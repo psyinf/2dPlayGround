@@ -1,0 +1,8 @@
+INCLUDE (CheckIncludeFiles)
+CHECK_INCLUDE_FILES("stacktrace" USE_STACKTRACES LANGUAGE CXX)
+if(USE_STACKTRACES)
+	message("Using stacktraces")
+	add_definitions(-DUSE_STACKTRACES)
+else()	
+	message("Not using stacktraces")
+endif()
