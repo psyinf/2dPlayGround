@@ -1,5 +1,5 @@
 project(sandbox)
-find_package(sdl2 REQUIRED)
+find_package(SDL2 REQUIRED)
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_sources(${PROJECT_NAME}
