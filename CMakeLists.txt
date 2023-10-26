@@ -23,7 +23,7 @@ conan_cmake_install(PATH_OR_REFERENCE .
 CPMAddPackage("https://github.com/psyinf/sdlpp.git#CMakeSupport")
 
 enable_testing()
-
+add_subdirectory(libs)
 add_subdirectory(apps)
 add_subdirectory(tests)
 

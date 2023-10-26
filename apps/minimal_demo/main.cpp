@@ -1,11 +1,11 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <array>
+#include <SDLApp.h>
 #include <iostream>
-#include <sdlpp.hpp>
+
 #include <vector>
-#include <memory>
+
 struct Star
 {
     float x;
@@ -13,69 +13,11 @@ struct Star
     float z;
 };
 
-namespace config {
 
-template <typename ELEMENT_TYPE>
-using Vec2 = std::array<ELEMENT_TYPE, 2>;
 
-using Vec2Window = Vec2<int32_t>;
 
-struct WindowConfig
-{
-    Vec2Window  offset;
-    Vec2Window  size;
-    std::string windowName;
-};
 
-// TODO: renderconfig -> renderhint
-
-} // namespace config
-
-class SDLApplication
-{
-public:
-    SDLApplication(const config::WindowConfig& windowConfig)
-      : windowConfig(windowConfig)
-    {
-        initialize(windowConfig);
-    }
-
-    void initialize(const config::WindowConfig& windowConfig)
-    {
-        init = std::make_unique<sdl::Init>(SDL_INIT_EVERYTHING);
-        window = std::make_unique<sdl::Window>(windowConfig.windowName.c_str(),
-                                               windowConfig.offset[0],
-                                               windowConfig.offset[1], //
-                                               windowConfig.size[0],
-                                               windowConfig.size[1], //
-                                               SDL_WINDOW_BORDERLESS);
-        SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1"); // TODO: move to config
-        renderer = std::make_unique<sdl::Renderer>(window->get(), -1, 0);
-    }
-
-   auto& getRenderer()
-    {
-        if (!renderer) { throw std::runtime_error("renderer not initialized"); }
-
-        return renderer;
-    }
-
-    auto getEventHandler() const { return eventHandler; }
-
-    void deinitialize() {}
-
-    ~SDLApplication(){}
-
-private:
-    config::WindowConfig           windowConfig;
-    std::unique_ptr<sdl::Renderer> renderer;
-    std::unique_ptr<sdl::Window>   window;
-    std::unique_ptr<sdl::Init>     init;
-    sdl::EventHandler              eventHandler;
-
-};
-
-static void mainloop(SDLApplication& sdlApp, std::vector<Star>& stars)
+static void mainloop(pg::SDLApp& sdlApp, std::vector<Star>& stars)
 {
     
     auto& renderer = sdlApp.getRenderer();
@@ -120,8 +62,8 @@ static void mainloop(SDLApplication& sdlApp, std::vector<Star>& stars)
 int main(int argc, char** argv)
 try
 {
-    config::WindowConfig windowConfig{{65, 126}, {1280, 720}, "minimal demo"};
-    SDLApplication       sdlApp{windowConfig};
+    pg::config::WindowConfig windowConfig{{65, 126}, {1280, 720}, "minimal demo"};
+    pg::SDLApp       sdlApp{windowConfig};
         
     std::vector<Star> stars;
     for (int i = 0; i < 1000; ++i)
