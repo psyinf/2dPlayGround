@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.22)
 project(sagan)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-#add cmake script to downlad conan-cmake integrations
+#add cmake script to download conan-cmake integrations
 include(cmake/conan_config.cmake)
 include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/coverage.cmake)
