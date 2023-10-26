@@ -11,7 +11,7 @@ include(cmake/setup_cpm.cmake)
 
 conan_cmake_configure(REQUIRES 
     catch2/3.4.0
-	sdl/2.28.3
+    sdl/2.28.3
     GENERATORS CMakeDeps CMakeToolchain
 )
 
@@ -19,7 +19,7 @@ conan_cmake_autodetect(settings)
 conan_cmake_install(PATH_OR_REFERENCE .
                     BUILD missing
                     REMOTE conancenter
-				    SETTINGS ${settings})
+                    SETTINGS ${settings})
 CPMAddPackage("https://github.com/psyinf/sdlpp.git#CMakeSupport")
 
 enable_testing()
