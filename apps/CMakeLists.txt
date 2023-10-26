@@ -1,1 +1,2 @@
+add_subdirectory(minimal_demo)
 add_subdirectory(sandbox)
