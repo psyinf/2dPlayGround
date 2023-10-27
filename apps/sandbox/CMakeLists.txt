@@ -1,5 +1,5 @@
 project(sandbox)
-find_package(SDL2 REQUIRED)
+
 add_executable(${PROJECT_NAME} main.cpp)
 
 target_sources(${PROJECT_NAME}
@@ -9,9 +9,7 @@ target_sources(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-    sdlpp::sdlpp
-    SDL2::SDL2
-    SDL2::SDL2main
+    pgEngine::pgEngine
 )
 
 enable_coverage(${PROJECT_NAME})

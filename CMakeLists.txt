@@ -20,8 +20,15 @@ conan_cmake_install(PATH_OR_REFERENCE .
                     BUILD missing
                     REMOTE conancenter
                     SETTINGS ${settings})
-CPMAddPackage("https://github.com/psyinf/sdlpp.git#CMakeSupport")
 
+
+CPMAddPackage(
+NAME sdlpp    
+
+GITHUB_REPOSITORY "mika314/sdlpp"
+GIT_TAG HEAD
+#OPTIONS USE_SDLGFX
+)
 enable_testing()
 add_subdirectory(libs)
 add_subdirectory(apps)
