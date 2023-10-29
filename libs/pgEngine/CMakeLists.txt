@@ -9,12 +9,15 @@ target_sources(${PROJECT_NAME}
 	PRIVATE
 		SDLApp.cpp
 		SDLPrimitives.cpp
+		SDLSprite.cpp
 	PUBLIC
 		SDLApp.h
 		SDLVec.h
 		SDLAppConfig.h
 		SDLPrimitives.h
- )
+		SDLSprite.h
+		Factories.h
+)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC

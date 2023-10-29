@@ -8,6 +8,8 @@
 #include <iostream>
 
 #include <vector>
+#include <SDLSprite.h>
+#include <Factories.h>
 
 class Circler 
 {
@@ -24,6 +26,7 @@ public:
         pg::Transform t{};
         t.pos[0] = mid[0] + sin(frame / static_cast<float>(period_frames) * 3.1412) * radius;
         t.pos[1] = mid[1] + cos(frame / static_cast<float>(period_frames) * 3.1412) * radius;
+        t.rotation_deg = 90 - (frame / static_cast<float>(period_frames) * 180);
         return t;
     }
 
@@ -35,46 +38,7 @@ protected:
 
 namespace pg {
 
-struct Sprite : public pg::Primitive
-{
-    Sprite(sdl::Texture&& tex)
-      : texture(std::move(tex))
-    {
-        texture.query(nullptr, nullptr, &texture_rect.w, &texture_rect.h);
-    }
 
-    void draw(sdl::Renderer& r, const pg::Transform& t) override
-    {
-        texture.query(nullptr, nullptr, &texture_rect.w, &texture_rect.h);
-
-        auto     new_x = (t.pos[0] + texture_rect.w / 2) - int(t.scale[0] * texture_rect.w / 2);
-        auto     new_y = (t.pos[1] + texture_rect.h / 2) - int(t.scale[1] * texture_rect.h / 2);
-        SDL_Rect dest_rect = {new_x, new_y, int(texture_rect.w * t.scale[0]), int(texture_rect.h * t.scale[1])};
-        r.copy(texture.get(), nullptr, &dest_rect);
-    }
-
-    void draw(sdl::Renderer& r) override
-    {
-        SDL_Rect texture_rect{};
-        texture.query(nullptr, nullptr, &texture_rect.w, &texture_rect.h);
-        r.copy(texture.get(), nullptr, &texture_rect);
-    }
-
-private:
-    sdl::Texture texture;
-    SDL_Rect     texture_rect{};
-};
-
-class SpriteFactory
-{
-public:
-    static std::unique_ptr<Sprite> makeSprite(sdl::Renderer& renderer, std::string_view resource_name)
-    {
-        sdl::Surface spriteSurface(IMG_Load(resource_name.data()));
-        sdl::Texture tex(renderer.get(), spriteSurface.get());
-        return std::make_unique<Sprite>(std::move(tex));
-    }
-};
 } // namespace pg
 
 
