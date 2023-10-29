@@ -1,5 +1,6 @@
 project(pgEngine)
 find_package(SDL2 REQUIRED)
+find_package(SDL2_image REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -20,6 +21,7 @@ target_link_libraries(${PROJECT_NAME}
     sdlpp::sdlpp
     SDL2::SDL2
     SDL2::SDL2main
+	SDL2_image::SDL2_image-static
 )
 
 target_include_directories(

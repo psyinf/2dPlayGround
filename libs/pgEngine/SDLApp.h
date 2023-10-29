@@ -10,7 +10,7 @@ public:
 
     void initialize(const config::WindowConfig& windowConfig);
 
-    auto getRenderer() -> std::unique_ptr<sdl::Renderer>&;
+    auto getRenderer() -> sdl::Renderer&;
 
     auto getEventHandler() const -> sdl::EventHandler;
 

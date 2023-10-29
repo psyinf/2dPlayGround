@@ -10,11 +10,11 @@ auto SDLApp::getEventHandler() const -> sdl::EventHandler
     return eventHandler;
 }
 
-auto SDLApp::getRenderer() -> std::unique_ptr<sdl::Renderer>&
+auto SDLApp::getRenderer() -> sdl::Renderer&
 {
     if (!renderer) { throw std::runtime_error("renderer not initialized"); }
 
-    return renderer;
+    return *renderer;
 }
 
 void SDLApp::initialize(const config::WindowConfig& windowConfig)

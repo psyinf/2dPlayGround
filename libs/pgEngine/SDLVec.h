@@ -11,5 +11,5 @@ using Vec3 = std::array<ELEMENT_TYPE, 2>;
 
 using Vec2Window = Vec2<int32_t>;
 using iVec2 = Vec2Window;
-
+using fVec2 =  Vec2<float>;
 } // namespace pg

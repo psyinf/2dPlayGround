@@ -27,8 +27,8 @@ static void mainloop(pg::SDLApp& sdlApp, std::vector<Star>& stars)
     while (!done)
     {
         while (sdlApp.getEventHandler().poll()) {}
-        renderer->setDrawColor(0x00, 0x00, 0x00, 0xff);
-        renderer->clear();
+        renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
+        renderer.clear();
         for (auto& star : stars)
         {
             if (star.z < 0xff) star.z += 1;
@@ -36,10 +36,10 @@ static void mainloop(pg::SDLApp& sdlApp, std::vector<Star>& stars)
             star.y = (star.y - 720 / 2) * (1 + 0.0001 * star.z) + 720 / 2;
             if (star.x < 0 || star.x > 1280 || star.y < 0 || star.y > 720)
                 star = Star{1.0f * (rand() % 1280), 1.0f * (rand() % 720), 0};
-            renderer->setDrawColor(star.z, star.z, star.z, 0xff);
-            renderer->drawPoint(star.x, star.y);
+            renderer.setDrawColor(star.z, star.z, star.z, 0xff);
+            renderer.drawPoint(star.x, star.y);
         }
-        renderer->present();
+        renderer.present();
     }
 
     /*

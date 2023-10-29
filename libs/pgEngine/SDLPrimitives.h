@@ -4,10 +4,18 @@
 
 namespace pg {
 
+struct Transform
+{
+    iVec2 pos{};
+    fVec2 scale{1,1};
+};
+
 class Primitive
 {
 public:
     virtual void draw(sdl::Renderer& r) = 0;
+
+    virtual void draw(sdl::Renderer& r, const Transform& t) { draw(r); };
 };
 
 class Line : public Primitive
@@ -33,6 +41,5 @@ public:
 protected:
     iVec2 pos;
 };
-
 
 } // namespace pg
