@@ -12,7 +12,7 @@ public:
 
     auto getRenderer() -> sdl::Renderer&;
 
-    auto getEventHandler() const -> sdl::EventHandler;
+    auto getEventHandler() -> sdl::EventHandler&;
 
     void deinitialize();
 

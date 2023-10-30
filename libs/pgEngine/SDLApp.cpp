@@ -5,7 +5,7 @@ SDLApp::~SDLApp() {}
 
 void SDLApp::deinitialize() {}
 
-auto SDLApp::getEventHandler() const -> sdl::EventHandler
+auto SDLApp::getEventHandler() -> sdl::EventHandler&
 {
     return eventHandler;
 }
