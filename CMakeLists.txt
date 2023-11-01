@@ -12,6 +12,7 @@ include(cmake/setup_cpm.cmake)
 conan_cmake_configure(REQUIRES 
     catch2/3.4.0
     sdl/2.28.3
+    sdl_image/2.6.3
     GENERATORS CMakeDeps CMakeToolchain
 )
 
@@ -20,17 +21,24 @@ conan_cmake_install(PATH_OR_REFERENCE .
                     BUILD missing
                     REMOTE conancenter
                     SETTINGS ${settings})
-CPMAddPackage("https://github.com/psyinf/sdlpp.git#CMakeSupport")
 
+
+CPMAddPackage(
+NAME sdlpp    
+
+GITHUB_REPOSITORY "mika314/sdlpp"
+GIT_TAG HEAD
+#OPTIONS USE_SDLGFX
+)
 enable_testing()
-
+add_subdirectory(libs)
 add_subdirectory(apps)
 add_subdirectory(tests)
 
-#install(DIRECTORY
-#		data/
-#	DESTINATION
-#		{CMAKE_INSTALL_BINDIR}/data#
-#	COMPONENT
-#		${RUNTIME_COMPONENT}
-#)
+install(DIRECTORY
+        data/
+    DESTINATION
+        data
+    COMPONENT
+        ${RUNTIME_COMPONENT}
+)

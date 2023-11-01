@@ -1,74 +1,107 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <sdlpp.hpp>
-#include <stdio.h>
+#include <SDLApp.h>
+#include <SDLBackgoundSprite.h>
+#include <SDLKeyStateMap.h>
+#include <SDLPrimitives.h>
+#include <SDLVec.h>
+#include <SDL_image.h>
+#include <iostream>
+
+#include <Factories.h>
+#include <SDLSprite.h>
 #include <vector>
 
-struct Star
+class Circler
 {
-    float x;
-    float y;
-    float z;
+public:
+    Circler(pg::iVec2&& p, int radius, int period_frames)
+      : mid(std::move(p))
+      , radius{radius}
+      , period_frames(period_frames)
+    {
+    }
+
+    pg::Transform frame(int frame)
+    {
+        pg::Transform t{};
+        t.pos[0] = mid[0] + sin(frame / static_cast<float>(period_frames) * 3.1412) * radius;
+        t.pos[1] = mid[1] + cos(frame / static_cast<float>(period_frames) * 3.1412) * radius;
+        t.rotation_deg = 90 - (frame / static_cast<float>(period_frames) * 180);
+        return t;
+    }
+
+protected:
+    pg::iVec2 mid;
+    int       radius;
+    int       period_frames;
 };
 
-static void mainloop()
+int main(int argc, char** argv)
+try
 {
-    sdl::Init   init(SDL_INIT_EVERYTHING);
-    sdl::Window w("Starfiled", 65, 126, 1280, 720, SDL_WINDOW_BORDERLESS);
-    SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1");
-    sdl::Renderer     r(w.get(), -1, 0);
-    auto              done = false;
-    sdl::EventHandler e;
-    e.quit = [&done](const SDL_QuitEvent&) { done = true; };
-    std::vector<Star> stars;
-    for (int i = 0; i < 1000; ++i)
-        stars.push_back(Star{1.0f * (rand() % 1280), 1.0f * (rand() % 720), 0});
+    pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
+    pg::SDLApp               sdlApp{windowConfig};
+    pg::KeyStateMap          keyStateMap(sdlApp.getEventHandler());
+    auto&                    renderer = sdlApp.getRenderer();
+    auto                     done = false;
+    sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
+        std::cout << "bye!";
+        done = true;
+    };
+    pg::Transform bgTransform{};
+
+    // some callback that is executed directly when the key is pressed
+    // this basically happens at the rate of key-repeat
+    keyStateMap.registerDirectCallback(
+        SDLK_x, {pg::KeyStateMap::CallbackTrigger::BOTH, {[](auto pressed) {
+                     std::cout << "x "
+                               << (pressed == pg::KeyStateMap::CallbackTrigger::PRESSED ? "pressed" : "released")
+                               << "\n";
+                 }}});
+    // register callbacks to be executed when desired, e.g. once per frame, independent from the key-repeat
+    keyStateMap.registerCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
+    keyStateMap.registerCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
+    keyStateMap.registerCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
+    keyStateMap.registerCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
+    pg::Line  l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
+    pg::Point p1{pg::iVec2{10, 10}};
+    pg::Point p2{pg::iVec2{9, 9}};
+    pg::Point p3{pg::iVec2{9, 9}};
+    Circler   c({550, 550}, 100, 555);
+    int       frame = 0;
+
+    auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
+    auto background = std::make_unique<pg::ScrollingSprite>(
+        pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"), SDL_Rect{0, 0, 1280, 720});
     while (!done)
     {
-        while (e.poll()) {}
-        r.setDrawColor(0x00, 0x00, 0x00, 0xff);
-        r.clear();
-        for (auto& star : stars)
-        {
-            if (star.z < 0xff) star.z += 1;
-            star.x = (star.x - 1280 / 2) * (1 + 0.0001 * star.z) + 1280 / 2;
-            star.y = (star.y - 720 / 2) * (1 + 0.0001 * star.z) + 720 / 2;
-            if (star.x < 0 || star.x > 1280 || star.y < 0 || star.y > 720)
-                star = Star{1.0f * (rand() % 1280), 1.0f * (rand() % 720), 0};
-            r.setDrawColor(star.z, star.z, star.z, 0xff);
-            r.drawPoint(star.x, star.y);
-        }
-        r.present();
+        // handle all pending events
+        while (sdlApp.getEventHandler().poll()) {}
+        keyStateMap.evaluateCallbacks();
+
+        renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
+        renderer.clear();
+        background->draw(renderer, bgTransform);
+        renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
+        l.draw(renderer);
+
+        renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
+        p1.draw(renderer);
+        p2.draw(renderer);
+        p3.draw(renderer);
+
+        sprite.draw(renderer, c.frame(++frame));
+
+        renderer.present();
     }
 
-    /*
-    if (!game_is_still_running)
-    {
-        deinitialize_the_game();
-#ifdef __EMSCRIPTEN__
-        emscripten_cancel_main_loop(); // this should "kill" the app.
-#else
-        exit(0);
-#endif
-    }
-
-    check_for_new_input();
-    think_about_stuff();
-    draw_the_next_frame();
-    */
+    return 0;
 }
 
-int main(int argc, char** argv)
+catch (const std::exception& e)
 {
-    // initialize_the_game();
-#ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop(mainloop, 0, 1);
-#else
-    while (1)
-    {
-        mainloop();
-    }
-#endif
-    return 0;
+    std::cerr << "Terminated: " << e.what() << std::endl;
+    return -1;
 }
