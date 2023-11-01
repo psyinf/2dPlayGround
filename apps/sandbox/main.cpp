@@ -50,7 +50,7 @@ try
         std::cout << "bye!";
         done = true;
     };
-    pg::Transform testTransform{};
+    pg::Transform bgTransform{};
 
     // some callback that is executed directly when the key is pressed
     // this basically happens at the rate of key-repeat
@@ -61,15 +61,15 @@ try
                                << "\n";
                  }}});
     // register callbacks to be executed when desired, e.g. once per frame, independent from the key-repeat
-    keyStateMap.registerCallback(SDLK_a, [&testTransform](auto) { testTransform.pos[0] -= 10; });
-    keyStateMap.registerCallback(SDLK_d, [&testTransform](auto) { testTransform.pos[0] += 10; });
-    keyStateMap.registerCallback(SDLK_w, [&testTransform](auto) { testTransform.pos[1] -= 10; });
-    keyStateMap.registerCallback(SDLK_s, [&testTransform](auto) { testTransform.pos[1] += 10; });
+    keyStateMap.registerCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
+    keyStateMap.registerCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
+    keyStateMap.registerCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
+    keyStateMap.registerCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
     pg::Line  l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
     pg::Point p1{pg::iVec2{10, 10}};
     pg::Point p2{pg::iVec2{9, 9}};
     pg::Point p3{pg::iVec2{9, 9}};
-    Circler   c({550, 550}, 100, 555);
+    //Circler   c({550, 550}, 100, 555);
     int       frame = 0;
 
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
@@ -83,7 +83,7 @@ try
 
         renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
         renderer.clear();
-        background->draw(renderer, testTransform);
+        background->draw(renderer, bgTransform);
         renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
         l.draw(renderer);
 
@@ -93,7 +93,7 @@ try
         p3.draw(renderer);
 
         sprite.draw(renderer, c.frame(++frame));
-        ;
+
         renderer.present();
     }
 
