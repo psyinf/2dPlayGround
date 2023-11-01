@@ -2,6 +2,8 @@
 #include <emscripten.h>
 #endif
 #include <SDLApp.h>
+#include <SDLBackgoundSprite.h>
+#include <SDLKeyStateMap.h>
 #include <SDLPrimitives.h>
 #include <SDLVec.h>
 #include <SDL_image.h>
@@ -36,99 +38,33 @@ protected:
     int       period_frames;
 };
 
-namespace pg {
-
-class ScrollingSprite : public Sprite
-{
-public:
-    ScrollingSprite(pg::Sprite&& sprite, SDL_Rect&& backgroundRect)
-      : Sprite(std::move(sprite))
-      , backgroundRect(std::move(backgroundRect))
-    {
-    }
-
-    void draw(sdl::Renderer& r, const pg::Transform& trans) override
-    {
-        auto& texture_rect = getTextureRect();
-        getTexture().query(nullptr, nullptr, &texture_rect.w, &texture_rect.h);
-        auto t = trans;
-        t.pos[0] %= texture_rect.w;
-        if (t.pos[0] > 0) { t.pos[0] -= texture_rect.w; }
-        t.pos[1] %= texture_rect.h;
-        if (t.pos[1] > 0) { t.pos[1] -= texture_rect.h; }
-        SDL_Rect src_1_rect{0, 0, texture_rect.w, texture_rect.h};
-        SDL_Rect dst_1_rect{t.pos[0], t.pos[1], texture_rect.w, texture_rect.h};
-       
-        SDL_Rect src_2_rect{0, 0, -t.pos[0], texture_rect.h};
-        SDL_Rect dst_2_rect{texture_rect.w + t.pos[0], + t.pos[1], -t.pos[0], texture_rect.h};
-
-        SDL_Rect src_3_rect{0, 0, texture_rect.w, -t.pos[1]};
-        SDL_Rect dst_3_rect{t.pos[0], texture_rect.h + t.pos[1], texture_rect.w, -t.pos[1]};
-
-        SDL_Rect src_4_rect{0, 0, -t.pos[0], -t.pos[1]};
-        SDL_Rect dst_4_rect{texture_rect.w + t.pos[0], texture_rect.h + t.pos[1], -t.pos[0], -t.pos[1]};
-
-        r.copyEx(getTexture().get(), &src_1_rect, &dst_1_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_2_rect, &dst_2_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_3_rect, &dst_3_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_4_rect, &dst_4_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-    }
-
-
-    /*
-           auto& texture_rect = getTextureRect();
-       getTexture().query(nullptr, nullptr, &texture_rect.w, &texture_rect.h);
-       auto t = trans;
-       t.pos[0] %= texture_rect.w;
-       if (t.pos[0] > 0) { t.pos[0] -= texture_rect.w; }
-       t.pos[1] %= texture_rect.h;
-       if (t.pos[1] > 0) { t.pos[1] -= texture_rect.h; }
-
-       SDL_Rect src_1_rect{0, 0, texture_rect.w, texture_rect.h};
-       SDL_Rect dst_1_rect{t.pos[0], t.pos[1], texture_rect.w, texture_rect.h};
-       // horizontal
-       SDL_Rect dst_2_rect{texture_rect.w + t.pos[0], +t.pos[1], -t.pos[0], texture_rect.h};
-       SDL_Rect src_2_rect{0, 0, -t.pos[0], texture_rect.h + t.pos[1]};
-
-       SDL_Rect src_3_rect{0, 0, texture_rect.w, -t.pos[1]};
-       SDL_Rect dst_3_rect{t.pos[0], texture_rect.h + t.pos[1], texture_rect.w, -t.pos[1]};
-
-
-
-       SDL_Rect src_4_rect{0, 0, -t.pos[0], -t.pos[1]};
-       SDL_Rect dst_4_rect{texture_rect.w + t.pos[0], texture_rect.h - t.pos[1], -t.pos[0], t.pos[1]};
-       r.copyEx(getTexture().get(), &src_1_rect, &dst_1_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_2_rect, &dst_2_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_3_rect, &dst_3_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-       // r.copyEx(getTexture().get(), &src_4_rect, &dst_4_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
-    */
-private:
-    SDL_Rect backgroundRect;
-};
-
-} // namespace pg
-
 int main(int argc, char** argv)
 try
 {
-    pg::config::WindowConfig windowConfig{{0, 0}, {1024, 768}, "minimal demo"};
+    pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
     pg::SDLApp               sdlApp{windowConfig};
-
-    auto& renderer = sdlApp.getRenderer();
-    auto  done = false;
+    pg::KeyStateMap          keyStateMap(sdlApp.getEventHandler());
+    auto&                    renderer = sdlApp.getRenderer();
+    auto                     done = false;
     sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         std::cout << "bye!";
         done = true;
     };
     pg::Transform testTransform{};
-    sdlApp.getEventHandler().keyDown = [&testTransform](const SDL_KeyboardEvent& keyboardEvent) {
-        // std::cout << "Pressed " << keyboardEvent.keysym << "\n";
-        if (keyboardEvent.keysym.sym == SDLK_a) { testTransform.pos[0] -= 10; }
-        if (keyboardEvent.keysym.sym == SDLK_d) { testTransform.pos[0] += 10; }
-        if (keyboardEvent.keysym.sym == SDLK_w) { testTransform.pos[1] -= 10; }
-        if (keyboardEvent.keysym.sym == SDLK_s) { testTransform.pos[1] += 10; }
-        // std::cout << "Pressed " << SDL_GetKeyName(keyboardEvent.keysym.scancode) << std::endl;
-    };
+
+    // some callback that is executed directly when the key is pressed
+    // this basically happens at the rate of key-repeat
+    keyStateMap.registerDirectCallback(
+        SDLK_x, {pg::KeyStateMap::CallbackTrigger::BOTH, {[](auto pressed) {
+                     std::cout << "x "
+                               << (pressed == pg::KeyStateMap::CallbackTrigger::PRESSED ? "pressed" : "released")
+                               << "\n";
+                 }}});
+    // register callbacks to be executed when desired, e.g. once per frame, independent from the key-repeat
+    keyStateMap.registerCallback(SDLK_a, [&testTransform](auto) { testTransform.pos[0] -= 10; });
+    keyStateMap.registerCallback(SDLK_d, [&testTransform](auto) { testTransform.pos[0] += 10; });
+    keyStateMap.registerCallback(SDLK_w, [&testTransform](auto) { testTransform.pos[1] -= 10; });
+    keyStateMap.registerCallback(SDLK_s, [&testTransform](auto) { testTransform.pos[1] += 10; });
     pg::Line  l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
     pg::Point p1{pg::iVec2{10, 10}};
     pg::Point p2{pg::iVec2{9, 9}};
@@ -138,11 +74,13 @@ try
 
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
     auto background = std::make_unique<pg::ScrollingSprite>(
-        pg::SpriteFactory::makeSprite(renderer, "../data/raster.png"), SDL_Rect{0, 0, 1280, 720});
+        pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"), SDL_Rect{0, 0, 1280, 720});
     while (!done)
     {
         // handle all pending events
         while (sdlApp.getEventHandler().poll()) {}
+        keyStateMap.evaluateCallbacks();
+
         renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
         renderer.clear();
         background->draw(renderer, testTransform);
@@ -161,6 +99,7 @@ try
 
     return 0;
 }
+
 catch (const std::exception& e)
 {
     std::cerr << "Terminated: " << e.what() << std::endl;

@@ -62,7 +62,7 @@ static void mainloop(pg::SDLApp& sdlApp, std::vector<Star>& stars)
 int main(int argc, char** argv)
 try
 {
-    pg::config::WindowConfig windowConfig{{65, 126}, {1280, 720}, "minimal demo"};
+    pg::config::WindowConfig windowConfig{0, {65, 126}, {1280, 720}, "minimal demo"};
     pg::SDLApp       sdlApp{windowConfig};
         
     std::vector<Star> stars;

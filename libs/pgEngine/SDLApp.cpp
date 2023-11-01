@@ -1,4 +1,5 @@
 #include "SDLApp.h"
+#include <ranges>
 using namespace pg;
 
 SDLApp::~SDLApp() {}
@@ -12,7 +13,7 @@ auto SDLApp::getEventHandler() -> sdl::EventHandler&
 
 auto SDLApp::getRenderer() -> sdl::Renderer&
 {
-    if (!renderer) { throw std::runtime_error("renderer not initialized"); }
+    checkInitialized();
 
     return *renderer;
 }
@@ -20,6 +21,7 @@ auto SDLApp::getRenderer() -> sdl::Renderer&
 void SDLApp::initialize(const config::WindowConfig& windowConfig)
 {
     init = std::make_unique<sdl::Init>(SDL_INIT_EVERYTHING);
+
     window = std::make_unique<sdl::Window>(windowConfig.windowName.c_str(),
                                            windowConfig.offset[0],
                                            windowConfig.offset[1], //
@@ -34,4 +36,23 @@ SDLApp::SDLApp(const config::WindowConfig& windowConfig)
   : windowConfig(windowConfig)
 {
     initialize(windowConfig);
+}
+
+void SDLApp::getNumDisplays() const
+{
+    checkInitialized();
+    SDL_GetNumVideoDisplays();
+}
+
+SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
+{
+    checkInitialized();
+    SDL_Rect screen;
+    SDL_GetDisplayBounds(screenNumber, &screen);
+    return screen;
+}
+
+void SDLApp::checkInitialized() const
+{
+    if (!init) { throw std::runtime_error("SDLApp not initialized"); }
 }

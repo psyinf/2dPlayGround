@@ -7,6 +7,7 @@ class SDLApp
 {
 public:
     SDLApp(const config::WindowConfig& windowConfig);
+    ~SDLApp();
 
     void initialize(const config::WindowConfig& windowConfig);
 
@@ -16,7 +17,13 @@ public:
 
     void deinitialize();
 
-    ~SDLApp();
+    void getNumDisplays() const;
+
+    SDL_Rect getDisplayBounds(const uint8_t screen) const;
+
+
+protected:
+    void checkInitialized() const;
 
 private:
     config::WindowConfig           windowConfig;
@@ -25,4 +32,4 @@ private:
     std::unique_ptr<sdl::Init>     init;
     sdl::EventHandler              eventHandler;
 };
-}
+} // namespace pg

@@ -10,6 +10,7 @@ target_sources(${PROJECT_NAME}
 		SDLApp.cpp
 		SDLPrimitives.cpp
 		SDLSprite.cpp
+		SDLKeyStateMap.cpp
 	PUBLIC
 		SDLApp.h
 		SDLVec.h
@@ -17,6 +18,8 @@ target_sources(${PROJECT_NAME}
 		SDLPrimitives.h
 		SDLSprite.h
 		Factories.h
+		SDLKeyStateMap.h 
+		SDLBackgoundSprite.h 
 )
 
 target_link_libraries(${PROJECT_NAME}
