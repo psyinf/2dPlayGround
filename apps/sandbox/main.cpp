@@ -69,7 +69,7 @@ try
     pg::Point p1{pg::iVec2{10, 10}};
     pg::Point p2{pg::iVec2{9, 9}};
     pg::Point p3{pg::iVec2{9, 9}};
-    //Circler   c({550, 550}, 100, 555);
+    Circler   c({550, 550}, 100, 555);
     int       frame = 0;
 
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
