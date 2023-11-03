@@ -5,9 +5,9 @@ namespace pg {
 class ScrollingSprite : public Sprite
 {
 public:
-    ScrollingSprite(pg::Sprite&& sprite, SDL_Rect&& backgroundRect)
+    ScrollingSprite(pg::Sprite&& sprite, iVec2&& backgroundSize)
       : Sprite(std::move(sprite))
-      , backgroundRect(std::move(backgroundRect))
+      , backgroundSize(std::move(backgroundSize))
     {
     }
 
@@ -39,7 +39,7 @@ public:
     }
 
 private:
-    SDL_Rect backgroundRect;
+    iVec2 backgroundSize;
 };
 
 } // namespace pg
