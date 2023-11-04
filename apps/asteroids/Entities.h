@@ -13,7 +13,7 @@ struct FrameStamp
 
 struct Drawable
 {
-    // TODO: get around polymorphism
+    // TODO: get around dynamic polymorphism maybe using CRTP
     std::unique_ptr<pg::Primitive> prim;
 };
 

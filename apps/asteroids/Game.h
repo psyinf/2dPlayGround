@@ -36,7 +36,7 @@ public:
 
     pg::SDLApp& getApp();;
 
-    pg::KeyStateMap& getKeyStateMap();;
+    pg::KeyStateMap& getKeyStateMap();
 
     void setup();
 

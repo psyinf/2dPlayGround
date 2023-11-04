@@ -8,9 +8,10 @@ game::Background::Background(Game& game)
 
 void game::Background::handle()
 {
-    auto  view = game.getRegistry().view<backgroundTag, pg::Transform>();
+    auto  view = game.getRegistry().view<backgroundTag, pg::Transform, game::Dynamics>();
     auto& entity = *view.begin();
-    auto& transform = view.get<pg::Transform>(entity);
+    auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
+    transform.pos[1] += dynamics.velocity[1];
 }
 
 void game::Background::setup()
@@ -26,5 +27,6 @@ void game::Background::setup()
     registry.emplace<Drawable>(
         background, std::make_unique<pg::ScrollingSprite>(std::move(backgroundImg), std::move(backgroundRect)));
     registry.emplace<pg::Transform>(background);
+    registry.emplace<game::Dynamics>(background, game::Dynamics{.velocity{0,3}});
     registry.emplace<backgroundTag>(background);
 }

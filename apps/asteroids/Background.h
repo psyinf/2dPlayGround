@@ -9,7 +9,7 @@ class Game;
 class Background
 {
 public:
-    using backgroundTag = entt::tag<"PLAYER"_hs>;
+    using backgroundTag = entt::tag<"BACKGROUND"_hs>;
     Background(Game& game);
 
     void setup();
