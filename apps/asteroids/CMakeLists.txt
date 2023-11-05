@@ -3,7 +3,7 @@ project(asteroids)
 
 set(CMAKE_CXX_STANDARD 23)
 
-add_executable(${PROJECT_NAME} main.cpp Player.cpp Game.cpp Background.cpp )
+add_executable(${PROJECT_NAME} main.cpp Player.cpp Game.cpp Background.cpp "Asteroids.cpp" )
 
 find_package(fmt REQUIRED)
 find_package(EnTT REQUIRED)

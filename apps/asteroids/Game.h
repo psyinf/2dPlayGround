@@ -9,6 +9,7 @@
 
 #include "Player.h"
 #include "Background.h"
+#include "Asteroids.h"
 
 #include <memory>
 
@@ -22,9 +23,10 @@ private:
     pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
 
     entt::registry registry;
-
+    //TODO: those are really systems.Currently this is mixing setup and per-frame action.
     Player player;
     Background background;
+    Asteroids asteroids;
 
     void renderFrame(const FrameStamp& frameStamp);
 

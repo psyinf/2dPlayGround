@@ -24,6 +24,7 @@ void game::Game::frame(FrameStamp frameStamp)
     keyStateMap.evaluateCallbacks();
     background.handle();
     player.handle();
+    asteroids.handle(frameStamp);
     renderFrame(frameStamp);
 }
 
@@ -44,11 +45,13 @@ pg::KeyStateMap& game::Game::getKeyStateMap()
 
 void game::Game::setup()
 {
-    auto details = registry.create ();
-    registry.emplace<WindowDetails>(details,
+    auto details = registry.create();
+    registry.emplace<WindowDetails>(
+        details,
         WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
     background.setup();
     player.setup();
+    asteroids.setup();
 }
 
 void game::Game::loop()
@@ -67,5 +70,6 @@ void game::Game::loop()
 game::Game::Game()
   : player(*this)
   , background(*this)
+  , asteroids(*this)
 {
 }
