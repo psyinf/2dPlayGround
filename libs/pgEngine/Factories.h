@@ -1,7 +1,7 @@
 #pragma once    
 #include <sdlpp.hpp>
 #include <SDLSprite.h>
-
+#include <SDL_image.h>
 namespace pg {
 
 class SpriteFactory

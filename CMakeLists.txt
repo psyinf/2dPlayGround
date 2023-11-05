@@ -13,6 +13,8 @@ conan_cmake_configure(REQUIRES
     catch2/3.4.0
     sdl/2.28.3
     sdl_image/2.6.3
+    fmt/10.1.1
+    entt/3.12.2
     GENERATORS CMakeDeps CMakeToolchain
 )
 
@@ -24,11 +26,11 @@ conan_cmake_install(PATH_OR_REFERENCE .
 
 
 CPMAddPackage(
-NAME sdlpp    
+    NAME sdlpp    
 
-GITHUB_REPOSITORY "mika314/sdlpp"
-GIT_TAG HEAD
-#OPTIONS USE_SDLGFX
+    GITHUB_REPOSITORY "mika314/sdlpp"
+    GIT_TAG HEAD
+    #OPTIONS USE_SDLGFX
 )
 enable_testing()
 add_subdirectory(libs)
