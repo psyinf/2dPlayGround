@@ -74,7 +74,7 @@ try
 
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
     auto background = std::make_unique<pg::ScrollingSprite>(
-        pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"), SDL_Rect{0, 0, 1280, 720});
+        pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"),pg::iVec2{ 1280, 720});
     while (!done)
     {
         // handle all pending events

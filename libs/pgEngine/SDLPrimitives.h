@@ -6,7 +6,7 @@ namespace pg {
 
 struct Transform
 {
-    iVec2 pos{};
+    fVec2 pos{};
     float rotation_deg{};
     fVec2 scale{1, 1};
 };

@@ -1,6 +1,6 @@
 INCLUDE (CheckIncludeFiles)
 CHECK_INCLUDE_FILES("stacktrace" USE_STACKTRACES LANGUAGE CXX)
-if(USE_STACKTRACES)
+if(USE_STACKTRACES AND (CMAKE_CXX_STANDARD EQUAL 23) )
 	message("Using stacktraces")
 	add_definitions(-DUSE_STACKTRACES)
 else()	
