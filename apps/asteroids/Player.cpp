@@ -47,6 +47,6 @@ void game::Player::handle()
 
     
     auto dim = pg::iVec2{1024, 768};
-    transform.pos[0] = std::clamp(transform.pos[0], 0, dim[0] - sprite_size);
-    transform.pos[1] = std::clamp(transform.pos[1], 0, dim[1] - sprite_size);
+    transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, dim[0] - sprite_size);
+    transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, dim[1] - sprite_size);
 }

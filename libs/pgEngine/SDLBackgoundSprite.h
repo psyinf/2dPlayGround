@@ -1,3 +1,4 @@
+#pragma once 
 #include "SDLSprite.h"
 
 namespace pg {
@@ -16,9 +17,9 @@ public:
         auto& texture_rect = getTextureRect();
         getTexture().query(nullptr, nullptr, &texture_rect.w, &texture_rect.h);
         auto t = trans;
-        t.pos[0] %= texture_rect.w;
+        t.pos[0] = std::fmod(t.pos[0], texture_rect.w);
         if (t.pos[0] > 0) { t.pos[0] -= texture_rect.w; }
-        t.pos[1] %= texture_rect.h;
+        t.pos[1] = std::fmod(t.pos[1], texture_rect.h);
         if (t.pos[1] > 0) { t.pos[1] -= texture_rect.h; }
         SDL_Rect src_1_rect{0, 0, texture_rect.w, texture_rect.h};
         SDL_Rect dst_1_rect{t.pos[0], t.pos[1], texture_rect.w, texture_rect.h};
