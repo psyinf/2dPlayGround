@@ -1,16 +1,12 @@
 #include "Asteroids.h"
-#include "Entities.h"
-#include "Game.h"
-#include "RegistryHelper.h"
+
+#include <core/Game.h>
+#include "core/RegistryHelper.h"
 #include <Factories.h>
 #include <SDLBackgoundSprite.h>
-
+#include "entities/Entities.h"
 #include <random>
 
-game::Asteroids::Asteroids(Game& game)
-  : game(game)
-{
-}
 
 void game::Asteroids::setup()
 {
