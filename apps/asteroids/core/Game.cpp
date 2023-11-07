@@ -1,5 +1,8 @@
 #include "Game.h"
-
+#include "systems/Player.h"
+#include "systems/Background.h"
+#include "systems/Asteroids.h"
+#include "entities/Entities.h"
 void game::Game::renderFrame(const FrameStamp& frameStamp)
 {
     auto& renderer = sdlApp.getRenderer();
@@ -22,9 +25,8 @@ void game::Game::frame(FrameStamp frameStamp)
     while (sdlApp.getEventHandler().poll()) {};
     // evaluate all callbacks bound to events
     keyStateMap.evaluateCallbacks();
-    background.handle();
-    player.handle();
-    asteroids.handle(frameStamp);
+    std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
+    //todo: move to system
     renderFrame(frameStamp);
 }
 
@@ -49,9 +51,12 @@ void game::Game::setup()
     registry.emplace<WindowDetails>(
         details,
         WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
-    background.setup();
-    player.setup();
-    asteroids.setup();
+    //systems = {{Background{*this}}, {Player{*this}}, {Asteroids{*this}}};
+    systems.emplace_back(std::make_unique<Player>(*this));
+    systems.emplace_back(std::make_unique<Asteroids>(*this));
+    systems.emplace_back(std::make_unique<Background>(*this));
+
+    std::ranges::for_each(systems, [](auto& system) { system->setup(); });
 }
 
 void game::Game::loop()
@@ -68,8 +73,5 @@ void game::Game::loop()
 }
 
 game::Game::Game()
-  : player(*this)
-  , background(*this)
-  , asteroids(*this)
 {
 }

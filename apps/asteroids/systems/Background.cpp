@@ -1,12 +1,8 @@
 #include "Background.h"
-#include "Game.h"
+#include "core/Game.h"
+#include "entities/Entities.h"
 
-game::Background::Background(Game& game)
-  : game(game)
-{
-}
-
-void game::Background::handle()
+void game::Background::handle(const FrameStamp& frameStamp)
 {
     auto  view = game.getRegistry().view<backgroundTag, pg::Transform, game::Dynamics>();
     auto& entity = *view.begin();

@@ -1,12 +1,8 @@
 #include "Player.h"
-#include "Entities.h"
-#include "Game.h"
+#include "entities/Entities.h"
+#include "core/Game.h"
 #include <SDLPrimitives.h>
 #include <fmt/format.h>
-game::Player::Player(game::Game& game)
-  : game(game)
-{
-}
 
 void game::Player::setup()
 {
@@ -31,7 +27,7 @@ void game::Player::setup()
     }
 }
 
-void game::Player::handle()
+void game::Player::handle(const FrameStamp& frameStamp)
 {
     auto  view = game.getRegistry().view<playerTag, pg::Transform, game::Dynamics>();
     auto& entity = *view.begin();

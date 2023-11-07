@@ -1,23 +1,20 @@
 #pragma once
 #include <entt/entt.hpp>
-
+#include "SystemInterface.h"
 namespace game {
 using entt::literals::operator""_hs;
 
 class Game;
 
-class Player
+class Player : public SystemInterface
 {
 public:
-    Player(Game& game);
+    using SystemInterface::SystemInterface;
  
     using playerTag = entt::tag<"PLAYER"_hs>;
 
     void setup();
 
-    void handle();
-
-private:
-    game::Game& game;
+    void handle(const FrameStamp& frameStamp);
 };
 } // namespace game

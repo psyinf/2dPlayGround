@@ -1,15 +1,14 @@
 #pragma once
-#include "Entities.h"
+
 #include <Factories.h>
 #include <SDLApp.h>
 #include <SDLBackgoundSprite.h>
 #include <SDLKeyStateMap.h>
 #include <SDLVec.h>
 #include <entt/entt.hpp>
+#include "systems/SystemInterface.h"
 
-#include "Player.h"
-#include "Background.h"
-#include "Asteroids.h"
+
 
 #include <memory>
 
@@ -24,9 +23,7 @@ private:
 
     entt::registry registry;
     //TODO: those are really systems.Currently this is mixing setup and per-frame action.
-    Player player;
-    Background background;
-    Asteroids asteroids;
+    std::vector<std::unique_ptr<SystemInterface>> systems;
 
     void renderFrame(const FrameStamp& frameStamp);
 
