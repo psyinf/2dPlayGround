@@ -2,14 +2,10 @@
 #include <SDLVec.h>
 #include <SDLPrimitives.h>
 #include <memory>
-#include <chrono>
+
 namespace game {
 
-struct FrameStamp
-{
-    std::uint64_t             frameNumber;
-    std::chrono::milliseconds lastFrameDuration;
-};
+
 
 struct Drawable
 {

@@ -1,23 +1,22 @@
 #pragma once
-#include "SDLPrimitives.h"
+#include "SystemInterface.h"
 #include <entt/entt.hpp>
 
 namespace game {
 using entt::literals::operator""_hs;
 class Game;
 
-class Background
+class Background : public SystemInterface
 {
 public:
+    using SystemInterface::SystemInterface;
+
     using backgroundTag = entt::tag<"BACKGROUND"_hs>;
-    Background(Game& game);
+
 
     void setup();
 
-    void handle();
-
-private:
-    Game& game;
+    void handle(const FrameStamp& frameStamp);
 };
 
 } // namespace game

@@ -1,4 +1,4 @@
-#include "Game.h"
+#include "core/Game.h"
 #include <SDLErrorTrace.h>
 #include <fmt/format.h>
 
