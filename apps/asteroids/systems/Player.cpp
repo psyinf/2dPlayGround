@@ -9,7 +9,13 @@ void game::Player::setup()
     auto& registry = game.getRegistry();
     auto& keyStateMap = game.getKeyStateMap();
     auto  player = game.getRegistry().create();
+    auto& ctx = game.getRegistry().ctx();
+    using entt::literals::operator""_hs;
+    ctx.emplace_as<const entt::entity>("Player"_hs, player);
+    
+
     auto  sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/playerShip1_blue.png");
+    ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, pg::iVec2{sprite.getTextureRect().w, sprite.getTextureRect().h});
     registry.emplace<Drawable>(player, std::make_unique<pg::Sprite>(std::move(sprite)));
     registry.emplace<pg::Transform>(player, pg::Transform{.pos{100, 100}});
     registry.emplace<game::Dynamics>(player, game::Dynamics{});

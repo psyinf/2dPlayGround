@@ -1,8 +1,10 @@
 #include "Game.h"
-#include "systems/Player.h"
-#include "systems/Background.h"
-#include "systems/Asteroids.h"
 #include "entities/Entities.h"
+#include "systems/Asteroids.h"
+#include "systems/Background.h"
+#include "systems/Lasers.h"
+#include "systems/Player.h"
+
 void game::Game::renderFrame(const FrameStamp& frameStamp)
 {
     auto& renderer = sdlApp.getRenderer();
@@ -26,13 +28,18 @@ void game::Game::frame(FrameStamp frameStamp)
     // evaluate all callbacks bound to events
     keyStateMap.evaluateCallbacks();
     std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
-    //todo: move to system
+    // todo: move to system
     renderFrame(frameStamp);
 }
 
 entt::registry& game::Game::getRegistry()
 {
     return registry;
+}
+
+entt::dispatcher& game::Game::getDispatcher()
+{
+    return dispatcher;
 }
 
 pg::SDLApp& game::Game::getApp()
@@ -51,12 +58,22 @@ void game::Game::setup()
     registry.emplace<WindowDetails>(
         details,
         WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
-    //systems = {{Background{*this}}, {Player{*this}}, {Asteroids{*this}}};
+    // systems = {{Background{*this}}, {Player{*this}}, {Asteroids{*this}}};
+    systems.emplace_back(std::make_unique<Lasers>(*this));
     systems.emplace_back(std::make_unique<Player>(*this));
     systems.emplace_back(std::make_unique<Asteroids>(*this));
     systems.emplace_back(std::make_unique<Background>(*this));
 
     std::ranges::for_each(systems, [](auto& system) { system->setup(); });
+    // retrieve the player id
+    auto& ctx = getRegistry().ctx();
+    using entt::literals::operator""_hs;
+    auto playerId = ctx.get<const entt::entity>("Player"_hs);
+    auto playerSpriteSize = ctx.get<const pg::iVec2>("Player.sprite.size"_hs);
+    auto event = events::LaserFired{.offset{playerSpriteSize[0] / 2.0f, static_cast<float>(-playerSpriteSize[1])},
+                                    .shooter{playerId}};
+    auto trigger = [event, this](auto) { dispatcher.trigger(event); };
+    keyStateMap.registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
 }
 
 void game::Game::loop()
@@ -70,8 +87,4 @@ void game::Game::loop()
         auto frameStart = std::chrono::high_resolution_clock::now();
         frame({frameNumber++, std::chrono::milliseconds(16)});
     }
-}
-
-game::Game::Game()
-{
 }
