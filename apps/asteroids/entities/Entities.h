@@ -9,8 +9,7 @@ namespace game {
 
 struct Drawable
 {
-    // TODO: get around dynamic polymorphism maybe using CRTP
-    std::unique_ptr<pg::Primitive> prim;
+    std::shared_ptr<pg::Primitive> prim;
 };
 
 struct Dynamics

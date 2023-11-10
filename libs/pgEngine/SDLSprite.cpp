@@ -19,8 +19,8 @@ void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform& t)
 {
     texture.query(nullptr, nullptr, &texture_rect.w, &texture_rect.h);
 
-    auto     new_x = (t.pos[0] + texture_rect.w / 2) - int(t.scale[0] * texture_rect.w / 2);
-    auto     new_y = (t.pos[1] + texture_rect.h / 2) - int(t.scale[1] * texture_rect.h / 2);
+    auto     new_x = int(t.pos[0] + texture_rect.w / 2) - int(t.scale[0] * texture_rect.w / 2);
+    auto     new_y = int(t.pos[1] + texture_rect.h / 2) - int(t.scale[1] * texture_rect.h / 2);
     SDL_Rect dest_rect = {new_x, new_y, int(texture_rect.w * t.scale[0]), int(texture_rect.h * t.scale[1])};
     r.copyEx(texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
 }

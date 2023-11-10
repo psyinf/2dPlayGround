@@ -12,9 +12,11 @@ struct Sprite : public pg::Primitive
 
     void draw(sdl::Renderer& r) override;
 
+    SDL_Rect& getTextureRect() { return texture_rect; }
+
 protected:
     sdl::Texture& getTexture() { return texture; }
-    SDL_Rect& getTextureRect() { return texture_rect; }
+    
 private:
     sdl::Texture texture;
     SDL_Rect     texture_rect{};
