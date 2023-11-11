@@ -39,16 +39,15 @@ void game::Player::handle(const FrameStamp& frameStamp)
     auto& entity = *view.begin();
     auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
 
-    auto sprite_size = 100; // TODO config/properties of the sprite
-
     transform.pos[0] += std::lround(dynamics.velocity[0]);
     transform.pos[1] += std::lround(dynamics.velocity[1]);
-    //fmt::print("v {:.2f}, t {}         \r", dynamics.velocity[0], transform.pos[0]);
+ 
     dynamics.velocity[0] *= dynamics.dampening[0];
     dynamics.velocity[1] *= dynamics.dampening[1];
 
     
     auto dim = pg::iVec2{1024, 768};
-    transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, dim[0] - sprite_size);
-    transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, dim[1] - sprite_size);
+    transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, dim[0]);
+    transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, dim[1]);
+    transform.scale = {0.5, 0.5};
 }
