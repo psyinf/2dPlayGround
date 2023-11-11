@@ -21,8 +21,8 @@ void game::Lasers::createShot(const events::LaserFired& event)
 
         (game.getRegistry(),                                 //
          std::move(d),                                       //
-         pg::Transform{.pos{shooterTransform.pos + event.offset}}, //
-         {.velocity{0, -4.1}},
+         pg::Transform{.pos{shooterTransform.pos + event.offset}, .scale{0.5,0.75}}, //
+         {.velocity{0, -5.0}},
          {} //
         );
 }
