@@ -8,20 +8,29 @@ void game::Lasers::setup()
     game.getDispatcher().sink<game::events::LaserFired>().connect<&Lasers::handleEvent>(this);
 }
 
+struct SpriteResource : public pg::Sprite
+{
+    SpriteResource(sdl::Renderer& renderer, const std::string& path)
+      : pg::Sprite(pg::SpriteFactory::makeSprite(renderer, path))
+    {
+    }
+};
+
 void game::Lasers::createShot(const events::LaserFired& event)
 {
-    // TODO: some simple resource manager
-    static auto sprite = std::make_shared<pg::Sprite>(
-        pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/laserBlue01.png"));
+    auto sprite = game.getResourceCache().load<pg::Sprite>("../data/laserBlue01.png", [this](const auto& e) {
+        return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
+    });
+
     Drawable d(sprite);
-    //determine shoot position
+    // determine shoot position
     auto& shooterTransform = game.getRegistry().get<pg::Transform>(event.shooter);
 
     game::makeEntity<Drawable, pg::Transform, Dynamics, tag>
 
-        (game.getRegistry(),                                 //
-         std::move(d),                                       //
-         pg::Transform{.pos{shooterTransform.pos + event.offset}, .scale{0.5,0.75}}, //
+        (game.getRegistry(),                                                          //
+         std::move(d),                                                                //
+         pg::Transform{.pos{shooterTransform.pos + event.offset}, .scale{0.5, 0.75}}, //
          {.velocity{0, -5.0}},
          {} //
         );
@@ -35,6 +44,8 @@ void game::Lasers::handle(const FrameStamp& frameStamp)
     {
         auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
         transform.pos[1] += dynamics.velocity[1];
+        // TODO. rather delete in collision handling (e.g. handle collision with upper limit)
+        if (transform.pos[1] < 0) { game.getRegistry().destroy(entity); }
     }
 
     std::ranges::for_each(queued, [this](const auto& e) { createShot(e); });
