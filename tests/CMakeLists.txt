@@ -2,12 +2,14 @@ cmake_minimum_required(VERSION 3.15...3.23)
 project(tests LANGUAGES CXX)
 find_package(Catch2 CONFIG REQUIRED)
 
-add_executable(tests tests.cpp)
+add_executable(tests "ResourceCacheTests.cpp")
 
 target_link_libraries(
   tests
   PRIVATE 
-          Catch2::Catch2WithMain)
+    Catch2::Catch2WithMain
+    pgEngine::pgEngine
+)
 
           
 include(CTest)
