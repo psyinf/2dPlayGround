@@ -43,7 +43,7 @@ TEST_CASE("ResourceCache smoke tests", "[ResourceCache]")
 TEST_CASE("ResourceCache multiple", "[ResourceCache]")
 {
     pg::ResourceCache cache;
-    SECTION("Insert/Retrieve ResourceB")
+    SECTION("Insert/Retrieve A and B")
     {
         auto resB = cache.load<ResourceB>("b", [](const auto& p) { return ResourceB{p}; });
         REQUIRE(typeid(resB) == typeid(std::shared_ptr<ResourceB>));
@@ -55,4 +55,12 @@ TEST_CASE("ResourceCache multiple", "[ResourceCache]")
         REQUIRE(resB2->p == "aa");
 
     }
+    SECTION("Re-register B with A's key")
+    {
+        auto resB = cache.load<ResourceB>("b", [](const auto& p) { return ResourceB{p}; });
+        REQUIRE(typeid(resB) == typeid(std::shared_ptr<ResourceB>));
+        REQUIRE(resB);
+        REQUIRE(resB->p == "b");
+        REQUIRE_THROWS_AS(cache.load<ResourceA>("b", [](const auto& p) { return ResourceA{p}; }), std::bad_any_cast);
+       }
 }
