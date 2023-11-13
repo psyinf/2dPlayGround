@@ -1,14 +1,12 @@
-#include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_session.hpp>
 
-unsigned int Factorial(unsigned int number)
+int main(int argc, char* argv[])
 {
-    return number <= 1 ? number : Factorial(number - 1) * number;
-}
+    // your setup ...
 
-TEST_CASE("Factorials are computed", "[factorial]")
-{
-    REQUIRE(Factorial(1) == 1);
-    REQUIRE(Factorial(2) == 2);
-    REQUIRE(Factorial(3) == 6);
-    REQUIRE(Factorial(10) == 3628800);
+    int result = Catch::Session().run(argc, argv);
+
+    // your clean-up...
+
+    return result;
 }

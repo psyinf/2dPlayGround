@@ -1,6 +1,7 @@
 #include <SDLResourceCache.hpp>
 #include <catch2/catch_test_macros.hpp>
 
+
 struct ResourceA
 {
     std::string p;

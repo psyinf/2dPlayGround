@@ -1,15 +1,10 @@
 #pragma once
 #include "SDLVec.h"
 #include <sdlpp.hpp>
-
+#include "SDLBounds.h"
 namespace pg {
 
-struct Transform
-{
-    fVec2 pos{};
-    float rotation_deg{};
-    fVec2 scale{1, 1};
-};
+
 
 class Primitive
 {

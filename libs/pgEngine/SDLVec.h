@@ -30,14 +30,37 @@ struct is_std_array<std::array<T, N>> : std::true_type
 template <class T>
 constexpr bool is_std_array_v = is_std_array<std::remove_cvref_t<T>>::value;
 
-template <typename V>
-V operator+(const V& lhs, const V& rhs)
+template <typename T>
+pg::Vec2<T> operator+(const pg::Vec2<T>& lhs, const pg::Vec2<T>& rhs)
 {
     // for now
-    V res;
+    pg::Vec2<T> res;
     for (auto idx : std::views::iota(0u, lhs.size()))
     {
         res[idx] = lhs[idx] + rhs[idx];
+    }
+    return res;
+}
+
+template <typename T>
+pg::Vec2<T> operator-(const pg::Vec2<T>& lhs, const pg::Vec2<T>& rhs)
+{
+    // for now
+    pg::Vec2<T> res;
+    for (auto idx : std::views::iota(0u, lhs.size()))
+    {
+        res[idx] = lhs[idx] - rhs[idx];
+    }
+    return res;
+}
+
+template <typename T>
+T dot(const pg::Vec2<T>& lhs, const pg::Vec2<T>& rhs)
+{
+    T res{};
+    for (auto idx : std::views::iota(0u, lhs.size()))
+    {
+        res += lhs[idx] * rhs[idx];
     }
     return res;
 }

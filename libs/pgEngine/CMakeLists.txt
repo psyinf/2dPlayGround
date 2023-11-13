@@ -20,7 +20,9 @@ target_sources(${PROJECT_NAME}
 		Factories.h
 		SDLKeyStateMap.h 
 		SDLBackgoundSprite.h 
- "SDLErrorTrace.h")
+		SDLErrorTrace.h
+		SDLBounds.h
+)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
