@@ -4,6 +4,7 @@
 #include "systems/Background.h"
 #include "systems/Lasers.h"
 #include "systems/Player.h"
+#include "systems/Collisions.hpp"
 
 void game::Game::renderFrame(const FrameStamp& frameStamp)
 {
@@ -68,7 +69,7 @@ void game::Game::setup()
     systems.emplace_back(std::make_unique<Player>(*this));
     systems.emplace_back(std::make_unique<Asteroids>(*this));
     systems.emplace_back(std::make_unique<Background>(*this));
-
+    systems.emplace_back(std::make_unique<Collisions>(*this));
     std::ranges::for_each(systems, [](auto& system) { system->setup(); });
     // retrieve the player id
     auto& ctx = getRegistry().ctx();

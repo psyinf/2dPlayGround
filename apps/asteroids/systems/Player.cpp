@@ -1,7 +1,9 @@
 #include "Player.h"
-#include "entities/Entities.h"
 #include "core/Game.h"
+#include "entities/Entities.h"
+#include <SDLBounds.h>
 #include <SDLPrimitives.h>
+
 #include <fmt/format.h>
 
 void game::Player::setup()
@@ -12,14 +14,18 @@ void game::Player::setup()
     auto& ctx = game.getRegistry().ctx();
     using entt::literals::operator""_hs;
     ctx.emplace_as<const entt::entity>("Player"_hs, player);
-    
 
-    auto  sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/playerShip1_blue.png");
+    auto sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/playerShip1_blue.png");
     ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, pg::iVec2{sprite.getTextureRect().w, sprite.getTextureRect().h});
+    auto sprite_radius = static_cast<float>(std::max(sprite.getTextureRect().w, sprite.getTextureRect().h));
+
+    registry.emplace<pg::BoundingSphere>(player, pg::BoundingSphere{.radius = sprite_radius});
     registry.emplace<Drawable>(player, std::make_unique<pg::Sprite>(std::move(sprite)));
     registry.emplace<pg::Transform>(player, pg::Transform{.pos{100, 100}});
+    //tags
     registry.emplace<game::Dynamics>(player, game::Dynamics{});
     registry.emplace<playerTag>(player);
+    registry.emplace<game::ActiveCollider>(player);
 
     auto view = game.getRegistry().view<playerTag, pg::Transform, game::Dynamics>();
     for (auto& entity : view)
@@ -41,11 +47,10 @@ void game::Player::handle(const FrameStamp& frameStamp)
 
     transform.pos[0] += std::lround(dynamics.velocity[0]);
     transform.pos[1] += std::lround(dynamics.velocity[1]);
- 
+
     dynamics.velocity[0] *= dynamics.dampening[0];
     dynamics.velocity[1] *= dynamics.dampening[1];
 
-    
     auto dim = pg::iVec2{1024, 768};
     transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, dim[0]);
     transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, dim[1]);
