@@ -11,6 +11,7 @@ void game::Collisions::handle(const FrameStamp& frameStamp)
     auto active_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, game::ActiveCollider>();
     auto passive_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, game::PassiveCollider>();
    
+    //actives vs passives
     for (auto& entity_a : active_view)
     {
         auto&& [transform_a, bs_a] = active_view.get<pg::Transform, pg::BoundingSphere>(entity_a);
@@ -20,6 +21,5 @@ void game::Collisions::handle(const FrameStamp& frameStamp)
                 game.getDispatcher().trigger<events::Collision>( {entity_a, entity_b});
             }
         }
-
     }
 }
