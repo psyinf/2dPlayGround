@@ -3,10 +3,46 @@
 #include <SDLErrorTrace.h>
 #include <SDL_image.h>
 #include <fmt/format.h>
-#include <span>
 
-template <typename Type, size_t Extent>
-void printASCII(const std::span<Type, Extent>& data, const pg::iVec2& dims)
+/**
+ * @brief Simple sprite surface wrapper
+ * @todo Use mdspan
+ */
+class SpritePixelData
+{
+    
+
+public:
+    using ColorType = uint8_t;
+    using Pixel = std::tuple<ColorType, ColorType, ColorType, ColorType>;
+    static constexpr auto numPixelComponents{3};
+
+    SpritePixelData(const std::string_view pathToImage)
+    {
+        sdl::Surface spriteSurface(IMG_Load("../data/meteorBrown_big1.png"));
+        surface = std::make_unique<sdl::Surface>(spriteSurface.get(), SDL_PIXELFORMAT_ARGB8888, 0);
+        rawPixels = std::span{std::bit_cast<uint8_t*>(spriteSurface->pixels),
+                              size_t(spriteSurface->w * spriteSurface->h * numPixelComponents)};
+        pixels = std::span{std::bit_cast<Pixel*>(spriteSurface->pixels), size_t(spriteSurface->w * spriteSurface->h)};
+
+        dims = {spriteSurface->w, spriteSurface->h};
+    }
+
+public:
+    const std::span<uint8_t>& getRawPixels() const { return rawPixels; }
+
+    const std::span<Pixel>& getPixels() const { return pixels; }
+
+    const pg::iVec2& getDimensions() const { return dims; }
+
+private:
+    std::unique_ptr<sdl::Surface> surface;
+    std::span<uint8_t>            rawPixels;
+    std::span<Pixel>              pixels;
+    pg::iVec2                     dims{};
+};
+
+void printASCII(const std::span<uint8_t>& data, const pg::iVec2& dims)
 {
     // get consecutive 4 bytes, and the index of the pixel
     for (const auto& [index, pixel] : std::views::enumerate(data | std::views::chunk(4)))
@@ -19,28 +55,19 @@ void printASCII(const std::span<Type, Extent>& data, const pg::iVec2& dims)
     }
 }
 
-class SpritePixelData
+void printASCII(const std::span<SpritePixelData::Pixel>& data, const pg::iVec2& dims)
 {
-public:
-    SpritePixelData(const std::string_view pathToImage)
+    // get consecutive 4 bytes, and the index of the pixel
+    for (const auto& [index, pixel] : std::views::enumerate(data))
     {
-        sdl::Surface spriteSurface(IMG_Load("../data/meteorBrown_big1.png"));
-        surface = std::make_unique<sdl::Surface>(spriteSurface.get(), SDL_PIXELFORMAT_ARGB8888, 0);
-        pixels =
-            std::span{std::bit_cast<uint8_t*>(spriteSurface->pixels), size_t(spriteSurface->w * spriteSurface->h * 4)};
-        dims = {spriteSurface->w, spriteSurface->h};
+        const auto [a, r, g, b] = pixel;
+
+        if (index % dims[0] == 0) { std::cout << "\n"; }
+        // draw us a nice little ascii image based on the alpha value
+        std::cout << (a != 0) ? "1" : "0";
     }
+}
 
-public:
-    const std::span<uint8_t>& getPixels() const { return pixels; }
-
-    const pg::iVec2& getDimensions() const { return dims; }
-
-private:
-    std::unique_ptr<sdl::Surface> surface;
-    std::span<uint8_t>            pixels;
-    pg::iVec2                     dims{};
-};
 
 int main(int argc, char* argv[])
 try
@@ -49,6 +76,7 @@ try
     fmt::print("Example: collision_shape_maker.exe ../data/meteorBrown_big1.png\n");
     SpritePixelData sprite("../data/meteorBrown_big1.png");
 
+    printASCII(sprite.getRawPixels(), sprite.getDimensions());
     printASCII(sprite.getPixels(), sprite.getDimensions());
     // find contours based on alpha/key color
     // create a convex hull from the contours
