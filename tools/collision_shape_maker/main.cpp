@@ -35,6 +35,12 @@ public:
 
     sdl::Surface& getSurface() { return *surface; }
 
+    const Pixel getPixel(const pg::iVec2& pos) const
+    {
+        auto coord = pos[0] + (pos[1] * dims[0]);
+        return pixels[coord];
+    }
+
 private:
     std::unique_ptr<sdl::Surface> surface;
     std::span<uint8_t>            rawPixels;
@@ -69,42 +75,86 @@ void printASCII(const std::span<SpritePixelData::Pixel>& data, const pg::iVec2& 
 }
 
 namespace pg {
-class Polygon : public pg::Primitive
+
+
+
+class RefPoints : public pg::Primitive
 {
 public:
-    Polygon(std::vector<iVec2>&& points)
+    RefPoints(std::vector<pg::iVec2>& points)
       : points(points)
     {
     }
 
     void draw(sdl::Renderer& r, const Transform& t) override
     {
+        ScopedScale ss(r, t.scale);
+        r.setDrawColor(255, 255, 255, 255);
         // draw the polygon
         for (const auto& p : points)
         {
-            r.setDrawColor(255, 255, 255, 255);
-            r.drawLines(std::bit_cast<SDL_Point*>(points.data()), points.size());
+            r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), points.size());
         }
     }
 
     void draw(sdl::Renderer& r) { draw(r, {}); }
 
 private:
-    std::vector<iVec2> points;
+    std::vector<iVec2>& points;
 };
 
 } // namespace pg
 
-void drawPolygon(SpritePixelData& pixelData)
+void findPoints(std::vector<pg::iVec2>& points, SpritePixelData& pixelData)
 {
-    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions()}}};
+    bool inside = false;
+    auto next = [&inside, &pixelData](const pg::iVec2& pos) {
+        auto val = std::get<0>(pixelData.getPixel(pos));
+        if (val != 0 && !inside)
+        {
+            inside = true;
+            return true;
+        }
+        if (val == 0 && inside)
+        {
+            inside = false;
+            return true;
+        }
+        return false;
+    };
 
-    pg::Sprite  sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
-    pg::Polygon p{std::vector<pg::iVec2>{{0, 0}, {100, 100}}};
-    auto        render = [&](auto& app) {
+    for (auto y : std::views::iota(0, pixelData.getDimensions()[1]))
+    {
+        inside = false;
+        for (auto x : std::views::iota(0, pixelData.getDimensions()[0]))
+        {
+            if (next(pg::iVec2{x, y}))
+            {
+                std::cout << "1";
+                points.push_back({x, y});
+            }
+            else { std::cout << " "; }
+        }
+        std::cout << "\n";
+    }
+}
 
-        sprite.draw(app.getRenderer());
-        p.draw(app.getRenderer());
+void calculatePolygon(SpritePixelData& pixelData)
+{
+    std::vector<pg::iVec2> points{{0, 0}};
+    pg::RefPoints          rp{points};
+    findPoints(points, pixelData);
+
+    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions() * 5}}};
+
+    pg::Sprite    sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
+    auto          dim = pixelData.getDimensions() - pg::iVec2{1, 1};
+    auto          dim2 = pixelData.getDimensions() - pg::iVec2{15, 15};
+    pg::Transform t;
+    auto          fDims = pg::fVec2{float(pixelData.getDimensions()[0]), float(pixelData.getDimensions()[1])};
+    auto          render = [&](auto& app) {
+        sprite.draw(app.getRenderer(), {.pos{fDims * 2.5f}, .scale{5, 5}});
+        rp.draw(app.getRenderer(), {.scale{5, 5}});
     };
 
     auto done = false;
@@ -120,7 +170,7 @@ try
 
     printASCII(sprite.getRawPixels(), sprite.getDimensions());
     printASCII(sprite.getPixels(), sprite.getDimensions());
-    drawPolygon(sprite);
+    calculatePolygon(sprite);
     // find contours based on alpha/key color
     // create a convex hull from the contours
     return 0;
