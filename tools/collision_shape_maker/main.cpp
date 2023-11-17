@@ -33,7 +33,8 @@ public:
 
     const pg::iVec2& getDimensions() const { return dims; }
 
-    const sdl::Surface& getSurface() const { return *surface; }
+    sdl::Surface& getSurface() { return *surface; }
+
 private:
     std::unique_ptr<sdl::Surface> surface;
     std::span<uint8_t>            rawPixels;
@@ -67,19 +68,17 @@ void printASCII(const std::span<SpritePixelData::Pixel>& data, const pg::iVec2& 
     }
 }
 
-void drawPolygon(const SpritePixelData& pixelData)
+void drawPolygon(SpritePixelData& pixelData)
 {
-    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{}, .size{pixelData.getDimensions()}}};
+    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200,200}, .size{pixelData.getDimensions()}}};
     auto       done = false;
     app.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         std::cout << "bye!";
         done = true;
     };
-    pg::Sprite(sdl::Texture(&app.getRenderer(), &pixelData.getSurface()));
+    pg::Sprite sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
 
-    auto render = [](auto& app) {
-        
-    };
+    auto render = [&sprite](auto& app) { sprite.draw(app.getRenderer()); };
 
     app.loop(done, render);
 }
