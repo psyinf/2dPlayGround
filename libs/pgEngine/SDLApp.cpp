@@ -52,6 +52,19 @@ SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
     return screen;
 }
 
+void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
+{
+    while (!done)
+    {
+        while (getEventHandler().poll()) {}
+        //#TODO: configurable, if clear and which color
+        renderer->setDrawColor(0x00, 0x00, 0x00, 0xff);
+        renderer->clear();
+        renderFunc(*this);
+        renderer->present();
+    }
+}
+
 void SDLApp::checkInitialized() const
 {
     if (!init) { throw std::runtime_error("SDLApp not initialized"); }

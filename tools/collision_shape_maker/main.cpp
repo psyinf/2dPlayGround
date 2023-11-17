@@ -10,8 +10,6 @@
  */
 class SpritePixelData
 {
-    
-
 public:
     using ColorType = uint8_t;
     using Pixel = std::tuple<ColorType, ColorType, ColorType, ColorType>;
@@ -35,6 +33,7 @@ public:
 
     const pg::iVec2& getDimensions() const { return dims; }
 
+    const sdl::Surface& getSurface() const { return *surface; }
 private:
     std::unique_ptr<sdl::Surface> surface;
     std::span<uint8_t>            rawPixels;
@@ -60,7 +59,7 @@ void printASCII(const std::span<SpritePixelData::Pixel>& data, const pg::iVec2& 
     // get consecutive 4 bytes, and the index of the pixel
     for (const auto& [index, pixel] : std::views::enumerate(data))
     {
-        const auto [a, r, g, b] = pixel;
+        const auto& [a, r, g, b] = pixel;
 
         if (index % dims[0] == 0) { std::cout << "\n"; }
         // draw us a nice little ascii image based on the alpha value
@@ -68,6 +67,22 @@ void printASCII(const std::span<SpritePixelData::Pixel>& data, const pg::iVec2& 
     }
 }
 
+void drawPolygon(const SpritePixelData& pixelData)
+{
+    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{}, .size{pixelData.getDimensions()}}};
+    auto       done = false;
+    app.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
+        std::cout << "bye!";
+        done = true;
+    };
+    pg::Sprite(sdl::Texture(&app.getRenderer(), &pixelData.getSurface()));
+
+    auto render = [](auto& app) {
+        
+    };
+
+    app.loop(done, render);
+}
 
 int main(int argc, char* argv[])
 try
@@ -78,6 +93,7 @@ try
 
     printASCII(sprite.getRawPixels(), sprite.getDimensions());
     printASCII(sprite.getPixels(), sprite.getDimensions());
+    drawPolygon(sprite);
     // find contours based on alpha/key color
     // create a convex hull from the contours
     return 0;
