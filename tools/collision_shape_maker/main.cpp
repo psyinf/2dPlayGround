@@ -68,18 +68,46 @@ void printASCII(const std::span<SpritePixelData::Pixel>& data, const pg::iVec2& 
     }
 }
 
+namespace pg {
+class Polygon : public pg::Primitive
+{
+public:
+    Polygon(std::vector<iVec2>&& points)
+      : points(points)
+    {
+    }
+
+    void draw(sdl::Renderer& r, const Transform& t) override
+    {
+        // draw the polygon
+        for (const auto& p : points)
+        {
+            r.setDrawColor(255, 255, 255, 255);
+            r.drawLines(std::bit_cast<SDL_Point*>(points.data()), points.size());
+        }
+    }
+
+    void draw(sdl::Renderer& r) { draw(r, {}); }
+
+private:
+    std::vector<iVec2> points;
+};
+
+} // namespace pg
+
 void drawPolygon(SpritePixelData& pixelData)
 {
-    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200,200}, .size{pixelData.getDimensions()}}};
-    auto       done = false;
-    app.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
-        std::cout << "bye!";
-        done = true;
+    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions()}}};
+
+    pg::Sprite  sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
+    pg::Polygon p{std::vector<pg::iVec2>{{0, 0}, {100, 100}}};
+    auto        render = [&](auto& app) {
+
+        sprite.draw(app.getRenderer());
+        p.draw(app.getRenderer());
     };
-    pg::Sprite sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
 
-    auto render = [&sprite](auto& app) { sprite.draw(app.getRenderer()); };
-
+    auto done = false;
     app.loop(done, render);
 }
 
