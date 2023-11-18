@@ -119,4 +119,65 @@ private:
     std::vector<iVec2> points;
 };
 
+class RefPoints : public pg::Primitive
+{
+public:
+    RefPoints(std::vector<pg::iVec2>& points)
+      : points(points)
+      , maxElement(points.size())
+    {
+    }
+
+    void setMaxElement(size_t maxElement) { this->maxElement = maxElement; }
+
+    size_t getMaxElement() const { return maxElement; }
+
+    void draw(sdl::Renderer& r, const Transform& t) override
+    {
+        ScopedScale ss(r, t.scale);
+        r.setDrawColor(255, 255, 255, 255);
+        // draw the polygon
+        for (const auto& p : points)
+        {
+            r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), std::min(maxElement, points.size()));
+        }
+    }
+
+    void draw(sdl::Renderer& r) { draw(r, {}); }
+
+private:
+    std::vector<iVec2>& points;
+    size_t              maxElement{points.size()};
+};
+
+class RefLines : public pg::Primitive
+{
+public:
+    RefLines(std::vector<pg::iVec2>& points)
+      : points(points)
+      , maxElement(points.size())
+    {
+    }
+
+    void setMaxElement(size_t maxElement) { this->maxElement = maxElement; }
+
+    size_t getMaxElement() const { return maxElement; }
+
+    void draw(sdl::Renderer& r, const Transform& t) override
+    {
+        ScopedScale ss(r, t.scale);
+        r.setDrawColor(255, 255, 255, 255);
+        // draw the polygon
+        for (const auto& p : points)
+        {
+            r.drawLines(std::bit_cast<SDL_Point*>(points.data()), std::min(maxElement, points.size()));
+        }
+    }
+
+    void draw(sdl::Renderer& r) { draw(r, {}); }
+
+private:
+    std::vector<iVec2>& points;
+    size_t              maxElement{points.size()};
+};
 } // namespace pg

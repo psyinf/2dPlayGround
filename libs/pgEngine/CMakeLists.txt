@@ -22,7 +22,7 @@ target_sources(${PROJECT_NAME}
 		SDLBackgoundSprite.h 
 		SDLErrorTrace.h
 		SDLBounds.h
-)
+ "ComputationalGeometry.hpp" "SpritePixelData.hpp")
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
