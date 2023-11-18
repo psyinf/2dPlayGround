@@ -59,7 +59,7 @@ void calculatePolygon(pg::SpritePixelData& pixelData)
             if (rpConvex.getMaxElement() > convPoints.size()) { rpConvex.setMaxElement(1); }
         }
         sprite.draw(app.getRenderer(), {.pos{fDims * 2.5f}, .scale{5, 5}});
-        // rp.draw(app.getRenderer(), {.scale{5, 5}});
+        rp.draw(app.getRenderer(), {.scale{5, 5}});
         rpConvex.draw(app.getRenderer(), {.scale{5, 5}});
     };
 
@@ -72,7 +72,7 @@ try
 {
     fmt::print("Usage: collision_shape_maker.exe <path_to_image>\n");
     fmt::print("Example: collision_shape_maker.exe ../data/meteorBrown_big1.png\n");
-    //SpritePixelData sprite("../data/meteorBrown_big1.png");
+    //pg::SpritePixelData sprite("../data/meteorBrown_big1.png");
     pg::SpritePixelData sprite("../data/playerShip1_blue.png");
 
     //printASCII(sprite.getRawPixels(), sprite.getDimensions());

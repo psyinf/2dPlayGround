@@ -34,7 +34,8 @@ std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)
         for (const auto x : std::views::iota(0, pixelData.getDimensions()[0]))
         {
             // todo: incorporate "inside" to move x to the left if leaving
-            if (next(pg::iVec2{x, y})) { points.push_back({x, y}); }
+            if (next(pg::iVec2{x, y})) { inside ? points.push_back({x, y}) : points.push_back({x - 1, y}); }
+            if (x == pixelData.getDimensions()[0]-1 && inside) { points.push_back({x, y}); }
         }
     }
     return points;
@@ -115,4 +116,4 @@ std::vector<Vec2> convexHull(const std::vector<Vec2>& points)
 
     return hull;
 }
-} // namespace pg::compgeometry
+} // namespace pg::compGeometry
