@@ -148,9 +148,7 @@ void calculatePolygon(SpritePixelData& pixelData)
     pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions() * 5}}};
 
     pg::Sprite    sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
-    auto          dim = pixelData.getDimensions() - pg::iVec2{1, 1};
-    auto          dim2 = pixelData.getDimensions() - pg::iVec2{15, 15};
-    pg::Transform t;
+   
     auto          fDims = pg::fVec2{float(pixelData.getDimensions()[0]), float(pixelData.getDimensions()[1])};
     auto          render = [&](auto& app) {
         sprite.draw(app.getRenderer(), {.pos{fDims * 2.5f}, .scale{5, 5}});
