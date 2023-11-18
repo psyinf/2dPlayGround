@@ -21,6 +21,24 @@ private:
     fVec2          scale;
 };
 
+class ScopedColor
+{
+public:
+    ScopedColor(sdl::Renderer& r, const Color& setColor)
+      : renderer(r)
+    {
+        renderer.getDrawColor(&color[0], &color[1], &color[2], &color[3]);
+        renderer.setDrawColor(setColor[0], setColor[1], setColor[2], setColor[3]);
+    }
+
+    ~ScopedColor() { renderer.setDrawColor(color[0], color[1], color[2], color[3]); }
+
+private:
+    sdl::Renderer& renderer;
+    Color          color;
+};
+
+
 class Primitive
 {
 public:
