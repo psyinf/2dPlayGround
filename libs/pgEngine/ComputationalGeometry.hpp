@@ -5,6 +5,8 @@
 #include <limits>
 #include <ranges>
 
+#include <SpritePixelData.hpp>
+
 namespace pg::compGeometry {
 
 std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)
@@ -35,7 +37,7 @@ std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)
         {
             // todo: incorporate "inside" to move x to the left if leaving
             if (next(pg::iVec2{x, y})) { inside ? points.push_back({x, y}) : points.push_back({x - 1, y}); }
-            if (x == pixelData.getDimensions()[0]-1 && inside) { points.push_back({x, y}); }
+            if (x == pixelData.getDimensions()[0] - 1 && inside) { points.push_back({x, y}); }
         }
     }
     return points;
@@ -116,4 +118,32 @@ std::vector<Vec2> convexHull(const std::vector<Vec2>& points)
 
     return hull;
 }
+
+/**
+ * @brief merge consecutive co-linear points 
+ * @param points A vector of points, asserted to be in order
+ * @param dotError allowed error in the dot-product
+ * @todo this is not working as intended, as it removes too many points at to steep angles
+ * @return 
+*/
+std::vector<iVec2> mergeColinear(const std::vector<iVec2>& points, float dotError)
+{
+    auto               indicesToRemove = std::vector<size_t>{};
+    std::vector<iVec2> filteredPoints;
+    filteredPoints.push_back(*points.begin());
+    auto cast = [](const auto& v) { return vec_cast<float>(v); };
+    for (auto&& [index, vec] : std::views::enumerate(points | std::views::transform(cast) | std::views::adjacent<3>))
+    {
+        auto&& [v1, v2, v3] = vec;
+        auto d1 = std::fabs(dot(makeNormal(v2 - v1), makeNormal(v3 - v2)));
+        if (d1 < 1.0 - dotError)
+        {
+            filteredPoints.push_back(points[index + 1]); //
+        }
+        
+    }
+    filteredPoints.push_back(*points.rbegin());
+   return filteredPoints;
+}
+
 } // namespace pg::compGeometry

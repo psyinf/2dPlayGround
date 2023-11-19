@@ -1,13 +1,13 @@
+#include <ComputationalGeometry.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
+#include <SDLPrimitives.h>
+#include <SDLSprite.h>
 #include <SDL_image.h>
+#include <SpritePixelData.hpp>
 #include <deque>
 #include <fmt/format.h>
 #include <ranges>
-#include <SpritePixelData.hpp>
-#include <SDLSprite.h>
-#include <SDLPrimitives.h>
-#include <ComputationalGeometry.hpp>
 
 void printASCII(const std::span<uint8_t>& data, const pg::iVec2& dims)
 {
@@ -35,36 +35,38 @@ void printASCII(const std::span<pg::SpritePixelData::Pixel>& data, const pg::iVe
     }
 }
 
-
-void calculatePolygon(pg::SpritePixelData& pixelData)
-{
+void debugDisplay(pg::SpritePixelData& pixelData,const std::vector<pg::iVec2>& contour, const std::vector<pg::iVec2>& convexHull) {
     auto frame = 0u;
+    pg::RefPoints rp{contour};
+    pg::SDLApp    app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions() * 5}}};
+    pg::Sprite    sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
 
-    std::vector<pg::iVec2> points = pg::compGeometry::findContour(pixelData);
-    auto convPoints = pg::compGeometry::convexHull(points);
-    // TODO: minimize number of points by collapsing nearly co-linear lines
-    pg::RefPoints rp{points};
-    pg::RefLines rpConvex{convPoints};
+    pg::RefLines rpConvex{convexHull};
     rpConvex.setMaxElement(1);
-    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions() * 5}}};
-    pg::Sprite sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
-
     auto fDims = pg::fVec2{float(pixelData.getDimensions()[0]), float(pixelData.getDimensions()[1])};
 
     auto render = [&](auto& app) {
         ++frame;
-        if (frame % 10 == 0)
+        if (frame % 100 == 0)
         {
             rpConvex.setMaxElement(rpConvex.getMaxElement() + 1);
-            if (rpConvex.getMaxElement() > convPoints.size()) { rpConvex.setMaxElement(1); }
+            if (rpConvex.getMaxElement() > rpConvex.size()) { rpConvex.setMaxElement(1); }
         }
         sprite.draw(app.getRenderer(), {.pos{fDims * 2.5f}, .scale{5, 5}});
-        rp.draw(app.getRenderer(), {.scale{5, 5}});
+        // rp.draw(app.getRenderer(), {.scale{5, 5}});
         rpConvex.draw(app.getRenderer(), {.scale{5, 5}});
     };
 
     auto done = false;
     app.loop(done, render);
+}
+auto calculateConvexHull(pg::SpritePixelData& pixelData)
+{
+
+    std::vector<pg::iVec2> points = pg::compGeometry::findContour(pixelData);
+    auto                   convPoints = pg::compGeometry::convexHull(points);
+    convPoints = pg::compGeometry::mergeColinear(convPoints, 0.02);
+    return std::make_tuple(points, convPoints);
 }
 
 int main(int argc, char* argv[])
@@ -72,14 +74,13 @@ try
 {
     fmt::print("Usage: collision_shape_maker.exe <path_to_image>\n");
     fmt::print("Example: collision_shape_maker.exe ../data/meteorBrown_big1.png\n");
-    //pg::SpritePixelData sprite("../data/meteorBrown_big1.png");
+    // pg::SpritePixelData sprite("../data/meteorBrown_big1.png");
+    // pg::SpritePixelData sprite("../data/laserBlue01.png");
     pg::SpritePixelData sprite("../data/playerShip1_blue.png");
 
-    //printASCII(sprite.getRawPixels(), sprite.getDimensions());
     printASCII(sprite.getPixels(), sprite.getDimensions());
-    calculatePolygon(sprite);
-    // find contours based on alpha/key color
-    // create a convex hull from the contours
+    auto [contour, convexHull] = calculateConvexHull(sprite);
+    debugDisplay(sprite, contour, convexHull);
     return 0;
 }
 catch (std::exception& e)

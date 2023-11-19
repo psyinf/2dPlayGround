@@ -122,7 +122,7 @@ private:
 class RefPoints : public pg::Primitive
 {
 public:
-    RefPoints(std::vector<pg::iVec2>& points)
+    RefPoints(const std::vector<pg::iVec2>& points)
       : points(points)
       , maxElement(points.size())
     {
@@ -146,14 +146,14 @@ public:
     void draw(sdl::Renderer& r) { draw(r, {}); }
 
 private:
-    std::vector<iVec2>& points;
+    const std::vector<iVec2>& points;
     size_t              maxElement{points.size()};
 };
 
 class RefLines : public pg::Primitive
 {
 public:
-    RefLines(std::vector<pg::iVec2>& points)
+    RefLines(const std::vector<pg::iVec2>& points)
       : points(points)
       , maxElement(points.size())
     {
@@ -162,6 +162,8 @@ public:
     void setMaxElement(size_t maxElement) { this->maxElement = maxElement; }
 
     size_t getMaxElement() const { return maxElement; }
+
+    size_t size() const { return points.size(); }
 
     void draw(sdl::Renderer& r, const Transform& t) override
     {
@@ -177,7 +179,7 @@ public:
     void draw(sdl::Renderer& r) { draw(r, {}); }
 
 private:
-    std::vector<iVec2>& points;
+    const std::vector<iVec2>& points;
     size_t              maxElement{points.size()};
 };
 } // namespace pg
