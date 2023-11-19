@@ -1,7 +1,7 @@
 #pragma once
 #include <SDLVec.h>
-#include <sdlpp.hpp
-#include <SDL_Image.h>
+#include <sdlpp.hpp>
+#include <SDL_image.h>
 #include <bit>
 #include <span>
 #include <string>

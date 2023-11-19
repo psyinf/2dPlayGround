@@ -1,7 +1,10 @@
 #pragma once
+#include "SDLBounds.h"
 #include "SDLVec.h"
 #include <sdlpp.hpp>
-#include "SDLBounds.h"
+
+#include <bit>
+
 namespace pg {
 
 class ScopedScale
@@ -37,7 +40,6 @@ private:
     sdl::Renderer& renderer;
     Color          color;
 };
-
 
 class Primitive
 {
@@ -147,7 +149,7 @@ public:
 
 private:
     const std::vector<iVec2>& points;
-    size_t              maxElement{points.size()};
+    size_t                    maxElement{points.size()};
 };
 
 class RefLines : public pg::Primitive
@@ -180,6 +182,6 @@ public:
 
 private:
     const std::vector<iVec2>& points;
-    size_t              maxElement{points.size()};
+    size_t                    maxElement{points.size()};
 };
 } // namespace pg
