@@ -1,10 +1,12 @@
 #pragma once
 #include <SDLVec.h>
-#include <sdlpp.hpp>
+#include <sdlpp.hpp
+#include <SDL_Image.h>
+#include <bit>
 #include <span>
 #include <string>
 #include <tuple>
-#include <SDL_Image.h>
+
 namespace pg {
 
 /**

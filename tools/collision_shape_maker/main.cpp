@@ -35,8 +35,11 @@ void printASCII(const std::span<pg::SpritePixelData::Pixel>& data, const pg::iVe
     }
 }
 
-void debugDisplay(pg::SpritePixelData& pixelData,const std::vector<pg::iVec2>& contour, const std::vector<pg::iVec2>& convexHull) {
-    auto frame = 0u;
+void debugDisplay(pg::SpritePixelData&          pixelData,
+                  const std::vector<pg::iVec2>& contour,
+                  const std::vector<pg::iVec2>& convexHull)
+{
+    auto          frame = 0u;
     pg::RefPoints rp{contour};
     pg::SDLApp    app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions() * 5}}};
     pg::Sprite    sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
@@ -60,9 +63,9 @@ void debugDisplay(pg::SpritePixelData& pixelData,const std::vector<pg::iVec2>& c
     auto done = false;
     app.loop(done, render);
 }
+
 auto calculateConvexHull(pg::SpritePixelData& pixelData)
 {
-
     std::vector<pg::iVec2> points = pg::compGeometry::findContour(pixelData);
     auto                   convPoints = pg::compGeometry::convexHull(points);
     convPoints = pg::compGeometry::mergeColinear(convPoints, 0.02);
