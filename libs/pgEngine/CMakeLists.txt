@@ -21,8 +21,9 @@ target_sources(${PROJECT_NAME}
 		SDLKeyStateMap.h 
 		SDLBackgoundSprite.h 
 		SDLErrorTrace.h
-		SDLBounds.h
- "ComputationalGeometry.hpp" "SpritePixelData.hpp")
+		SDLBounds.h 
+		ComputationalGeometry.hpp 
+		SpritePixelData.hpp)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC

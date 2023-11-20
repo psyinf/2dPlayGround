@@ -1,14 +1,15 @@
+#pragma once
 #include <SDLVec.h>
 #include <algorithm>
 #include <deque>
 #include <functional>
 #include <limits>
 #include <ranges>
+#include <vector>
 
 #include <SpritePixelData.hpp>
 
 namespace pg::compGeometry {
-
 std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)
 {
     std::vector<pg::iVec2> points;
@@ -58,8 +59,9 @@ std::vector<Vec2> convexHull(const std::vector<Vec2>& points)
     };
 
     if (points.size() < 3) { throw std::invalid_argument("Insufficient number of points for convex hull"); }
-
-    std::deque<Vec2> point_set = std::ranges::to<std::deque<Vec2>>(points);
+    // wait for __cpp_lib_ranges_to_container to be set by MSVC compiler correctly
+    // std::deque<Vec2> point_set = std::ranges::to<std::deque<Vec2>>(points);
+    std::deque<Vec2> point_set(points.begin(), points.end());
     std::ranges::sort(point_set, lexicographical_compare);
 
     Vec2 left_most = point_set.front();
@@ -120,12 +122,12 @@ std::vector<Vec2> convexHull(const std::vector<Vec2>& points)
 }
 
 /**
- * @brief merge consecutive co-linear points 
+ * @brief merge consecutive co-linear points
  * @param points A vector of points, asserted to be in order
  * @param dotError allowed error in the dot-product
  * @todo this is not working as intended, as it removes too many points at to steep angles
- * @return 
-*/
+ * @return
+ */
 std::vector<iVec2> mergeColinear(const std::vector<iVec2>& points, float dotError)
 {
     auto               indicesToRemove = std::vector<size_t>{};
@@ -140,10 +142,9 @@ std::vector<iVec2> mergeColinear(const std::vector<iVec2>& points, float dotErro
         {
             filteredPoints.push_back(points[index + 1]); //
         }
-        
     }
     filteredPoints.push_back(*points.rbegin());
-   return filteredPoints;
+    return filteredPoints;
 }
 
 } // namespace pg::compGeometry
