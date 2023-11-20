@@ -15,6 +15,7 @@ conan_cmake_configure(REQUIRES
     sdl_image/2.6.3
     fmt/10.1.1
     entt/3.12.2
+    libxml2/2.11.5
     GENERATORS CMakeDeps CMakeToolchain
 )
 
