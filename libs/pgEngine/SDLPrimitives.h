@@ -145,7 +145,7 @@ public:
         }
     }
 
-    void draw(sdl::Renderer& r) { draw(r, {}); }
+    void draw(sdl::Renderer& r) override { draw(r, {}); }
 
 private:
     const std::vector<iVec2>& points;
@@ -178,7 +178,7 @@ public:
         }
     }
 
-    void draw(sdl::Renderer& r) { draw(r, {}); }
+    void draw(sdl::Renderer& r) override { draw(r, {}); }
 
 private:
     const std::vector<iVec2>& points;
