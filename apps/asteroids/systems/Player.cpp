@@ -16,13 +16,13 @@ void game::Player::setup()
     ctx.emplace_as<const entt::entity>("Player"_hs, player);
 
     auto sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/playerShip1_blue.png");
-    ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, pg::iVec2{sprite.getTextureRect().w, sprite.getTextureRect().h});
-    auto sprite_radius = static_cast<float>(std::max(sprite.getTextureRect().w, sprite.getTextureRect().h));
+    ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, sprite.getDimensions());
 
-    registry.emplace<pg::BoundingSphere>(player, pg::BoundingSphere{.radius = sprite_radius});
+    registry.emplace<pg::BoundingSphere>(
+        player, pg::BoundingSphere{.radius = pg::BoundingSphere::fromRectangle(sprite.getDimensions())});
     registry.emplace<Drawable>(player, std::make_unique<pg::Sprite>(std::move(sprite)));
     registry.emplace<pg::Transform>(player, pg::Transform{.pos{100, 100}});
-    //tags
+    // tags
     registry.emplace<game::Dynamics>(player, game::Dynamics{});
     registry.emplace<playerTag>(player);
     registry.emplace<game::ActiveCollider>(player);

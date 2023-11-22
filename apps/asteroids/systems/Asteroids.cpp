@@ -26,7 +26,7 @@ void game::Asteroids::setup()
              std::move(d),                                        //
              pg::Transform{.pos{static_cast<float>(pos(rd)), 0}}, //
              {.velocity{0, std::fabs(speed(rd))}},
-             {},
+             {pg::BoundingSphere::fromRectangle(sprite.getDimensions())},
              {} //
             );
     }
