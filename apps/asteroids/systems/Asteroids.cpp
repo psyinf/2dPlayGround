@@ -20,12 +20,13 @@ void game::Asteroids::setup()
         //TODO: make textures shareable
         auto     sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/meteorBrown_big1.png");
         Drawable d(std::make_unique<pg::Sprite>(std::move(sprite)));
-        game::makeEntity<Drawable, pg::Transform, Dynamics,pg::BoundingSphere, tag>
+        game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag>
 
             (game.getRegistry(),                                  //
              std::move(d),                                        //
              pg::Transform{.pos{static_cast<float>(pos(rd)), 0}}, //
              {.velocity{0, std::fabs(speed(rd))}},
+             {},
              {} //
             );
     }
