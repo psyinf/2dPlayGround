@@ -1,31 +1,30 @@
 #include "Player.h"
 #include "core/Game.h"
+#include "core/RegistryHelper.h"
 #include "entities/Entities.h"
 #include <SDLBounds.h>
 #include <SDLPrimitives.h>
-
 #include <fmt/format.h>
 
 void game::Player::setup()
 {
     auto& registry = game.getRegistry();
     auto& keyStateMap = game.getKeyStateMap();
-    auto  player = game.getRegistry().create();
+    // auto  player = game.getRegistry().create();
     auto& ctx = game.getRegistry().ctx();
     using entt::literals::operator""_hs;
-    ctx.emplace_as<const entt::entity>("Player"_hs, player);
-
     auto sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/playerShip1_blue.png");
+    auto player = game::makeEntity<pg::BoundingSphere, Drawable, pg::Transform, game::Dynamics, playerTag, game::ActiveCollider>(
+        game.getRegistry(),
+        {.radius = pg::BoundingSphere::fromRectangle(sprite.getDimensions())}, //
+        {std::make_unique<pg::Sprite>(std::move(sprite))},//
+        {.pos{100, 100}},//
+        {},//
+        {},//
+        {}
+        );
     ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, sprite.getDimensions());
-
-    registry.emplace<pg::BoundingSphere>(
-        player, pg::BoundingSphere{.radius = pg::BoundingSphere::fromRectangle(sprite.getDimensions())});
-    registry.emplace<Drawable>(player, std::make_unique<pg::Sprite>(std::move(sprite)));
-    registry.emplace<pg::Transform>(player, pg::Transform{.pos{100, 100}});
-    // tags
-    registry.emplace<game::Dynamics>(player, game::Dynamics{});
-    registry.emplace<playerTag>(player);
-    registry.emplace<game::ActiveCollider>(player);
+    ctx.emplace_as<const entt::entity>("Player"_hs, player);
 
     auto view = game.getRegistry().view<playerTag, pg::Transform, game::Dynamics>();
     for (auto& entity : view)
