@@ -34,7 +34,7 @@ void game::Asteroids::handle(const FrameStamp& frameStamp)
 {
     std::random_device              rd;
     std::normal_distribution<float> dist(1, 2);
-    std::normal_distribution<float> speed(0.02, 0.05);
+    std::normal_distribution<float> speed(0.2, 3);
     std::uniform_int_distribution   pos(-200, 1024);
     auto                            view = game.getRegistry().view<tag, pg::Transform, game::Dynamics>();
     for (auto& entity : view)

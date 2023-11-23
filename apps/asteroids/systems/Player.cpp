@@ -18,7 +18,7 @@ void game::Player::setup()
         game.getRegistry(),
         {.radius = pg::BoundingSphere::fromRectangle(sprite.getDimensions())}, //
         {std::make_unique<pg::Sprite>(std::move(sprite))},//
-        {.pos{100, 100}},//
+        {.pos{100, 100},.scale = {0.5, 0.5}},//
         {},//
         {},//
         {}
@@ -53,5 +53,5 @@ void game::Player::handle(const FrameStamp& frameStamp)
     auto dim = pg::iVec2{1024, 768};
     transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, dim[0]);
     transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, dim[1]);
-    transform.scale = {0.5, 0.5};
+    
 }

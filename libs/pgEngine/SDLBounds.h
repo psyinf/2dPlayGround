@@ -11,9 +11,8 @@ struct Transform
 
 struct BoundingSphere
 {
-    static float fromRectangle(const pg::iVec2& rect) {
-        return std::sqrt(dot(rect, rect));
-    }
+    static float fromRectangle(const pg::iVec2& rect) { return 0.5 * std::sqrt(dot(rect, rect)); }
+
     float radius;
 };
 
