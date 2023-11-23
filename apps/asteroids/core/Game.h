@@ -26,8 +26,6 @@ private:
     // TODO: those are really systems.Currently this is mixing setup and per-frame action.
     std::vector<std::unique_ptr<SystemInterface>> systems;
 
-    void renderFrame(const FrameStamp& frameStamp);
-
     void frame(FrameStamp frameStamp);
 
 public:

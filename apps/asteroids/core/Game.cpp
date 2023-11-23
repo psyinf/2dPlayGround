@@ -5,22 +5,7 @@
 #include "systems/Lasers.h"
 #include "systems/Player.h"
 #include "systems/Collisions.hpp"
-
-void game::Game::renderFrame(const FrameStamp& frameStamp)
-{
-    auto& renderer = sdlApp.getRenderer();
-
-    // renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
-    renderer.clear();
-
-    auto view = registry.view<Drawable, pg::Transform>();
-    for (auto& entity : view)
-    {
-        auto&& [drawable, transform] = view.get<Drawable, pg::Transform>(entity);
-        drawable.prim->draw(renderer, transform);
-    }
-    renderer.present();
-}
+#include "systems/RenderSystem.hpp"
 
 void game::Game::frame(FrameStamp frameStamp)
 {
@@ -29,8 +14,6 @@ void game::Game::frame(FrameStamp frameStamp)
     // evaluate all callbacks bound to events
     keyStateMap.evaluateCallbacks();
     std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
-    // todo: move to system
-    renderFrame(frameStamp);
 }
 
 entt::registry& game::Game::getRegistry()
@@ -70,6 +53,7 @@ void game::Game::setup()
     systems.emplace_back(std::make_unique<Asteroids>(*this));
     systems.emplace_back(std::make_unique<Background>(*this));
     systems.emplace_back(std::make_unique<Collisions>(*this));
+    systems.emplace_back(std::make_unique<RenderSystem>(*this));
     std::ranges::for_each(systems, [](auto& system) { system->setup(); });
     // retrieve the player id
     auto& ctx = getRegistry().ctx();
