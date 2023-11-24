@@ -1,6 +1,15 @@
 #pragma once
 #include <entt/entt.hpp>
 
+/**
+ * @brief Functions to make entity creation with components added easier. 
+ * Instead of doing @code 
+ * auto entity = registry::create();
+ * registry.emplate<X>({paramToX});
+ * registry.emplate<Y>({paramToY,param2ToY});
+ * the helper allows you to:
+ * auto entity = makeEntity<X,Y>({paramToX},{paramToY,param2ToY});
+*/
 namespace game {
 
 template <typename Component, typename... Args>

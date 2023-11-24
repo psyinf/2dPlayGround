@@ -18,7 +18,7 @@ public:
 
  
 private:
-
+    void handleCollision(entt::entity id1, entt::entity id2, float intrusion);
 };
 
 } // namespace game

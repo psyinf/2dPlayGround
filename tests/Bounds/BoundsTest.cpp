@@ -1,4 +1,4 @@
-#include <SDLBounds.h>
+#include <BoundsOperations.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("BoundsTests", "[BoundsTests]")

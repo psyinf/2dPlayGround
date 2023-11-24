@@ -26,16 +26,15 @@ void game::Lasers::createShot(const events::LaserFired& event)
     // determine shoot position
     auto& shooterTransform = game.getRegistry().get<pg::Transform>(event.shooter);
 
-    game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag>
+    game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag , ActiveCollider>
 
         (game.getRegistry(),                                                          //
          std::move(d),                                                                //
          pg::Transform{.pos{shooterTransform.pos + event.offset}, .scale{0.5, 0.75}}, //
          {.velocity{0, -5.0}},
-        //TODO:: smaller or use bounding rect 
          {pg::BoundingSphere::fromRectangle(sprite->getDimensions())},
-         {} //
-
+         {}, //
+        {}
         );
 }
 
