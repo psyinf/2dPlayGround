@@ -14,7 +14,7 @@ struct ResourceB
 
 TEST_CASE("ResourceCache smoke tests", "[ResourceCache]")
 {
-    pg::ResourceCache cache;
+    pg::ResourceCache cache{""};
     SECTION("Insert/Retrieve ResourceA"){
         auto resA = cache.load<ResourceA>("a", [](const auto& p) { return ResourceA{p}; });
         REQUIRE(typeid(resA) == typeid(std::shared_ptr<ResourceA>));
@@ -43,7 +43,7 @@ TEST_CASE("ResourceCache smoke tests", "[ResourceCache]")
 
 TEST_CASE("ResourceCache multiple", "[ResourceCache]")
 {
-    pg::ResourceCache cache;
+    pg::ResourceCache cache{""};
     SECTION("Insert/Retrieve A and B")
     {
         auto resB = cache.load<ResourceB>("b", [](const auto& p) { return ResourceB{p}; });

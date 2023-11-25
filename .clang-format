@@ -23,5 +23,5 @@ SeparateDefinitionBlocks : Always
 AlignConsecutiveDeclarations: 'true'
 BraceWrapping:
   AfterNamespace:  false
-BreakBeforeBraces: Custom
+
 ...

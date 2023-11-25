@@ -21,6 +21,16 @@ struct Dynamics
     pg::fVec2 dampening{0.9, 0.9};
 };
 
+struct HitPoints
+{
+    std::uint16_t remaining{};
+};
+
+struct Damage
+{
+    std::uint16_t amount{};
+};
+
 struct WindowDetails
 {
     SDL_Rect windowRect;
