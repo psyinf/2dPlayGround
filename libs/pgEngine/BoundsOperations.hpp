@@ -14,7 +14,7 @@ static auto intersects(const BoundingSphere  sphere1,
     const auto distSquared = dot(diff, diff);
     const auto radiiSum = sphere1.radius * max_scale_t1 + sphere2.radius * max_scale_t2;
     auto intrusion = distSquared - (radiiSum * radiiSum);
-    return intrusion <= 0.0f ? std::optional<float>{intrusion} : std::nullopt;
+    return intrusion < 0.0f ? std::optional<float>{intrusion} : std::nullopt;
 }
 
 }

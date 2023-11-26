@@ -1,41 +1,36 @@
-cmake_minimum_required(VERSION 3.15...3.23)
-project(tests LANGUAGES CXX)
+project(unittests LANGUAGES CXX)
 find_package(Catch2 CONFIG REQUIRED)
-
-
-add_library(test_sources OBJECT 
-    ResourceCache/ResourceCacheTests.cpp
-    Bounds/BoundsTest.cpp
-)
-
-
-
-target_link_libraries(
-    test_sources   
-    PUBLIC
-        pgEngine::pgEngine
-        Catch2::Catch2
-)
-
-add_executable(tests tests.cpp)
-
-target_link_libraries(
-  tests
-  PRIVATE 
-    test_sources
-    Catch2::Catch2
-
-
-)
-
-          
 include(CTest)
 include(Catch)
-catch_discover_tests(
-  tests
-  TEST_PREFIX "unittests."
-  REPORTER XML
-  OUTPUT_DIR .
-  OUTPUT_PREFIX "unittests."
-  OUTPUT_SUFFIX .xml
-)
+# Tests
+add_library(testMain OBJECT tests.cpp)
+target_link_libraries(testMain PUBLIC Catch2::Catch2)
+
+if(BUILD_TESTING)
+    set(ALL_TESTS
+        Bounds
+        Vec
+        ResourceCache
+    )
+
+    add_executable(Bounds Bounds/BoundsTests.cpp )
+    add_executable(Vec Vec/VecTests.cpp )
+    add_executable(ResourceCache ResourceCache/ResourceCacheTests.cpp)
+
+    foreach(target ${ALL_TESTS})
+        set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
+        target_compile_features(${target} PUBLIC cxx_std_20)
+        target_compile_options(${target} PRIVATE ${DEFAULT_COMPILER_OPTIONS_AND_WARNINGS})
+        target_link_libraries(${target} PRIVATE testMain pgEngine::pgEngine )
+
+        #add_test(NAME ${target} COMMAND ${target})
+        catch_discover_tests(
+          ${target}
+          TEST_PREFIX ${target}.
+          REPORTER XML
+          OUTPUT_DIR .
+          OUTPUT_PREFIX ${target}
+          OUTPUT_SUFFIX .xml
+        )
+    endforeach()
+endif()
