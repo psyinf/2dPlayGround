@@ -28,7 +28,7 @@ using Color = Vec4<uint8_t>;
 } // namespace pg
 
 template <typename T, size_t SIZE>
-pg::Vec<T, SIZE> operator+(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
+constexpr pg::Vec<T, SIZE> operator+(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
     // for now
     pg::Vec<T, SIZE> res;
@@ -37,6 +37,18 @@ pg::Vec<T, SIZE> operator+(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& 
         res[idx] = lhs[idx] + rhs[idx];
     }
     return res;
+}
+
+template <typename T, size_t SIZE>
+void operator+=(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
+{
+    // for now
+    pg::Vec<T, SIZE> res;
+    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    {
+        lhs[idx] += rhs[idx];
+    }
+    return lhs;
 }
 
 template <typename T, size_t SIZE>
@@ -123,3 +135,4 @@ pg::Vec<CAST_T, SIZE> vec_cast(const pg::Vec<T, SIZE>& lhs)
     }
     return res;
 }
+

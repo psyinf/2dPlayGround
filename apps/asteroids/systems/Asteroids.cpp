@@ -4,8 +4,11 @@
 #include "entities/Entities.h"
 #include <Factories.h>
 #include <SDLBackgoundSprite.h>
+#include <VecOperations.hpp>
+#include <algorithm>
 #include <core/Game.h>
 #include <random>
+
 #include <systems/Lasers.h>
 
 struct AsteroidsRandomGen
@@ -49,60 +52,11 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(game:
     return retVal;
 }
 
-std::vector<pg::fVec2> splitImpulseRandomly(const pg::fVec2& initialImpulse, uint8_t n)
-{
-    // Calculate the total magnitude of the initial impulse
-    float totalMagnitude = length(initialImpulse);
-    //float totalMagnitude = std::sqrt(std::pow(initialImpulse[0], 2) + std::pow(initialImpulse[1], 2));
 
-    // Generate n-1 random numbers to split the total magnitude
-    std::vector<float>                    splitFractions(n - 1);
-    std::random_device                    rd;
-    std::mt19937                          gen(rd());
-    std::uniform_real_distribution<float> dis(0.0, 1.0);
-
-    for (int i = 0; i < n - 1; ++i)
-    {
-        splitFractions[i] = dis(gen);
-    }
-
-    // Calculate the differences between consecutive split fractions
-    std::vector<float> parts(n);
-    parts[0] = splitFractions[0];
-    for (int i = 1; i < n - 1; ++i)
-    {
-        parts[i] = splitFractions[i] - splitFractions[i - 1];
-    }
-    parts[n - 1] = 1.0 - splitFractions[n - 2];
-
-    // Scale the parts to match the total magnitude
-    for (int i = 0; i < n; ++i)
-    {
-        parts[i] *= totalMagnitude;
-    }
-
-    // Create a vector of array<float, 2> as the result
-    std::vector<std::array<float, 2>> result;
-    float                             cumulativeMagnitude = 0.0;
-    for (int i = 0; i < n - 1; ++i)
-    {
-        float x = parts[i] * initialImpulse[0] / totalMagnitude;
-        float y = parts[i] * initialImpulse[1] / totalMagnitude;
-        result.push_back({x, y});
-        cumulativeMagnitude += parts[i];
-    }
-
-    // Add the last part to ensure the sum equals the total magnitude
-    float lastX = (totalMagnitude - cumulativeMagnitude) * initialImpulse[0] / totalMagnitude;
-    float lastY = (totalMagnitude - cumulativeMagnitude) * initialImpulse[1] / totalMagnitude;
-    result.push_back({lastX, lastY});
-
-    return result;
-}
 
 void game::Asteroids::setup()
 {
-    for (auto _ : std::views::iota(0, 10))
+    for (auto _ : std::views::iota(0, 4))
     {
         auto [pos, vel] = AsteroidsRandomGen::makeInitial();
         createAsteroid(pos, vel, Size::Large);
@@ -129,24 +83,37 @@ void game::Asteroids::createAsteroid(const pg::fVec2& position, const pg::fVec2&
         asteroidConf = {"Meteors/meteorBrown_med1.png", 60, 60};
         break;
     }
+    case Size::Small: {
+        asteroidConf = {"Meteors/meteorBrown_small1.png", 30, 30};
+        break;
+    }
+    case Size::Tiny: {
+        asteroidConf = {"Meteors/meteorBrown_tiny1.png", 15, 15};
+        break;
+    }
     }
 
     auto sprite = game.getResourceCache().load<pg::Sprite>(std::string(asteroidConf.resource), [this](const auto& e) {
         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
     });
 
-    game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, HitPoints, Damage, PassiveCollider, tag>
-
-        (game.getRegistry(),            //
-         Drawable{sprite},              //
-         pg::Transform{.pos{position}}, //
-         {.velocity{velocity}},
-         {pg::BoundingSphere::fromRectangle(sprite->getDimensions())},
-         {asteroidConf.hitPoints},
-         {asteroidConf.damage},
-         {},
-         {} //
+    auto entity = game::makeEntity<Drawable,
+                                   pg::Transform,
+                                   Dynamics,
+                                   pg::BoundingSphere,
+                                   HitPoints,
+                                   Damage,
+                                   Size>                               //
+        (game.getRegistry(),                                           //
+         Drawable{sprite},                                             //
+         pg::Transform{.pos{position}},                                //
+         {.velocity{velocity}},                                        //
+         {pg::BoundingSphere::fromRectangle(sprite->getDimensions())}, //
+         {asteroidConf.hitPoints},                                     //
+         {asteroidConf.damage},                                        //
+         {std::move(size)}                                             //
         );
+    game::addComponents<PassiveCollider, tag>(game.getRegistry(), entity);
 }
 
 void game::Asteroids::handle(const FrameStamp& frameStamp)
@@ -161,6 +128,7 @@ void game::Asteroids::handle(const FrameStamp& frameStamp)
     {
         auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
         transform.pos[1] += std::ceil(dynamics.velocity[1]);
+        transform.pos[0] += std::ceil(dynamics.velocity[0]);
 
         if (transform.pos[1] >= 1000)
         {
@@ -176,13 +144,18 @@ void game::Asteroids::handle(const FrameStamp& frameStamp)
         if (!collisionPair.has_value()) { continue; }
         auto&& [asteroid, laser] = collisionPair.value();
 
-       
-        //TODO: make based on damage vs hitpoints
-        auto transform = game.getRegistry().get<pg::Transform>(asteroid);
-        // create fragments
-        auto [pos, vel] = AsteroidsRandomGen::makeFragment(transform.pos);
-        //TODO make based on previous size
-        createAsteroid(pos, vel, Size::Medium);
+        // TODO: make based on damage vs hitpoints
+        auto&& [transform, dynamics, size] = game.getRegistry().get<pg::Transform, game::Dynamics, Size>(asteroid);
+
+        auto newSize = getNextSmallest(size);
+        if (newSize.has_value())
+        {
+            auto fragments = pg::splitVector(dynamics.velocity, 4);
+            for (const auto& fragment : fragments)
+            {
+                createAsteroid(transform.pos, fragment, newSize.value());
+            }
+        }
         // trigger explosion
         // game.getDispatcher().trigger<events::Collision>( {entity_a, entity_b});
         game.getRegistry().destroy(asteroid);

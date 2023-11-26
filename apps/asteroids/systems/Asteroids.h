@@ -9,16 +9,32 @@ namespace game {
 using entt::literals::operator""_hs;
 
 class Game;
+enum class Size
+{
+    Tiny,
+    Small,
+    Medium,
+    Large
+};
+
+inline static constexpr std::optional<Size> getNextSmallest(Size size){
+    switch (size)
+    {
+    case Size::Large:
+        return Size::Medium;//
+    case Size::Medium: 
+        return Size::Small; //
+    case Size::Small:
+        return Size::Tiny; //
+    case Size::Tiny:
+        return std::nullopt;
+    }
+    return std::nullopt;
+}
 
 class Asteroids : public SystemInterface
 {
-    enum class Size
-    {
-        Tiny,
-        Small,
-        Medium,
-        Large
-    };
+  
 public:
     using SystemInterface::SystemInterface;
 
