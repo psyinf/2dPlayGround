@@ -49,6 +49,57 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(game:
     return retVal;
 }
 
+std::vector<pg::fVec2> splitImpulseRandomly(const pg::fVec2& initialImpulse, uint8_t n)
+{
+    // Calculate the total magnitude of the initial impulse
+    float totalMagnitude = length(initialImpulse);
+    //float totalMagnitude = std::sqrt(std::pow(initialImpulse[0], 2) + std::pow(initialImpulse[1], 2));
+
+    // Generate n-1 random numbers to split the total magnitude
+    std::vector<float>                    splitFractions(n - 1);
+    std::random_device                    rd;
+    std::mt19937                          gen(rd());
+    std::uniform_real_distribution<float> dis(0.0, 1.0);
+
+    for (int i = 0; i < n - 1; ++i)
+    {
+        splitFractions[i] = dis(gen);
+    }
+
+    // Calculate the differences between consecutive split fractions
+    std::vector<float> parts(n);
+    parts[0] = splitFractions[0];
+    for (int i = 1; i < n - 1; ++i)
+    {
+        parts[i] = splitFractions[i] - splitFractions[i - 1];
+    }
+    parts[n - 1] = 1.0 - splitFractions[n - 2];
+
+    // Scale the parts to match the total magnitude
+    for (int i = 0; i < n; ++i)
+    {
+        parts[i] *= totalMagnitude;
+    }
+
+    // Create a vector of array<float, 2> as the result
+    std::vector<std::array<float, 2>> result;
+    float                             cumulativeMagnitude = 0.0;
+    for (int i = 0; i < n - 1; ++i)
+    {
+        float x = parts[i] * initialImpulse[0] / totalMagnitude;
+        float y = parts[i] * initialImpulse[1] / totalMagnitude;
+        result.push_back({x, y});
+        cumulativeMagnitude += parts[i];
+    }
+
+    // Add the last part to ensure the sum equals the total magnitude
+    float lastX = (totalMagnitude - cumulativeMagnitude) * initialImpulse[0] / totalMagnitude;
+    float lastY = (totalMagnitude - cumulativeMagnitude) * initialImpulse[1] / totalMagnitude;
+    result.push_back({lastX, lastY});
+
+    return result;
+}
+
 void game::Asteroids::setup()
 {
     for (auto _ : std::views::iota(0, 10))
