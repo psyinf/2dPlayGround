@@ -50,10 +50,9 @@ void game::RenderSystem::handle(const FrameStamp& frameStamp)
         auto&& [drawable, transform] = view.get<game::Drawable, pg::Transform>(entity);
         drawable.prim->draw(renderer, transform);
     }
-    // TODO: render debug primitives like collision shapes
 
-     auto renderConfigId = game.getRegistry().ctx().get<const entt::entity>("RenderConfig"_hs);
-     auto renderConfig = *game.getRegistry().try_get<RenderConfig>(renderConfigId);
+     auto renderConfig = game.getRegistry().ctx().get<RenderConfig>();
+     
      if (renderConfig.renderBroadPhaseCollisionShapes)
      {
         for (auto boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform>(); auto& entity : boundsView)

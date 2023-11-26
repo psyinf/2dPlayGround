@@ -1,12 +1,12 @@
 #include "Game.h"
+#include "RegistryHelper.h"
 #include "entities/Entities.h"
 #include "systems/Asteroids.h"
 #include "systems/Background.h"
+#include "systems/Collisions.hpp"
 #include "systems/Lasers.h"
 #include "systems/Player.h"
-#include "systems/Collisions.hpp"
 #include "systems/RenderSystem.hpp"
-#include "RegistryHelper.h"
 
 void game::Game::frame(FrameStamp frameStamp)
 {
@@ -44,6 +44,9 @@ pg::ResourceCache& game::Game::getResourceCache()
 
 void game::Game::setup()
 {
+    registry.ctx().emplace<pg::TypedResourceCache<pg::Sprite>>(
+        "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
+
     auto details = registry.create();
     registry.emplace<WindowDetails>(
         details,
@@ -65,9 +68,10 @@ void game::Game::setup()
     auto trigger = [event, this](auto) { dispatcher.trigger(event); };
     keyStateMap.registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
 
-    //TODO: from external config
-    auto renderConfigEntity = makeEntity<RenderConfig>(registry, {.renderBroadPhaseCollisionShapes = true});
-    registry.ctx().emplace_as<const entt::entity>("RenderConfig"_hs, renderConfigEntity);
+    // TODO: from external config
+    registry.ctx().emplace<RenderConfig>(RenderConfig{.renderBroadPhaseCollisionShapes = true});
+
+    
 }
 
 void game::Game::loop()

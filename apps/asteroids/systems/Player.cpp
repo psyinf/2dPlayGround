@@ -12,17 +12,16 @@ void game::Player::setup()
     auto& keyStateMap = game.getKeyStateMap();
     auto& ctx = game.getRegistry().ctx();
     using entt::literals::operator""_hs;
-    auto sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/playerShip1_blue.png");
-    auto player = game::makeEntity<pg::BoundingSphere, Drawable, pg::Transform, game::Dynamics, playerTag, game::ActiveCollider>(
+    auto sprite = game.getTypedResourceCache<pg::Sprite>().load("playerShip1_blue.png");
+    auto player = game::makeEntity<pg::BoundingSphere, Drawable, pg::Transform>(
         game.getRegistry(),
-        {.radius = pg::BoundingSphere::fromRectangle(sprite.getDimensions())}, //
-        {std::make_unique<pg::Sprite>(std::move(sprite))},//
-        {.pos{100, 100},.scale = {0.5, 0.5}},//
-        {},//
-        {},//
-        {}
+        {.radius = pg::BoundingSphere::fromRectangle(sprite->getDimensions())}, //
+        {sprite},//
+        {.pos{100, 100},.scale = {0.5, 0.5}}//
         );
-    ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, sprite.getDimensions());
+    game::addComponents<game::Dynamics, playerTag, game::ActiveCollider>(game.getRegistry(), player);
+
+    ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, sprite->getDimensions());
     ctx.emplace_as<const entt::entity>("Player"_hs, player);
 
     auto view = game.getRegistry().view<playerTag, pg::Transform, game::Dynamics>();

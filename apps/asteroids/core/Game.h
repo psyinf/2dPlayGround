@@ -38,6 +38,12 @@ public:
 
     pg::ResourceCache& getResourceCache();
 
+
+    template <typename Resource> 
+    pg::TypedResourceCache<Resource>& getTypedResourceCache()
+    {
+        return registry.ctx().get<pg::TypedResourceCache<Resource>>();
+    }
     void setup();
 
     void loop();
