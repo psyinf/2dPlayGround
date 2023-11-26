@@ -52,10 +52,15 @@ void game::RenderSystem::handle(const FrameStamp& frameStamp)
     }
     // TODO: render debug primitives like collision shapes
 
-    for (auto boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform>(); auto& entity : boundsView)
-    {
-        auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform>(entity);
-        renderSDL(renderer, bound, transform);
+     auto renderConfigId = game.getRegistry().ctx().get<const entt::entity>("RenderConfig"_hs);
+     auto renderConfig = *game.getRegistry().try_get<RenderConfig>(renderConfigId);
+     if (renderConfig.renderBroadPhaseCollisionShapes)
+     {
+        for (auto boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform>(); auto& entity : boundsView)
+        {
+            auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform>(entity);
+            renderSDL(renderer, bound, transform);
+        } 
     }
     renderer.present();
 }

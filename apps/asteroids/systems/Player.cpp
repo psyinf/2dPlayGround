@@ -10,7 +10,6 @@ void game::Player::setup()
 {
     auto& registry = game.getRegistry();
     auto& keyStateMap = game.getKeyStateMap();
-    // auto  player = game.getRegistry().create();
     auto& ctx = game.getRegistry().ctx();
     using entt::literals::operator""_hs;
     auto sprite = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/playerShip1_blue.png");

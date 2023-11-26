@@ -6,6 +6,7 @@
 #include "systems/Player.h"
 #include "systems/Collisions.hpp"
 #include "systems/RenderSystem.hpp"
+#include "RegistryHelper.h"
 
 void game::Game::frame(FrameStamp frameStamp)
 {
@@ -63,6 +64,10 @@ void game::Game::setup()
     auto event = events::LaserFired{.offset{}, .shooter{playerId}};
     auto trigger = [event, this](auto) { dispatcher.trigger(event); };
     keyStateMap.registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
+
+    //TODO: from external config
+    auto renderConfigEntity = makeEntity<RenderConfig>(registry, {.renderBroadPhaseCollisionShapes = true});
+    registry.ctx().emplace_as<const entt::entity>("RenderConfig"_hs, renderConfigEntity);
 }
 
 void game::Game::loop()

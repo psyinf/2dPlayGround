@@ -35,4 +35,9 @@ struct WindowDetails
 {
     SDL_Rect windowRect;
 };
+
+struct RenderConfig
+{
+    bool renderBroadPhaseCollisionShapes{};
+};
 } // namespace game
