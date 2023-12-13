@@ -32,8 +32,8 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
     for (int i = 0; i < 360; i++)
     {
         auto p = transform.pos + pg::fVec2{
-                                     radius * std::cosf(i * std::numbers::pi / 180), //
-                                     radius * std::sinf(i * std::numbers::pi / 180)  //
+                                     radius * cosf(i * std::numbers::pi / 180.0f), //
+                                     radius * sinf(i * std::numbers::pi / 180.0f)  //
                                  };
 
         circle_points.push_back(vec_cast<int>(p));
