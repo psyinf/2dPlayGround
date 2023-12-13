@@ -2,6 +2,7 @@
 #include "core/Game.h"
 #include <entities/Entities.h>
 #include <numbers>
+#include <cmath>
 
 void game::RenderSystem::setup() {}
 
