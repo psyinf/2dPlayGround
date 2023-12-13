@@ -23,7 +23,7 @@ private:
     pg::ResourceCache        resourceCache{"../data/"};
     entt::registry   registry;
     entt::dispatcher dispatcher;
-    // TODO: those are really systems.Currently this is mixing setup and per-frame action.
+
     std::vector<std::unique_ptr<SystemInterface>> systems;
 
     void frame(FrameStamp frameStamp);

@@ -7,6 +7,7 @@
 #include "systems/Lasers.h"
 #include "systems/Player.h"
 #include "systems/RenderSystem.hpp"
+#include "systems/DynamicsSystem.hpp"
 
 void game::Game::frame(FrameStamp frameStamp)
 {
@@ -46,11 +47,9 @@ void game::Game::setup()
 {
     registry.ctx().emplace<pg::TypedResourceCache<pg::Sprite>>(
         "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-
-    auto details = registry.create();
-    registry.emplace<WindowDetails>(
-        details,
-        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
+   auto details =
+        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]};
+    registry.ctx().emplace<WindowDetails>(details);
     // systems = {{Background{*this}}, {Player{*this}}, {Asteroids{*this}}};
     systems.emplace_back(std::make_unique<Lasers>(*this));
     systems.emplace_back(std::make_unique<Player>(*this));
@@ -58,6 +57,7 @@ void game::Game::setup()
     systems.emplace_back(std::make_unique<Background>(*this));
     systems.emplace_back(std::make_unique<Collisions>(*this));
     systems.emplace_back(std::make_unique<RenderSystem>(*this));
+    systems.emplace_back(std::make_unique<DynamicsSystem>(*this));
     std::ranges::for_each(systems, [](auto& system) { system->setup(); });
     // retrieve the player id
     auto& ctx = getRegistry().ctx();
