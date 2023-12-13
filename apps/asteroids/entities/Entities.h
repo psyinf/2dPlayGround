@@ -18,7 +18,7 @@ struct Drawable
 struct Dynamics
 {
     pg::fVec2 velocity{};
-    pg::fVec2 dampening{0.9, 0.9};
+    pg::fVec2 dampening{1.0f, 1.0f};
 };
 
 struct HitPoints
