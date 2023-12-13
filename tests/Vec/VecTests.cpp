@@ -45,5 +45,5 @@ TEST_CASE("Length", "[VecTests]")
     pg::fVec2 lhs{3.0, 4.0};
     auto res = length(lhs);
     REQUIRE(res == Catch::Approx(5.0f));
-    REQUIRE(res == std::sqrtf(dot(lhs, lhs)));
+    REQUIRE(res == std::sqrt(dot(lhs, lhs)));
 }
