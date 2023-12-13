@@ -14,7 +14,7 @@
 struct AsteroidsRandomGen
 {
     static inline std::random_device              rd{};
-    static inline std::normal_distribution<float> speed{0.2, 5};
+    static inline std::normal_distribution<float> speed{10, 200};
     static inline std::uniform_int_distribution   pos{-200, 1024};
 
     static auto makeInitial()
@@ -120,15 +120,13 @@ void game::Asteroids::handle(const FrameStamp& frameStamp)
 {
     std::random_device              rd;
     std::normal_distribution<float> dist(1, 2);
-    std::normal_distribution<float> speed(0.2, 3);
+    std::normal_distribution<float> speed(10, 100);
     std::uniform_int_distribution   pos(-200, 1024);
     // TODO: move to generic dynamics-system
     auto view = game.getRegistry().view<tag, pg::Transform, game::Dynamics>();
     for (auto& entity : view)
     {
         auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
-        transform.pos[1] += std::ceil(dynamics.velocity[1]);
-        transform.pos[0] += std::ceil(dynamics.velocity[0]);
 
         if (transform.pos[1] >= 1000)
         {

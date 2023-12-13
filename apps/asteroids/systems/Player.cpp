@@ -10,25 +10,27 @@ void game::Player::setup()
 {
     auto& registry = game.getRegistry();
     auto& keyStateMap = game.getKeyStateMap();
+
     auto& ctx = game.getRegistry().ctx();
     using entt::literals::operator""_hs;
-    auto sprite = game.getTypedResourceCache<pg::Sprite>().load("playerShip1_blue.png");
-    auto player = game::makeEntity<pg::BoundingSphere, Drawable, pg::Transform>(
-        game.getRegistry(),
-        {.radius = pg::BoundingSphere::fromRectangle(sprite->getDimensions())}, //
-        {sprite},//
-        {.pos{100, 100},.scale = {0.5, 0.5}}//
-        );
-    game::addComponents<game::Dynamics, playerTag, game::ActiveCollider>(game.getRegistry(), player);
 
+    auto sprite = game.getTypedResourceCache<pg::Sprite>().load("playerShip1_blue.png");
+    auto windowDetails = registry.ctx().get<WindowDetails>();
+    auto player = game::makeEntity<pg::BoundingSphere, Drawable, pg::Transform, game::Dynamics>(
+        game.getRegistry(),
+        {.radius = pg::BoundingSphere::fromRectangle(sprite->getDimensions())},                               //
+        {sprite},                                                                                             //
+        {.pos{windowDetails.windowRect.w * 0.5f, windowDetails.windowRect.h * 0.75f}, .scale = {0.5f, 0.5f}}, //
+        {.dampening{0.95f, 0.95f}});
+
+    game::addComponents<playerTag, game::ActiveCollider>(game.getRegistry(), player);
     ctx.emplace_as<pg::iVec2>("Player.sprite.size"_hs, sprite->getDimensions());
     ctx.emplace_as<const entt::entity>("Player"_hs, player);
-
     auto view = game.getRegistry().view<playerTag, pg::Transform, game::Dynamics>();
     for (auto& entity : view)
     {
         auto&      dynamics = registry.get<game::Dynamics>(entity);
-        const auto speed = 0.4;
+        const auto speed = 20;
         keyStateMap.registerCallback(SDLK_LEFT, [&dynamics, speed](auto) { dynamics.velocity[0] -= speed; });
         keyStateMap.registerCallback(SDLK_RIGHT, [&dynamics, speed](auto) { dynamics.velocity[0] += speed; });
         keyStateMap.registerCallback(SDLK_UP, [&dynamics, speed](auto) { dynamics.velocity[1] -= speed; });
@@ -42,14 +44,7 @@ void game::Player::handle(const FrameStamp& frameStamp)
     auto& entity = *view.begin();
     auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
 
-    transform.pos[0] += std::lround(dynamics.velocity[0]);
-    transform.pos[1] += std::lround(dynamics.velocity[1]);
-
-    dynamics.velocity[0] *= dynamics.dampening[0];
-    dynamics.velocity[1] *= dynamics.dampening[1];
-
-    auto dim = pg::iVec2{1024, 768};
-    transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, dim[0]);
-    transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, dim[1]);
-    
+    auto windowDetails = game.getRegistry().ctx().get<WindowDetails>();
+    transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, windowDetails.windowRect.w);
+    transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, windowDetails.windowRect.h);
 }

@@ -31,7 +31,7 @@ void game::Lasers::createShot(const events::LaserFired& event)
         (game.getRegistry(),                                                          //
          std::move(d),                                                                //
          pg::Transform{.pos{shooterTransform.pos + event.offset}, .scale{0.5, 0.75}}, //
-         {.velocity{0, -5.0}},
+         {.velocity{0, -300.0}},
          {pg::BoundingSphere::fromRectangle(sprite->getDimensions())},
          {}, //
         {}
@@ -41,11 +41,10 @@ void game::Lasers::createShot(const events::LaserFired& event)
 void game::Lasers::handle(const FrameStamp& frameStamp)
 {
     // TODO: This is should be in a system for updating transforms via dynamics
-    auto view = game.getRegistry().view<tag, pg::Transform, game::Dynamics>();
+    auto view = game.getRegistry().view<pg::Transform, tag>();
     for (auto& entity : view)
     {
-        auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
-        transform.pos[1] += dynamics.velocity[1];
+        auto&& transform = view.get<pg::Transform>(entity);
         // TODO. rather delete in collision handling (e.g. handle collision with upper limit)
         if (transform.pos[1] < 0) { game.getRegistry().destroy(entity); }
     }
