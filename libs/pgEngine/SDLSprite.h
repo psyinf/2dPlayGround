@@ -12,13 +12,13 @@ struct Sprite : public pg::Primitive
 
     void draw(sdl::Renderer& r) override;
 
-    SDL_Rect& getTextureRect() { return texture_rect; }
+    const pg::iVec2& getDimensions() const { return dimensions; }
 
 protected:
     sdl::Texture& getTexture() { return texture; }
     
 private:
     sdl::Texture texture;
-    SDL_Rect     texture_rect{};
+    pg::iVec2    dimensions{};
 };
 } // namespace pg

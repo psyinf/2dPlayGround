@@ -1,25 +1,13 @@
 #include "Game.h"
+#include "RegistryHelper.h"
 #include "entities/Entities.h"
 #include "systems/Asteroids.h"
 #include "systems/Background.h"
+#include "systems/Collisions.hpp"
 #include "systems/Lasers.h"
 #include "systems/Player.h"
-
-void game::Game::renderFrame(const FrameStamp& frameStamp)
-{
-    auto& renderer = sdlApp.getRenderer();
-
-    // renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
-    renderer.clear();
-
-    auto view = registry.view<Drawable, pg::Transform>();
-    for (auto& entity : view)
-    {
-        auto&& [drawable, transform] = view.get<Drawable, pg::Transform>(entity);
-        drawable.prim->draw(renderer, transform);
-    }
-    renderer.present();
-}
+#include "systems/RenderSystem.hpp"
+#include "systems/DynamicsSystem.hpp"
 
 void game::Game::frame(FrameStamp frameStamp)
 {
@@ -28,8 +16,6 @@ void game::Game::frame(FrameStamp frameStamp)
     // evaluate all callbacks bound to events
     keyStateMap.evaluateCallbacks();
     std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
-    // todo: move to system
-    renderFrame(frameStamp);
 }
 
 entt::registry& game::Game::getRegistry()
@@ -59,16 +45,19 @@ pg::ResourceCache& game::Game::getResourceCache()
 
 void game::Game::setup()
 {
-    auto details = registry.create();
-    registry.emplace<WindowDetails>(
-        details,
-        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
+    registry.ctx().emplace<pg::TypedResourceCache<pg::Sprite>>(
+        "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
+   auto details =
+        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]};
+    registry.ctx().emplace<WindowDetails>(details);
     // systems = {{Background{*this}}, {Player{*this}}, {Asteroids{*this}}};
     systems.emplace_back(std::make_unique<Lasers>(*this));
     systems.emplace_back(std::make_unique<Player>(*this));
     systems.emplace_back(std::make_unique<Asteroids>(*this));
     systems.emplace_back(std::make_unique<Background>(*this));
-
+    systems.emplace_back(std::make_unique<Collisions>(*this));
+    systems.emplace_back(std::make_unique<RenderSystem>(*this));
+    systems.emplace_back(std::make_unique<DynamicsSystem>(*this));
     std::ranges::for_each(systems, [](auto& system) { system->setup(); });
     // retrieve the player id
     auto& ctx = getRegistry().ctx();
@@ -78,6 +67,11 @@ void game::Game::setup()
     auto event = events::LaserFired{.offset{}, .shooter{playerId}};
     auto trigger = [event, this](auto) { dispatcher.trigger(event); };
     keyStateMap.registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
+
+    // TODO: from external config
+    registry.ctx().emplace<RenderConfig>(RenderConfig{.renderBroadPhaseCollisionShapes = true});
+
+    
 }
 
 void game::Game::loop()
