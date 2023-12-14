@@ -18,7 +18,7 @@ void printASCII(const std::span<uint8_t>& data, const pg::iVec2& dims)
 
         if (index % dims[0] == 0) { std::cout << "\n"; }
         // draw us a nice little ascii image based on the alpha value
-        std::cout << (a != 0) ? "1" : "0";
+        std::cout << ((a != 0) ? "1" : "0");
     }
 }
 
@@ -31,7 +31,7 @@ void printASCII(const std::span<pg::SpritePixelData::Pixel>& data, const pg::iVe
 
         if (index % dims[0] == 0) { std::cout << "\n"; }
         // draw us a nice little ascii image based on the alpha value
-        std::cout << (a != 0) ? "1" : "0";
+        std::cout << ((a != 0) ? "1" : "0");
     }
 }
 
