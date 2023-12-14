@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(sagan)
+project(2dPlayground)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 #add cmake script to download conan-cmake integrations
@@ -36,6 +36,7 @@ enable_testing()
 add_subdirectory(libs)
 add_subdirectory(apps)
 add_subdirectory(tests)
+add_subdirectory(tools)
 
 install(DIRECTORY
         data/

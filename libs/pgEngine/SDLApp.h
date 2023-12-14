@@ -6,6 +6,7 @@ namespace pg {
 class SDLApp
 {
 public:
+    using RenderFunction = std::function<void(SDLApp&)>;
     SDLApp(const config::WindowConfig& windowConfig);
     ~SDLApp();
 
@@ -21,6 +22,7 @@ public:
 
     SDL_Rect getDisplayBounds(const uint8_t screen) const;
 
+    void loop(bool& done, const RenderFunction& renderFunction);
 
 protected:
     void checkInitialized() const;
