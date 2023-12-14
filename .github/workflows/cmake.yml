@@ -58,11 +58,11 @@ jobs:
             conan profile update conf.tools.system.package_manager:mode=install default
             conan profile update conf.tools.system.package_manager:sudo=True default    
     - name: Configure CMake
-      run: cmake --preset unixlike-${{runner.compiler}}-debug
+      run: cmake --preset unixlike-${{matrix.compiler}}-debug
     
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build --preset unixlike-${{runner.compiler}}-debug
+      run: cmake --build --preset unixlike-${{matrix.compiler}}-debug
 
     - name: Test
       working-directory: ${{github.workspace}}/build
