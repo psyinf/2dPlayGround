@@ -20,6 +20,7 @@ jobs:
       matrix:
         #version: [10, 12, 14]
         os: [ubuntu-latest]
+        compiler: [gcc, clang]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Using the builtin GitHub Cache Action for .conan
@@ -57,13 +58,11 @@ jobs:
             conan profile update conf.tools.system.package_manager:mode=install default
             conan profile update conf.tools.system.package_manager:sudo=True default    
     - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake --preset unixlike-${{runner.compiler}}-debug
     
     - name: Build
       # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: cmake --build --preset unixlike-${{runner.compiler}}-debug
 
     - name: Test
       working-directory: ${{github.workspace}}/build
