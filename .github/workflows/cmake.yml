@@ -23,6 +23,8 @@ jobs:
         compiler: [gcc, clang]
     runs-on: ${{ matrix.os }}
     steps:
+    - name: Setup Ninja
+      uses: ashutoshvarma/setup-ninja@master
     - name: Using the builtin GitHub Cache Action for .conan
       id: github-cache-conan
       uses: actions/cache@v2
