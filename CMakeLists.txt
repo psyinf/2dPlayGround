@@ -13,6 +13,7 @@ conan_cmake_configure(REQUIRES
     catch2/3.4.0
     sdl/2.28.3
     sdl_image/2.6.3
+    sdl_ttf/2.20.2
     fmt/10.1.1
     entt/3.12.2
     GENERATORS CMakeDeps CMakeToolchain
