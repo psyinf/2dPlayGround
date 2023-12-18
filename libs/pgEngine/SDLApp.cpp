@@ -1,5 +1,6 @@
 #include "SDLApp.h"
-#include <ranges>
+#include "Lifetime.hpp"
+
 using namespace pg;
 
 SDLApp::~SDLApp() {}
@@ -21,7 +22,7 @@ auto SDLApp::getRenderer() -> sdl::Renderer&
 void SDLApp::initialize(const config::WindowConfig& windowConfig)
 {
     init = std::make_unique<sdl::Init>(SDL_INIT_EVERYTHING);
-
+    ttfInit = std::make_unique<TTFInit>();
     window = std::make_unique<sdl::Window>(windowConfig.windowName.c_str(),
                                            windowConfig.offset[0],
                                            windowConfig.offset[1], //

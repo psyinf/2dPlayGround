@@ -1,10 +1,14 @@
 #pragma once
+#include "Lifetime.hpp"
 #include "SDLAppConfig.h"
+#include "sdl_ttf.h"
 #include <sdlpp.hpp>
 
 namespace pg {
 class SDLApp
 {
+    using TTFInit = Lifetime<TTF_Init,TTF_Quit>;
+
 public:
     using RenderFunction = std::function<void(SDLApp&)>;
     SDLApp(const config::WindowConfig& windowConfig);
@@ -32,6 +36,7 @@ private:
     std::unique_ptr<sdl::Renderer> renderer;
     std::unique_ptr<sdl::Window>   window;
     std::unique_ptr<sdl::Init>     init;
+    std::unique_ptr<TTFInit>       ttfInit;
     sdl::EventHandler              eventHandler;
 };
 } // namespace pg
