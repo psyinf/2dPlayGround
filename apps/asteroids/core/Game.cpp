@@ -64,7 +64,7 @@ void game::Game::setup()
     using entt::literals::operator""_hs;
     auto playerId = ctx.get<const entt::entity>("Player"_hs);
 
-    auto event = events::LaserFired{.offset{}, .shooter{playerId}};
+    auto event = events::LaserFired{.offset{}, .shooter = playerId};
     auto trigger = [event, this](auto) { dispatcher.trigger(event); };
     keyStateMap.registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
 
