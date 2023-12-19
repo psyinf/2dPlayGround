@@ -23,15 +23,15 @@ public:
     static Sprite makeTextSprite(sdl::Renderer&   renderer,
                                  std::string_view text,
                                  std::string_view fontName,
-                                 uint16_t         ptsize,
-                                 Color        color)
+                                 uint16_t         ptsize)
     {
+        static constexpr auto white = SDL_Color{255, 255, 255, 255};
         // TODO: get from resource manager
         auto font = FontPtr(TTF_OpenFont(fontName.data(), ptsize));
         if (!font) { throw std::invalid_argument(TTF_GetError()); }
-        auto surface = std::make_unique<sdl::Surface>(TTF_RenderText_Blended(font.get(), "Hello, World!", std::bit_cast<SDL_Color>(color )));
-        auto texture = SDL_CreateTextureFromSurface(renderer.get(), surface.get()->get());
-        return Sprite(std::move(texture));
+        auto surface = std::make_unique<sdl::Surface>(
+            TTF_RenderText_Blended(font.get(), "Hello, World!", std::bit_cast<SDL_Color>(white)));
+        return Sprite(sdl::Texture(renderer.get(), surface.get()->get()));
    
     }
 };
