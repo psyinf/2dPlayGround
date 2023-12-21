@@ -1,6 +1,7 @@
 #pragma once
 #include "SDLVec.h"
 #include "SDLPrimitives.h"
+#include "State.hpp"
 
 namespace pg {
 
@@ -8,9 +9,8 @@ struct Sprite : public pg::Primitive
 {
     Sprite(sdl::Texture&& tex);
 
-    void draw(sdl::Renderer& r, const pg::Transform& t) override;
+    void draw(sdl::Renderer& r, const pg::Transform& t, const RendererStates& states); 
 
-    void draw(sdl::Renderer& r) override;
 
     const pg::iVec2& getDimensions() const { return dimensions; }
 

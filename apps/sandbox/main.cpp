@@ -38,6 +38,39 @@ protected:
     int       period_frames;
 };
 
+struct ColorState
+{
+    ColorState(const pg::Color& color)
+      : setColor(color)
+    {
+        std::puts("S");
+    }
+
+    ~ColorState() { std::puts("~S"); }
+
+    ColorState(const ColorState& rhs) = delete;
+    ColorState(ColorState&& rhs) = delete;
+
+    void operator=(const ColorState& rhs) = delete;
+    void operator=(ColorState&& rhs) = delete;
+
+    void set(sdl::Renderer& renderer, std::any& state)
+    {
+        pg::Color color;
+        renderer.getDrawColor(&color[0], &color[1], &color[2], &color[3]);
+        state = color;
+        renderer.setDrawColor(setColor[0], setColor[1], setColor[2], setColor[3]);
+    }
+
+    void reset(sdl::Renderer& renderer, std::any& state)
+    {
+        pg::Color storedColor = std::any_cast<pg::Color>(state);
+        renderer.setDrawColor(storedColor[0], storedColor[1], storedColor[2], storedColor[3]);
+    }
+
+    pg::Color setColor;
+};
+
 int main(int argc, char** argv)
 try
 {
@@ -65,7 +98,9 @@ try
     keyStateMap.registerCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
     keyStateMap.registerCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
     keyStateMap.registerCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
-    pg::Line  l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
+    pg::Line l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
+    pg::Line l2{pg::iVec2{5, 5}, pg::iVec2{1285, 725}};
+
     pg::Point p1{pg::iVec2{10, 10}};
     pg::Point p2{pg::iVec2{9, 9}};
     pg::Point p3{pg::iVec2{9, 9}};
@@ -74,7 +109,8 @@ try
 
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
     auto background = std::make_unique<pg::ScrollingSprite>(
-        pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"),pg::iVec2{ 1280, 720});
+        pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"), pg::iVec2{1280, 720});
+
     while (!done)
     {
         // handle all pending events
@@ -83,20 +119,22 @@ try
 
         renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
         renderer.clear();
-        background->draw(renderer, bgTransform);
-        renderer.setDrawColor(0xff, 0xff, 0xff, 0xff);
-        l.draw(renderer);
+        background->draw(renderer, bgTransform, {});
+
+        renderer.setDrawColor(0xff, 0x00, 0xff, 0xff);
+        l.draw(renderer, {}, {});
+        l2.draw(renderer, {}, {});
 
         renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
-        p1.draw(renderer);
-        p2.draw(renderer);
-        p3.draw(renderer);
+        p1.draw(renderer, {}, {});
+        p2.draw(renderer, {}, {});
+        p3.draw(renderer, {}, {});
 
-        sprite.draw(renderer, c.frame(++frame));
+        auto rendererStates = std::vector<std::unique_ptr<pg::RendererState>>{};
+        sprite.draw(renderer, c.frame(++frame), rendererStates);
 
         renderer.present();
     }
-
     return 0;
 }
 
