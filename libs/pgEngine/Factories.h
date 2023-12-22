@@ -7,7 +7,7 @@
 
 namespace pg {
 
-auto deleter = [](TTF_Font* p) { TTF_CloseFont(p); };
+static constexpr auto deleter = [](TTF_Font* p) { TTF_CloseFont(p); };
 using FontPtr = std::unique_ptr<TTF_Font, decltype(deleter)>;
 
 class SpriteFactory
