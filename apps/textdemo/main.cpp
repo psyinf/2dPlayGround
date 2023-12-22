@@ -1,18 +1,9 @@
-#include "SDL_ttf.h"
-#include <Factories.h>
+
+#include <Factories.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
 #include <SDLPrimitives.h>
 
-void renderText()
-{
-    SDL_RenderPresent(nullptr);
-    SDL_Delay(2000);
-    /* SDL_FreeSurface(surfaceMessage);
-     SDL_DestroyTexture(Message);
-     TTF_CloseFont(font);*/
-    TTF_Quit();
-}
 
 void textdemo_main()
 {

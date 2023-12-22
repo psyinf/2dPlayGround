@@ -1,6 +1,6 @@
 #include "SDLApp.h"
 #include "Lifetime.hpp"
-#include "SDL_ttf.h"
+#include <SDL_ttf.h>
 using namespace pg;
 
 void pg::ttfInitDelegate() 
