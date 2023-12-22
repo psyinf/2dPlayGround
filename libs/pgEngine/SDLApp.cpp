@@ -1,7 +1,19 @@
 #include "SDLApp.h"
 #include "Lifetime.hpp"
-
+#include "SDL_ttf.h"
 using namespace pg;
+
+void pg::ttfInitDelegate() 
+{
+    TTF_Init();
+}
+
+void pg::ttfQuitDelegate() 
+{
+    TTF_Quit();
+}
+
+
 
 SDLApp::~SDLApp() {}
 
@@ -52,6 +64,7 @@ SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
     SDL_GetDisplayBounds(screenNumber, &screen);
     return screen;
 }
+
 
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
 {

@@ -1,13 +1,19 @@
 #pragma once
 #include "Lifetime.hpp"
 #include "SDLAppConfig.h"
-#include "sdl_ttf.h"
 #include <sdlpp.hpp>
 
+
+
+
 namespace pg {
+//delegates for TTF_Init and TTF_Quit
+void ttfQuitDelegate();
+void ttfInitDelegate();
+
 class SDLApp
 {
-    using TTFInit = Lifetime<TTF_Init,TTF_Quit>;
+    using TTFInit = Lifetime<ttfInitDelegate,ttfQuitDelegate>;
 
 public:
     using RenderFunction = std::function<void(SDLApp&)>;
