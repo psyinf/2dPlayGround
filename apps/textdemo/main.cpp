@@ -4,7 +4,6 @@
 #include <SDLErrorTrace.h>
 #include <SDLPrimitives.h>
 
-
 void textdemo_main()
 {
     pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{1024, 1024}}};
@@ -17,8 +16,9 @@ void textdemo_main()
     // TODO: test approach where we render the text as white and then use blending to color it
     auto render = [&](auto& app) {
         text.draw(app.getRenderer(),
-                  {.pos{100, 100}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}});
-        text.draw(app.getRenderer(), {.pos{512, 512}});
+                  {.pos{100, 100}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
+                  {});
+        text.draw(app.getRenderer(), {.pos{512, 512}}, {});
     };
 
     auto done = false;
