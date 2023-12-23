@@ -9,7 +9,7 @@
 #include <SDL_image.h>
 #include <iostream>
 
-#include <Factories.h>
+#include <Factories.hpp>
 #include <SDLSprite.h>
 #include <vector>
 

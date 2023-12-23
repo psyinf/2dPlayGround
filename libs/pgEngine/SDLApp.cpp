@@ -1,6 +1,19 @@
 #include "SDLApp.h"
-#include <ranges>
+#include "Lifetime.hpp"
+#include <SDL_ttf.h>
 using namespace pg;
+
+void pg::ttfInitDelegate() 
+{
+    TTF_Init();
+}
+
+void pg::ttfQuitDelegate() 
+{
+    TTF_Quit();
+}
+
+
 
 SDLApp::~SDLApp() {}
 
@@ -21,7 +34,7 @@ auto SDLApp::getRenderer() -> sdl::Renderer&
 void SDLApp::initialize(const config::WindowConfig& windowConfig)
 {
     init = std::make_unique<sdl::Init>(SDL_INIT_EVERYTHING);
-
+    ttfInit = std::make_unique<TTFInit>();
     window = std::make_unique<sdl::Window>(windowConfig.windowName.c_str(),
                                            windowConfig.offset[0],
                                            windowConfig.offset[1], //
@@ -51,6 +64,7 @@ SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
     SDL_GetDisplayBounds(screenNumber, &screen);
     return screen;
 }
+
 
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
 {

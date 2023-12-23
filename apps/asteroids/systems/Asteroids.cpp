@@ -2,7 +2,7 @@
 
 #include "core/RegistryHelper.h"
 #include "entities/Entities.h"
-#include <Factories.h>
+#include <Factories.hpp>
 #include <SDLBackgoundSprite.h>
 #include <VecOperations.hpp>
 #include <algorithm>

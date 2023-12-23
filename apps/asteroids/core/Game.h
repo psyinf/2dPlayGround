@@ -1,7 +1,7 @@
 #pragma once
 
 #include "systems/SystemInterface.h"
-#include <Factories.h>
+#include <Factories.hpp>
 #include <SDLApp.h>
 #include <SDLBackgoundSprite.h>
 #include <SDLKeyStateMap.h>
