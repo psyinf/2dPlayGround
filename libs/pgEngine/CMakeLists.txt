@@ -13,6 +13,7 @@ target_sources(${PROJECT_NAME}
 		SDLSprite.cpp
 		SDLKeyStateMap.cpp
 		Factories.cpp
+		SDLFont.cpp
 	PUBLIC
 		SDLApp.h
 		SDLVec.h

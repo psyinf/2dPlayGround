@@ -130,8 +130,7 @@ try
         p2.draw(renderer, {}, {});
         p3.draw(renderer, {}, {});
 
-        auto rendererStates = std::vector<std::unique_ptr<pg::RendererState>>{};
-        sprite.draw(renderer, c.frame(++frame), rendererStates);
+        sprite.draw(renderer, c.frame(++frame), {});
 
         renderer.present();
     }
