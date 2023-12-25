@@ -13,7 +13,7 @@ struct Sprite : public pg::Primitive
 
     const pg::iVec2& getDimensions() const { return dimensions; }
 
-//protected:
+protected:
     sdl::Texture& getTexture() { return texture; }
     
 private:

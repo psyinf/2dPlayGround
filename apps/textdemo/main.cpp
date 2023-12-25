@@ -20,15 +20,13 @@ void textdemo_main()
     auto rendererStates2 = pg::States{};
     auto rendererStates3 = pg::States{};
     
-    //rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_BLEND});
-    //rendererStates.push(pg::TextureAlphaState{255});
     rendererStates.push(pg::TextureColorState{pg::Color{255, 0, 0, 255}});
     rendererStates2.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates2.push(pg::TextureAlphaState{128});
     rendererStates3.push(pg::TextureColorState{pg::Color{255, 0, 255, 255}});
    
 
-    text.getTexture().setColorMod(255, 255, 255);
+    
     auto render = [&](auto& app) {
        
         text.draw(app.getRenderer(),
