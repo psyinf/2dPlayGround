@@ -49,7 +49,7 @@ void game::RenderSystem::handle(const FrameStamp& frameStamp)
     for (auto view = game.getRegistry().view<game::Drawable, pg::Transform>(); auto& entity : view)
     {
         auto&& [drawable, transform] = view.get<game::Drawable, pg::Transform>(entity);
-        drawable.prim->draw(renderer, transform);
+        drawable.prim->draw(renderer, transform, {});
     }
 
      auto renderConfig = game.getRegistry().ctx().get<RenderConfig>();

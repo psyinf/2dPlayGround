@@ -1,10 +1,10 @@
 #include "Factories.hpp"
 
 #include <SDL_image.h>
-#include <SDL_ttf.h>
+#include "SDLFont.hpp"
+#include "SDL_ttf.h"
 
-static constexpr auto deleter = [](TTF_Font* p) { TTF_CloseFont(p); };
-using FontPtr = std::unique_ptr<TTF_Font, decltype(deleter)>;
+
 
 
 pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_view resource_name)
@@ -14,15 +14,11 @@ pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_vi
     return Sprite(std::move(tex));
 }
 
-pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer&   renderer,
-                                             std::string_view text,
-                                             std::string_view fontName,
-                                             uint16_t         ptsize)
+pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer& renderer, SDLFont& font, std::string_view text)
 {
     static constexpr auto white = SDL_Color{255, 255, 255, 255};
     // TODO: get from resource manager
-    auto font = FontPtr(TTF_OpenFont(fontName.data(), ptsize));
-    if (!font) { throw std::invalid_argument(TTF_GetError()); }
+
     auto surface = sdl::Surface(TTF_RenderText_Blended(font.get(), "Hello, World!", std::bit_cast<SDL_Color>(white)));
     return Sprite(sdl::Texture(renderer.get(), surface.get()));
 }

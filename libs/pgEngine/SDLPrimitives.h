@@ -1,9 +1,11 @@
 #pragma once
 #include "SDLBounds.h"
 #include "SDLVec.h"
-#include <sdlpp.hpp>
-
+#include "States.hpp"
 #include <bit>
+#include <memory>
+#include <sdlpp.hpp>
+#include <vector>
 
 namespace pg {
 
@@ -44,9 +46,7 @@ private:
 class Primitive
 {
 public:
-    virtual void draw(sdl::Renderer& r) = 0;
-
-    virtual void draw(sdl::Renderer& r, const Transform& t) { draw(r); };
+    virtual void draw(sdl::Renderer& r, const Transform& t, const States& rendererStates) = 0;
 };
 
 class Line : public Primitive
@@ -54,7 +54,7 @@ class Line : public Primitive
 public:
     Line(iVec2&& start, iVec2&& end);
 
-    void draw(sdl::Renderer& r) override;
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override;
 
 protected:
     iVec2 start;
@@ -67,7 +67,7 @@ public:
     Point(iVec2&& pos)
       : pos(pos){};
 
-    void draw(sdl::Renderer& r) override;
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override;
 
 protected:
     iVec2 pos;
@@ -81,7 +81,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform& t) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
         r.setDrawColor(255, 255, 255, 255);
         // draw the polygon
@@ -90,8 +90,6 @@ public:
             r.drawLines(std::bit_cast<SDL_Point*>(points.data()), points.size());
         }
     }
-
-    void draw(sdl::Renderer& r) override { draw(r, {}); }
 
 private:
     std::vector<iVec2> points;
@@ -105,7 +103,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform& t) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
         r.setDrawColor(255, 255, 255, 255);
         // draw the polygon
@@ -114,8 +112,6 @@ public:
             r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), points.size());
         }
     }
-
-    void draw(sdl::Renderer& r) override { draw(r, {}); }
 
 private:
     std::vector<iVec2> points;
@@ -134,9 +130,9 @@ public:
 
     size_t getMaxElement() const { return maxElement; }
 
-    void draw(sdl::Renderer& r, const Transform& t) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
-        ScopedScale ss(r, t.scale);
+        ScopedScale ss(r, transform.scale);
         r.setDrawColor(255, 255, 255, 255);
         // draw the polygon
         for (const auto& p : points)
@@ -144,8 +140,6 @@ public:
             r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), std::min(maxElement, points.size()));
         }
     }
-
-    void draw(sdl::Renderer& r) override { draw(r, {}); }
 
 private:
     const std::vector<iVec2>& points;
@@ -167,9 +161,9 @@ public:
 
     size_t size() const { return points.size(); }
 
-    void draw(sdl::Renderer& r, const Transform& t) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
-        ScopedScale ss(r, t.scale);
+        ScopedScale ss(r, transform.scale);
         r.setDrawColor(255, 255, 255, 255);
         // draw the polygon
         for (const auto& p : points)
@@ -177,8 +171,6 @@ public:
             r.drawLines(std::bit_cast<SDL_Point*>(points.data()), std::min(maxElement, points.size()));
         }
     }
-
-    void draw(sdl::Renderer& r) override { draw(r, {}); }
 
 private:
     const std::vector<iVec2>& points;

@@ -55,9 +55,8 @@ void debugDisplay(pg::SpritePixelData&          pixelData,
             rpConvex.setMaxElement(rpConvex.getMaxElement() + 1);
             if (rpConvex.getMaxElement() > rpConvex.size()) { rpConvex.setMaxElement(1); }
         }
-        sprite.draw(app.getRenderer(), {.pos{fDims * 2.5f}, .scale{5, 5}});
-        // rp.draw(app.getRenderer(), {.scale{5, 5}});
-        rpConvex.draw(app.getRenderer(), {.scale{5, 5}});
+        sprite.draw(app.getRenderer(), {.pos{fDims * 2.5f}, .scale{5, 5}}, {});
+        rpConvex.draw(app.getRenderer(), {.scale{5, 5}}, {});
     };
 
     auto done = false;
