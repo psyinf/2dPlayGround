@@ -8,12 +8,12 @@
 {
 }
 
-void pg::Line::draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates)
+void pg::Line::draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates)
 {
     r.drawLine(start[0], start[1], end[0], end[1]);
 }
 
-void pg::Point::draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates)
+void pg::Point::draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates)
 {
     r.drawPoint(pos[0], pos[1]);
 }

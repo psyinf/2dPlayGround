@@ -1,10 +1,10 @@
 #pragma once
 #include "SDLBounds.h"
-#include "State.hpp"
 #include "SDLVec.h"
-#include <sdlpp.hpp>
+#include "States.hpp"
 #include <bit>
 #include <memory>
+#include <sdlpp.hpp>
 #include <vector>
 
 namespace pg {
@@ -43,13 +43,10 @@ private:
     Color          color;
 };
 
-using RendererStatePointer = std::unique_ptr<RendererState>;
-using RendererStates = std::vector<RendererStatePointer>;
-
 class Primitive
 {
 public:
-    virtual void draw(sdl::Renderer& r, const Transform& t, const RendererStates& rendererStates) = 0;
+    virtual void draw(sdl::Renderer& r, const Transform& t, const States& rendererStates) = 0;
 };
 
 class Line : public Primitive
@@ -57,7 +54,7 @@ class Line : public Primitive
 public:
     Line(iVec2&& start, iVec2&& end);
 
-    void draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates) override;
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override;
 
 protected:
     iVec2 start;
@@ -70,7 +67,7 @@ public:
     Point(iVec2&& pos)
       : pos(pos){};
 
-    void draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates) override;
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override;
 
 protected:
     iVec2 pos;
@@ -84,7 +81,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
         r.setDrawColor(255, 255, 255, 255);
         // draw the polygon
@@ -106,7 +103,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
         r.setDrawColor(255, 255, 255, 255);
         // draw the polygon
@@ -133,7 +130,7 @@ public:
 
     size_t getMaxElement() const { return maxElement; }
 
-    void draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
         ScopedScale ss(r, transform.scale);
         r.setDrawColor(255, 255, 255, 255);
@@ -164,7 +161,7 @@ public:
 
     size_t size() const { return points.size(); }
 
-    void draw(sdl::Renderer& r, const Transform& transform, const RendererStates& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform& transform, const States& rendererStates) override
     {
         ScopedScale ss(r, transform.scale);
         r.setDrawColor(255, 255, 255, 255);
