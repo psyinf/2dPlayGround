@@ -13,9 +13,9 @@ void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform& t, const States& st
     SDL_Rect dest_rect = {new_x, new_y, int(dimensions[0] * t.scale[0]), int(dimensions[1] * t.scale[1])};
     states.apply(r);
     states.apply(r, texture);
-   
+
     r.copyEx(texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
 
-   states.restore(r);
-   states.restore(r, texture);
+    states.restore(r);
+    states.restore(r, texture);
 }

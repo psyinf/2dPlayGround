@@ -15,8 +15,6 @@ void pg::ttfQuitDelegate()
     TTF_Quit();
 }
 
-
-
 SDLApp::~SDLApp() {}
 
 void SDLApp::deinitialize() {}
@@ -70,7 +68,6 @@ SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
 
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
 {
-   
     getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         
         done = true;
