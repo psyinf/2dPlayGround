@@ -3,9 +3,11 @@
 #include <SDLErrorTrace.h>
 #include <SDLPrimitives.h>
 #include <States.hpp>
-
+#include <FPSCounter.hpp>
 #include <random>
+//TODO: make Rect class represting pos, dimension? 
 
+//TODO: move this to lib 
 pg::fVec2 makeRandom(const pg::fVec2& minMaxX, const pg::fVec2& minMaxY)
 {
     // use random distribution to generate random numbers between min and max
@@ -43,14 +45,20 @@ void textdemo_main()
     std::vector<pg::fVec2> positions;
     auto                   bounds = app.getDisplayBounds(0);
     createStars(positions,
-                10000,
+                1000,
                 vec_cast<float>(pg::iVec2{bounds.x, bounds.y}),
                 vec_cast<float>(pg::iVec2{bounds.w, bounds.h}));
-
+    pg::FPSCounter fpsCounter; //move to app?
     auto render = [&](auto& app) {
+       
         for (const auto& pos : positions)
         {
             dot.draw(app.getRenderer(), {.pos{pos}, .scale{0.05, 0.05}}, rendererStates);
+        }
+        fpsCounter.frame();
+        if (fpsCounter.getCurrentFrameCount() % 100 == 0)
+        {
+            std::cout << fpsCounter.getAverageFPSAndReset() << "\n";
         }
     };
 
