@@ -1,6 +1,8 @@
 #include "SDLApp.h"
 #include "Lifetime.hpp"
 #include <SDL_ttf.h>
+#include "SDLPrimitives.h"
+
 using namespace pg;
 
 void pg::ttfInitDelegate() 
@@ -78,8 +80,10 @@ void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
     {
         while (getEventHandler().poll()) {}
         //#TODO: configurable, if clear and which color
-        renderer->setDrawColor(0x00, 0x00, 0x00, 0xff);
-        renderer->clear();
+        {
+            pg::ScopedColor sc{getRenderer(), Color{0, 0, 0, 255}};
+            renderer->clear();
+        }
         renderFunc(*this);
         renderer->present();
     }
