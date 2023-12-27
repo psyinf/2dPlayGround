@@ -32,6 +32,8 @@ public:
 
     SDL_Rect getDisplayBounds(const uint8_t screen) const;
 
+    auto getWindowConfig() const -> const config::WindowConfig&;
+
     void loop(bool& done, const RenderFunction& renderFunction);
 
 protected:
