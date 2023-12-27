@@ -92,7 +92,7 @@ pg::Vec<T, SIZE> operator*(const pg::Vec<T, SIZE>& lhs, const T& rhs)
 }
 
 template <typename T, size_t SIZE>
-constexpr auto operator*(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
+constexpr auto operator*(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
     pg::Vec<T, SIZE> res;
     for (auto idx : std::views::iota(size_t{}, lhs.size()))
