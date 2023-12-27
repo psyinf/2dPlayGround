@@ -73,7 +73,7 @@ public:
 private:
     int                                            frameCount;
     std::chrono::high_resolution_clock::time_point lastFrameTime;
-    double                                         lastFrameFPS;
+    double                                         lastFrameFPS{60};
     std::chrono::duration<double>                  totalTime;
     std::vector<double>                            fpsSamples;
 };

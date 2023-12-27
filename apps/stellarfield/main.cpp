@@ -1,37 +1,73 @@
+#include <FPSCounter.hpp>
 #include <Factories.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
 #include <SDLPrimitives.h>
 #include <States.hpp>
-#include <FPSCounter.hpp>
 #include <random>
-//TODO: make Rect class represting pos, dimension? 
 
-//TODO: move this to lib 
+// TODO: make Rect class representing pos, dimension?
+
+// TODO: move this to lib
 pg::fVec2 makeRandom(const pg::fVec2& minMaxX, const pg::fVec2& minMaxY)
 {
     // use random distribution to generate random numbers between min and max
-    static std::random_device                    rd;
-    static std::mt19937                          gen(rd());
-    static std::uniform_real_distribution<float> disX(minMaxX[0], minMaxX[1]);
-    static std::uniform_real_distribution<float> disY(minMaxY[0], minMaxY[1]);
+    static std::random_device             rd;
+    static std::mt19937                   gen(rd());
+    std::uniform_real_distribution<float> disX(minMaxX[0], minMaxX[1]);
+    std::uniform_real_distribution<float> disY(minMaxY[0], minMaxY[1]);
 
     return {disX(gen), disY(gen)};
 }
 
-void createStars(std::vector<pg::fVec2>& positions, size_t count, const pg::fVec2& pos, const pg::fVec2& width)
+struct Particle
 {
-    positions.clear();
-    positions.reserve(count);
+    pg::fVec2 pos{};
+    pg::fVec2 dir{};
+};
+
+void createStars(std::vector<Particle>& particles, size_t count, const pg::fVec2& pos, const pg::fVec2& width)
+{
+    particles.clear();
+    particles.reserve(count);
     for (size_t i = 0; i < count; ++i)
     {
-        positions.emplace_back(makeRandom({pos[0], pos[0] + width[0]}, {pos[1], pos[1] + width[1]}));
+        particles.emplace_back(Particle                                                               //
+                               {makeRandom({pos[0], pos[0] + width[0]}, {pos[1], pos[1] + width[1]}), //
+                                {makeRandom({-5, 5}, {-5, 5})}});
+    }
+}
+
+void updateStars(std::vector<Particle>& particles, float frameTime, const SDL_Rect& bounds, const pg::fVec2& attractor)
+{
+    for (auto& particle : particles)
+    {
+        particle.pos += particle.dir * frameTime;
+    }
+    // reflect on bounds
+    for (auto& particle : particles)
+    {
+        if (particle.pos[0] < bounds.x || particle.pos[0] > bounds.w) { particle.dir[0] *= -1; }
+        if (particle.pos[1] < bounds.y || particle.pos[1] > bounds.h) { particle.dir[1] *= -1; }
+    }
+    // attract to attractor
+    for (auto& particle : particles)
+    {
+        for (auto& particle2 : particles)
+        {
+            if (&particle != &particle2)
+            {
+                auto dir = particle2.pos - particle.pos;
+                auto len = lengthSquared(dir);
+                if (len > 1.0f) { particle.dir += makeNormal(dir) * (0.5f / len); }
+            }
+        }
     }
 }
 
 void textdemo_main()
 {
-    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{1024, 1024}}};
+    pg::SDLApp app{pg::config::WindowConfig{.screen{}, .offset{10, 10}, .size{1024, 512}}};
 
     auto font = pg::SDLFont("../data/fonts/Roboto-Regular.ttf", 24);
     // make a text sprite
@@ -42,24 +78,24 @@ void textdemo_main()
     rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
     //
-    std::vector<pg::fVec2> positions;
-    auto                   bounds = app.getDisplayBounds(0);
-    createStars(positions,
-                1000,
-                vec_cast<float>(pg::iVec2{bounds.x, bounds.y}),
-                vec_cast<float>(pg::iVec2{bounds.w, bounds.h}));
-    pg::FPSCounter fpsCounter; //move to app?
+    std::vector<Particle> particles;
+    auto                  windowSize = app.getWindowConfig().size;
+    createStars(particles, 150, {0, 0}, vec_cast<float>(windowSize));
+    pg::FPSCounter fpsCounter; // move to app?
+    // TODO: entt based rendering and update
+
     auto render = [&](auto& app) {
-       
-        for (const auto& pos : positions)
+        for (auto& particle : particles)
         {
+            auto pos = particle.pos;
             dot.draw(app.getRenderer(), {.pos{pos}, .scale{0.05, 0.05}}, rendererStates);
+            // update
         }
         fpsCounter.frame();
-        if (fpsCounter.getCurrentFrameCount() % 100 == 0)
-        {
-            std::cout << fpsCounter.getAverageFPSAndReset() << "\n";
-        }
+        updateStars(
+            particles, 1.0 / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]}, particles[0].pos);
+
+        if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
     };
 
     auto done = false;

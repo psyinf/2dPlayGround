@@ -42,7 +42,7 @@ void SDLApp::initialize(const config::WindowConfig& windowConfig)
                                            windowConfig.size[1], //
                                            SDL_WINDOW_BORDERLESS);
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1"); // TODO: move to config
-    renderer = std::make_unique<sdl::Renderer>(window->get(), -1, 0);
+    renderer = std::make_unique<sdl::Renderer>(window->get(), -1, SDL_RENDERER_ACCELERATED);
 }
 
 SDLApp::SDLApp(const config::WindowConfig& windowConfig)
@@ -65,6 +65,11 @@ SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
     return screen;
 }
 
+
+auto SDLApp::getWindowConfig() const -> const config::WindowConfig&
+{
+    return windowConfig;
+}
 
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
 {
