@@ -4,8 +4,6 @@
 #include <iostream>
 #include <vector>
 
-
-
 namespace pg {
 
 struct FPSStats
@@ -78,13 +76,11 @@ private:
     std::vector<double>                            fpsSamples;
 };
 
-
 } // namespace pg
 
-std::ostream& operator<<(std::ostream& os, const pg::FPSStats& stats)
+static std::ostream& operator<<(std::ostream& os, const pg::FPSStats& stats)
 {
-    os << "Average FPS: " << stats.averageFPS << ", "
-       << "Min FPS: " << stats.minFPS << ", "
-       << "Max FPS: " << stats.maxFPS;
+    os << std::setprecision(1) << std::fixed << "FPS Avg/Min/Max: " << stats.averageFPS << " / " << stats.minFPS
+       << " / " << stats.maxFPS;
     return os;
 }

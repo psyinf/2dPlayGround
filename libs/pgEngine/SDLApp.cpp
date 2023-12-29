@@ -71,6 +71,11 @@ auto SDLApp::getWindowConfig() const -> const config::WindowConfig&
     return windowConfig;
 }
 
+auto pg::SDLApp::getFPSCounter() -> FPSCounter&
+{
+    return fpsCounter;
+}
+
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
 {
     getEventHandler().quit = [&done](const SDL_QuitEvent&) {
@@ -88,6 +93,7 @@ void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
         }
         renderFunc(*this);
         renderer->present();
+        fpsCounter.frame();
     }
 }
 

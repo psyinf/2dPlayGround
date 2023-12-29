@@ -81,20 +81,20 @@ void textdemo_main()
     std::vector<Particle> particles;
     auto                  windowSize = app.getWindowConfig().size;
     createStars(particles, 150, {0, 0}, vec_cast<float>(windowSize));
-    pg::FPSCounter fpsCounter; // move to app?
     // TODO: entt based rendering and update
 
     auto render = [&](auto& app) {
+        auto& fpsCounter = app.getFPSCounter();
         for (auto& particle : particles)
         {
             auto pos = particle.pos;
             dot.draw(app.getRenderer(), {.pos{pos}, .scale{0.05, 0.05}}, rendererStates);
             // update
         }
-        fpsCounter.frame();
+
         updateStars(
             particles, 1.0 / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]}, particles[0].pos);
-
+        
         if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
     };
 
