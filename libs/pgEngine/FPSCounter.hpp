@@ -40,6 +40,19 @@ public:
         frameCount++;
     }
 
+    std::chrono::milliseconds getLastFrameDuration() const
+    {
+        if (lastFrameFPS == 0.0)
+        {
+            return std::chrono::milliseconds(16); //
+        }
+        else
+        {
+            return std::chrono::duration_cast<std::chrono::milliseconds>(
+                std::chrono::duration<float>(1.0 / lastFrameFPS));
+        }
+    }
+
     double getLastFrameFPS() const { return lastFrameFPS; }
 
     int getCurrentFrameCount() const { return frameCount; }
