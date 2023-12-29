@@ -47,4 +47,6 @@ void game::Player::handle(const FrameStamp& frameStamp)
     auto windowDetails = game.getRegistry().ctx().get<WindowDetails>();
     transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, windowDetails.windowRect.w);
     transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, windowDetails.windowRect.h);
+    dynamics.velocity = elementWise(std::truncl, dynamics.velocity);
+    std::cout << dynamics.velocity << std::endl;
 }
