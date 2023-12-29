@@ -29,7 +29,7 @@ using Color = Vec4<uint8_t>;
 } // namespace pg
 
 template <typename T, size_t SIZE>
-constexpr std::ostream& operator<< (std::ostream& os, const pg::Vec<T, SIZE>& rhs)
+static constexpr std::ostream& operator<< (std::ostream& os, const pg::Vec<T, SIZE>& rhs)
 {
     os << "[";
     for (auto idx : std::views::iota(size_t{}, rhs.size()))
