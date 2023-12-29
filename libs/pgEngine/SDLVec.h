@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <ostream>
 #include <ranges>
 
 namespace pg {
@@ -26,6 +27,22 @@ using fVec2 = Vec2<float>;
 using Color = Vec4<uint8_t>;
 
 } // namespace pg
+
+template <typename T, size_t SIZE>
+constexpr std::ostream& operator<< (std::ostream& os, const pg::Vec<T, SIZE>& rhs)
+{
+    os << "[";
+    for (auto idx : std::views::iota(size_t{}, rhs.size()))
+    {
+        os << rhs[idx];
+        if (idx != rhs.size() - 1)
+        {
+            os << ", ";
+        }
+    }
+    os << "]";
+    return os;
+}
 
 template <typename T, size_t SIZE, typename Functor>
 auto elementWise(const Functor& f, const pg::Vec<T, SIZE>& rhs)
