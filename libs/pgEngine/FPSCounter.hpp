@@ -1,9 +1,7 @@
 #pragma once
-#include <algorithm>
+
 #include <chrono>
-#include <iomanip>
-#include <iostream>
-#include <vector>
+
 
 namespace pg {
 
@@ -39,9 +37,4 @@ private:
 
 } // namespace pg
 
-static std::ostream& operator<<(std::ostream& os, const pg::FPSStats& stats)
-{
-    os << std::setprecision(1) << std::fixed << "FPS Avg/Min/Max: " << stats.averageFPS << " / " << stats.minFPS
-       << " / " << stats.maxFPS;
-    return os;
-}
+std::ostream& operator<<(std::ostream& os, const pg::FPSStats& stats);

@@ -1,4 +1,8 @@
 #include "FPSCounter.hpp"
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+#include <vector>
 
 pg::FPSCounter::FPSCounter()
   : frameCount(0)
@@ -68,4 +72,11 @@ pg::FPSStats pg::FPSCounter::getAverageFPSAndReset()
     fpsSamples.clear();
 
     return stats;
+}
+
+static std::ostream& operator<<(std::ostream& os, const pg::FPSStats& stats)
+{
+    os << std::setprecision(1) << std::fixed << "FPS Avg/Min/Max: " << stats.averageFPS << " / " << stats.minFPS
+       << " / " << stats.maxFPS;
+    return os;
 }
