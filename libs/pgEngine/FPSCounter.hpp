@@ -1,7 +1,8 @@
 #pragma once
 
 #include <chrono>
-
+#include <ostream>
+#include <vector>
 
 namespace pg {
 

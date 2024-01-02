@@ -74,7 +74,7 @@ pg::FPSStats pg::FPSCounter::getAverageFPSAndReset()
     return stats;
 }
 
-static std::ostream& operator<<(std::ostream& os, const pg::FPSStats& stats)
+std::ostream& operator<<(std::ostream& os, const pg::FPSStats& stats)
 {
     os << std::setprecision(1) << std::fixed << "FPS Avg/Min/Max: " << stats.averageFPS << " / " << stats.minFPS
        << " / " << stats.maxFPS;
