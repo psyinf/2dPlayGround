@@ -122,7 +122,8 @@ void game::Asteroids::handle(const FrameStamp& frameStamp)
     std::normal_distribution<float> dist(1, 2);
     std::normal_distribution<float> speed(10, 100);
     std::uniform_int_distribution   pos(-200, 1024);
-    // TODO: move to generic dynamics-system
+
+    //TODO: flag entities that should re-appear after entering a screen border and handle them in a separate system
     auto view = game.getRegistry().view<tag, pg::Transform, game::Dynamics>();
     for (auto& entity : view)
     {
@@ -148,7 +149,8 @@ void game::Asteroids::handle(const FrameStamp& frameStamp)
         auto newSize = getNextSmallest(size);
         if (newSize.has_value())
         {
-            auto fragments = pg::splitVector(dynamics.velocity, 4);
+            
+            auto fragments = pg::splitVector(dynamics.velocity, pg::randomBetween(2,3));
             for (const auto& fragment : fragments)
             {
                 createAsteroid(transform.pos, fragment, newSize.value());
