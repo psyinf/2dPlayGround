@@ -1,10 +1,9 @@
 #pragma once
-#include "Lifetime.hpp"
 #include "SDLAppConfig.h"
+#include "FPSCounter.hpp"
+#include "Lifetime.hpp"
+
 #include <sdlpp.hpp>
-
-
-
 
 namespace pg {
 //delegates for TTF_Init and TTF_Quit
@@ -32,6 +31,9 @@ public:
 
     SDL_Rect getDisplayBounds(const uint8_t screen) const;
 
+    auto getWindowConfig() const -> const config::WindowConfig&;
+
+    auto getFPSCounter() -> FPSCounter&;
     void loop(bool& done, const RenderFunction& renderFunction);
 
 protected:
@@ -44,5 +46,6 @@ private:
     std::unique_ptr<sdl::Init>     init;
     std::unique_ptr<TTFInit>       ttfInit;
     sdl::EventHandler              eventHandler;
+    FPSCounter                     fpsCounter;
 };
 } // namespace pg

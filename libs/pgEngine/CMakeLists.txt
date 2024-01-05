@@ -14,6 +14,7 @@ target_sources(${PROJECT_NAME}
 		SDLKeyStateMap.cpp
 		Factories.cpp
 		SDLFont.cpp
+		FPSCounter.cpp
 	PUBLIC
 		SDLApp.h
 		SDLVec.h
@@ -26,7 +27,8 @@ target_sources(${PROJECT_NAME}
 		SDLErrorTrace.h
 		SDLBounds.h 
 		ComputationalGeometry.hpp 
-		SpritePixelData.hpp)
+		SpritePixelData.hpp
+)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC

@@ -1,6 +1,8 @@
 #include "SDLApp.h"
 #include "Lifetime.hpp"
 #include <SDL_ttf.h>
+#include "SDLPrimitives.h"
+
 using namespace pg;
 
 void pg::ttfInitDelegate() 
@@ -12,8 +14,6 @@ void pg::ttfQuitDelegate()
 {
     TTF_Quit();
 }
-
-
 
 SDLApp::~SDLApp() {}
 
@@ -42,7 +42,7 @@ void SDLApp::initialize(const config::WindowConfig& windowConfig)
                                            windowConfig.size[1], //
                                            SDL_WINDOW_BORDERLESS);
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1"); // TODO: move to config
-    renderer = std::make_unique<sdl::Renderer>(window->get(), -1, 0);
+    renderer = std::make_unique<sdl::Renderer>(window->get(), -1, SDL_RENDERER_ACCELERATED);
 }
 
 SDLApp::SDLApp(const config::WindowConfig& windowConfig)
@@ -66,9 +66,18 @@ SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
 }
 
 
+auto SDLApp::getWindowConfig() const -> const config::WindowConfig&
+{
+    return windowConfig;
+}
+
+auto pg::SDLApp::getFPSCounter() -> FPSCounter&
+{
+    return fpsCounter;
+}
+
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
 {
-   
     getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         
         done = true;
@@ -78,10 +87,13 @@ void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
     {
         while (getEventHandler().poll()) {}
         //#TODO: configurable, if clear and which color
-        renderer->setDrawColor(0x00, 0x00, 0x00, 0xff);
-        renderer->clear();
+        {
+            pg::ScopedColor sc{getRenderer(), Color{0, 0, 0, 255}};
+            renderer->clear();
+        }
         renderFunc(*this);
         renderer->present();
+        fpsCounter.frame();
     }
 }
 

@@ -82,7 +82,6 @@ void game::Game::loop()
     uint64_t frameNumber{};
     while (!done)
     {
-        auto frameStart = std::chrono::high_resolution_clock::now();
-        frame({frameNumber++, std::chrono::milliseconds(16)});
+        frame({ frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
     }
 }
