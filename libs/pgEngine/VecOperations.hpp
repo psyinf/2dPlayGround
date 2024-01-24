@@ -1,38 +1,30 @@
 #pragma once
 #include <SDLVec.h>
 #include <numeric>
-#include <random>
+#include <Random.hpp>
 #include <vector>
 
 namespace pg {
-// Function to generate a random vector
-pg::fVec2 getRandomVector()
-{
-    static std::random_device                    rd;
-    static std::mt19937                          gen(rd());
-    static std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
-
-    return makeNormal(pg::fVec2{dis(gen), dis(gen)});
-}
 
 // Function to split a vector into fragments
 // TODO: optimize
 std::vector<pg::fVec2> splitVector(const pg::fVec2& original, int numFragments)
 {
     std::vector<pg::fVec2> fragments;
-
+    auto                   scale = length(original);
     for (int i = 0; i < numFragments - 1; ++i)
     {
         // Generate a random vector
         pg::fVec2 fragment = getRandomVector();
-        // Ensure the generated vector is not collinear
-        while (std::abs(fragment[0] * original[1] - fragment[1] * original[0]) < 1e-6)
+
+        while (dot(makeNormal(fragment), makeNormal(original)) > 0.999f)
         {
             fragment = getRandomVector();
         }
 
         // Scale the vector to ensure it sums up to the original vector
-        fragment = fragment * (1.0f / numFragments);
+        fragment = fragment * (1.0f / numFragments) * scale;
+        
         // Add the fragment to the vector of fragments
         fragments.push_back(fragment);
     }
