@@ -24,8 +24,8 @@ void game::Player::setup()
 
     pg::game::addComponents<playerTag, game::ActiveCollider>(game.getRegistry(), player);
 
-    game.addSingleton<const entt::entity>("Player", player);
-    game.addSingleton<pg::iVec2>("Player.sprite.size", sprite->getDimensions());
+    game.addSingleton_as<const entt::entity>("Player", player);
+    game.addSingleton_as<pg::iVec2>("Player.sprite.size", sprite->getDimensions());
 
     auto view = game.getRegistry().view<playerTag, pg::Transform, game::Dynamics>();
     for (auto& entity : view)

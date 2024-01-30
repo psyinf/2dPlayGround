@@ -1,19 +1,10 @@
 #include "Game.hpp"
 #include "FrameStamp.hpp"
-#include <systems/SystemInterface.hpp>
 #include <entities/WindowDetails.hpp>
+#include <systems/SystemInterface.hpp>
 
 #include <ranges>
 
-//#include "RegistryHelper.h"
-//#include "entities/Entities.h"
-/*#include "systems/Asteroids.h"
-#include "systems/Background.h"
-#include "systems/Collisions.hpp"
-#include "systems/Lasers.h"
-#include "systems/Player.h"
-#include "systems/RenderSystem.hpp"
-#include "systems/DynamicsSystem.hpp"*/
 using namespace pg;
 
 void game::Game::frame(FrameStamp frameStamp)
@@ -52,11 +43,9 @@ pg::ResourceCache& game::Game::getResourceCache()
 
 void game::Game::setup()
 {
-    registry.ctx().emplace<pg::TypedResourceCache<pg::Sprite>>(
+    addSingleton<pg::TypedResourceCache<pg::Sprite>>(
         "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-    auto details =
-        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]};
-    registry.ctx().emplace<WindowDetails>(details);
+    addSingleton<WindowDetails>(WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
     std::ranges::for_each(systems, [](auto& system) { system->setup(); });
 }
 
@@ -68,6 +57,6 @@ void game::Game::loop()
     uint64_t frameNumber{};
     while (!done)
     {
-        frame({ frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
+        frame({frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
     }
 }

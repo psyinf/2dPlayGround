@@ -32,7 +32,7 @@ try
     game.getKeyStateMap().registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
 
     // TODO: from external config
-    game.getRegistry().ctx().emplace<game::RenderConfig>(game::RenderConfig{.renderBroadPhaseCollisionShapes = true});
+    game.addSingleton<game::RenderConfig>(game::RenderConfig{.renderBroadPhaseCollisionShapes = true});
 
     game.loop();
     return 0;

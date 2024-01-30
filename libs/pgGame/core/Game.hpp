@@ -58,7 +58,7 @@ public:
     }
 
     template <typename Type, typename... Args>
-    auto& addSingleton(std::string_view id, Args&&... args)
+    auto& addSingleton_as(std::string_view id, Args&&... args)
     {
         return registry.ctx().emplace_as<Type>(entt::hashed_string{id.data()}, std::forward<Args>(args)...);
     }
@@ -71,9 +71,15 @@ public:
     }
 
     template <typename Type, typename... Args>
-    auto& addSingleton(const entt::id_type id = entt::type_id<Type>().hash(), Args&&... args)
+    auto& addSingleton_as(const entt::id_type id = entt::type_id<Type>().hash(), Args&&... args)
     {
         return registry.ctx().emplace_as<Type>(id, std::forward<Args>(args)...);
+    }
+
+    template <typename Type, typename... Args>
+    auto& addSingleton(Args&&... args)
+    {
+        return registry.ctx().emplace_as<Type>(entt::type_id<Type>().hash(), std::forward<Args>(args)...);
     }
 
     void setup();
