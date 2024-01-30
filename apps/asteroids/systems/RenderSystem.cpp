@@ -52,7 +52,7 @@ void game::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         drawable.prim->draw(renderer, transform, {});
     }
 
-    auto renderConfig = game.getRegistry().ctx().get<RenderConfig>();
+    auto renderConfig = game.getSingleton<RenderConfig>();
      
      if (renderConfig.renderBroadPhaseCollisionShapes)
      {

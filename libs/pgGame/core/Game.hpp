@@ -47,7 +47,7 @@ public:
     template <typename Resource>
     pg::TypedResourceCache<Resource>& getTypedResourceCache()
     {
-        return registry.ctx().get<pg::TypedResourceCache<Resource>>();
+        return getSingleton<pg::TypedResourceCache<Resource>>();
     }
 
     template <typename Type>
