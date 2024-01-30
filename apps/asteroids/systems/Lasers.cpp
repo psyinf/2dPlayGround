@@ -1,7 +1,8 @@
 #include "Lasers.h"
-#include <core/Game.h>
-#include <core/RegistryHelper.h>
+#include <core/Game.hpp>
+#include <core/RegistryHelper.hpp>
 #include <entities/Entities.h>
+
 
 void game::Lasers::setup()
 {
@@ -26,7 +27,7 @@ void game::Lasers::createShot(const events::LaserFired& event)
     // determine shoot position
     auto& shooterTransform = game.getRegistry().get<pg::Transform>(event.shooter);
 
-    game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag , ActiveCollider>
+    pg::game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag , ActiveCollider>
 
         (game.getRegistry(),                                                          //
          std::move(d),                                                                //
@@ -38,7 +39,7 @@ void game::Lasers::createShot(const events::LaserFired& event)
         );
 }
 
-void game::Lasers::handle(const FrameStamp& frameStamp)
+void game::Lasers::handle(const pg::game::FrameStamp& frameStamp)
 {
     // TODO: This is should be in a system for updating transforms via dynamics
     auto view = game.getRegistry().view<pg::Transform, tag>();

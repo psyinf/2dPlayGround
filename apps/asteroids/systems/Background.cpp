@@ -1,8 +1,9 @@
 #include "Background.h"
-#include "core/Game.h"
+#include <core/Game.hpp>
+#include <entities/WindowDetails.hpp>
 #include "entities/Entities.h"
 
-void game::Background::handle(const FrameStamp& frameStamp)
+void game::Background::handle(const pg::game::FrameStamp& frameStamp)
 {
     // TODO: base scrolling speed on the player's velocity
     auto& registry = game.getRegistry();
@@ -14,7 +15,7 @@ void game::Background::setup()
     auto  background = game.getRegistry().create();
     auto& registry = game.getRegistry();
     auto  backgroundImg = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/spr_stars01.png");
-    auto  windowDetails = game.getRegistry().ctx().get<WindowDetails>();
+    auto  windowDetails = game.getRegistry().ctx().get<pg::game::WindowDetails>();
     // TODO add entities as references to the classes
     auto backgroundRect = pg::iVec2{windowDetails.windowRect.w, windowDetails.windowRect.h};
 

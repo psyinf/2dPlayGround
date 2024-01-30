@@ -1,5 +1,5 @@
 #pragma once
-#include "SystemInterface.h"
+#include <systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
 #include <events/LaserFired.h>
 
@@ -7,14 +7,14 @@ namespace game {
 using entt::literals::operator""_hs;
 
 
-class Collisions : public SystemInterface
+class Collisions : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
     
     void setup();
 
-    void handle(const FrameStamp& frameStamp);
+    void handle(const pg::game::FrameStamp& frameStamp);
 
  
 private:

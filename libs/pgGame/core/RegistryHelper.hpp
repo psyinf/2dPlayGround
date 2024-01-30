@@ -10,7 +10,7 @@
  * the helper allows you to:
  * auto entity = makeEntity<X,Y>({paramToX},{paramToY,param2ToY});
 */
-namespace game {
+namespace pg::game {
 
 template <typename Component, typename... Args>
 void addComponent(entt::registry& registry, entt::entity id, Component&& t)
@@ -45,4 +45,4 @@ auto makeEntity(entt::registry& registry, Components&&... components)
     return id;
 }
 
-} // namespace game
+} // namespace pg::game

@@ -4,4 +4,4 @@ add_subdirectory(sandbox)
 add_subdirectory(asteroids)
 add_subdirectory(textdemo)
 add_subdirectory(stellarfield)
-
+add_subdirectory(vonNeumannSim)

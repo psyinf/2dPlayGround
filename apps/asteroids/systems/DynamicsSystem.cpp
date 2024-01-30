@@ -1,11 +1,11 @@
 #include "DynamicsSystem.hpp"
-#include "core/Game.h"
+#include <core/Game.hpp>
 #include "Player.h"
 #include "entities/Entities.h"
 
 void game::DynamicsSystem::setup() {}
 
-void game::DynamicsSystem::handle(const FrameStamp& frameStamp)
+void game::DynamicsSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     auto& registry = game.getRegistry();
 

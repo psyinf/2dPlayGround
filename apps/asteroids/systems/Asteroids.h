@@ -1,5 +1,5 @@
 #pragma once
-#include "SystemInterface.h"
+#include <systems/SystemInterface.hpp>
 #include <array>
 #include <deque>
 #include <entt/entt.hpp>
@@ -32,7 +32,7 @@ inline static constexpr std::optional<Size> getNextSmallest(Size size){
     return std::nullopt;
 }
 
-class Asteroids : public SystemInterface
+class Asteroids : public pg::game::SystemInterface
 {
   
 public:
@@ -44,7 +44,7 @@ public:
 
     void createAsteroid(const pg::fVec2& position, const pg::fVec2& velocity, Size size);
 
-    void handle(const FrameStamp& frameStamp);
+    void handle(const pg::game::FrameStamp& frameStamp);
 
     void handleEvent(const events::Collision& collision) { collisions.push_back(collision); }
 

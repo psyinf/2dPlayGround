@@ -1,12 +1,12 @@
 #pragma once
-#include "SystemInterface.h"
+#include <systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
 
 namespace game {
 using entt::literals::operator""_hs;
 class Game;
 
-class Background : public SystemInterface
+class Background : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
@@ -16,7 +16,7 @@ public:
 
     void setup();
 
-    void handle(const FrameStamp& frameStamp);
+    void handle(const pg::game::FrameStamp& frameStamp);
 };
 
 } // namespace game

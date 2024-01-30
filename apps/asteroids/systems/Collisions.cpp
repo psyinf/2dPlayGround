@@ -1,13 +1,13 @@
 #include "Collisions.hpp"
 #include <BoundsOperations.hpp>
-#include <core/Game.h>
+#include <core/Game.hpp>
 #include <entities/Entities.h>
 #include <events/Collison.h>
 #include <iostream>
 
 void game::Collisions::setup() {}
 
-void game::Collisions::handle(const FrameStamp& frameStamp)
+void game::Collisions::handle(const pg::game::FrameStamp& frameStamp)
 {
     auto active_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, game::ActiveCollider>();
     auto passive_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, game::PassiveCollider>();

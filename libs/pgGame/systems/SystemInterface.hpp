@@ -1,8 +1,7 @@
 #pragma once
-#include <entt/entt.hpp>
-#include "core/FrameStamp.h"
+#include "core/FrameStamp.hpp"
 
-namespace game {
+namespace pg::game {
 class Game;
 
 class SystemInterface
@@ -20,4 +19,4 @@ public:
 protected:
     Game& game;
 };
-} // namespace game;
+} // namespace pg::game;

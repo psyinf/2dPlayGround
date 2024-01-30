@@ -1,5 +1,5 @@
 #include "RenderSystem.hpp"
-#include "core/Game.h"
+#include <core/Game.hpp>
 #include <entities/Entities.h>
 #include <numbers>
 #include <cmath>
@@ -41,7 +41,7 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
     renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), circle_points.size());
 }
 
-void game::RenderSystem::handle(const FrameStamp& frameStamp)
+void game::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     auto& renderer = game.getApp().getRenderer();
     renderer.clear();
@@ -52,7 +52,7 @@ void game::RenderSystem::handle(const FrameStamp& frameStamp)
         drawable.prim->draw(renderer, transform, {});
     }
 
-     auto renderConfig = game.getRegistry().ctx().get<RenderConfig>();
+    auto renderConfig = game.getRegistry().ctx().get<RenderConfig>();
      
      if (renderConfig.renderBroadPhaseCollisionShapes)
      {

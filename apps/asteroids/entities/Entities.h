@@ -31,10 +31,7 @@ struct Damage
     std::uint16_t amount{};
 };
 
-struct WindowDetails
-{
-    SDL_Rect windowRect;
-};
+
 
 struct RenderConfig
 {

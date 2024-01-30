@@ -1,12 +1,12 @@
 #include "Asteroids.h"
 
-#include "core/RegistryHelper.h"
+#include <core/RegistryHelper.hpp>
 #include "entities/Entities.h"
 #include <Factories.hpp>
 #include <SDLBackgoundSprite.h>
 #include <VecOperations.hpp>
 #include <algorithm>
-#include <core/Game.h>
+#include <core/Game.hpp>
 #include <random>
 
 #include <systems/Lasers.h>
@@ -33,7 +33,7 @@ struct AsteroidsRandomGen
     }
 };
 
-std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(game::Game&                    game,
+std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(pg::game::Game&                    game,
                                                                            const game::events::Collision& collision)
 {
     auto                                  isAsteroidE1 = game.getRegistry().all_of<game::Asteroids::tag>(collision.c1);
@@ -97,7 +97,7 @@ void game::Asteroids::createAsteroid(const pg::fVec2& position, const pg::fVec2&
         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
     });
 
-    auto entity = game::makeEntity<Drawable,
+    auto entity = pg::game::makeEntity<Drawable,
                                    pg::Transform,
                                    Dynamics,
                                    pg::BoundingSphere,
@@ -113,10 +113,10 @@ void game::Asteroids::createAsteroid(const pg::fVec2& position, const pg::fVec2&
          {asteroidConf.damage},                                        //
          {std::move(size)}                                             //
         );
-    game::addComponents<PassiveCollider, tag>(game.getRegistry(), entity);
+    pg::game::addComponents<PassiveCollider, tag>(game.getRegistry(), entity);
 }
 
-void game::Asteroids::handle(const FrameStamp& frameStamp)
+void game::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
 {
     std::random_device              rd;
     std::normal_distribution<float> dist(1, 2);
