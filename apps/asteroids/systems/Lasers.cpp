@@ -4,9 +4,9 @@
 #include <entities/Entities.h>
 
 
-void game::Lasers::setup()
+void asteroids::Lasers::setup()
 {
-    game.getDispatcher().sink<game::events::LaserFired>().connect<&Lasers::handleEvent>(this);
+    game.getDispatcher().sink<asteroids::events::LaserFired>().connect<&Lasers::handleEvent>(this);
 }
 
 struct SpriteResource : public pg::Sprite
@@ -17,7 +17,7 @@ struct SpriteResource : public pg::Sprite
     }
 };
 
-void game::Lasers::createShot(const events::LaserFired& event)
+void asteroids::Lasers::createShot(const events::LaserFired& event)
 {
     auto sprite = game.getResourceCache().load<pg::Sprite>("../data/laserBlue01.png", [this](const auto& e) {
         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
@@ -39,7 +39,7 @@ void game::Lasers::createShot(const events::LaserFired& event)
         );
 }
 
-void game::Lasers::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::Lasers::handle(const pg::game::FrameStamp& frameStamp)
 {
     // TODO: This is should be in a system for updating transforms via dynamics
     auto view = game.getRegistry().view<pg::Transform, tag>();
@@ -55,7 +55,7 @@ void game::Lasers::handle(const pg::game::FrameStamp& frameStamp)
     queued.clear();
 }
 
-void game::Lasers::handleEvent(const events::LaserFired& laserFired)
+void asteroids::Lasers::handleEvent(const events::LaserFired& laserFired)
 {
     queued.push_back(laserFired);
 }

@@ -4,7 +4,7 @@
 #include <numbers>
 #include <cmath>
 
-void game::RenderSystem::setup() {}
+void asteroids::RenderSystem::setup() {}
 
 class ScopedColor
 {
@@ -41,14 +41,14 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
     renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), circle_points.size());
 }
 
-void game::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     auto& renderer = game.getApp().getRenderer();
     renderer.clear();
 
-    for (auto view = game.getRegistry().view<game::Drawable, pg::Transform>(); auto& entity : view)
+    for (auto view = game.getRegistry().view<asteroids::Drawable, pg::Transform>(); auto& entity : view)
     {
-        auto&& [drawable, transform] = view.get<game::Drawable, pg::Transform>(entity);
+        auto&& [drawable, transform] = view.get<asteroids::Drawable, pg::Transform>(entity);
         drawable.prim->draw(renderer, transform, {});
     }
 

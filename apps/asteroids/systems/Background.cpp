@@ -3,14 +3,14 @@
 #include <entities/WindowDetails.hpp>
 #include "entities/Entities.h"
 
-void game::Background::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::Background::handle(const pg::game::FrameStamp& frameStamp)
 {
     // TODO: base scrolling speed on the player's velocity
     auto& registry = game.getRegistry();
-    auto  view = registry.view<pg::Transform, game::Dynamics, backgroundTag>();
+    auto  view = registry.view<pg::Transform, asteroids::Dynamics, backgroundTag>();
 }
 
-void game::Background::setup()
+void asteroids::Background::setup()
 {
     auto  background = game.getRegistry().create();
     auto& registry = game.getRegistry();
@@ -22,6 +22,6 @@ void game::Background::setup()
     registry.emplace<Drawable>(
         background, std::make_unique<pg::ScrollingSprite>(std::move(backgroundImg), std::move(backgroundRect)));
     registry.emplace<pg::Transform>(background);
-    registry.emplace<game::Dynamics>(background, game::Dynamics{.velocity{0, 200}});
+    registry.emplace<asteroids::Dynamics>(background, asteroids::Dynamics{.velocity{0, 200}});
     registry.emplace<backgroundTag>(background);
 }

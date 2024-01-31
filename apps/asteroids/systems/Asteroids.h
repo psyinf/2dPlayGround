@@ -5,7 +5,7 @@
 #include <entt/entt.hpp>
 #include <events/Collison.h>
 
-namespace game {
+namespace asteroids {
 using entt::literals::operator""_hs;
 
 class Game;
@@ -53,4 +53,4 @@ private:
     std::deque<events::Collision> collisions;
 };
 
-} // namespace game
+} // namespace asteroids

@@ -2,7 +2,7 @@
 #include <systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
 
-namespace game {
+namespace asteroids {
 using entt::literals::operator""_hs;
 
 class Game;
@@ -18,4 +18,4 @@ public:
 
     void handle(const pg::game::FrameStamp& frameStamp);
 };
-} // namespace game
+} // namespace asteroids

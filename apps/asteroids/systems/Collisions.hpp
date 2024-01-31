@@ -3,7 +3,7 @@
 #include <entt/entt.hpp>
 #include <events/LaserFired.h>
 
-namespace game {
+namespace asteroids {
 using entt::literals::operator""_hs;
 
 
@@ -21,4 +21,4 @@ private:
     void handleCollision(entt::entity id1, entt::entity id2, float intrusion);
 };
 
-} // namespace game
+} // namespace asteroids

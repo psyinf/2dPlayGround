@@ -5,12 +5,12 @@
 #include <events/Collison.h>
 #include <iostream>
 
-void game::Collisions::setup() {}
+void asteroids::Collisions::setup() {}
 
-void game::Collisions::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::Collisions::handle(const pg::game::FrameStamp& frameStamp)
 {
-    auto active_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, game::ActiveCollider>();
-    auto passive_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, game::PassiveCollider>();
+    auto active_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, asteroids::ActiveCollider>();
+    auto passive_view = game.getRegistry().view<pg::Transform, pg::BoundingSphere, asteroids::PassiveCollider>();
 
     // actives vs passives
     for (auto& entity_a : active_view)
@@ -27,7 +27,7 @@ void game::Collisions::handle(const pg::game::FrameStamp& frameStamp)
     }
 }
 
-void game::Collisions::handleCollision(entt::entity id1, entt::entity id2, float intrusion) {
+void asteroids::Collisions::handleCollision(entt::entity id1, entt::entity id2, float intrusion) {
 
     game.getDispatcher().trigger<events::Collision>({id1, id2});
 

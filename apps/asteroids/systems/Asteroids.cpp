@@ -34,12 +34,12 @@ struct AsteroidsRandomGen
 };
 
 std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(pg::game::Game&                    game,
-                                                                           const game::events::Collision& collision)
+    const asteroids::events::Collision& collision)
 {
-    auto                                  isAsteroidE1 = game.getRegistry().all_of<game::Asteroids::tag>(collision.c1);
-    auto                                  isAsteroidE2 = game.getRegistry().all_of<game::Asteroids::tag>(collision.c2);
-    auto                                  isLaserE1 = game.getRegistry().all_of<game::Lasers::tag>(collision.c1);
-    auto                                  isLaserE2 = game.getRegistry().all_of<game::Lasers::tag>(collision.c2);
+    auto isAsteroidE1 = game.getRegistry().all_of<asteroids::Asteroids::tag>(collision.c1);
+    auto isAsteroidE2 = game.getRegistry().all_of<asteroids::Asteroids::tag>(collision.c2);
+    auto isLaserE1 = game.getRegistry().all_of<asteroids::Lasers::tag>(collision.c1);
+    auto isLaserE2 = game.getRegistry().all_of<asteroids::Lasers::tag>(collision.c2);
     std::pair<entt::entity, entt::entity> retVal;
 
     if (!isAsteroidE1 && !isAsteroidE2) { return std::nullopt; }
@@ -54,17 +54,17 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(pg::g
 
 
 
-void game::Asteroids::setup()
+void asteroids::Asteroids::setup()
 {
     for (auto _ : std::views::iota(0, 4))
     {
         auto [pos, vel] = AsteroidsRandomGen::makeInitial();
         createAsteroid(pos, vel, Size::Large);
     }
-    game.getDispatcher().sink<game::events::Collision>().connect<&Asteroids::handleEvent>(this);
+    game.getDispatcher().sink<asteroids::events::Collision>().connect<&Asteroids::handleEvent>(this);
 }
 
-void game::Asteroids::createAsteroid(const pg::fVec2& position, const pg::fVec2& velocity, Size size)
+void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::fVec2& velocity, Size size)
 {
     struct AstroidConf
     {
@@ -116,7 +116,7 @@ void game::Asteroids::createAsteroid(const pg::fVec2& position, const pg::fVec2&
     pg::game::addComponents<PassiveCollider, tag>(game.getRegistry(), entity);
 }
 
-void game::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
 {
     std::random_device              rd;
     std::normal_distribution<float> dist(1, 2);
@@ -124,10 +124,10 @@ void game::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
     std::uniform_int_distribution   pos(-200, 1024);
 
     //TODO: flag entities that should re-appear after entering a screen border and handle them in a separate system
-    auto view = game.getRegistry().view<tag, pg::Transform, game::Dynamics>();
+    auto view = game.getRegistry().view<tag, pg::Transform, asteroids::Dynamics>();
     for (auto& entity : view)
     {
-        auto&& [transform, dynamics] = view.get<pg::Transform, game::Dynamics>(entity);
+        auto&& [transform, dynamics] = view.get<pg::Transform, asteroids::Dynamics>(entity);
 
         if (transform.pos[1] >= 1000)
         {
@@ -144,7 +144,7 @@ void game::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
         auto&& [asteroid, laser] = collisionPair.value();
 
         // TODO: make based on damage vs hitpoints
-        auto&& [transform, dynamics, size] = game.getRegistry().get<pg::Transform, game::Dynamics, Size>(asteroid);
+        auto&& [transform, dynamics, size] = game.getRegistry().get<pg::Transform, asteroids::Dynamics, Size>(asteroid);
 
         auto newSize = getNextSmallest(size);
         if (newSize.has_value())

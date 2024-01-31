@@ -3,7 +3,7 @@
 #include <entt/entt.hpp>
 #include <events/LaserFired.h>
 
-namespace game {
+namespace asteroids {
 using entt::literals::operator""_hs;
 
 class Lasers : public pg::game::SystemInterface
@@ -23,4 +23,4 @@ private:
     std::vector<events::LaserFired> queued;
 };
 
-} // namespace game
+} // namespace asteroids

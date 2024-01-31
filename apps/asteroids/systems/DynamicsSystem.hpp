@@ -1,7 +1,7 @@
 #pragma once
 #include <systems/SystemInterface.hpp>
 
-namespace game {
+namespace asteroids {
 class DynamicsSystem : public pg::game::SystemInterface
 {
 public:
@@ -9,4 +9,4 @@ public:
     void setup() override;
     void handle(const pg::game::FrameStamp& frameStamp) override;
 };
-} // namespace game
+} // namespace asteroids
