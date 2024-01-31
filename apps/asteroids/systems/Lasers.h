@@ -1,12 +1,12 @@
 #pragma once
-#include "SystemInterface.h"
+#include <systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
 #include <events/LaserFired.h>
 
-namespace game {
+namespace asteroids {
 using entt::literals::operator""_hs;
 
-class Lasers : public SystemInterface
+class Lasers : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
@@ -15,7 +15,7 @@ public:
 
     void createShot(const events::LaserFired& event);
 
-    void handle(const FrameStamp& frameStamp);
+    void handle(const pg::game::FrameStamp& frameStamp);
 
     void handleEvent(const events::LaserFired& laserFired);
 
@@ -23,4 +23,4 @@ private:
     std::vector<events::LaserFired> queued;
 };
 
-} // namespace game
+} // namespace asteroids

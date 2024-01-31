@@ -1,12 +1,14 @@
 #pragma once
+#include <core/FrameStamp.hpp>
+#include <systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
-#include "SystemInterface.h"
-namespace game {
+
+namespace asteroids {
 using entt::literals::operator""_hs;
 
 class Game;
 
-class Player : public SystemInterface
+class Player : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
@@ -15,6 +17,6 @@ public:
 
     void setup();
 
-    void handle(const FrameStamp& frameStamp);
+    void handle(const pg::game::FrameStamp& frameStamp);
 };
-} // namespace game
+} // namespace asteroids
