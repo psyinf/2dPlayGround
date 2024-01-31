@@ -7,4 +7,4 @@ struct LaserFired
     pg::fVec2 offset;
     entt::entity shooter;
 };
-}}
+}} // namespace asteroids::events

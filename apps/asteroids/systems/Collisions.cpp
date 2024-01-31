@@ -27,8 +27,7 @@ void asteroids::Collisions::handle(const pg::game::FrameStamp& frameStamp)
     }
 }
 
-void asteroids::Collisions::handleCollision(entt::entity id1, entt::entity id2, float intrusion) {
-
+void asteroids::Collisions::handleCollision(entt::entity id1, entt::entity id2, float intrusion)
+{
     game.getDispatcher().trigger<events::Collision>({id1, id2});
-
 }
