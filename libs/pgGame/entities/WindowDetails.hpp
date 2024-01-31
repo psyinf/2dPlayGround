@@ -1,3 +1,7 @@
+#pragma once
+
+#include <sdlpp.hpp>
+
 namespace pg::game {
 
 struct WindowDetails

@@ -1,12 +1,12 @@
 #include "Asteroids.h"
 
-#include <core/RegistryHelper.hpp>
 #include "entities/Entities.h"
 #include <Factories.hpp>
 #include <SDLBackgoundSprite.h>
 #include <VecOperations.hpp>
 #include <algorithm>
 #include <core/Game.hpp>
+#include <core/RegistryHelper.hpp>
 #include <random>
 
 #include <systems/Lasers.h>
@@ -33,7 +33,8 @@ struct AsteroidsRandomGen
     }
 };
 
-std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(pg::game::Game&                    game,
+std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(
+    pg::game::Game&                     game,
     const asteroids::events::Collision& collision)
 {
     auto isAsteroidE1 = game.getRegistry().all_of<asteroids::Asteroids::tag>(collision.c1);
@@ -51,8 +52,6 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(pg::g
     else { retVal.second = collision.c2; }
     return retVal;
 }
-
-
 
 void asteroids::Asteroids::setup()
 {
@@ -98,12 +97,12 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
     });
 
     auto entity = pg::game::makeEntity<Drawable,
-                                   pg::Transform,
-                                   Dynamics,
-                                   pg::BoundingSphere,
-                                   HitPoints,
-                                   Damage,
-                                   Size>                               //
+                                       pg::Transform,
+                                       Dynamics,
+                                       pg::BoundingSphere,
+                                       HitPoints,
+                                       Damage,
+                                       Size>                           //
         (game.getRegistry(),                                           //
          Drawable{sprite},                                             //
          pg::Transform{.pos{position}},                                //
@@ -123,7 +122,7 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
     std::normal_distribution<float> speed(10, 100);
     std::uniform_int_distribution   pos(-200, 1024);
 
-    //TODO: flag entities that should re-appear after entering a screen border and handle them in a separate system
+    // TODO: flag entities that should re-appear after entering a screen border and handle them in a separate system
     auto view = game.getRegistry().view<tag, pg::Transform, asteroids::Dynamics>();
     for (auto& entity : view)
     {
@@ -149,8 +148,7 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
         auto newSize = getNextSmallest(size);
         if (newSize.has_value())
         {
-            
-            auto fragments = pg::splitVector(dynamics.velocity, pg::randomBetween(2,3));
+            auto fragments = pg::splitVector(dynamics.velocity, pg::randomBetween(2, 3));
             for (const auto& fragment : fragments)
             {
                 createAsteroid(transform.pos, fragment, newSize.value());

@@ -1,6 +1,6 @@
 #pragma once
-#include <systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
+#include <systems/SystemInterface.hpp>
 
 namespace asteroids {
 using entt::literals::operator""_hs;
@@ -12,7 +12,6 @@ public:
     using SystemInterface::SystemInterface;
 
     using backgroundTag = entt::tag<"BACKGROUND"_hs>;
-
 
     void setup();
 

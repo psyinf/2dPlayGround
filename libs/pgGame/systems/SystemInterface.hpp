@@ -19,4 +19,4 @@ public:
 protected:
     Game& game;
 };
-} // namespace pg::game;
+} // namespace pg::game

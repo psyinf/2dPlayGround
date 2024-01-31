@@ -1,9 +1,9 @@
 #pragma once
-#include <systems/SystemInterface.hpp>
 #include <array>
 #include <deque>
 #include <entt/entt.hpp>
 #include <events/Collison.h>
+#include <systems/SystemInterface.hpp>
 
 namespace asteroids {
 using entt::literals::operator""_hs;
@@ -17,12 +17,13 @@ enum class Size
     Large
 };
 
-inline static constexpr std::optional<Size> getNextSmallest(Size size){
+inline static constexpr std::optional<Size> getNextSmallest(Size size)
+{
     switch (size)
     {
     case Size::Large:
-        return Size::Medium;//
-    case Size::Medium: 
+        return Size::Medium; //
+    case Size::Medium:
         return Size::Small; //
     case Size::Small:
         return Size::Tiny; //
@@ -34,7 +35,6 @@ inline static constexpr std::optional<Size> getNextSmallest(Size size){
 
 class Asteroids : public pg::game::SystemInterface
 {
-  
 public:
     using SystemInterface::SystemInterface;
 
@@ -49,7 +49,6 @@ public:
     void handleEvent(const events::Collision& collision) { collisions.push_back(collision); }
 
 private:
-
     std::deque<events::Collision> collisions;
 };
 
