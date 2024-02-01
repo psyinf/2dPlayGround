@@ -1,6 +1,6 @@
 #pragma once
-#include <math/Vec.hpp>
-#include <primitives/Primitives.hpp>
+#include <pgEngine/math/Vec.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
 #include <memory>
 #include <entt/entt.hpp>
 namespace asteroids {

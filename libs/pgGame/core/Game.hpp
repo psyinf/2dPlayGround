@@ -1,13 +1,13 @@
 #pragma once
 
-#include <factories/Factories.hpp>
-#include <core/App.hpp>
-#include <sprite/BackgoundSprite.hpp>
-#include <core/KeyStateMap.hpp>
-#include <core/ResourceCache.hpp>
-#include <math/Vec.hpp>
-#include <core/FrameStamp.hpp>
-#include <systems/SystemInterface.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgGame/core/KeyStateMap.hpp>
+#include <pgGame/core/ResourceCache.hpp>
+#include <pgEngine/math/Vec.hpp>
+#include <pgGame/core/FrameStamp.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 
 #include <entt/entt.hpp>
 #include <memory>

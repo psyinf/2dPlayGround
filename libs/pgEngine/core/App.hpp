@@ -1,6 +1,6 @@
 #pragma once
-#include <core/AppConfig.hpp>
-#include <core/FPSCounter.hpp>
+#include <pgEngine/core/AppConfig.hpp>
+#include <pgEngine/core/FPSCounter.hpp>
 #include "Lifetime.hpp"
 
 #include <sdlpp.hpp>

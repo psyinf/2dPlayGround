@@ -3,7 +3,7 @@
 #include <deque>
 #include <entt/entt.hpp>
 #include <events/Collison.h>
-#include <systems/SystemInterface.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 
 namespace asteroids {
 using entt::literals::operator""_hs;

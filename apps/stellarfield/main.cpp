@@ -1,9 +1,9 @@
-#include <core/FPSCounter.hpp>
-#include <factories/Factories.hpp>
-#include <core/App.hpp>
-#include <core/ErrorTrace.hpp>
-#include <primitives/Primitives.hpp>
-#include <core/States.hpp>
+#include <pgEngine/core/FPSCounter.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/core/States.hpp>
 #include <random>
 
 // TODO: make Rect class representing pos, dimension?

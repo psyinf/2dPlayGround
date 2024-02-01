@@ -1,5 +1,5 @@
 #pragma once
-#include <math/Vec.hpp>
+#include <pgEngine/math/Vec.hpp>
 
 namespace pg {
 struct Transform

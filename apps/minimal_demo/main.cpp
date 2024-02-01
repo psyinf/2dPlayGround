@@ -1,7 +1,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <core/App.hpp>
+#include <pgEngine/core/App.hpp>
 #include <iostream>
 
 #include <vector>

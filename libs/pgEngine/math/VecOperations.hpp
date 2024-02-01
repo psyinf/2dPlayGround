@@ -1,6 +1,6 @@
 #pragma once
-#include <math/Random.hpp>
-#include <math/Vec.hpp>
+#include <pgEngine/math/Random.hpp>
+#include <pgEngine/math/Vec.hpp>
 
 #include <numeric>
 #include <vector>

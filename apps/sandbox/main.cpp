@@ -1,16 +1,16 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <core/App.hpp>
-#include <sprite/BackgoundSprite.hpp>
-#include <core/KeyStateMap.hpp>
-#include <primitives/Primitives.hpp>
-#include <math/Vec.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgGame/core/KeyStateMap.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/math/Vec.hpp>
 #include <SDL_image.h>
 #include <iostream>
 
-#include <factories/Factories.hpp>
-#include <sprite/Sprite.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/sprite/Sprite.hpp>
 #include <vector>
 
 class Circler

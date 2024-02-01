@@ -1,9 +1,9 @@
 
-#include <factories/Factories.hpp>
-#include <core/App.hpp>
-#include <core/ErrorTrace.hpp>
-#include <primitives/Primitives.hpp>
-#include <core/State.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/core/State.hpp>
 
 void textdemo_main()
 {

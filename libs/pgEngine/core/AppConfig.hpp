@@ -1,6 +1,7 @@
 #pragma once
+
+#include <pgEngine/math/Vec.hpp>
 #include <string>
-#include <math/Vec.hpp>
 namespace pg::config {
 
 struct WindowConfig

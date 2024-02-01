@@ -1,5 +1,5 @@
 #pragma once
-#include <systems/SystemInterface.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 
 namespace asteroids {
 class DynamicsSystem : public pg::game::SystemInterface

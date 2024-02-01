@@ -1,12 +1,13 @@
 #include "Asteroids.h"
 
 #include "entities/Entities.h"
-#include <factories/Factories.hpp>
-#include <sprite/BackgoundSprite.hpp>
-#include <math/VecOperations.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgEngine/math/VecOperations.hpp>
+#include <pgGame/core/Game.hpp>
+#include <pgGame/core/RegistryHelper.hpp>
+
 #include <algorithm>
-#include <core/Game.hpp>
-#include <core/RegistryHelper.hpp>
 #include <random>
 
 #include <systems/Lasers.h>

@@ -1,10 +1,11 @@
-#include <math/ComputationalGeometry.hpp>
-#include <core/App.hpp>
-#include <core/ErrorTrace.hpp>
-#include <primitives/Primitives.hpp>
-#include <sprite/Sprite.hpp>
+#include <pgEngine/math/ComputationalGeometry.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/sprite/SpritePixelData.hpp>
+#include <pgEngine/sprite/Sprite.hpp>
 #include <SDL_image.h>
-#include <sprite/SpritePixelData.hpp>
+
 #include <deque>
 #include <fmt/format.h>
 #include <ranges>

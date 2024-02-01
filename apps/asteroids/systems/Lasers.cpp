@@ -1,6 +1,6 @@
 #include "Lasers.h"
-#include <core/Game.hpp>
-#include <core/RegistryHelper.hpp>
+#include <pgGame/core/Game.hpp>
+#include <pgGame/core/RegistryHelper.hpp>
 #include <entities/Entities.h>
 
 

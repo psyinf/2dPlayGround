@@ -1,7 +1,7 @@
 #pragma once
-#include <math/Vec.hpp>
-#include <primitives/Primitives.hpp>
-#include <core/State.hpp>
+#include <pgEngine/math/Vec.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/core/State.hpp>
 
 namespace pg {
 

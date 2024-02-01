@@ -1,5 +1,5 @@
 #include "RenderSystem.hpp"
-#include <core/Game.hpp>
+#include <pgGame/core/Game.hpp>
 #include <entities/Entities.h>
 #include <numbers>
 #include <cmath>

@@ -1,5 +1,5 @@
 #pragma once 
-#include <sprite/Sprite.hpp>
+#include <pgEngine/sprite/Sprite.hpp>
 
 namespace pg {
 

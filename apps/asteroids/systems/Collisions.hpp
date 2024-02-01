@@ -1,7 +1,7 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <events/LaserFired.h>
-#include <systems/SystemInterface.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 
 namespace asteroids {
 using entt::literals::operator""_hs;

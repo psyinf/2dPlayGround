@@ -1,7 +1,7 @@
 #pragma once
-#include <math/Bounds.hpp>
-#include <math/Vec.hpp>
-#include <core/States.hpp>
+#include <pgEngine/math/Bounds.hpp>
+#include <pgEngine/math/Vec.hpp>
+#include <pgEngine/core/States.hpp>
 #include <bit>
 #include <memory>
 #include <sdlpp.hpp>

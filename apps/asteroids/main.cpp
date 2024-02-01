@@ -1,5 +1,5 @@
-#include <core/ErrorTrace.hpp>
-#include <core/Game.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgGame/core/Game.hpp>
 #include <fmt/format.h>
 
 #include <entities/Entities.h>
