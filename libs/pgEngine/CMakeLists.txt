@@ -13,7 +13,7 @@ target_sources(${PROJECT_NAME}
 		SDLSprite.cpp
 		SDLKeyStateMap.cpp
 		Factories.cpp
-		SDLFont.cpp
+		"font/Font.cpp"
 		FPSCounter.cpp
 	PUBLIC
 		math/Bounds.hpp

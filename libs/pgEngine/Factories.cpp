@@ -1,7 +1,7 @@
 #include "Factories.hpp"
 
 #include <SDL_image.h>
-#include "SDLFont.hpp"
+#include <font/Font.hpp>
 #include "SDL_ttf.h"
 
 

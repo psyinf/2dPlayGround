@@ -1,7 +1,8 @@
 #pragma once
-#include "SDLFont.hpp"
+#include <font/Font.hpp>
 #include "SDLSprite.h"
-#include <sdlpp.hpp>
+
+class SDLFont;
 
 namespace pg {
 
