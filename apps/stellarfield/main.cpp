@@ -1,6 +1,6 @@
-#include <FPSCounter.hpp>
+#include <core/FPSCounter.hpp>
 #include <factories/Factories.hpp>
-#include <SDLApp.h>
+#include <core/App.hpp>
 #include <SDLErrorTrace.h>
 #include <primitives/Primitives.hpp>
 #include <States.hpp>

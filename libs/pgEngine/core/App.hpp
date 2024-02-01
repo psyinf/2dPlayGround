@@ -1,6 +1,6 @@
 #pragma once
-#include "SDLAppConfig.h"
-#include "FPSCounter.hpp"
+#include <core/AppConfig.hpp>
+#include <core/FPSCounter.hpp>
 #include "Lifetime.hpp"
 
 #include <sdlpp.hpp>

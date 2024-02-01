@@ -1,4 +1,4 @@
-#include <SDLResourceCache.hpp>
+#include <core/ResourceCache.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 

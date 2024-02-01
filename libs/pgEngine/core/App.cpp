@@ -1,4 +1,4 @@
-#include "SDLApp.h"
+#include <core/App.hpp>
 #include "Lifetime.hpp"
 #include <SDL_ttf.h>
 #include <primitives/Primitives.hpp>

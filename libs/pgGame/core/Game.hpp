@@ -1,10 +1,10 @@
 #pragma once
 
 #include <factories/Factories.hpp>
-#include <SDLApp.h>
+#include <core/App.hpp>
 #include <sprite/BackgoundSprite.hpp>
-#include <SDLKeyStateMap.h>
-#include <SDLResourceCache.hpp>
+#include <core/KeyStateMap.hpp>
+#include <core/ResourceCache.hpp>
 #include <math/Vec.hpp>
 #include <core/FrameStamp.hpp>
 #include <systems/SystemInterface.hpp>

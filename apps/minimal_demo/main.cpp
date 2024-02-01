@@ -1,7 +1,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <SDLApp.h>
+#include <core/App.hpp>
 #include <iostream>
 
 #include <vector>

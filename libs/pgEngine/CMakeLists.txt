@@ -8,13 +8,13 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
 	PRIVATE
-		SDLApp.cpp
+		"core/App.cpp"
 		primitives/Primitives.cpp
 		sprite/Sprite.cpp
-		SDLKeyStateMap.cpp
+
 		factories/Factories.cpp
 		font/Font.cpp
-		FPSCounter.cpp
+		"core/FPSCounter.cpp"
 	PUBLIC
 		factories/Factories.hpp
 		
@@ -32,11 +32,11 @@ target_sources(${PROJECT_NAME}
 		sprite/Sprite.hpp
 		sprite/SpritePixelData.hpp
 
-		SDLApp.h
-		SDLAppConfig.h
+		"core/App.hpp"
+		"core/AppConfig.hpp"
+		core/FPSCounter.hpp
 		
-		
-		SDLKeyStateMap.h 
+
 		
 		SDLErrorTrace.h
 

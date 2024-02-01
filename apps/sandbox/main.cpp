@@ -1,9 +1,9 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <SDLApp.h>
+#include <core/App.hpp>
 #include <sprite/BackgoundSprite.hpp>
-#include <SDLKeyStateMap.h>
+#include <core/KeyStateMap.hpp>
 #include <primitives/Primitives.hpp>
 #include <math/Vec.hpp>
 #include <SDL_image.h>

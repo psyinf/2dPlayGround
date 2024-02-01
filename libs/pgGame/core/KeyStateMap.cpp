@@ -1,4 +1,4 @@
-#include "SDLKeyStateMap.h"
+#include <core/KeyStateMap.hpp>
 
 namespace pg {
 

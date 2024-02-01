@@ -1,6 +1,6 @@
 
 #include <factories/Factories.hpp>
-#include <SDLApp.h>
+#include <core/App.hpp>
 #include <SDLErrorTrace.h>
 #include <primitives/Primitives.hpp>
 #include <State.hpp>

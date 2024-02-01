@@ -9,11 +9,13 @@ find_package(EnTT REQUIRED)
 target_sources(${PROJECT_NAME}
 	PRIVATE
 		core/Game.cpp
+		core/KeyStateMap.cpp
 	PUBLIC
 		core/Game.hpp
 		core/FrameStamp.hpp
 		core/RegistryHelper.hpp
-		
+		core/KeyStateMap.hpp
+		core/ResourceCache.hpp
 		systems/SystemInterface.hpp
 		
 		entities/WindowDetails.hpp
