@@ -1,6 +1,6 @@
 #include <math/ComputationalGeometry.hpp>
 #include <core/App.hpp>
-#include <SDLErrorTrace.h>
+#include <core/ErrorTrace.hpp>
 #include <primitives/Primitives.hpp>
 #include <sprite/Sprite.hpp>
 #include <SDL_image.h>

@@ -38,7 +38,7 @@ target_sources(${PROJECT_NAME}
 		
 
 		
-		SDLErrorTrace.h
+		"core/ErrorTrace.hpp"
 
 
 )

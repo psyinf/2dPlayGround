@@ -1,9 +1,9 @@
 
 #include <factories/Factories.hpp>
 #include <core/App.hpp>
-#include <SDLErrorTrace.h>
+#include <core/ErrorTrace.hpp>
 #include <primitives/Primitives.hpp>
-#include <State.hpp>
+#include <core/State.hpp>
 
 void textdemo_main()
 {

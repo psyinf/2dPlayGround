@@ -1,4 +1,4 @@
-#include <SDLErrorTrace.h>
+#include <core/ErrorTrace.hpp>
 #include <core/Game.hpp>
 #include <fmt/format.h>
 

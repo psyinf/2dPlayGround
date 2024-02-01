@@ -1,7 +1,7 @@
 #pragma once
 #include <math/Bounds.hpp>
 #include <math/Vec.hpp>
-#include "States.hpp"
+#include <core/States.hpp>
 #include <bit>
 #include <memory>
 #include <sdlpp.hpp>

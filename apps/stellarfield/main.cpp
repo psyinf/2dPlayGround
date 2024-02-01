@@ -1,9 +1,9 @@
 #include <core/FPSCounter.hpp>
 #include <factories/Factories.hpp>
 #include <core/App.hpp>
-#include <SDLErrorTrace.h>
+#include <core/ErrorTrace.hpp>
 #include <primitives/Primitives.hpp>
-#include <States.hpp>
+#include <core/States.hpp>
 #include <random>
 
 // TODO: make Rect class representing pos, dimension?
