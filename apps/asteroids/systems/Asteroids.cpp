@@ -1,7 +1,7 @@
 #include "Asteroids.h"
 
 #include "entities/Entities.h"
-#include <Factories.hpp>
+#include <factories/Factories.hpp>
 #include <SDLBackgoundSprite.h>
 #include <math/VecOperations.hpp>
 #include <algorithm>

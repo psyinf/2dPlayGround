@@ -1,5 +1,5 @@
 
-#include <Factories.hpp>
+#include <factories/Factories.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
 #include <SDLPrimitives.h>

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Factories.hpp>
+#include <factories/Factories.hpp>
 #include <SDLApp.h>
 #include <SDLBackgoundSprite.h>
 #include <SDLKeyStateMap.h>

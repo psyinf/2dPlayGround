@@ -12,10 +12,14 @@ target_sources(${PROJECT_NAME}
 		SDLPrimitives.cpp
 		SDLSprite.cpp
 		SDLKeyStateMap.cpp
-		Factories.cpp
-		"font/Font.cpp"
+		factories/Factories.cpp
+		font/Font.cpp
 		FPSCounter.cpp
 	PUBLIC
+		factories/Factories.hpp
+		
+		font/Font.hpp
+		
 		math/Bounds.hpp
 		math/BoundsOperations.hpp
 		math/ComputationalGeometry.hpp 
@@ -28,7 +32,7 @@ target_sources(${PROJECT_NAME}
 		SDLAppConfig.h
 		SDLPrimitives.h
 		SDLSprite.h
-		Factories.hpp
+
 		SDLKeyStateMap.h 
 		SDLBackgoundSprite.h 
 		SDLErrorTrace.h
