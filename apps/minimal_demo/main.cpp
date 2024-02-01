@@ -13,16 +13,14 @@ struct Star
     float z;
 };
 
-
-
-
-
 static void mainloop(pg::SDLApp& sdlApp, std::vector<Star>& stars)
 {
-    
     auto& renderer = sdlApp.getRenderer();
-    auto done = false;
-    sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) { std::cout << "bye!"; done = true; };
+    auto  done = false;
+    sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
+        std::cout << "bye!";
+        done = true;
+    };
 
     while (!done)
     {
@@ -63,8 +61,8 @@ int main(int argc, char** argv)
 try
 {
     pg::config::WindowConfig windowConfig{0, {65, 126}, {1280, 720}, "minimal demo"};
-    pg::SDLApp       sdlApp{windowConfig};
-        
+    pg::SDLApp               sdlApp{windowConfig};
+
     std::vector<Star> stars;
     for (int i = 0; i < 1000; ++i)
         stars.push_back(Star{1.0f * (rand() % 1280), 1.0f * (rand() % 720), 0});
