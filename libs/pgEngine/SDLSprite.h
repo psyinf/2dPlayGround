@@ -1,6 +1,6 @@
 #pragma once
 #include <math/Vec.hpp>
-#include "SDLPrimitives.h"
+#include <primitives/Primitives.hpp>
 #include "State.hpp"
 
 namespace pg {

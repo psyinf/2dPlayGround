@@ -1,7 +1,7 @@
 #include <math/ComputationalGeometry.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
-#include <SDLPrimitives.h>
+#include <primitives/Primitives.hpp>
 #include <SDLSprite.h>
 #include <SDL_image.h>
 #include <SpritePixelData.hpp>

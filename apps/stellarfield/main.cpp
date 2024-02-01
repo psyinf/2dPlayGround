@@ -2,7 +2,7 @@
 #include <factories/Factories.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
-#include <SDLPrimitives.h>
+#include <primitives/Primitives.hpp>
 #include <States.hpp>
 #include <random>
 

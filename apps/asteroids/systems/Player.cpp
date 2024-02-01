@@ -4,7 +4,7 @@
 #include <entities/WindowDetails.hpp>
 #include "entities/Entities.h"
 #include <math/Bounds.hpp>
-#include <SDLPrimitives.h>
+#include <primitives/Primitives.hpp>
 #include <fmt/format.h>
 
 void asteroids::Player::setup()

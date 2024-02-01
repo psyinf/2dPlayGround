@@ -2,7 +2,7 @@
 #include <factories/Factories.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
-#include <SDLPrimitives.h>
+#include <primitives/Primitives.hpp>
 #include <State.hpp>
 
 void textdemo_main()

@@ -1,7 +1,7 @@
 #include "SDLApp.h"
 #include "Lifetime.hpp"
 #include <SDL_ttf.h>
-#include "SDLPrimitives.h"
+#include <primitives/Primitives.hpp>
 
 using namespace pg;
 

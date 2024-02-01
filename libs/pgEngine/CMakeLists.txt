@@ -9,7 +9,7 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
 	PRIVATE
 		SDLApp.cpp
-		SDLPrimitives.cpp
+		primitives/Primitives.cpp
 		SDLSprite.cpp
 		SDLKeyStateMap.cpp
 		factories/Factories.cpp
@@ -26,11 +26,12 @@ target_sources(${PROJECT_NAME}
 		math/Random.hpp
 		math/Vec.hpp
 		math/VecOperations.hpp
-		
+		primitives/Primitives.hpp
+
 		SpritePixelData.hpp
 		SDLApp.h
 		SDLAppConfig.h
-		SDLPrimitives.h
+		
 		SDLSprite.h
 
 		SDLKeyStateMap.h 

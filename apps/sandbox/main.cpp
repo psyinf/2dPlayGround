@@ -4,7 +4,7 @@
 #include <SDLApp.h>
 #include <SDLBackgoundSprite.h>
 #include <SDLKeyStateMap.h>
-#include <SDLPrimitives.h>
+#include <primitives/Primitives.hpp>
 #include <math/Vec.hpp>
 #include <SDL_image.h>
 #include <iostream>
