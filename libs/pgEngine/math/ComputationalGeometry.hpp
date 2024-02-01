@@ -1,13 +1,13 @@
 #pragma once
-#include <SDLVec.h>
+#include <pgEngine/math/Vec.hpp>
+#include <pgEngine/sprite/SpritePixelData.hpp>
+
 #include <algorithm>
 #include <deque>
 #include <functional>
 #include <limits>
 #include <ranges>
 #include <vector>
-
-#include <SpritePixelData.hpp>
 
 namespace pg::compGeometry {
 std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)

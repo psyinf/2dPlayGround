@@ -1,15 +1,17 @@
 #pragma once
-#include <SDLVec.h>
-#include <SDLPrimitives.h>
+#include <pgEngine/math/Vec.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
 #include <memory>
 #include <entt/entt.hpp>
+
 namespace asteroids {
 using entt::literals::operator""_hs;
 
-//active colliders can collide with active and passive colliders
+// active colliders can collide with active and passive colliders
 using ActiveCollider = entt::tag<"ActiveCollider"_hs>;
-//passive colliders cannot collide with other active colliders
+// passive colliders cannot collide with other active colliders
 using PassiveCollider = entt::tag<"PassiveCollider"_hs>;
+
 struct Drawable
 {
     std::shared_ptr<pg::Primitive> prim;
@@ -30,8 +32,6 @@ struct Damage
 {
     std::uint16_t amount{};
 };
-
-
 
 struct RenderConfig
 {

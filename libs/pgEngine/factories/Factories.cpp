@@ -1,11 +1,8 @@
 #include "Factories.hpp"
 
 #include <SDL_image.h>
-#include "SDLFont.hpp"
+#include <font/Font.hpp>
 #include "SDL_ttf.h"
-
-
-
 
 pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_view resource_name)
 {

@@ -1,7 +1,8 @@
 #pragma once
-#include <SDLVec.h>
+#include <pgEngine/math/Random.hpp>
+#include <pgEngine/math/Vec.hpp>
+
 #include <numeric>
-#include <Random.hpp>
 #include <vector>
 
 namespace pg {
@@ -24,7 +25,7 @@ std::vector<pg::fVec2> splitVector(const pg::fVec2& original, int numFragments)
 
         // Scale the vector to ensure it sums up to the original vector
         fragment = fragment * (1.0f / numFragments) * scale;
-        
+
         // Add the fragment to the vector of fragments
         fragments.push_back(fragment);
     }

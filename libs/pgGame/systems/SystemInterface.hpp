@@ -1,5 +1,5 @@
 #pragma once
-#include "core/FrameStamp.hpp"
+#include <pgGame/core/FrameStamp.hpp>
 
 namespace pg::game {
 class Game;

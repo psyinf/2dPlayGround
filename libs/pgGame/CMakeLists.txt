@@ -9,11 +9,13 @@ find_package(EnTT REQUIRED)
 target_sources(${PROJECT_NAME}
 	PRIVATE
 		core/Game.cpp
+		core/KeyStateMap.cpp
 	PUBLIC
 		core/Game.hpp
 		core/FrameStamp.hpp
 		core/RegistryHelper.hpp
-		
+		core/KeyStateMap.hpp
+		core/ResourceCache.hpp
 		systems/SystemInterface.hpp
 		
 		entities/WindowDetails.hpp
@@ -21,15 +23,17 @@ target_sources(${PROJECT_NAME}
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
-
+		EnTT::EnTT
 	PRIVATE
 	    pgEngine::pgEngine
 		fmt::fmt
-		EnTT::EnTT
 )
 
 target_include_directories(
   ${PROJECT_NAME}
-  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+  PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC 
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

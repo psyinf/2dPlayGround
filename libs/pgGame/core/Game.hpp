@@ -1,13 +1,13 @@
 #pragma once
 
-#include <Factories.hpp>
-#include <SDLApp.h>
-#include <SDLBackgoundSprite.h>
-#include <SDLKeyStateMap.h>
-#include <SDLResourceCache.hpp>
-#include <SDLVec.h>
-#include <core/FrameStamp.hpp>
-#include <systems/SystemInterface.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgGame/core/KeyStateMap.hpp>
+#include <pgGame/core/ResourceCache.hpp>
+#include <pgEngine/math/Vec.hpp>
+#include <pgGame/core/FrameStamp.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 
 #include <entt/entt.hpp>
 #include <memory>

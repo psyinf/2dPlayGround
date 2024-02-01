@@ -1,5 +1,5 @@
 #pragma once
-#include <systems/SystemInterface.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
 #include <events/LaserFired.h>
 

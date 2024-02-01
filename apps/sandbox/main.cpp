@@ -1,16 +1,16 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <SDLApp.h>
-#include <SDLBackgoundSprite.h>
-#include <SDLKeyStateMap.h>
-#include <SDLPrimitives.h>
-#include <SDLVec.h>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgGame/core/KeyStateMap.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/math/Vec.hpp>
 #include <SDL_image.h>
 #include <iostream>
 
-#include <Factories.hpp>
-#include <SDLSprite.h>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/sprite/Sprite.hpp>
 #include <vector>
 
 class Circler

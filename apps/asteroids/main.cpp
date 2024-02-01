@@ -1,5 +1,5 @@
-#include <SDLErrorTrace.h>
-#include <core/Game.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgGame/core/Game.hpp>
 #include <fmt/format.h>
 
 #include <entities/Entities.h>
@@ -10,7 +10,6 @@
 #include <systems/Lasers.h>
 #include <systems/Player.h>
 #include <systems/RenderSystem.hpp>
-
 
 int main(int argc, char** argv)
 try

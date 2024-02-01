@@ -1,14 +1,12 @@
-#include <FPSCounter.hpp>
-#include <Factories.hpp>
-#include <SDLApp.h>
-#include <SDLErrorTrace.h>
-#include <SDLPrimitives.h>
-#include <States.hpp>
+#include <pgEngine/core/FPSCounter.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/core/States.hpp>
 #include <random>
 
 // TODO: make Rect class representing pos, dimension?
-
-// TODO: move this to lib
 pg::fVec2 makeRandom(const pg::fVec2& minMaxX, const pg::fVec2& minMaxY)
 {
     // use random distribution to generate random numbers between min and max
@@ -94,7 +92,7 @@ void textdemo_main()
 
         updateStars(
             particles, 1.0 / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]}, particles[0].pos);
-        
+
         if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
     };
 

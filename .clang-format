@@ -23,5 +23,6 @@ SeparateDefinitionBlocks : Always
 AlignConsecutiveDeclarations: 'true'
 BraceWrapping:
   AfterNamespace:  false
+SortIncludes: false
 
 ...

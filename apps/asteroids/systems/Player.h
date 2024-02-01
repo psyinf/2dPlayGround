@@ -1,6 +1,6 @@
 #pragma once
-#include <core/FrameStamp.hpp>
-#include <systems/SystemInterface.hpp>
+#include <pgGame/core/FrameStamp.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
 
 namespace asteroids {
@@ -12,7 +12,7 @@ class Player : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
- 
+
     using playerTag = entt::tag<"PLAYER"_hs>;
 
     void setup();

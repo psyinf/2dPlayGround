@@ -1,6 +1,5 @@
-#include "SDLFont.hpp"
+#include "font/Font.hpp"
 #include <SDL_ttf.h>
-#include "SDLFont.hpp"
 
 pg::SDLFont::SDLFont(const std::string_view path, int size)
 {

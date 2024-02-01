@@ -1,10 +1,11 @@
-#include <ComputationalGeometry.hpp>
-#include <SDLApp.h>
-#include <SDLErrorTrace.h>
-#include <SDLPrimitives.h>
-#include <SDLSprite.h>
+#include <pgEngine/math/ComputationalGeometry.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/sprite/SpritePixelData.hpp>
+#include <pgEngine/sprite/Sprite.hpp>
 #include <SDL_image.h>
-#include <SpritePixelData.hpp>
+
 #include <deque>
 #include <fmt/format.h>
 #include <ranges>

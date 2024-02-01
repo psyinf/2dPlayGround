@@ -1,5 +1,5 @@
 #pragma once
-#include <SDLVec.h>
+#include <pgEngine/math/Vec.hpp>
 #include <sdlpp.hpp>
 #include <SDL_image.h>
 #include <bit>

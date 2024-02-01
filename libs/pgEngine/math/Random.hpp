@@ -15,17 +15,17 @@ pg::fVec2 getRandomVector()
 template <typename T>
 T randomBetween(T min, T max)
 {
-    if constexpr(std::is_floating_point<T>::value)
+    if constexpr (std::is_floating_point<T>::value)
     {
-        static std::random_device                rd;
-        static std::mt19937                      gen(rd());
+        static std::random_device         rd;
+        static std::mt19937               gen(rd());
         std::uniform_real_distribution<T> dis(min, max);
         return dis(gen);
     }
     if constexpr (std::is_integral<T>::value)
     {
-        static std::random_device               rd;
-        static std::mt19937                     gen(rd());
+        static std::random_device        rd;
+        static std::mt19937              gen(rd());
         std::uniform_int_distribution<T> dis(min, max);
         return dis(gen);
     }

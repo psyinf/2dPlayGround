@@ -1,5 +1,5 @@
 #pragma once
-#include <SDLVec.h>
+#include <pgEngine/math/Vec.hpp>
 
 namespace asteroids { namespace events {
 

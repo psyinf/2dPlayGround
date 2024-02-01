@@ -45,7 +45,8 @@ void game::Game::setup()
 {
     addSingleton<pg::TypedResourceCache<pg::Sprite>>(
         "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-    addSingleton<WindowDetails>(WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
+    addSingleton<WindowDetails>(
+        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
     std::ranges::for_each(systems, [](auto& system) { system->setup(); });
 }
 

@@ -10,6 +10,7 @@ target_sources(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
+    pgGame::pgGame
 )
 
 enable_coverage(${PROJECT_NAME})

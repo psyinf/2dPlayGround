@@ -8,26 +8,39 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
 	PRIVATE
-		SDLApp.cpp
-		SDLPrimitives.cpp
-		SDLSprite.cpp
-		SDLKeyStateMap.cpp
-		Factories.cpp
-		SDLFont.cpp
-		FPSCounter.cpp
+		"core/App.cpp"
+		primitives/Primitives.cpp
+		sprite/Sprite.cpp
+
+		factories/Factories.cpp
+		font/Font.cpp
+		"core/FPSCounter.cpp"
 	PUBLIC
-		SDLApp.h
-		SDLVec.h
-		SDLAppConfig.h
-		SDLPrimitives.h
-		SDLSprite.h
-		Factories.hpp
-		SDLKeyStateMap.h 
-		SDLBackgoundSprite.h 
-		SDLErrorTrace.h
-		SDLBounds.h 
-		ComputationalGeometry.hpp 
-		SpritePixelData.hpp
+		factories/Factories.hpp
+		
+		font/Font.hpp
+		
+		math/Bounds.hpp
+		math/BoundsOperations.hpp
+		math/ComputationalGeometry.hpp 
+		math/Random.hpp
+		math/Vec.hpp
+		math/VecOperations.hpp
+		primitives/Primitives.hpp
+
+		sprite/BackgoundSprite.hpp
+		sprite/Sprite.hpp
+		sprite/SpritePixelData.hpp
+
+		"core/App.hpp"
+		"core/AppConfig.hpp"
+		core/FPSCounter.hpp
+		
+
+		
+		"core/ErrorTrace.hpp"
+
+
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -42,6 +55,10 @@ target_link_libraries(${PROJECT_NAME}
 
 target_include_directories(
   ${PROJECT_NAME}
-  INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
-            $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+		
+  PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}
+  PUBLIC 
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

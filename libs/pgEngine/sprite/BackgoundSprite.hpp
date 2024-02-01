@@ -1,5 +1,5 @@
-#pragma once 
-#include "SDLSprite.h"
+#pragma once
+#include <pgEngine/sprite/Sprite.hpp>
 
 namespace pg {
 
@@ -15,7 +15,7 @@ public:
     void draw(sdl::Renderer& r, const pg::Transform& trans, const States& states) override
     {
         auto& dims = getDimensions();
-       
+
         auto pos = iVec2{static_cast<int>(trans.pos[0]), static_cast<int>(trans.pos[1])};
         pos[0] %= dims[0];
         if (pos[0] > 0) { pos[0] -= dims[0]; }

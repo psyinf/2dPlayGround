@@ -1,5 +1,5 @@
 #include "RenderSystem.hpp"
-#include <core/Game.hpp>
+#include <pgGame/core/Game.hpp>
 #include <entities/Entities.h>
 #include <numbers>
 #include <cmath>
@@ -20,7 +20,7 @@ public:
 
 private:
     sdl::Renderer& renderer;
-    pg::Color          color;
+    pg::Color      color;
 };
 
 // TODO: draw to texture and scale
@@ -53,14 +53,14 @@ void asteroids::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
     }
 
     auto renderConfig = game.getSingleton<RenderConfig>();
-     
-     if (renderConfig.renderBroadPhaseCollisionShapes)
-     {
+
+    if (renderConfig.renderBroadPhaseCollisionShapes)
+    {
         for (auto boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform>(); auto& entity : boundsView)
         {
             auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform>(entity);
             renderSDL(renderer, bound, transform);
-        } 
+        }
     }
     renderer.present();
 }

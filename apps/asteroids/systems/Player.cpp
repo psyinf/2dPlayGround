@@ -1,17 +1,16 @@
 #include "Player.h"
-#include <core/Game.hpp>
-#include <core/RegistryHelper.hpp>
-#include <entities/WindowDetails.hpp>
+#include <pgGame/core/Game.hpp>
+#include <pgGame/core/RegistryHelper.hpp>
+#include <pgGame/entities/WindowDetails.hpp>
 #include "entities/Entities.h"
-#include <SDLBounds.h>
-#include <SDLPrimitives.h>
+#include <pgEngine/math/Bounds.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
 #include <fmt/format.h>
 
 void asteroids::Player::setup()
 {
     auto& registry = game.getRegistry();
     auto& keyStateMap = game.getKeyStateMap();
-
 
     auto sprite = game.getTypedResourceCache<pg::Sprite>().load("playerShip1_blue.png");
     auto windowDetails = game.getSingleton<pg::game::WindowDetails>();

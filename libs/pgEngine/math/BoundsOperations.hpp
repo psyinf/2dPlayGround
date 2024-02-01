@@ -1,6 +1,7 @@
 #pragma once
-#include <SDLBounds.h>
+#include <pgEngine/math/Bounds.hpp>
 #include <optional>
+
 namespace pg {
 
 static auto intersects(const BoundingSphere  sphere1,
@@ -13,8 +14,8 @@ static auto intersects(const BoundingSphere  sphere1,
     const auto diff = t1.pos - t2.pos;
     const auto distSquared = dot(diff, diff);
     const auto radiiSum = sphere1.radius * max_scale_t1 + sphere2.radius * max_scale_t2;
-    auto intrusion = distSquared - (radiiSum * radiiSum);
+    auto       intrusion = distSquared - (radiiSum * radiiSum);
     return intrusion < 0.0f ? std::optional<float>{intrusion} : std::nullopt;
 }
 
-}
+} // namespace pg

@@ -1,5 +1,5 @@
 #pragma once
-#include "SDLVec.h"
+#include <pgEngine/math/Vec.hpp>
 
 namespace pg {
 struct Transform
@@ -15,6 +15,5 @@ struct BoundingSphere
 
     float radius;
 };
-
 
 } // namespace pg

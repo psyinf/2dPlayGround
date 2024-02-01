@@ -1,8 +1,7 @@
 #include "Lasers.h"
-#include <core/Game.hpp>
-#include <core/RegistryHelper.hpp>
+#include <pgGame/core/Game.hpp>
+#include <pgGame/core/RegistryHelper.hpp>
 #include <entities/Entities.h>
-
 
 void asteroids::Lasers::setup()
 {
@@ -27,7 +26,7 @@ void asteroids::Lasers::createShot(const events::LaserFired& event)
     // determine shoot position
     auto& shooterTransform = game.getRegistry().get<pg::Transform>(event.shooter);
 
-    pg::game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag , ActiveCollider>
+    pg::game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag, ActiveCollider>
 
         (game.getRegistry(),                                                          //
          std::move(d),                                                                //
@@ -35,8 +34,7 @@ void asteroids::Lasers::createShot(const events::LaserFired& event)
          {.velocity{0, -300.0}},
          {pg::BoundingSphere::fromRectangle(sprite->getDimensions())},
          {}, //
-        {}
-        );
+         {});
 }
 
 void asteroids::Lasers::handle(const pg::game::FrameStamp& frameStamp)

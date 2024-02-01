@@ -1,9 +1,9 @@
 
-#include <Factories.hpp>
-#include <SDLApp.h>
-#include <SDLErrorTrace.h>
-#include <SDLPrimitives.h>
-#include <State.hpp>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/core/ErrorTrace.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/core/State.hpp>
 
 void textdemo_main()
 {
@@ -19,27 +19,24 @@ void textdemo_main()
     auto rendererStates = pg::States{};
     auto rendererStates2 = pg::States{};
     auto rendererStates3 = pg::States{};
-    
+
     rendererStates.push(pg::TextureColorState{pg::Color{255, 0, 0, 255}});
     rendererStates2.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates2.push(pg::TextureAlphaState{128});
     rendererStates3.push(pg::TextureColorState{pg::Color{255, 0, 255, 255}});
-   
 
-    
     auto render = [&](auto& app) {
-       
         text.draw(app.getRenderer(),
                   {.pos{100, 100}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
                   rendererStates);
 
         text.draw(app.getRenderer(), {.pos{512, 512}}, rendererStates2);
-        
+
         text.draw(app.getRenderer(),
-                   {.pos{200, 200}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
-                   rendererStates3);
+                  {.pos{200, 200}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
+                  rendererStates3);
         text.draw(app.getRenderer(), {.pos{512, 200}}, {});
-        };
+    };
 
     auto done = false;
     app.loop(done, render);
