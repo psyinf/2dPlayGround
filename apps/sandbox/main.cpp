@@ -2,7 +2,7 @@
 #include <emscripten.h>
 #endif
 #include <SDLApp.h>
-#include <SDLBackgoundSprite.h>
+#include <sprite/BackgoundSprite.hpp>
 #include <SDLKeyStateMap.h>
 #include <primitives/Primitives.hpp>
 #include <math/Vec.hpp>
@@ -10,7 +10,7 @@
 #include <iostream>
 
 #include <factories/Factories.hpp>
-#include <SDLSprite.h>
+#include <sprite/Sprite.hpp>
 #include <vector>
 
 class Circler

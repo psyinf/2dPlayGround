@@ -7,7 +7,7 @@
 #include <ranges>
 #include <vector>
 
-#include <SpritePixelData.hpp>
+#include <sprite/SpritePixelData.hpp>
 
 namespace pg::compGeometry {
 std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)

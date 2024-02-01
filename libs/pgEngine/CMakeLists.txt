@@ -10,7 +10,7 @@ target_sources(${PROJECT_NAME}
 	PRIVATE
 		SDLApp.cpp
 		primitives/Primitives.cpp
-		SDLSprite.cpp
+		sprite/Sprite.cpp
 		SDLKeyStateMap.cpp
 		factories/Factories.cpp
 		font/Font.cpp
@@ -28,14 +28,16 @@ target_sources(${PROJECT_NAME}
 		math/VecOperations.hpp
 		primitives/Primitives.hpp
 
-		SpritePixelData.hpp
+		sprite/BackgoundSprite.hpp
+		sprite/Sprite.hpp
+		sprite/SpritePixelData.hpp
+
 		SDLApp.h
 		SDLAppConfig.h
 		
-		SDLSprite.h
-
+		
 		SDLKeyStateMap.h 
-		SDLBackgoundSprite.h 
+		
 		SDLErrorTrace.h
 
 

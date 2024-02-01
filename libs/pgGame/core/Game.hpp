@@ -2,7 +2,7 @@
 
 #include <factories/Factories.hpp>
 #include <SDLApp.h>
-#include <SDLBackgoundSprite.h>
+#include <sprite/BackgoundSprite.hpp>
 #include <SDLKeyStateMap.h>
 #include <SDLResourceCache.hpp>
 #include <math/Vec.hpp>

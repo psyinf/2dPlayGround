@@ -2,7 +2,7 @@
 
 #include "entities/Entities.h"
 #include <factories/Factories.hpp>
-#include <SDLBackgoundSprite.h>
+#include <sprite/BackgoundSprite.hpp>
 #include <math/VecOperations.hpp>
 #include <algorithm>
 #include <core/Game.hpp>

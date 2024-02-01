@@ -1,4 +1,4 @@
-#include "SDLSprite.h"
+#include <sprite/Sprite.hpp>
 
 pg::Sprite::Sprite(sdl::Texture&& tex)
   : texture(std::move(tex))

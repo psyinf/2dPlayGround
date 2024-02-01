@@ -1,6 +1,6 @@
 #pragma once
 #include <font/Font.hpp>
-#include "SDLSprite.h"
+#include <sprite/Sprite.hpp>
 
 class SDLFont;
 

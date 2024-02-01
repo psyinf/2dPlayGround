@@ -1,5 +1,5 @@
 #pragma once 
-#include "SDLSprite.h"
+#include <sprite/Sprite.hpp>
 
 namespace pg {
 

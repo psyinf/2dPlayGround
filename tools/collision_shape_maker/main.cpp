@@ -2,9 +2,9 @@
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
 #include <primitives/Primitives.hpp>
-#include <SDLSprite.h>
+#include <sprite/Sprite.hpp>
 #include <SDL_image.h>
-#include <SpritePixelData.hpp>
+#include <sprite/SpritePixelData.hpp>
 #include <deque>
 #include <fmt/format.h>
 #include <ranges>
