@@ -1,6 +1,6 @@
 #pragma once
-#include "SDLBounds.h"
-#include "SDLVec.h"
+#include <math/Bounds.hpp>
+#include <math/Vec.hpp>
 #include "States.hpp"
 #include <bit>
 #include <memory>

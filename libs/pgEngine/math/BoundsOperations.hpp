@@ -1,5 +1,5 @@
 #pragma once
-#include <SDLBounds.h>
+#include <math/Bounds.hpp>
 #include <optional>
 namespace pg {
 

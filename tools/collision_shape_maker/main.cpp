@@ -1,4 +1,4 @@
-#include <ComputationalGeometry.hpp>
+#include <math/ComputationalGeometry.hpp>
 #include <SDLApp.h>
 #include <SDLErrorTrace.h>
 #include <SDLPrimitives.h>

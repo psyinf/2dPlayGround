@@ -1,7 +1,8 @@
 #pragma once
-#include <SDLVec.h>
+#include <math/Random.hpp>
+#include <math/Vec.hpp>
+
 #include <numeric>
-#include <Random.hpp>
 #include <vector>
 
 namespace pg {

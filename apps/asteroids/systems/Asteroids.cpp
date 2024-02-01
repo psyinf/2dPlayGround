@@ -3,7 +3,7 @@
 #include "entities/Entities.h"
 #include <Factories.hpp>
 #include <SDLBackgoundSprite.h>
-#include <VecOperations.hpp>
+#include <math/VecOperations.hpp>
 #include <algorithm>
 #include <core/Game.hpp>
 #include <core/RegistryHelper.hpp>

@@ -1,5 +1,5 @@
 #pragma once
-#include "SDLVec.h"
+#include <math/Vec.hpp>
 
 namespace pg {
 struct Transform

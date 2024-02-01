@@ -16,8 +16,15 @@ target_sources(${PROJECT_NAME}
 		SDLFont.cpp
 		FPSCounter.cpp
 	PUBLIC
+		math/Bounds.hpp
+		math/BoundsOperations.hpp
+		math/ComputationalGeometry.hpp 
+		math/Random.hpp
+		math/Vec.hpp
+		math/VecOperations.hpp
+		
+		SpritePixelData.hpp
 		SDLApp.h
-		SDLVec.h
 		SDLAppConfig.h
 		SDLPrimitives.h
 		SDLSprite.h
@@ -25,9 +32,8 @@ target_sources(${PROJECT_NAME}
 		SDLKeyStateMap.h 
 		SDLBackgoundSprite.h 
 		SDLErrorTrace.h
-		SDLBounds.h 
-		ComputationalGeometry.hpp 
-		SpritePixelData.hpp
+
+
 )
 
 target_link_libraries(${PROJECT_NAME}
@@ -42,6 +48,6 @@ target_link_libraries(${PROJECT_NAME}
 
 target_include_directories(
   ${PROJECT_NAME}
-  INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
             $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
 )

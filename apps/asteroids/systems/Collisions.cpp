@@ -1,5 +1,5 @@
 #include "Collisions.hpp"
-#include <BoundsOperations.hpp>
+#include <math/BoundsOperations.hpp>
 #include <core/Game.hpp>
 #include <entities/Entities.h>
 #include <events/Collison.h>

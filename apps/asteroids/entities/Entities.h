@@ -1,5 +1,5 @@
 #pragma once
-#include <SDLVec.h>
+#include <math/Vec.hpp>
 #include <SDLPrimitives.h>
 #include <memory>
 #include <entt/entt.hpp>

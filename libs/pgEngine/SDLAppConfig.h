@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include "SDLVec.h"
+#include <math/Vec.hpp>
 namespace pg::config {
 
 struct WindowConfig

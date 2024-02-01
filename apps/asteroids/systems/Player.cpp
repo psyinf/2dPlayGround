@@ -3,7 +3,7 @@
 #include <core/RegistryHelper.hpp>
 #include <entities/WindowDetails.hpp>
 #include "entities/Entities.h"
-#include <SDLBounds.h>
+#include <math/Bounds.hpp>
 #include <SDLPrimitives.h>
 #include <fmt/format.h>
 

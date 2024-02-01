@@ -5,7 +5,7 @@
 #include <SDLBackgoundSprite.h>
 #include <SDLKeyStateMap.h>
 #include <SDLResourceCache.hpp>
-#include <SDLVec.h>
+#include <math/Vec.hpp>
 #include <core/FrameStamp.hpp>
 #include <systems/SystemInterface.hpp>
 
