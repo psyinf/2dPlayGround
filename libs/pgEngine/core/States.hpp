@@ -1,5 +1,6 @@
 #pragma once
 #include <pgEngine/core/State.hpp>
+
 namespace pg {
 using RendererStatePointer = std::unique_ptr<RendererState>;
 using TextureStatePointer = std::unique_ptr<TextureState>;

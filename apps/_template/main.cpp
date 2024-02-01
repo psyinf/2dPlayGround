@@ -11,13 +11,13 @@ void textdemo_main()
 
     auto font = pg::SDLFont("../data/fonts/Roboto-Regular.ttf", 24);
     // make a text sprite
-    auto text = pg::SpriteFactory::makeTextSprite(app.getRenderer(), font, "Hello, World!");
-    auto line = pg::Line{{0, 0}, {100, 100}};
+    auto  text = pg::SpriteFactory::makeTextSprite(app.getRenderer(), font, "Hello, World!");
+    auto  line = pg::Line{{0, 0}, {100, 100}};
     auto& renderer = app.getRenderer();
     renderer.setDrawColor(0xff, 0x00, 0xff, 0xff);
-    
+
     auto render = [&](auto& app) {
-        text.draw(app.getRenderer(), {.pos{100, 100}}, {});   
+        text.draw(app.getRenderer(), {.pos{100, 100}}, {});
         line.draw(app.getRenderer(), {.pos{100, 400}}, {});
     };
 

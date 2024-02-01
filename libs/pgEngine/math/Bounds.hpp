@@ -16,5 +16,4 @@ struct BoundingSphere
     float radius;
 };
 
-
 } // namespace pg

@@ -12,7 +12,6 @@ void asteroids::Player::setup()
     auto& registry = game.getRegistry();
     auto& keyStateMap = game.getKeyStateMap();
 
-
     auto sprite = game.getTypedResourceCache<pg::Sprite>().load("playerShip1_blue.png");
     auto windowDetails = game.getSingleton<pg::game::WindowDetails>();
     auto player = pg::game::makeEntity<pg::BoundingSphere, Drawable, pg::Transform, asteroids::Dynamics>(

@@ -12,7 +12,8 @@ bool operator&(const KeyStateMap::CallbackTrigger& mask, const KeyStateMap::Call
 void pg::KeyStateMap::keyDown(SDL_Keycode keyCode)
 {
     pressed[keyCode] = true;
-    if (auto hit = directCallbacks.find(keyCode); hit != directCallbacks.end() && hit->second.trigger & CallbackTrigger::PRESSED)
+    if (auto hit = directCallbacks.find(keyCode);
+        hit != directCallbacks.end() && hit->second.trigger & CallbackTrigger::PRESSED)
     {
         hit->second.callback(CallbackTrigger::PRESSED);
     }

@@ -9,7 +9,6 @@
 #include <ranges>
 #include <vector>
 
-
 namespace pg::compGeometry {
 std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)
 {

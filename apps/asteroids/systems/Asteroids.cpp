@@ -2,8 +2,8 @@
 
 #include "entities/Entities.h"
 #include <pgEngine/factories/Factories.hpp>
-#include <pgEngine/sprite/BackgoundSprite.hpp>
 #include <pgEngine/math/VecOperations.hpp>
+#include <pgEngine/sprite/BackgoundSprite.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
 

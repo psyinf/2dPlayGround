@@ -2,14 +2,14 @@
 #include <entt/entt.hpp>
 
 /**
- * @brief Functions to make entity creation with components added easier. 
- * Instead of doing @code 
+ * @brief Functions to make entity creation with components added easier.
+ * Instead of doing @code
  * auto entity = registry::create();
  * registry.emplate<X>({paramToX});
  * registry.emplate<Y>({paramToY,param2ToY});
  * the helper allows you to:
  * auto entity = makeEntity<X,Y>({paramToX},{paramToY,param2ToY});
-*/
+ */
 namespace pg::game {
 
 template <typename Component, typename... Args>
@@ -30,12 +30,12 @@ void addComponents(entt::registry& registry, entt::entity entity, Components&&..
 {
     addComponent(registry, entity, std::forward<Components>(components)...);
 }
+
 template <typename... Components>
 void addComponents(entt::registry& registry, entt::entity entity)
 {
     addComponent(registry, entity, std::forward<Components>({})...);
 }
-
 
 template <typename... Components>
 auto makeEntity(entt::registry& registry, Components&&... components)

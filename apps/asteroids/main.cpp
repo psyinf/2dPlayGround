@@ -11,7 +11,6 @@
 #include <systems/Player.h>
 #include <systems/RenderSystem.hpp>
 
-
 int main(int argc, char** argv)
 try
 {

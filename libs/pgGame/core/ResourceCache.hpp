@@ -47,7 +47,6 @@ public:
     {
     }
 
-
     std::shared_ptr<Resource> load(const std::string& path)
     {
         if (resources.find(path) == resources.end())

@@ -25,7 +25,7 @@ std::vector<pg::fVec2> splitVector(const pg::fVec2& original, int numFragments)
 
         // Scale the vector to ensure it sums up to the original vector
         fragment = fragment * (1.0f / numFragments) * scale;
-        
+
         // Add the fragment to the vector of fragments
         fragments.push_back(fragment);
     }

@@ -9,15 +9,12 @@ namespace pg {
 class KeyStateMap
 {
 public:
-    KeyStateMap(sdl::EventHandler& eventHandler) {
-        eventHandler.keyDown = [this](const SDL_KeyboardEvent& keyboardEvent) {
-            keyDown(keyboardEvent.keysym.sym);
-        };
-        eventHandler.keyUp = [this](const SDL_KeyboardEvent& keyboardEvent) {
-            keyUp(keyboardEvent.keysym.sym);
-        };
+    KeyStateMap(sdl::EventHandler& eventHandler)
+    {
+        eventHandler.keyDown = [this](const SDL_KeyboardEvent& keyboardEvent) { keyDown(keyboardEvent.keysym.sym); };
+        eventHandler.keyUp = [this](const SDL_KeyboardEvent& keyboardEvent) { keyUp(keyboardEvent.keysym.sym); };
     }
-    
+
     enum class CallbackTrigger
     {
         PRESSED,
@@ -25,13 +22,12 @@ public:
         BOTH,
     };
 
-    
     struct DirectCallback
     {
-        CallbackTrigger trigger;
+        CallbackTrigger                              trigger;
         std::function<void(CallbackTrigger trigger)> callback;
-    
     };
+
     using Callback = std::function<void(SDL_Keycode)>;
 
 public:
@@ -40,17 +36,17 @@ public:
     void keyUp(SDL_Keycode keyCode);
 
     bool isPressed(SDL_Keycode keyCode);
-    
+
     void registerDirectCallback(SDL_Keycode code, DirectCallback&& callback);
-    
+
     void registerCallback(SDL_Keycode code, Callback&& callback);
-    
+
     void evaluateCallbacks() const;
 
 private:
-    std::unordered_map<SDL_Keycode, bool>     pressed;
+    std::unordered_map<SDL_Keycode, bool>           pressed;
     std::unordered_map<SDL_Keycode, DirectCallback> directCallbacks;
-    std::unordered_map<SDL_Keycode, Callback> callbacks;
+    std::unordered_map<SDL_Keycode, Callback>       callbacks;
 };
 
 } // namespace pg

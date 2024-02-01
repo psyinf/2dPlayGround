@@ -1,7 +1,6 @@
 #include <pgEngine/math/BoundsOperations.hpp>
 #include <catch2/catch_test_macros.hpp>
 
-
 TEST_CASE("Miss", "[BoundsTests]")
 {
     pg::BoundingSphere bs1{10.0};

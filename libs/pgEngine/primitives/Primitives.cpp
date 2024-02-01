@@ -1,8 +1,6 @@
 #include <primitives/Primitives.hpp>
 
-
-
- pg::Line::Line(iVec2&& start, iVec2&& end)
+pg::Line::Line(iVec2&& start, iVec2&& end)
   : start(start)
   , end(end)
 {

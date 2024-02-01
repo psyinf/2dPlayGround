@@ -5,12 +5,12 @@
 
 using namespace pg;
 
-void pg::ttfInitDelegate() 
+void pg::ttfInitDelegate()
 {
     TTF_Init();
 }
 
-void pg::ttfQuitDelegate() 
+void pg::ttfQuitDelegate()
 {
     TTF_Quit();
 }
@@ -65,7 +65,6 @@ SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
     return screen;
 }
 
-
 auto SDLApp::getWindowConfig() const -> const config::WindowConfig&
 {
     return windowConfig;
@@ -78,15 +77,12 @@ auto pg::SDLApp::getFPSCounter() -> FPSCounter&
 
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
 {
-    getEventHandler().quit = [&done](const SDL_QuitEvent&) {
-        
-        done = true;
-    };
+    getEventHandler().quit = [&done](const SDL_QuitEvent&) { done = true; };
 
     while (!done)
     {
         while (getEventHandler().poll()) {}
-        //#TODO: configurable, if clear and which color
+        // #TODO: configurable, if clear and which color
         {
             pg::ScopedColor sc{getRenderer(), Color{0, 0, 0, 255}};
             renderer->clear();
