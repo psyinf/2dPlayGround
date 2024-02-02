@@ -33,8 +33,8 @@ public:
 
     auto getWindowConfig() const -> const config::WindowConfig&;
 
-    auto getFPSCounter() -> FPSCounter&;
-    void loop(bool& done, const RenderFunction& renderFunction);
+    auto                                  getFPSCounter() -> FPSCounter&;
+    [[deprecated("Use Game class")]] void loop(bool& done, const RenderFunction& renderFunction);
 
 protected:
     void checkInitialized() const;

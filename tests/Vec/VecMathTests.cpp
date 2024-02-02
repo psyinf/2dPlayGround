@@ -14,7 +14,6 @@ TEST_CASE("angleBetween", "[VecTests]")
         {{1, 0}, -std::numbers::pi / 2.0f},
         {{0, -1}, -std::numbers::pi},
         {{-1, 0}, std::numbers::pi / 2.0f},
-
     }));
 
     auto res = angleBetween(ref, std::get<0>(data));
