@@ -127,6 +127,20 @@ T dot(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
     return res;
 }
 
+template <typename T>
+T det(const pg::Vec<T, 2>& lhs, const pg::Vec<T, 2>& rhs)
+{
+    return lhs[0] * rhs[1] - lhs[1] * rhs[0];
+}
+
+template <typename T>
+T angleBetween(const pg::Vec<T, 2>& lhs, const pg::Vec<T, 2>& rhs)
+{
+    auto dot_product = dot(lhs, rhs);
+    auto determinant = det(lhs, rhs);
+    return atan2(determinant, dot_product);
+}
+
 template <typename T, size_t SIZE>
 T lengthSquared(const pg::Vec<T, SIZE>& lhs)
 {
