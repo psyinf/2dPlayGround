@@ -1,13 +1,14 @@
+#include <Galaxy.hpp>
 #include <pgEngine/core/ErrorTrace.hpp>
-#include <pgGame/core/Game.hpp>
 #include <fmt/format.h>
-
-#include <entities/StarSystem.hpp>
-#include <systems/RenderSystem.hpp>
 
 int main(int argc, char** argv)
 try
 {
+    galaxy::GalacticCore gc;
+    gc.setup();
+    gc.run();
+
     return 0;
 }
 catch (std::exception& e)

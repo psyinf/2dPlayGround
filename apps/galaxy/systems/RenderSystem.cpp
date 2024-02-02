@@ -9,10 +9,15 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     auto& renderer = game.getApp().getRenderer();
     renderer.clear();
-
+    auto rendererStates = pg::States{};
+    // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
+    rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
+    rendererStates.apply(renderer);
     for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
     {
         auto&& [drawable, transform] = view.get<pg::game::Drawable, pg::Transform2D>(entity);
-        drawable.prim->draw(renderer, transform, {});
+        drawable.prim->draw(renderer, transform, rendererStates);
     }
+    rendererStates.restore(renderer);
+    renderer.present();
 }
