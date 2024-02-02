@@ -1,9 +1,12 @@
 #pragma once
+#include <pgEngine/math/Vec.hpp>
+#include <pgEngine/math/Random.hpp>
+#include <numbers>
 #include <random>
 
 namespace pg {
 
-pg::fVec2 getRandomVector()
+static pg::fVec2 getRandomVector()
 {
     static std::random_device                    rd;
     static std::mt19937                          gen(rd());
@@ -13,7 +16,7 @@ pg::fVec2 getRandomVector()
 }
 
 template <typename T>
-T randomBetween(T min, T max)
+static T randomBetween(T min, T max)
 {
     if constexpr (std::is_floating_point<T>::value)
     {
@@ -29,6 +32,16 @@ T randomBetween(T min, T max)
         std::uniform_int_distribution<T> dis(min, max);
         return dis(gen);
     }
+}
+
+static pg::fVec2 getPointInCircle(double radius)
+{
+    auto a = randomBetween(0.0, 1.0);
+    auto b = randomBetween(0.0, 1.0);
+    if (b < a) { std::swap(a, b); }
+
+    return {static_cast<float>(b * radius * std::cos(2.0f * std::numbers::pi * a / b)),
+            static_cast<float>(b * radius * std::sin(2.0f * std::numbers::pi * a / b))};
 }
 
 } // namespace pg
