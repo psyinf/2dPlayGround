@@ -2,12 +2,6 @@
 #include <pgEngine/math/Vec.hpp>
 
 namespace pg {
-struct Transform
-{
-    fVec2 pos{};
-    float rotation_deg{};
-    fVec2 scale{1, 1};
-};
 
 struct BoundingSphere
 {

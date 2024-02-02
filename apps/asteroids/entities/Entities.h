@@ -12,11 +12,6 @@ using ActiveCollider = entt::tag<"ActiveCollider"_hs>;
 // passive colliders cannot collide with other active colliders
 using PassiveCollider = entt::tag<"PassiveCollider"_hs>;
 
-struct Drawable
-{
-    std::shared_ptr<pg::Primitive> prim;
-};
-
 struct Dynamics
 {
     pg::fVec2 velocity{};

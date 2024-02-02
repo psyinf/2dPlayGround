@@ -1,12 +1,15 @@
 #include "Asteroids.h"
 
 #include "entities/Entities.h"
+
 #include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/math/Bounds.hpp>
+#include <pgEngine/math/Transform.hpp>
 #include <pgEngine/math/VecOperations.hpp>
 #include <pgEngine/sprite/BackgoundSprite.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
-
+#include <pgGame/entities/Drawable.hpp>
 #include <algorithm>
 #include <random>
 
@@ -97,16 +100,16 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
     });
 
-    auto entity = pg::game::makeEntity<Drawable,
-                                       pg::Transform,
+    auto entity = pg::game::makeEntity<pg::game::Drawable,
+                                       pg::Transform2D,
                                        Dynamics,
                                        pg::BoundingSphere,
                                        HitPoints,
                                        Damage,
                                        Size>                           //
         (game.getRegistry(),                                           //
-         Drawable{sprite},                                             //
-         pg::Transform{.pos{position}},                                //
+         pg::game::Drawable{sprite},                                   //
+         pg::Transform2D{.pos{position}},                              //
          {.velocity{velocity}},                                        //
          {pg::BoundingSphere::fromRectangle(sprite->getDimensions())}, //
          {asteroidConf.hitPoints},                                     //
@@ -124,10 +127,10 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
     std::uniform_int_distribution   pos(-200, 1024);
 
     // TODO: flag entities that should re-appear after entering a screen border and handle them in a separate system
-    auto view = game.getRegistry().view<tag, pg::Transform, asteroids::Dynamics>();
+    auto view = game.getRegistry().view<tag, pg::Transform2D, asteroids::Dynamics>();
     for (auto& entity : view)
     {
-        auto&& [transform, dynamics] = view.get<pg::Transform, asteroids::Dynamics>(entity);
+        auto&& [transform, dynamics] = view.get<pg::Transform2D, asteroids::Dynamics>(entity);
 
         if (transform.pos[1] >= 1000)
         {
@@ -144,7 +147,8 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
         auto&& [asteroid, laser] = collisionPair.value();
 
         // TODO: make based on damage vs hitpoints
-        auto&& [transform, dynamics, size] = game.getRegistry().get<pg::Transform, asteroids::Dynamics, Size>(asteroid);
+        auto&& [transform, dynamics, size] =
+            game.getRegistry().get<pg::Transform2D, asteroids::Dynamics, Size>(asteroid);
 
         auto newSize = getNextSmallest(size);
         if (newSize.has_value())

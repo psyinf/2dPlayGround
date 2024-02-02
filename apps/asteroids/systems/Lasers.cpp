@@ -1,7 +1,10 @@
 #include "Lasers.h"
+#include <pgEngine/math/Bounds.hpp>
+#include <pgEngine/math/Transform.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
 #include <entities/Entities.h>
+#include <pgGame/entities/Drawable.hpp>
 
 void asteroids::Lasers::setup()
 {
@@ -22,15 +25,15 @@ void asteroids::Lasers::createShot(const events::LaserFired& event)
         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
     });
 
-    Drawable d(sprite);
+    pg::game::Drawable d(sprite);
     // determine shoot position
-    auto& shooterTransform = game.getRegistry().get<pg::Transform>(event.shooter);
+    auto& shooterTransform = game.getRegistry().get<pg::Transform2D>(event.shooter);
 
-    pg::game::makeEntity<Drawable, pg::Transform, Dynamics, pg::BoundingSphere, tag, ActiveCollider>
+    pg::game::makeEntity<pg::game::Drawable, pg::Transform2D, Dynamics, pg::BoundingSphere, tag, ActiveCollider>
 
-        (game.getRegistry(),                                                          //
-         std::move(d),                                                                //
-         pg::Transform{.pos{shooterTransform.pos + event.offset}, .scale{0.5, 0.75}}, //
+        (game.getRegistry(),                                                            //
+         std::move(d),                                                                  //
+         pg::Transform2D{.pos{shooterTransform.pos + event.offset}, .scale{0.5, 0.75}}, //
          {.velocity{0, -300.0}},
          {pg::BoundingSphere::fromRectangle(sprite->getDimensions())},
          {}, //
@@ -40,10 +43,10 @@ void asteroids::Lasers::createShot(const events::LaserFired& event)
 void asteroids::Lasers::handle(const pg::game::FrameStamp& frameStamp)
 {
     // TODO: This is should be in a system for updating transforms via dynamics
-    auto view = game.getRegistry().view<pg::Transform, tag>();
+    auto view = game.getRegistry().view<pg::Transform2D, tag>();
     for (auto& entity : view)
     {
-        auto&& transform = view.get<pg::Transform>(entity);
+        auto&& transform = view.get<pg::Transform2D>(entity);
         // TODO. rather delete in collision handling (e.g. handle collision with upper limit)
         if (transform.pos[1] < 0) { game.getRegistry().destroy(entity); }
     }

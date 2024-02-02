@@ -17,6 +17,7 @@ conan_cmake_configure(REQUIRES
     fmt/10.1.1
     entt/3.12.2
     libxml2/2.11.4#resolving conflict
+    libpng/1.6.42#resolving conflict
     #openssl/3.2.0
     GENERATORS CMakeDeps CMakeToolchain
 )
