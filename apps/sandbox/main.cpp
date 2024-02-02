@@ -23,9 +23,9 @@ public:
     {
     }
 
-    pg::Transform frame(int frame)
+    pg::Transform2D frame(int frame)
     {
-        pg::Transform t{};
+        pg::Transform2D t{};
         t.pos[0] = mid[0] + sin(frame / static_cast<float>(period_frames) * 3.1412) * radius;
         t.pos[1] = mid[1] + cos(frame / static_cast<float>(period_frames) * 3.1412) * radius;
         t.rotation_deg = 90 - (frame / static_cast<float>(period_frames) * 180);
@@ -83,7 +83,7 @@ try
         std::cout << "bye!";
         done = true;
     };
-    pg::Transform bgTransform{};
+    pg::Transform2D bgTransform{};
 
     // some callback that is executed directly when the key is pressed
     // this basically happens at the rate of key-repeat

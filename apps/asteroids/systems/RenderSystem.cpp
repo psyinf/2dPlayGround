@@ -1,5 +1,8 @@
 #include "RenderSystem.hpp"
+#include <pgEngine/math/Bounds.hpp>
+#include <pgEngine/math/Transform.hpp>
 #include <pgGame/core/Game.hpp>
+#include <pgGame/entities/Drawable.hpp>
 #include <entities/Entities.h>
 #include <numbers>
 #include <cmath>
@@ -24,7 +27,7 @@ private:
 };
 
 // TODO: draw to texture and scale
-static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, const pg::Transform& transform)
+static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, const pg::Transform2D& transform)
 {
     ScopedColor            sc(renderer, {0xff, 0xff, 0xff, 0xff});
     std::vector<pg::iVec2> circle_points;
@@ -46,9 +49,9 @@ void asteroids::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
     auto& renderer = game.getApp().getRenderer();
     renderer.clear();
 
-    for (auto view = game.getRegistry().view<asteroids::Drawable, pg::Transform>(); auto& entity : view)
+    for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
     {
-        auto&& [drawable, transform] = view.get<asteroids::Drawable, pg::Transform>(entity);
+        auto&& [drawable, transform] = view.get<pg::game::Drawable, pg::Transform2D>(entity);
         drawable.prim->draw(renderer, transform, {});
     }
 
@@ -56,9 +59,10 @@ void asteroids::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
 
     if (renderConfig.renderBroadPhaseCollisionShapes)
     {
-        for (auto boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform>(); auto& entity : boundsView)
+        for (auto  boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform2D>();
+             auto& entity : boundsView)
         {
-            auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform>(entity);
+            auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform2D>(entity);
             renderSDL(renderer, bound, transform);
         }
     }

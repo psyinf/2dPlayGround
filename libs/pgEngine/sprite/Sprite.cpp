@@ -6,7 +6,7 @@ pg::Sprite::Sprite(sdl::Texture&& tex)
     texture.query(nullptr, nullptr, &dimensions[0], &dimensions[1]);
 }
 
-void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform& t, const States& states)
+void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states)
 {
     auto      calcPos = t.pos - (vec_cast<float>(dimensions) * 0.5f * t.scale);
     SDL_FRect dest_rect = {calcPos[0], calcPos[1], (dimensions[0] * t.scale[0]), (dimensions[1] * t.scale[1])};

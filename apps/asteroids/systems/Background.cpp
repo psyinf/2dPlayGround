@@ -2,12 +2,13 @@
 #include <pgGame/core/Game.hpp>
 #include <pgGame/entities/WindowDetails.hpp>
 #include "entities/Entities.h"
+#include <pgGame/entities/Drawable.hpp>
 
 void asteroids::Background::handle(const pg::game::FrameStamp& frameStamp)
 {
     // TODO: base scrolling speed on the player's velocity
     auto& registry = game.getRegistry();
-    auto  view = registry.view<pg::Transform, asteroids::Dynamics, backgroundTag>();
+    auto  view = registry.view<pg::Transform2D, asteroids::Dynamics, backgroundTag>();
 }
 
 void asteroids::Background::setup()
@@ -19,9 +20,9 @@ void asteroids::Background::setup()
     // TODO add entities as references to the classes
     auto backgroundRect = pg::iVec2{windowDetails.windowRect.w, windowDetails.windowRect.h};
 
-    registry.emplace<Drawable>(
+    registry.emplace<pg::game::Drawable>(
         background, std::make_unique<pg::ScrollingSprite>(std::move(backgroundImg), std::move(backgroundRect)));
-    registry.emplace<pg::Transform>(background);
+    registry.emplace<pg::Transform2D>(background);
     registry.emplace<asteroids::Dynamics>(background, asteroids::Dynamics{.velocity{0, 200}});
     registry.emplace<backgroundTag>(background);
 }
