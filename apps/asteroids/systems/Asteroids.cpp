@@ -6,7 +6,7 @@
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/Transform.hpp>
 #include <pgEngine/math/VecOperations.hpp>
-#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
 #include <pgGame/entities/Drawable.hpp>
@@ -96,9 +96,7 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
     }
     }
 
-    auto sprite = game.getResourceCache().load<pg::Sprite>(std::string(asteroidConf.resource), [this](const auto& e) {
-        return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
-    });
+    auto sprite = game.getTypedResourceCache<pg::Sprite>().load(std::string(asteroidConf.resource));
 
     auto entity = pg::game::makeEntity<pg::game::Drawable,
                                        pg::Transform2D,

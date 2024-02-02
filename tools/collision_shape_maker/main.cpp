@@ -3,7 +3,7 @@
 #include <pgEngine/core/ErrorTrace.hpp>
 #include <pgEngine/primitives/Primitives.hpp>
 #include <pgEngine/sprite/SpritePixelData.hpp>
-#include <pgEngine/sprite/Sprite.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
 #include <SDL_image.h>
 
 #include <deque>
