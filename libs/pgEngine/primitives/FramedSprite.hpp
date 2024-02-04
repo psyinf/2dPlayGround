@@ -1,5 +1,5 @@
 #pragma once
-#include "SDLSprite.h"
+#include <pgEngine/primitives/Sprite.hpp>
 
 namespace pg {
 
@@ -13,10 +13,10 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform& t, const States& states) override
+    void draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states) override
     {
-        //TODO: get from extern
-        uint32_t currentFrame = 0;
+        // TODO: get from extern
+        uint32_t    currentFrame = 0;
         const auto& dimensions = getDimensions();
         const auto& fdimensions = vec_cast<float>(dimensions) * pg::fVec2{1.0f / width, 1.0f / height};
         auto&       texture = getTexture();

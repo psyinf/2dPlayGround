@@ -16,6 +16,7 @@ conan_cmake_configure(REQUIRES
     sdl_ttf/2.20.2
     fmt/10.1.1
     entt/3.12.2
+    libpng/1.6.42 #resolve conflicts
     GENERATORS CMakeDeps CMakeToolchain
 )
 

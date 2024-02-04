@@ -1,6 +1,7 @@
 #pragma once
-#include "SDLFont.hpp"
-#include "SDLSprite.h"
+#include <pgEngine/font/Font.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
+#include <pgEngine/primitives/FramedSprite.hpp>
 #include <sdlpp.hpp>
 
 namespace pg {
