@@ -6,7 +6,7 @@ fi
 USER="$1"
 
 apt -qq update
-apt -q install -y cmake ninja-build g++ clang pkgconf
+apt -q install -y cmake ninja-build g++ clang pkgconf gdb
 apt -q install -y python3-pip
 
 sudo -Hiu $USER env pip3 install --user conan==1.60.2
