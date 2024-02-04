@@ -15,7 +15,8 @@ int main(int argc, char** argv)
 try
 {
     pg::game::Game game;
-    auto&          systems = game.getSystems();
+    auto&          scene = game.createScene("start");
+    auto&          systems = scene.getSystems();
     systems.emplace_back(std::make_unique<asteroids::Lasers>(game));
     systems.emplace_back(std::make_unique<asteroids::Player>(game));
     systems.emplace_back(std::make_unique<asteroids::Asteroids>(game));
@@ -23,7 +24,7 @@ try
     systems.emplace_back(std::make_unique<asteroids::Collisions>(game));
     systems.emplace_back(std::make_unique<asteroids::RenderSystem>(game));
     systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game));
-    game.setup();
+    game.switchScene("start");
 
     auto playerId = game.getSingleton<const entt::entity>("Player");
     auto event = asteroids::events::LaserFired{.offset{}, .shooter = playerId};
