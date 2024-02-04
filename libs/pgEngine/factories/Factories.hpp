@@ -1,6 +1,6 @@
 #pragma once
 #include <pgEngine/font/Font.hpp>
-#include <pgEngine/sprite/Sprite.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
 
 class SDLFont;
 

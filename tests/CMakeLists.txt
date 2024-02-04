@@ -14,7 +14,7 @@ if(BUILD_TESTING)
     )
 
     add_executable(Bounds Bounds/BoundsTests.cpp )
-    add_executable(Vec Vec/VecTests.cpp )
+    add_executable(Vec Vec/VecTests.cpp Vec/VecMathTests.cpp )
     add_executable(ResourceCache ResourceCache/ResourceCacheTests.cpp)
 
     foreach(target ${ALL_TESTS})

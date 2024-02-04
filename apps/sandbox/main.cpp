@@ -2,7 +2,7 @@
 #include <emscripten.h>
 #endif
 #include <pgEngine/core/App.hpp>
-#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
 #include <pgEngine/primitives/Primitives.hpp>
 #include <pgEngine/math/Vec.hpp>
@@ -10,7 +10,7 @@
 #include <iostream>
 
 #include <pgEngine/factories/Factories.hpp>
-#include <pgEngine/sprite/Sprite.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
 #include <vector>
 
 class Circler

@@ -59,5 +59,6 @@ void game::Game::loop()
     while (!done)
     {
         frame({frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
+        sdlApp.getFPSCounter().frame();
     }
 }

@@ -2,7 +2,7 @@
 
 #include <pgEngine/factories/Factories.hpp>
 #include <pgEngine/core/App.hpp>
-#include <pgEngine/sprite/BackgoundSprite.hpp>
+#include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
 #include <pgGame/core/ResourceCache.hpp>
 #include <pgEngine/math/Vec.hpp>

@@ -10,7 +10,7 @@ target_sources(${PROJECT_NAME}
 	PRIVATE
 		"core/App.cpp"
 		primitives/Primitives.cpp
-		sprite/Sprite.cpp
+		"primitives/Sprite.cpp"
 
 		factories/Factories.cpp
 		font/Font.cpp
@@ -28,8 +28,8 @@ target_sources(${PROJECT_NAME}
 		math/VecOperations.hpp
 		primitives/Primitives.hpp
 
-		sprite/BackgoundSprite.hpp
-		sprite/Sprite.hpp
+		primitives/BackgoundSprite.hpp
+		primitives/Sprite.hpp
 		sprite/SpritePixelData.hpp
 
 		"core/App.hpp"
