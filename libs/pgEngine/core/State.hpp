@@ -20,6 +20,7 @@ public:
     virtual void restore(sdl::Renderer& renderer, sdl::Texture& texture) = 0;
 };
 
+
 class BlendModeState : public RendererState
 {
 public:

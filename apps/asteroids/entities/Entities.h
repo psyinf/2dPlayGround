@@ -9,7 +9,7 @@ using entt::literals::operator""_hs;
 
 // active colliders can collide with active and passive colliders
 using ActiveCollider = entt::tag<"ActiveCollider"_hs>;
-// passive colliders cannot collide with other active colliders
+// passive colliders cannot collide with other active colliders, but can be collided with
 using PassiveCollider = entt::tag<"PassiveCollider"_hs>;
 
 struct Dynamics

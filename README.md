@@ -14,9 +14,16 @@ It basically get's all the needed packages to get building as well as Conan up a
 ## Build
 The project uses CMake and comes with presets, so building is a trivial as:
 
-`cmake . --preset=unixlike-gcc-debug`
+`cmake . --preset=unixlike-gcc-release`
 
-`cmake --build --preset=unixlike-gcc-debug`
+`cmake --build --preset=unixlike-gcc-release`
+Note: the later seems broken so you'll need to use
+`cmake --build out/build/unixlike-gcc-release`
 
 Visual Studio and VS Code will also work either directly for Windows or using WSL. 
+
+## Troubleshooting
+In case the initial WSL based configure build of conan hangs (usually when using dpkg like `[CMake] dpkg-query: no packages found matching libegl-dev`) configure once using:
+`cmake . --preset=unixlike-gcc-release`
+
 

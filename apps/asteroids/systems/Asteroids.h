@@ -41,7 +41,14 @@ public:
     using tag = entt::tag<"Asteroids"_hs>;
 
     void setup();
-
+    /**
+     * @brief Creates an asteroid entity in the game.
+     *
+     * @param position The initial position of the asteroid.
+     * @param velocity The initial velocity of the asteroid.
+     * @param size The size of the asteroid. This affects the sprite used, as well as the hitpoints and damage of the
+     * asteroid.
+     */
     void createAsteroid(const pg::fVec2& position, const pg::fVec2& velocity, Size size);
 
     void handle(const pg::game::FrameStamp& frameStamp);

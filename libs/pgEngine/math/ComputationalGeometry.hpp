@@ -9,6 +9,9 @@
 #include <ranges>
 #include <vector>
 
+/**
+ * @brief Find the contour of a sprite
+*/
 namespace pg::compGeometry {
 std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)
 {
@@ -43,7 +46,9 @@ std::vector<pg::iVec2> findContour(pg::SpritePixelData& pixelData)
     }
     return points;
 }
-
+/**
+ * @brief Find the convex hull of a set of points
+*/
 template <typename Vec2>
 std::vector<Vec2> convexHull(const std::vector<Vec2>& points)
 {
