@@ -26,6 +26,14 @@ public:
         systems.emplace_back(std::make_unique<galaxy::RenderSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
 
+        game->getKeyStateMap().registerMouseRelativeDraggedCallback(
+            [&scene](auto pos, auto state) { scene.getGlobalTransform().pos += vec_cast<float>(pos); });
+
+        game->getKeyStateMap().registerMouseWheelCallback([&scene](auto pos) {
+            scene.getGlobalTransform().scale *= std::powf(1.1f, pos[1]);
+            scene.getGlobalTransform().scale[0] = std::clamp(scene.getGlobalTransform().scale[0], 0.5f, 10.0f);
+            scene.getGlobalTransform().scale[1] = std::clamp(scene.getGlobalTransform().scale[1], 0.5f, 10.0f);
+        });
         setupStarSystems();
         game->switchScene("start");
     }

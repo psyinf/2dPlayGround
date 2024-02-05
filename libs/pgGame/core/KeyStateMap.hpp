@@ -33,6 +33,7 @@ public:
             mouseButtonEvent(buttonEvent);
         };
         eventHandler.mouseButtonUp = [this](const SDL_MouseButtonEvent& buttonEvent) { mouseButtonEvent(buttonEvent); };
+        eventHandler.mouseWheel = [this](const SDL_MouseWheelEvent& wheelEvent) { mouseWheelEvent(wheelEvent); };
     }
 
     enum class CallbackTrigger
@@ -52,25 +53,18 @@ public:
     using MouseMovedCallback = std::function<void(pg::iVec2)>;
     using MouseDraggedCallback = std::function<void(pg::iVec2, MouseButtonsState)>;
     using MousePressedCallback = std::function<void(pg::iVec2, MouseButtonsState, bool)>;
+    using MouseWheelCallback = std::function<void(pg::iVec2)>;
 
 public:
     void keyDown(SDL_Keycode keyCode);
 
     void keyUp(SDL_Keycode keyCode);
 
-    void mouseMotion(const SDL_MouseMotionEvent& event)
-    {
-        if (mouseMovedCallback) { mouseMovedCallback({event.x, event.y}); }
-        if (event.state != 0 && mouseDraggedCallback) { mouseDraggedCallback({event.x, event.y}, event.state); }
-    }
+    void mouseMotion(const SDL_MouseMotionEvent& event);
 
-    void mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent)
-    {
-        if (mousePressedCallback)
-        {
-            mousePressedCallback({buttonEvent.x, buttonEvent.y}, buttonEvent.button, buttonEvent.state == SDL_PRESSED);
-        }
-    }
+    void mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent);
+
+    void mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent);
 
     bool isPressed(SDL_Keycode keyCode);
     /**
@@ -93,7 +87,14 @@ public:
 
     void registerMouseDraggedCallback(MouseDraggedCallback&& callback) { mouseDraggedCallback = callback; }
 
+    void registerMouseRelativeDraggedCallback(MouseDraggedCallback&& callback)
+    {
+        mouseRelativeDraggedCallback = callback;
+    }
+
     void registerMousePressedCallback(MousePressedCallback&& callback) { mousePressedCallback = callback; }
+
+    void registerMouseWheelCallback(MouseWheelCallback&& callback) { mouseWheelCallback = callback; }
 
     void evaluateCallbacks() const;
 
@@ -105,7 +106,9 @@ private:
 
     MouseMovedCallback   mouseMovedCallback;
     MouseDraggedCallback mouseDraggedCallback;
+    MouseDraggedCallback mouseRelativeDraggedCallback;
     MousePressedCallback mousePressedCallback;
+    MouseWheelCallback   mouseWheelCallback;
 };
 
 } // namespace pg

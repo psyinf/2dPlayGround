@@ -29,6 +29,29 @@ void pg::KeyStateMap::keyUp(SDL_Keycode keyCode)
     }
 }
 
+void pg::KeyStateMap::mouseMotion(const SDL_MouseMotionEvent& event)
+{
+    if (mouseMovedCallback) { mouseMovedCallback({event.x, event.y}); }
+    if (event.state != 0 && mouseDraggedCallback) { mouseDraggedCallback({event.x, event.y}, event.state); }
+    if (event.state != 0 && mouseRelativeDraggedCallback)
+    {
+        mouseRelativeDraggedCallback({event.xrel, event.yrel}, event.state);
+    }
+}
+
+void pg::KeyStateMap::mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent)
+{
+    if (mousePressedCallback)
+    {
+        mousePressedCallback({buttonEvent.x, buttonEvent.y}, buttonEvent.button, buttonEvent.state == SDL_PRESSED);
+    }
+}
+
+void pg::KeyStateMap::mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent)
+{
+    if (mouseWheelCallback) { mouseWheelCallback({wheelEvent.x, wheelEvent.y}); }
+}
+
 bool pg::KeyStateMap::isPressed(SDL_Keycode keyCode)
 {
     if (auto hit = pressed.find(keyCode); hit != pressed.end()) { return (*hit).second; }

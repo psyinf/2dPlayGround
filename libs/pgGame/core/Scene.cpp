@@ -14,7 +14,6 @@ void pg::game::Scene::setup(Game& game)
 
 void pg::game::Scene::frame(FrameStamp frameStamp)
 {
-    globalTransform.pos[0] += 0.01f;
     std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
 }
 

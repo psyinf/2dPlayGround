@@ -20,7 +20,10 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
     for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
     {
         auto&& [drawable, transform] = view.get<pg::game::Drawable, pg::Transform2D>(entity);
-        drawable.prim->draw(renderer, transform + globalTransform, rendererStates);
+        auto new_transform = transform;
+        new_transform.scale *= globalTransform.scale;
+        new_transform.pos = (transform.pos) * globalTransform.scale;
+        drawable.prim->draw(renderer, new_transform + globalTransform, rendererStates);
     }
     rendererStates.restore(renderer);
     renderer.present();
