@@ -21,12 +21,13 @@ public:
 
     void setup()
     {
-        auto& scene = game->createScene("start", true);
+        auto& scene = game->createScene("start");
         auto& systems = scene.getSystems();
         systems.emplace_back(std::make_unique<galaxy::RenderSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
 
         setupStarSystems();
+        game->switchScene("start");
     }
 
     void run() { game->loop(); }

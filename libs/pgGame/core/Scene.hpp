@@ -1,6 +1,7 @@
 #pragma once
 #include <pgGame/systems/SystemInterface.hpp>
 #include <pgGame/core/FrameStamp.hpp>
+#include <pgEngine/math/Transform.hpp>
 #include <memory>
 #include <vector>
 #include <ranges>
@@ -14,27 +15,28 @@ class Scene
 {
     // TODO: we probably need to switch/store keystatemap, scene-transform, and modify some global singletons
 public:
+    static auto constexpr GlobalTransformName = "Scene.globalTransform";
     using Systems = std::vector<std::shared_ptr<SystemInterface>>;
 
     Scene() = default;
     virtual ~Scene() = default;
 
-    const Systems& getSystems() const { return systems; }
+    const Systems& getSystems() const;
 
-    Systems& getSystems() { return systems; }
+    Systems& getSystems();
 
-    void frame(FrameStamp frameStamp)
-    {
-        std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
-    }
+    const Transform2D& getGlobalTransform() const { return globalTransform; }
 
-    void setup()
-    {
-        std::ranges::for_each(systems, [](auto& system) { system->setup(); });
-    }
+    Transform2D& getGlobalTransform() { return globalTransform; }
+
+    void frame(FrameStamp frameStamp);
+
+    void setup(Game& game);
 
 private:
     Systems systems;
+    // TODO: scenestate
+    Transform2D globalTransform;
 };
 
 } // namespace pg::game

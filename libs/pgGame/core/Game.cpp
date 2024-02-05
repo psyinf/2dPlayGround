@@ -9,6 +9,8 @@ using namespace pg;
 
 void game::Game::frame(FrameStamp frameStamp)
 {
+    // check preconditions
+    if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
     // poll all events
     while (sdlApp.getEventHandler().poll()) {};
     // evaluate all callbacks bound to events
@@ -68,9 +70,8 @@ pg::game::Scene& game::Game::getScene(std::string_view id)
     return *scenes.at(std::string(id));
 }
 
-pg::game::Scene& game::Game::createScene(std::string_view id, bool makeCurrent /*=false*/)
+pg::game::Scene& game::Game::createScene(std::string_view id)
 {
-    if (makeCurrent) { currentSceneId = id; }
     return *scenes.emplace(std::string(id), std::make_unique<pg::game::Scene>()).first->second;
 }
 
@@ -79,5 +80,5 @@ void game::Game::switchScene(std::string_view id)
     auto scene = scenes.at(std::string(id)).get();
     currentSceneId = id;
     // TODO: we need to figure out how to handle the setup of the scene when switching back and forth
-    scene->setup();
+    scene->setup(*this);
 }

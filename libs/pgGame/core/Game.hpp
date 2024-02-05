@@ -91,7 +91,8 @@ public:
         return registry.ctx().emplace_as<Type>(entt::type_id<Type>().hash(), std::forward<Args>(args)...);
     }
 
-    Scene& createScene(std::string_view id, bool makeCurrent = false);
+    /// Scene interfaces
+    Scene& createScene(std::string_view id);
     Scene& getScene(std::string_view id);
     void   switchScene(std::string_view id);
 
