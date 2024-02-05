@@ -8,6 +8,7 @@
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/primitives/Primitives.hpp>
 #include <fmt/format.h>
+#include <events/LaserFired.h>
 
 void asteroids::Player::setup()
 {
@@ -29,15 +30,18 @@ void asteroids::Player::setup()
     game.addSingleton_as<pg::iVec2>("Player.sprite.size", sprite->getDimensions());
 
     auto view = game.getRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
-    for (auto& entity : view)
-    {
-        auto&      dynamics = registry.get<asteroids::Dynamics>(entity);
-        const auto speed = 20;
-        keyStateMap.registerCallback(SDLK_LEFT, [&dynamics, speed](auto) { dynamics.velocity[0] -= speed; });
-        keyStateMap.registerCallback(SDLK_RIGHT, [&dynamics, speed](auto) { dynamics.velocity[0] += speed; });
-        keyStateMap.registerCallback(SDLK_UP, [&dynamics, speed](auto) { dynamics.velocity[1] -= speed; });
-        keyStateMap.registerCallback(SDLK_DOWN, [&dynamics, speed](auto) { dynamics.velocity[1] += speed; });
-    }
+    auto entity = view.front();
+
+    auto&      dynamics = registry.get<asteroids::Dynamics>(entity);
+    const auto speed = 20;
+    keyStateMap.registerKeyCallback(SDLK_LEFT, [&dynamics, speed](auto) { dynamics.velocity[0] -= speed; });
+    keyStateMap.registerKeyCallback(SDLK_RIGHT, [&dynamics, speed](auto) { dynamics.velocity[0] += speed; });
+    keyStateMap.registerKeyCallback(SDLK_UP, [&dynamics, speed](auto) { dynamics.velocity[1] -= speed; });
+    keyStateMap.registerKeyCallback(SDLK_DOWN, [&dynamics, speed](auto) { dynamics.velocity[1] += speed; });
+
+    auto event = asteroids::events::LaserFired{.offset{}, .shooter = player};
+    auto trigger = [event, this](auto) { game.getDispatcher().trigger(event); };
+    game.getKeyStateMap().registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
 }
 
 void asteroids::Player::handle(const pg::game::FrameStamp& frameStamp)

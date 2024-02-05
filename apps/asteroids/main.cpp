@@ -26,11 +26,6 @@ try
     systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game));
     game.switchScene("start");
 
-    auto playerId = game.getSingleton<const entt::entity>("Player");
-    auto event = asteroids::events::LaserFired{.offset{}, .shooter = playerId};
-    auto trigger = [event, &game](auto) { game.getDispatcher().trigger(event); };
-    game.getKeyStateMap().registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
-
     // TODO: from external config
     game.addSingleton<asteroids::RenderConfig>(asteroids::RenderConfig{.renderBroadPhaseCollisionShapes = true});
 

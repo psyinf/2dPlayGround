@@ -40,7 +40,7 @@ void pg::KeyStateMap::registerDirectCallback(SDL_Keycode code, DirectCallback&& 
     directCallbacks.insert_or_assign(code, callback);
 }
 
-void pg::KeyStateMap::registerCallback(SDL_Keycode code, Callback&& callback)
+void pg::KeyStateMap::registerKeyCallback(SDL_Keycode code, Callback&& callback)
 {
     callbacks.insert_or_assign(code, callback);
 }
