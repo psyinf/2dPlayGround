@@ -31,7 +31,7 @@ public:
             auto distance = normalize(transform.pos);
             // auto angle = angleBetween(pg::fVec2{0, 1}, transform.pos);
             auto angle = atan2(transform.pos[1], transform.pos[0]);
-            angle += 0.01 * sqrt(1.0 / distance);
+            angle += 0.0001 * sqrt(1.0 / distance);
             transform.pos = {distance * cos(angle), distance * sin(angle)};
         }
         auto& fpsCounter = game.getApp().getFPSCounter();

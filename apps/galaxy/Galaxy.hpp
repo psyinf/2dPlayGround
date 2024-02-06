@@ -49,6 +49,15 @@ public:
 private:
     void setupStarSystems()
     {
+        // TODO: make this a galaxy generator
+        // TODO: star sizes variation
+        // TODO: less stars on the edges
+        // TODO: maybe use a 2d- normal distribution for the star positions
+        /*
+        std::random_device rd;
+        std::mt19937       gen(rd());
+        std::normal_distribution<> d(5, 2);
+        */
         auto dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
 
         for (auto i : std::ranges::iota_view{1, 5000})
@@ -59,6 +68,10 @@ private:
                 pg::game::Drawable{dot_sprite},
                 galaxy::StarSystemState{});
         }
+        // add some background
+        auto background_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way.jpg");
+        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
+            game->getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite});
     }
 
     void setupRegularGrid()
