@@ -41,6 +41,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
             break;
         }
     }
+    rendererStates.push(pg::TextureAlphaState{128});
     for (auto  view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(entt::exclude<StarSystemState>);
          auto& entity : view)
     {
@@ -52,6 +53,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         new_transform.scale *= globalTransform.scale;
         drawable.prim->draw(renderer, new_transform, rendererStates);
     }
+    rendererStates.pop<pg::TextureAlphaState>();
 
     rendererStates.restore(renderer);
     renderer.present();

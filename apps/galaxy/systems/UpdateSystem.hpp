@@ -21,6 +21,7 @@ public:
 
     void handle(const pg::game::FrameStamp& frameStamp) override
     {
+        return; // no rotation for now
         auto& registry = game.getRegistry();
         auto  view = registry.view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>();
         for (auto& entity : view)
