@@ -65,6 +65,14 @@ public:
         else { static_assert(always_false<T>, "Invalid state type"); }
     }
 
+    template <typename T>
+    constexpr void pop()
+    {
+        if constexpr (std::is_base_of_v<pg::RendererState, std::decay_t<T>>) { rendererStates.pop_back(); }
+        else if constexpr (std::is_base_of_v<pg::TextureState, std::decay_t<T>>) { textureStates.pop_back(); }
+        else { static_assert(always_false<T>, "Invalid state type"); }
+    }
+
 private:
     std::vector<RendererStatePointer> rendererStates;
     std::vector<TextureStatePointer>  textureStates;

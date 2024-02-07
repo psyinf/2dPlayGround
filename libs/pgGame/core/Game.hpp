@@ -5,19 +5,23 @@
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
 #include <pgGame/core/ResourceCache.hpp>
-#include <pgEngine/math/Vec.hpp>
 #include <pgGame/core/FrameStamp.hpp>
+#include <pgGame/core/Scene.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
+
+#include <pgEngine/math/Vec.hpp>
 
 #include <entt/entt.hpp>
 #include <memory>
+#include <unordered_map>
 
 namespace pg::game {
 
 class Game
 {
 public:
-    using Systems = std::vector<std::unique_ptr<SystemInterface>>;
+    using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
+    using Systems = Scene::Systems;
 
 private:
     pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"}; // TODO: from config
@@ -27,11 +31,15 @@ private:
     entt::registry           registry;
     entt::dispatcher         dispatcher;
 
-    Systems systems;
+    Scenes scenes;
 
     void frame(FrameStamp frameStamp);
 
+    std::string currentSceneId;
+
 public:
+    Game();
+
     entt::registry& getRegistry();
 
     entt::dispatcher& getDispatcher();
@@ -42,8 +50,9 @@ public:
 
     pg::ResourceCache& getResourceCache();
 
-    Systems& getSystems() { return systems; }
-
+    /**
+     * Get the resource cache for a specific type of resource.
+     */
     template <typename Resource>
     pg::TypedResourceCache<Resource>& getTypedResourceCache()
     {
@@ -82,7 +91,10 @@ public:
         return registry.ctx().emplace_as<Type>(entt::type_id<Type>().hash(), std::forward<Args>(args)...);
     }
 
-    void setup();
+    /// Scene interfaces
+    Scene& createScene(std::string_view id);
+    Scene& getScene(std::string_view id);
+    void   switchScene(std::string_view id);
 
     void loop();
 };

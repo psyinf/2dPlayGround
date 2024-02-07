@@ -38,8 +38,6 @@ protected:
     int       period_frames;
 };
 
-
-
 int main(int argc, char** argv)
 try
 {
@@ -53,7 +51,7 @@ try
         done = true;
     };
     pg::Transform2D bgTransform{};
-
+    pg::Transform2D mouseClickTransform{};
     // some callback that is executed directly when the key is pressed
     // this basically happens at the rate of key-repeat
     keyStateMap.registerDirectCallback(
@@ -63,10 +61,14 @@ try
                                << "\n";
                  }}});
     // register callbacks to be executed when desired, e.g. once per frame, independent from the key-repeat
-    keyStateMap.registerCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
-    keyStateMap.registerCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
-    keyStateMap.registerCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
-    keyStateMap.registerCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
+    keyStateMap.registerKeyCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
+    keyStateMap.registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
+    keyStateMap.registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
+    keyStateMap.registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
+    keyStateMap.registerMousePressedCallback(
+        [&mouseClickTransform](auto pos, auto state, bool updown) { mouseClickTransform.pos = vec_cast<float>(pos); });
+    keyStateMap.registerMouseDraggedCallback(
+        [&mouseClickTransform](auto pos, auto state) { mouseClickTransform.pos = vec_cast<float>(pos); });
     pg::Line l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
     pg::Line l2{pg::iVec2{5, 5}, pg::iVec2{1285, 725}};
 
@@ -79,7 +81,7 @@ try
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
     auto background = std::make_unique<pg::ScrollingSprite>(
         pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"), pg::iVec2{1280, 720});
-    auto animation = pg::SpriteFactory::makeFramedSprite(renderer, 8,4, "../data/effects/explosion_1_8x4.png");
+    auto animation = pg::SpriteFactory::makeFramedSprite(renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
     while (!done)
     {
         // handle all pending events
@@ -100,7 +102,7 @@ try
         p3.draw(renderer, {}, {});
 
         sprite.draw(renderer, c.frame(++frame), {});
-        animation.draw(renderer, {.pos{100,100}}, {});
+        animation.draw(renderer, mouseClickTransform, {});
         renderer.present();
     }
     return 0;

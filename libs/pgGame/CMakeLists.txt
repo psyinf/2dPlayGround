@@ -10,12 +10,15 @@ target_sources(${PROJECT_NAME}
 	PRIVATE
 		core/Game.cpp
 		core/KeyStateMap.cpp
+		core/Scene.cpp
 	PUBLIC
 		core/Game.hpp
 		core/FrameStamp.hpp
 		core/RegistryHelper.hpp
 		core/KeyStateMap.hpp
 		core/ResourceCache.hpp
+		core/Scene.hpp
+		
 		systems/SystemInterface.hpp
 		
 		entities/WindowDetails.hpp

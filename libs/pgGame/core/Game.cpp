@@ -9,11 +9,14 @@ using namespace pg;
 
 void game::Game::frame(FrameStamp frameStamp)
 {
+    // check preconditions
+    if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
     // poll all events
     while (sdlApp.getEventHandler().poll()) {};
     // evaluate all callbacks bound to events
     keyStateMap.evaluateCallbacks();
-    std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
+    // update the scene
+    scenes.at(currentSceneId)->frame(frameStamp);
 }
 
 entt::registry& game::Game::getRegistry()
@@ -41,15 +44,6 @@ pg::ResourceCache& game::Game::getResourceCache()
     return resourceCache;
 }
 
-void game::Game::setup()
-{
-    addSingleton<pg::TypedResourceCache<pg::Sprite>>(
-        "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-    addSingleton<WindowDetails>(
-        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
-    std::ranges::for_each(systems, [](auto& system) { system->setup(); });
-}
-
 void game::Game::loop()
 {
     bool done{};
@@ -61,4 +55,30 @@ void game::Game::loop()
         frame({frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
         sdlApp.getFPSCounter().frame();
     }
+}
+
+game::Game::Game()
+{
+    addSingleton<pg::TypedResourceCache<pg::Sprite>>(
+        "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
+    addSingleton<WindowDetails>(
+        WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
+}
+
+pg::game::Scene& game::Game::getScene(std::string_view id)
+{
+    return *scenes.at(std::string(id));
+}
+
+pg::game::Scene& game::Game::createScene(std::string_view id)
+{
+    return *scenes.emplace(std::string(id), std::make_unique<pg::game::Scene>()).first->second;
+}
+
+void game::Game::switchScene(std::string_view id)
+{
+    auto scene = scenes.at(std::string(id)).get();
+    currentSceneId = id;
+    // TODO: we need to figure out how to handle the setup of the scene when switching back and forth
+    scene->setup(*this);
 }
