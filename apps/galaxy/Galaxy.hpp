@@ -7,10 +7,13 @@
 #include <pgEngine/math/VecUtils.hpp>
 #include <systems/RenderSystem.hpp>
 #include <systems/UpdateSystem.hpp>
+#include <systems/PickingSystem.hpp>
 
 #include "entities/StarSystem.hpp"
+#include "events/PickEvent.hpp"
 #include <pgEngine/math/Random.hpp>
 #include <pgGame/entities/WindowDetails.hpp>
+
 #include <cmath>
 
 namespace galaxy {
@@ -28,9 +31,33 @@ public:
         auto& systems = scene.getSystems();
         systems.emplace_back(std::make_unique<galaxy::RenderSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
+        systems.emplace_back(std::make_unique<galaxy::PickingSystem>(*game));
+        // TODO: maybe encapsulate this into a class
+        // TODO: add a mechanism that wathces the mouse position and triggers a pick event in case it was not moved for
+        // a while
 
-        game->getKeyStateMap().registerMouseRelativeDraggedCallback([&scene](auto pos, auto state) {
-            scene.getGlobalTransform().pos += vec_cast<float>(pos) * (1.0f / scene.getGlobalTransform().scale);
+        game->getKeyStateMap().registerMouseRelativeDraggedCallback([&scene, this](auto pos, auto state) {
+            if (state & SDL_BUTTON_LMASK)
+            {
+                const auto absolute_drag_distance = vec_cast<float>(pos);
+                if (lengthSquared(absolute_drag_distance) < 4.0f) { return; };
+                scene.getGlobalTransform().pos += absolute_drag_distance * (1.0f / scene.getGlobalTransform().scale);
+                isDragging = true;
+            }
+        });
+
+        game->getKeyStateMap().registerMousePressedCallback([this](auto pos, auto button, bool pressed) {
+            if (isDragging && !pressed)
+            {
+                isDragging = false;
+                return;
+            }
+            if (button == SDL_BUTTON_LEFT && !pressed)
+            {
+                // fire a pick event. TODO: distinguish between drag and click
+                auto event = galaxy::events::PickEvent{.screen_position{pos}};
+                game->getDispatcher().trigger(event);
+            };
         });
 
         game->getKeyStateMap().registerMouseWheelCallback([&scene](auto pos) {
@@ -115,6 +142,7 @@ private:
 
 private:
     std::unique_ptr<pg::game::Game> game;
+    bool                            isDragging;
 };
 
 } // namespace galaxy
