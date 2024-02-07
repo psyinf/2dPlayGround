@@ -1,16 +1,16 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <SDLApp.h>
-#include <SDLBackgoundSprite.h>
-#include <SDLKeyStateMap.h>
-#include <SDLPrimitives.h>
-#include <SDLVec.h>
+#include <pgEngine/core/App.hpp>
+#include <pgEngine/primitives/BackgoundSprite.hpp>
+#include <pgGame/core/KeyStateMap.hpp>
+#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/math/Vec.hpp>
 #include <SDL_image.h>
 #include <iostream>
 
-#include <Factories.hpp>
-#include <SDLSprite.h>
+#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
 #include <vector>
 
 class Circler
@@ -23,9 +23,9 @@ public:
     {
     }
 
-    pg::Transform frame(int frame)
+    pg::Transform2D frame(int frame)
     {
-        pg::Transform t{};
+        pg::Transform2D t{};
         t.pos[0] = mid[0] + sin(frame / static_cast<float>(period_frames) * 3.1412) * radius;
         t.pos[1] = mid[1] + cos(frame / static_cast<float>(period_frames) * 3.1412) * radius;
         t.rotation_deg = 90 - (frame / static_cast<float>(period_frames) * 180);
@@ -36,39 +36,6 @@ protected:
     pg::iVec2 mid;
     int       radius;
     int       period_frames;
-};
-
-struct ColorState
-{
-    ColorState(const pg::Color& color)
-      : setColor(color)
-    {
-        std::puts("S");
-    }
-
-    ~ColorState() { std::puts("~S"); }
-
-    ColorState(const ColorState& rhs) = delete;
-    ColorState(ColorState&& rhs) = delete;
-
-    void operator=(const ColorState& rhs) = delete;
-    void operator=(ColorState&& rhs) = delete;
-
-    void set(sdl::Renderer& renderer, std::any& state)
-    {
-        pg::Color color;
-        renderer.getDrawColor(&color[0], &color[1], &color[2], &color[3]);
-        state = color;
-        renderer.setDrawColor(setColor[0], setColor[1], setColor[2], setColor[3]);
-    }
-
-    void reset(sdl::Renderer& renderer, std::any& state)
-    {
-        pg::Color storedColor = std::any_cast<pg::Color>(state);
-        renderer.setDrawColor(storedColor[0], storedColor[1], storedColor[2], storedColor[3]);
-    }
-
-    pg::Color setColor;
 };
 
 int main(int argc, char** argv)
@@ -83,8 +50,8 @@ try
         std::cout << "bye!";
         done = true;
     };
-    pg::Transform bgTransform{};
-
+    pg::Transform2D bgTransform{};
+    pg::Transform2D mouseClickTransform{};
     // some callback that is executed directly when the key is pressed
     // this basically happens at the rate of key-repeat
     keyStateMap.registerDirectCallback(
@@ -94,10 +61,14 @@ try
                                << "\n";
                  }}});
     // register callbacks to be executed when desired, e.g. once per frame, independent from the key-repeat
-    keyStateMap.registerCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
-    keyStateMap.registerCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
-    keyStateMap.registerCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
-    keyStateMap.registerCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
+    keyStateMap.registerKeyCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
+    keyStateMap.registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
+    keyStateMap.registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
+    keyStateMap.registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
+    keyStateMap.registerMousePressedCallback(
+        [&mouseClickTransform](auto pos, auto state, bool updown) { mouseClickTransform.pos = vec_cast<float>(pos); });
+    keyStateMap.registerMouseDraggedCallback(
+        [&mouseClickTransform](auto pos, auto state) { mouseClickTransform.pos = vec_cast<float>(pos); });
     pg::Line l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
     pg::Line l2{pg::iVec2{5, 5}, pg::iVec2{1285, 725}};
 
@@ -110,7 +81,7 @@ try
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
     auto background = std::make_unique<pg::ScrollingSprite>(
         pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"), pg::iVec2{1280, 720});
-
+    auto animation = pg::SpriteFactory::makeFramedSprite(renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
     while (!done)
     {
         // handle all pending events
@@ -131,7 +102,7 @@ try
         p3.draw(renderer, {}, {});
 
         sprite.draw(renderer, c.frame(++frame), {});
-
+        animation.draw(renderer, mouseClickTransform, {});
         renderer.present();
     }
     return 0;

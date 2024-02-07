@@ -1,11 +1,11 @@
 #pragma once
-#include "SystemInterface.h"
 #include <array>
 #include <deque>
 #include <entt/entt.hpp>
 #include <events/Collison.h>
+#include <pgGame/systems/SystemInterface.hpp>
 
-namespace game {
+namespace asteroids {
 using entt::literals::operator""_hs;
 
 class Game;
@@ -17,12 +17,13 @@ enum class Size
     Large
 };
 
-inline static constexpr std::optional<Size> getNextSmallest(Size size){
+inline static constexpr std::optional<Size> getNextSmallest(Size size)
+{
     switch (size)
     {
     case Size::Large:
-        return Size::Medium;//
-    case Size::Medium: 
+        return Size::Medium; //
+    case Size::Medium:
         return Size::Small; //
     case Size::Small:
         return Size::Tiny; //
@@ -32,25 +33,30 @@ inline static constexpr std::optional<Size> getNextSmallest(Size size){
     return std::nullopt;
 }
 
-class Asteroids : public SystemInterface
+class Asteroids : public pg::game::SystemInterface
 {
-  
 public:
     using SystemInterface::SystemInterface;
 
     using tag = entt::tag<"Asteroids"_hs>;
 
     void setup();
-
+    /**
+     * @brief Creates an asteroid entity in the game.
+     *
+     * @param position The initial position of the asteroid.
+     * @param velocity The initial velocity of the asteroid.
+     * @param size The size of the asteroid. This affects the sprite used, as well as the hitpoints and damage of the
+     * asteroid.
+     */
     void createAsteroid(const pg::fVec2& position, const pg::fVec2& velocity, Size size);
 
-    void handle(const FrameStamp& frameStamp);
+    void handle(const pg::game::FrameStamp& frameStamp);
 
     void handleEvent(const events::Collision& collision) { collisions.push_back(collision); }
 
 private:
-
     std::deque<events::Collision> collisions;
 };
 
-} // namespace game
+} // namespace asteroids

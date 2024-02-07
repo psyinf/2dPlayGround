@@ -1,22 +1,21 @@
 #pragma once
-#include "SystemInterface.h"
 #include <entt/entt.hpp>
+#include <pgGame/systems/SystemInterface.hpp>
 
-namespace game {
+namespace asteroids {
 using entt::literals::operator""_hs;
 class Game;
 
-class Background : public SystemInterface
+class Background : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
 
     using backgroundTag = entt::tag<"BACKGROUND"_hs>;
 
-
     void setup();
 
-    void handle(const FrameStamp& frameStamp);
+    void handle(const pg::game::FrameStamp& frameStamp);
 };
 
-} // namespace game
+} // namespace asteroids

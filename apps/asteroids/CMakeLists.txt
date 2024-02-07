@@ -14,6 +14,7 @@ find_package(EnTT REQUIRED)
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
+    pgGame::pgGame
     fmt::fmt
     EnTT::EnTT
 )

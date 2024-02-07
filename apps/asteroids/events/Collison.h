@@ -1,11 +1,11 @@
 #pragma once
-#include <SDLVec.h>
+#include <pgEngine/math/Vec.hpp>
 
-namespace game { namespace events {
+namespace asteroids { namespace events {
 
 struct Collision
 {
     entt::entity c1;
     entt::entity c2;
 };
-}} // namespace game::events
+}} // namespace asteroids::events

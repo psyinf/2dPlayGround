@@ -1,12 +1,12 @@
 #pragma once
-#include <systems/SystemInterface.h>
+#include <pgGame/systems/SystemInterface.hpp>
 
-namespace game {
-class DynamicsSystem : public SystemInterface
+namespace asteroids {
+class DynamicsSystem : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
     void setup() override;
-    void handle(const FrameStamp& frameStamp) override;
+    void handle(const pg::game::FrameStamp& frameStamp) override;
 };
-} // namespace game
+} // namespace asteroids
