@@ -34,7 +34,7 @@ public:
         });
 
         game->getKeyStateMap().registerMouseWheelCallback([&scene](auto pos) {
-            scene.getGlobalTransform().scale *= std::powf(1.1f, pos[1]);
+            scene.getGlobalTransform().scale *= static_cast<float>(std::pow(1.1f, pos[1]));
             scene.getGlobalTransform().scale[0] = std::clamp(scene.getGlobalTransform().scale[0], 0.5f, 10.0f);
             scene.getGlobalTransform().scale[1] = std::clamp(scene.getGlobalTransform().scale[1], 0.5f, 10.0f);
         });
