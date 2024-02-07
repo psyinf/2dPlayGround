@@ -22,6 +22,7 @@ target_sources(${PROJECT_NAME}
 		
 		math/Bounds.hpp
 		math/BoundsOperations.hpp
+		math/Box.hpp
 		math/ComputationalGeometry.hpp 
 		math/Random.hpp
 		math/Vec.hpp
