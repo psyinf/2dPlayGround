@@ -41,7 +41,7 @@ void asteroids::Player::setup()
 
     auto event = asteroids::events::LaserFired{.offset{}, .shooter = player};
     auto trigger = [event, this](auto) { game.getDispatcher().trigger(event); };
-    game.getKeyStateMap().registerDirectCallback(SDLK_SPACE, {pg::KeyStateMap::CallbackTrigger::RELEASED, trigger});
+    game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, trigger, true);
 }
 
 void asteroids::Player::handle(const pg::game::FrameStamp& frameStamp)
