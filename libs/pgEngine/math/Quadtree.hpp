@@ -43,7 +43,7 @@ public:
     {
         // TODO: this seems to test in the wrong ways
         //  Check if the point is within the node's bounds
-        if (!point.contains(node->bounds)) { return; }
+        if (!node->bounds.contains(point)) { return; }
 
         // If the node has children, insert the point into the appropriate child
         if (!node->isLeaf())
@@ -66,15 +66,12 @@ public:
     void splitNode(std::unique_ptr<QuadTreeNode>& node)
     {
         auto [midX, midY] = node->bounds.midpoint();
-
-        node->children[0] = std::make_unique<QuadTreeNode>(
-            fBox({node->bounds.left(), node->bounds.top()}, {node->bounds.width() / 2, node->bounds.height() / 2}));
-        node->children[1] = std::make_unique<QuadTreeNode>(
-            fBox({midX, node->bounds.top()}, {node->bounds.width() / 2, node->bounds.height() / 2}));
-        node->children[2] = std::make_unique<QuadTreeNode>(
-            fBox({node->bounds.left(), midY}, {node->bounds.width() / 2, node->bounds.height() / 2}));
-        node->children[3] =
-            std::make_unique<QuadTreeNode>(fBox({midX, midY}, {node->bounds.width() / 2, node->bounds.height() / 2}));
+        const auto splitBoxDim = pg::fVec2{node->bounds.width() / 2, node->bounds.height() / 2};
+        node->children[0] =
+            std::make_unique<QuadTreeNode>(fBox({node->bounds.left(), node->bounds.top()}, splitBoxDim));
+        node->children[1] = std::make_unique<QuadTreeNode>(fBox({midX, node->bounds.top()}, splitBoxDim));
+        node->children[2] = std::make_unique<QuadTreeNode>(fBox({node->bounds.left(), midY}, splitBoxDim));
+        node->children[3] = std::make_unique<QuadTreeNode>(fBox({midX, midY}, splitBoxDim));
 
         // Distribute points to children
         for (const auto& point : node->points)
