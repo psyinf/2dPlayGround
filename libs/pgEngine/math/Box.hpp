@@ -34,7 +34,7 @@ public:
     constexpr decltype(auto) height() const noexcept { return dim[1]; }
 
     // TODO: check with integer types
-    constexpr decltype(auto) midpoint() const noexcept { return (pos + dim) * static_cast<T>(0.5); }
+    constexpr decltype(auto) midpoint() const noexcept { return pos + dim * static_cast<T>(0.5); }
 
     constexpr decltype(auto) size() const noexcept { return dim; }
 
