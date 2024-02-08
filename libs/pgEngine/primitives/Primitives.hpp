@@ -3,11 +3,14 @@
 #include <pgEngine/math/Vec.hpp>
 #include <pgEngine/core/States.hpp>
 #include <pgEngine/math/Transform.hpp>
+#include <pgEngine/math/Box.hpp>
 
 #include <bit>
 #include <memory>
 #include <sdlpp.hpp>
 #include <vector>
+
+#include <SDL_rect.h>
 
 namespace pg {
 
@@ -95,6 +98,35 @@ public:
 
 private:
     std::vector<iVec2> points;
+};
+
+class BoxPrimitive : public pg::Primitive
+{
+public:
+    BoxPrimitive(const pg::fBox& box)
+      : box(box)
+    {
+    }
+
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        // transform the box
+        auto b = box;
+        b.pos -= (box.midpoint());
+        b.pos *= transform.scale;
+        b.dim *= transform.scale;
+        b.pos += transform.pos;
+        // TODO: this seems awkward
+        b.pos += (box.midpoint() * transform.scale);
+        auto rect = (SDL_FRect{b.left(), b.top(), b.width(), b.height()});
+        // r.setDrawColor(255, 255, 255, 255);
+        pg::ScopedColor sc{r, Color{255, 0, 0, 255}};
+        // draw the polygon
+        SDL_RenderDrawRectF(r.get(), &rect);
+    }
+
+private:
+    const pg::fBox box;
 };
 
 class Points : public pg::Primitive

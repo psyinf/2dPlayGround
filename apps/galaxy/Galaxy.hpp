@@ -5,6 +5,7 @@
 
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgEngine/math/VecUtils.hpp>
+#include <pgEngine/math/Quadtree.hpp>
 #include <systems/RenderSystem.hpp>
 #include <systems/UpdateSystem.hpp>
 #include <systems/PickingSystem.hpp>
@@ -70,14 +71,36 @@ public:
         // setupStarSystems();
         //  setupRegularGrid();
         setupGalaxy();
+        setupQuadtreeDebug();
         game->switchScene("start");
     }
 
     void run() { game->loop(); }
 
 private:
+    void setupQuadtreeDebug()
+    {
+        CollectBoundsVisitor<pg::QuadTreeNode> visitor;
+        galaxyQuadtree->root->accept(visitor);
+        auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
+        for (const auto& box : visitor.results)
+        {
+            auto box_prim = std::make_shared<pg::BoxPrimitive>(box);
+
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
+                game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim});
+        }
+        auto box_prim = std::make_shared<pg::BoxPrimitive>(pg::fBox{{-100, -100}, {200, 200}});
+        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
+            game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim});
+        auto box_prim2 = std::make_shared<pg::BoxPrimitive>(pg::fBox{{0, -0}, {200, 200}});
+        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
+            game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim2});
+    }
+
     void setupGalaxy()
     {
+        galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-500, -500}, {1000, 1000}});
         std::random_device              rd;
         std::mt19937                    gen(rd());
         std::normal_distribution<float> d(0, 150);
@@ -87,9 +110,12 @@ private:
 
         for (auto i : std::ranges::iota_view{1, 4000})
         {
+            auto new_pos = pg::fVec2{d(gen), d(gen)};
+            auto new_size = star_size_dist(gen) * pg::fVec2{1.0f, 1.0f};
+            galaxyQuadtree->insert({new_pos, new_size}, galaxyQuadtree->root);
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState>(
                 game->getRegistry(),
-                {.pos{d(gen), d(gen)}, .scale{star_size_dist(gen) * pg::fVec2{1.0f, 1.0f}}},
+                {.pos{new_pos}, .scale{new_size}},
                 pg::game::Drawable{dot_sprite},
                 galaxy::StarSystemState{});
         }
@@ -142,6 +168,7 @@ private:
 
 private:
     std::unique_ptr<pg::game::Game> game;
+    std::unique_ptr<pg::Quadtree>   galaxyQuadtree;
     bool                            isDragging;
 };
 

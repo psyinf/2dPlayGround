@@ -8,9 +8,9 @@ class CellVisitor
 public:
     virtual void apply(Cell& c) { traverse(c); }
 
-    virtual void done(Cell& c) {}
+    virtual void done(const Cell& c) {}
 
-    void traverse(Cell& c)
+    void traverse(const Cell& c)
     {
         for (auto& child : c.children)
         {
@@ -34,21 +34,33 @@ class CollectChildrenVisitor : public CellVisitor<T>
 public:
     using ResultVector = std::vector<pg::fBox>;
 
-    CollectChildrenVisitor(ResultVector& collection)
-      : mResults(collection)
-    {
-    }
-
     virtual void apply(T& c)
     {
-        if (0 != c.size()) { mResults.emplace_back(c.bounds); }
+        if (0 != c.points.size()) { results.emplace_back(c.bounds); }
         else {}
 
-        traverse(c);
+        CellVisitor<T>::traverse(c);
     }
 
     virtual void done(T& c) {}
 
-protected:
-    ResultVector& mResults;
+    ResultVector results;
+};
+
+template <class T>
+class CollectBoundsVisitor : public CellVisitor<T>
+{
+public:
+    using ResultVector = std::vector<pg::fBox>;
+
+    virtual void apply(T& c)
+    {
+        results.emplace_back(c.bounds);
+
+        CellVisitor<T>::traverse(c);
+    }
+
+    virtual void done(T& c) {}
+
+    ResultVector results;
 };
