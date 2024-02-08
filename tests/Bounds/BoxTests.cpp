@@ -38,12 +38,12 @@ TEST_CASE("Intersects", "[BoxTests]")
 
 TEST_CASE("Getters", "[BoxTests]")
 {
-    pg::fBox box({0, 0}, {10, 10});
+    pg::fBox box({-10, -10}, {20, 20});
 
-    REQUIRE(box.left() == 0.0f);
+    REQUIRE(box.left() == -10.0f);
     REQUIRE(box.right() == 10.0f);
-    REQUIRE(box.top() == 0.0f);
+    REQUIRE(box.top() == -10.0f);
     REQUIRE(box.bottom() == 10.0f);
-    REQUIRE(box.midpoint() == pg::fVec2({5.0f, 5.0f}));
-    REQUIRE(box.size() == pg::fVec2({10.0f, 10.0f}));
+    REQUIRE(box.midpoint() == pg::fVec2({0.0f, 0.0f}));
+    REQUIRE(box.size() == pg::fVec2({20.0f, 20.0f}));
 }
