@@ -6,6 +6,8 @@
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgEngine/math/VecUtils.hpp>
 #include <pgEngine/math/Quadtree.hpp>
+
+#include <entities/Tags.hpp>
 #include <systems/RenderSystem.hpp>
 #include <systems/UpdateSystem.hpp>
 #include <systems/PickingSystem.hpp>
@@ -34,7 +36,7 @@ public:
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::PickingSystem>(*game));
         // TODO: maybe encapsulate this into a class
-        // TODO: add a mechanism that wathces the mouse position and triggers a pick event in case it was not moved for
+        // TODO: add a mechanism that watches the mouse position and triggers a pick event in case it was not moved for
         // a while
 
         game->getKeyStateMap().registerMouseRelativeDraggedCallback([&scene, this](auto pos, auto state) {
@@ -68,11 +70,16 @@ public:
         });
 
         game->getKeyStateMap().registerKeyCallback(SDLK_SPACE, [&scene](auto) { scene.getGlobalTransform() = {}; });
+        game->getKeyStateMap().registerKeyCallback(
+            SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
         // setupStarSystems();
         //  setupRegularGrid();
         setupGalaxy();
         setupQuadtreeDebug();
         game->switchScene("start");
+        // TODO: add some wrapper that holds a map of registered singleton names used as configuration items
+        // Better: generic mechanism that wraps a config struct
+        game->addSingleton_as<const bool&>("galaxy.debug.draw", drawDebugItems);
     }
 
     void run() { game->loop(); }
@@ -87,20 +94,14 @@ private:
         {
             auto box_prim = std::make_shared<pg::BoxPrimitive>(box);
 
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
-                game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim});
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
+                game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
-        auto box_prim = std::make_shared<pg::BoxPrimitive>(pg::fBox{{-100, -100}, {200, 200}});
-        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
-            game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim});
-        auto box_prim2 = std::make_shared<pg::BoxPrimitive>(pg::fBox{{0, -0}, {200, 200}});
-        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
-            game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim2});
     }
 
     void setupGalaxy()
     {
-        galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-500, -500}, {1000, 1000}});
+        galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::random_device              rd;
         std::mt19937                    gen(rd());
         std::normal_distribution<float> d(0, 150);
@@ -170,6 +171,7 @@ private:
     std::unique_ptr<pg::game::Game> game;
     std::unique_ptr<pg::Quadtree>   galaxyQuadtree;
     bool                            isDragging;
+    bool                            drawDebugItems;
 };
 
 } // namespace galaxy
