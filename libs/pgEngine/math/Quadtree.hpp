@@ -33,10 +33,7 @@ class Quadtree
 public:
     std::unique_ptr<QuadTreeNode> root; // Use std::unique_ptr for the root node
 
-    Quadtree(const fBox& b)
-    {
-        root = std::make_unique<QuadTreeNode>(b); // Use std::make_unique to create the root node
-    }
+    Quadtree(const fBox& b) { root = std::make_unique<QuadTreeNode>(b); }
 
     // Function to insert a point into the quadtree
     void insert(const fBox& point, std::unique_ptr<QuadTreeNode>& node)

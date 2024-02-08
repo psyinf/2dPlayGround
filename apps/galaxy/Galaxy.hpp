@@ -49,7 +49,7 @@ public:
             }
         });
 
-        game->getKeyStateMap().registerMousePressedCallback([this](auto pos, auto button, bool pressed) {
+        game->getKeyStateMap().registerMousePressedCallback([this, &scene](auto pos, auto button, bool pressed) {
             if (isDragging && !pressed)
             {
                 isDragging = false;
@@ -58,7 +58,13 @@ public:
             if (button == SDL_BUTTON_LEFT && !pressed)
             {
                 // fire a pick event. TODO: distinguish between drag and click
-                auto event = galaxy::events::PickEvent{.screen_position{pos}};
+                auto world_pos = vec_cast<float>(pos);
+                auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
+                auto globalTransform = scene.getGlobalTransform();
+                world_pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
+                world_pos = (world_pos) * (1.0f / globalTransform.scale);
+                world_pos -= globalTransform.pos;
+                auto event = galaxy::events::PickEvent{.screen_position{pos}, .world_position{world_pos}};
                 game->getDispatcher().trigger(event);
             };
         });
@@ -80,6 +86,7 @@ public:
         // TODO: add some wrapper that holds a map of registered singleton names used as configuration items
         // Better: generic mechanism that wraps a config struct
         game->addSingleton_as<const bool&>("galaxy.debug.draw", drawDebugItems);
+        game->addSingleton_as<const pg::Quadtree&>("galaxy.quadtree", *galaxyQuadtree);
     }
 
     void run() { game->loop(); }
@@ -97,6 +104,11 @@ private:
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
                 game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
+        auto         dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
+        entt::entity marker =
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
+                game->getRegistry(), {.pos{}, .scale{0.05, 0.05}}, pg::game::Drawable{dot_sprite}, {});
+        game->addSingleton_as<entt::entity>("galaxy.debug.marker", marker);
     }
 
     void setupGalaxy()
