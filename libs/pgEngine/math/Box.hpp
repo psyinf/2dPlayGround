@@ -29,8 +29,12 @@ public:
 
     constexpr decltype(auto) bottom() const noexcept { return pos[1] + dim[1]; }
 
+    constexpr decltype(auto) width() const noexcept { return dim[0]; }
+
+    constexpr decltype(auto) height() const noexcept { return dim[1]; }
+
     // TODO: check with integer types
-    constexpr decltype(auto) center() const noexcept { return (pos + dim) * static_cast<T>(0.5); }
+    constexpr decltype(auto) midpoint() const noexcept { return (pos + dim) * static_cast<T>(0.5); }
 
     constexpr decltype(auto) size() const noexcept { return dim; }
 
@@ -39,6 +43,12 @@ public:
         // Check if the other box is within the current box
         return this->left() <= box.left() && this->right() >= box.right() && this->top() <= box.top() &&
                this->bottom() >= box.bottom();
+    }
+
+    constexpr bool contains(const Vec2<T>& point) const noexcept
+    {
+        return this->left() <= point[0] && this->right() >= point[0] && this->top() <= point[1] &&
+               this->bottom() >= point[1];
     }
 
     constexpr bool intersects(const Box<T>& box) const noexcept

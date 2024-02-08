@@ -44,6 +44,6 @@ TEST_CASE("Getters", "[BoxTests]")
     REQUIRE(box.right() == 10.0f);
     REQUIRE(box.top() == 0.0f);
     REQUIRE(box.bottom() == 10.0f);
-    REQUIRE(box.center() == pg::fVec2({5.0f, 5.0f}));
+    REQUIRE(box.midpoint() == pg::fVec2({5.0f, 5.0f}));
     REQUIRE(box.size() == pg::fVec2({10.0f, 10.0f}));
 }
