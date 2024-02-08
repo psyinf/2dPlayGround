@@ -1,4 +1,5 @@
 #include <core/KeyStateMap.hpp>
+#include <iostream>
 
 namespace pg {
 
@@ -9,23 +10,24 @@ bool operator&(const KeyStateMap::CallbackTrigger& mask, const KeyStateMap::Call
 }
 } // namespace pg
 
-void pg::KeyStateMap::keyDown(SDL_Keycode keyCode)
+pg::KeyStateMap::KeyStateMap(sdl::EventHandler& eventHandler)
 {
-    pressed[keyCode] = true;
-    if (auto hit = directCallbacks.find(keyCode);
-        hit != directCallbacks.end() && hit->second.trigger & CallbackTrigger::PRESSED)
-    {
-        hit->second.callback(CallbackTrigger::PRESSED);
-    }
+    eventHandler.keyDown = [this](const SDL_KeyboardEvent& keyboardEvent) { keyEvent(keyboardEvent); };
+    eventHandler.keyUp = [this](const SDL_KeyboardEvent& keyboardEvent) { keyEvent(keyboardEvent); };
+    eventHandler.mouseMotion = [this](const SDL_MouseMotionEvent& mouseMotionEvent) { mouseMotion(mouseMotionEvent); };
+    eventHandler.mouseButtonDown = [this](const SDL_MouseButtonEvent& buttonEvent) { mouseButtonEvent(buttonEvent); };
+    eventHandler.mouseButtonUp = [this](const SDL_MouseButtonEvent& buttonEvent) { mouseButtonEvent(buttonEvent); };
+    eventHandler.mouseWheel = [this](const SDL_MouseWheelEvent& wheelEvent) { mouseWheelEvent(wheelEvent); };
 }
 
-void pg::KeyStateMap::keyUp(SDL_Keycode keyCode)
+void pg::KeyStateMap::keyEvent(const SDL_KeyboardEvent& event)
 {
-    pressed[keyCode] = false;
-    if (auto hit = directCallbacks.find(keyCode);
-        hit != directCallbacks.end() && hit->second.trigger & CallbackTrigger::RELEASED)
+    pressed[event.keysym.sym] = {.pressed{event.state == SDL_PRESSED}, .repeated{event.repeat != 0}};
+
+    if (auto hit = directCallbacks.find(event.keysym.sym); hit != directCallbacks.end())
     {
-        hit->second.callback(CallbackTrigger::RELEASED);
+        if (hit->second.trigger & CallbackTrigger::PRESSED) { hit->second.callback(CallbackTrigger::PRESSED); }
+        else if (hit->second.trigger & CallbackTrigger::RELEASED) { hit->second.callback(CallbackTrigger::RELEASED); }
     }
 }
 
@@ -52,29 +54,35 @@ void pg::KeyStateMap::mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent)
     if (mouseWheelCallback) { mouseWheelCallback({wheelEvent.x, wheelEvent.y}); }
 }
 
-bool pg::KeyStateMap::isPressed(SDL_Keycode keyCode)
-{
-    if (auto hit = pressed.find(keyCode); hit != pressed.end()) { return (*hit).second; }
-    else { return false; }
-}
-
 void pg::KeyStateMap::registerDirectCallback(SDL_Keycode code, DirectCallback&& callback)
 {
     directCallbacks.insert_or_assign(code, callback);
 }
 
-void pg::KeyStateMap::registerKeyCallback(SDL_Keycode code, Callback&& callback)
+void pg::KeyStateMap::registerKeyCallback(SDL_Keycode code, Callback&& callback, bool once /* = false*/)
 {
-    callbacks.insert_or_assign(code, callback);
+    callbacks.insert_or_assign(code, CallbackData{CallbackTrigger::BOTH, callback, once});
 }
 
 void pg::KeyStateMap::evaluateCallbacks() const
 {
-    for (auto& callback : callbacks)
+    for (auto&& [key, callback_data] : callbacks)
     {
-        if (auto hit = pressed.find(callback.first); hit != pressed.end() && hit->second == true)
+        if (auto hit = pressed.find(key); hit != pressed.end())
         {
-            callback.second(callback.first);
+            // copy by value
+            const auto keyState = hit->second;
+            // TODO: every n-frames
+            if (keyState.repeated && callback_data.once)
+            { //
+                continue;
+            }
+            if (callback_data.once) //
+            {
+                pressed[key] = {.pressed{false}, .repeated{keyState.repeated}};
+            }
+
+            if (keyState.pressed) { callback_data.callback(key); }
         }
     }
 }
