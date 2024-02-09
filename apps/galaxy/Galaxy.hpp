@@ -79,7 +79,7 @@ public:
         game->getKeyStateMap().registerKeyCallback(
             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
         // setupStarSystems();
-        //  setupRegularGrid();
+        // setupRegularGrid();
         setupGalaxy();
         setupQuadtreeDebug();
         game->switchScene("start");
@@ -99,7 +99,7 @@ private:
         auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
         for (const auto& box : visitor.results)
         {
-            auto box_prim = std::make_shared<pg::BoxPrimitive>(box);
+            auto box_prim = std::make_shared<pg::BoxPrimitive>(box, pg::Color{100, 0, 0, 50});
 
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
                 game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
@@ -107,11 +107,20 @@ private:
         auto         dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
         entt::entity marker =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                game->getRegistry(), {.pos{}, .scale{0.05, 0.05}}, pg::game::Drawable{dot_sprite}, {});
+                game->getRegistry(), {.pos{}, .scale{0.005, 0.005}}, pg::game::Drawable{dot_sprite}, {});
         game->addSingleton_as<entt::entity>("galaxy.debug.marker", marker);
+        for (auto i = 0; i < 4; ++i)
+        {
+            auto         debug_cell = std::make_shared<pg::BoxPrimitive>(pg::fBox{{}, {}});
+            entt::entity cell =
+                pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
+                    game->getRegistry(), {.pos{}, .scale{1.00, 1.00}}, pg::game::Drawable{debug_cell}, {});
+            game->addSingleton_as<entt::entity>(fmt::format("galaxy.debug.cell_{}", i), cell);
+        }
     }
 
     void setupGalaxy()
+
     {
         galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::random_device              rd;
@@ -158,19 +167,22 @@ private:
 
     void setupRegularGrid()
     {
+        galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-750, -750}, {1500, 1500}});
         // centered around 0,0
         auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
         auto dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
         auto midpoint = pg::dimsFromRect<float>(windowRect) * 0.5f;
 
-        for (auto x : std::ranges::iota_view{0, windowRect.w / 10})
+        for (auto x : std::ranges::iota_view{0, windowRect.w / 100})
         {
-            for (auto y : std::ranges::iota_view{0, windowRect.h / 10})
+            for (auto y : std::ranges::iota_view{0, windowRect.h / 100})
             {
+                auto new_pos = pg::fVec2{midpoint - 10.0f * pg::fVec2{static_cast<float>(x), static_cast<float>(y)}};
+                auto new_size = pg::fVec2{0.025, 0.025};
+                galaxyQuadtree->insert({new_pos, new_size}, galaxyQuadtree->root);
                 pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState>(
                     game->getRegistry(),
-                    {.pos{midpoint - 10.0f * pg::fVec2{static_cast<float>(x), static_cast<float>(y)}},
-                     .scale{0.025, 0.025}},
+                    {.pos{new_pos}, .scale{new_size}},
                     pg::game::Drawable{dot_sprite},
                     galaxy::StarSystemState{(x == windowRect.w / 20 && y == windowRect.h / 20)
                                                 ? ColonizationStatus::Colonized
@@ -182,8 +194,8 @@ private:
 private:
     std::unique_ptr<pg::game::Game> game;
     std::unique_ptr<pg::Quadtree>   galaxyQuadtree;
-    bool                            isDragging;
-    bool                            drawDebugItems;
+    bool                            isDragging{};
+    bool                            drawDebugItems{true};
 };
 
 } // namespace galaxy

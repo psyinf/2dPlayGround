@@ -8,12 +8,17 @@
 
 namespace pg {
 
+struct DebugIntersectionCollector
+{
+    std::vector<pg::fBox> intersectedQuadTreeNodes;
+};
+
 // Define the Quadtree node class
 class QuadTreeNode
 {
 public:
     fBox                                         bounds;
-    std::vector<fBox>                            points;
+    std::vector<fBox>                            boxes;
     std::array<std::unique_ptr<QuadTreeNode>, 4> children; // Use std::unique_ptr instead of raw pointers
 
     QuadTreeNode(const fBox& b)
@@ -36,27 +41,26 @@ public:
     Quadtree(const fBox& b) { root = std::make_unique<QuadTreeNode>(b); }
 
     // Function to insert a point into the quadtree
-    void insert(const fBox& point, std::unique_ptr<QuadTreeNode>& node)
+    void insert(const fBox& box, std::unique_ptr<QuadTreeNode>& node)
     {
-        // TODO: this seems to test in the wrong ways
         //  Check if the point is within the node's bounds
-        if (!node->bounds.contains(point)) { return; }
+        if (!node->bounds.intersects(box)) { return; }
 
         // If the node has children, insert the point into the appropriate child
         if (!node->isLeaf())
         {
             for (int i = 0; i < 4; ++i)
             {
-                insert(point, node->children[i]);
+                insert(box, node->children[i]);
             }
             return;
         }
 
         // Otherwise, insert the point into the node's points vector
-        node->points.push_back(point);
+        node->boxes.push_back(box);
 
         // Split the node if it exceeds the capacity (e.g., number of points per node)
-        if (node->points.size() > MAX_POINTS_PER_NODE) { splitNode(node); }
+        if (node->boxes.size() > MAX_POINTS_PER_NODE) { splitNode(node); }
     }
 
     // Function to split a node into four child nodes
@@ -71,50 +75,69 @@ public:
         node->children[3] = std::make_unique<QuadTreeNode>(fBox({midX, midY}, splitBoxDim));
 
         // Distribute points to children
-        for (const auto& point : node->points)
+        for (const auto& point : node->boxes)
         {
             for (int i = 0; i < 4; ++i)
             {
                 insert(point, node->children[i]);
             }
         }
-        node->points.clear();
+        node->boxes.clear();
+    }
+
+    std::vector<fBox> rangeQuery(const fBox& queryBox, DebugIntersectionCollector& collector) const
+    {
+        std::vector<fBox> intersectedPoints;
+        rangeQueryHelper(root, queryBox, intersectedPoints, collector);
+        // sort by distance to queryBox mid
+        std::ranges::sort_heap(
+            intersectedPoints.begin(), intersectedPoints.end(), [&queryBox](const fBox& a, const fBox& b) {
+                return lengthSquared(a.midpoint() - queryBox.midpoint()) <
+                       lengthSquared(b.midpoint() - queryBox.midpoint());
+            });
+        return intersectedPoints;
     }
 
     // Function to perform a range query and return intersected points
     std::vector<fBox> rangeQuery(const fBox& queryBox) const
     {
-        std::vector<fBox> intersectedPoints;
-        rangeQueryHelper(root, queryBox, intersectedPoints);
-        return intersectedPoints;
+        DebugIntersectionCollector collector;
+        return rangeQuery(queryBox, collector);
     }
 
     // Recursive helper function for range query
     void rangeQueryHelper(const std::unique_ptr<QuadTreeNode>& node,
                           const fBox&                          queryBox,
-                          std::vector<fBox>&                   intersectedPoints) const
+                          std::vector<fBox>&                   intersectedPoints,
+                          DebugIntersectionCollector&          collector) const
     {
         if (!node) { return; }
 
         if (node->bounds.intersects(queryBox))
         {
-            for (const auto& point : node->points)
-            {
-                if (queryBox.contains(point.midpoint())) { intersectedPoints.push_back(point); }
-            }
-
             if (!node->isLeaf())
             {
                 for (int i = 0; i < 4; ++i)
                 {
-                    rangeQueryHelper(node->children[i], queryBox, intersectedPoints);
+                    rangeQueryHelper(node->children[i], queryBox, intersectedPoints, collector);
+                }
+            }
+            else
+            {
+                collector.intersectedQuadTreeNodes.push_back(node->bounds);
+                for (const auto& point : node->boxes)
+                {
+                    if (queryBox.intersects(point)) //
+                    {
+                        intersectedPoints.push_back(point);
+                    }
                 }
             }
         }
     }
 
 private:
-    static constexpr int MAX_POINTS_PER_NODE = 4; // Adjust as needed
+    static constexpr int MAX_POINTS_PER_NODE = 2; // Adjust as needed
 };
 
 } // namespace pg

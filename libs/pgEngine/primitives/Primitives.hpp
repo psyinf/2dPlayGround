@@ -54,6 +54,15 @@ public:
     virtual void draw(sdl::Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
 };
 
+class Placeholder : public Primitive
+{
+public:
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        // do nothing
+    }
+};
+
 class Line : public Primitive
 {
 public:
@@ -103,8 +112,9 @@ private:
 class BoxPrimitive : public pg::Primitive
 {
 public:
-    BoxPrimitive(const pg::fBox& box)
+    BoxPrimitive(const pg::fBox& box, Color color = {255, 255, 255, 255})
       : box(box)
+      , color(color)
     {
     }
 
@@ -120,13 +130,14 @@ public:
         b.pos += (box.midpoint() * transform.scale);
         auto rect = (SDL_FRect{b.left(), b.top(), b.width(), b.height()});
         // r.setDrawColor(255, 255, 255, 255);
-        pg::ScopedColor sc{r, Color{255, 0, 0, 255}};
+        pg::ScopedColor sc{r, color};
         // draw the polygon
         SDL_RenderDrawRectF(r.get(), &rect);
     }
 
 private:
     const pg::fBox box;
+    const Color    color;
 };
 
 class Points : public pg::Primitive

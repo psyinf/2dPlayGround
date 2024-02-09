@@ -38,7 +38,9 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
             break;
 
         default:
+            rendererStates.push(pg::TextureColorState{pg::Color{255, 0, 0, 255}});
             drawable.prim->draw(renderer, new_transform, rendererStates);
+            rendererStates.pop<pg::TextureColorState>();
             break;
         }
     }
@@ -56,7 +58,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         drawable.prim->draw(renderer, new_transform, rendererStates);
     }
     rendererStates.pop<pg::TextureAlphaState>();
-    // debug items
+    // debug items, TODO: check why this not drawn reliably over other items
     if (game.getSingleton<const bool>("galaxy.debug.draw"))
     {
         for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, pg::tags::DebugRenderingItemTag>(
