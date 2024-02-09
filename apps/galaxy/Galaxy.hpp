@@ -104,12 +104,16 @@ private:
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
                 game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
-        auto         dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
-        entt::entity marker =
+        auto dot_texture = game->getTypedResourceCache<sdl::Texture>().load("../data/circle_05.png");
+        auto sprites = std::make_shared<pg::Sprites>(dot_texture);
+
+        entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                game->getRegistry(), {.pos{}, .scale{0.005, 0.005}}, pg::game::Drawable{dot_sprite}, {});
-        game->addSingleton_as<entt::entity>("galaxy.debug.marker", marker);
-        for (auto i = 0; i < 4; ++i)
+                game->getRegistry(), {}, pg::game::Drawable{sprites}, {});
+        game->addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
+        sprites->getTransforms().emplace_back(pg::Transform2D{.pos{0, 0}, .scale{0.005, 0.005}});
+
+        for (auto i = 0; i < 16; ++i)
         {
             auto         debug_cell = std::make_shared<pg::BoxPrimitive>(pg::fBox{{}, {}});
             entt::entity cell =

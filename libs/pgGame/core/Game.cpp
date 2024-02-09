@@ -61,6 +61,8 @@ game::Game::Game()
 {
     addSingleton<pg::TypedResourceCache<pg::Sprite>>(
         "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
+    addSingleton<pg::TypedResourceCache<sdl::Texture>>(
+        "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
     addSingleton<WindowDetails>(
         WindowDetails{windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]});
 }

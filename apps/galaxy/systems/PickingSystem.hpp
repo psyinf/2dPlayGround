@@ -12,6 +12,7 @@
 #include <deque>
 #include <ranges>
 #include <pgEngine/math/Transform.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -44,9 +45,17 @@ public:
                 auto                           results = quadtree.rangeQuery({pick.world_position, {5, 5}}, collector);
                 if (!results.empty())
                 {
+                    fmt::print("PickingSystem::processPick found {} results\n", results.size());
                     auto marker = game.getSingleton<entt::entity>("galaxy.debug.marker");
-
-                    game.getRegistry().get<pg::Transform2D>(marker).pos = {results.at(0).midpoint()};
+                    auto&& [transform, drawable] = game.getRegistry().get<pg::Transform2D, pg::game::Drawable>(marker);
+                    transform.pos = {results.at(0).midpoint()};
+                    auto                         sprites = std::dynamic_pointer_cast<pg::Sprites>(drawable.prim);
+                    std::vector<pg::Transform2D> transforms;
+                    for (auto& result : results)
+                    {
+                        transforms.push_back({.pos{result.midpoint()}, .scale{0.005, 0.005}});
+                    }
+                    sprites->getTransforms() = transforms;
                     auto i = 0;
                     for (auto& node : collector.intersectedQuadTreeNodes)
                     {

@@ -63,6 +63,23 @@ public:
     }
 };
 
+class Group : public Primitive
+{
+public:
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        for (auto& p : primitives)
+        {
+            p->draw(r, transform, rendererStates);
+        }
+    }
+
+    void addPrimitive(std::unique_ptr<Primitive>&& p) { primitives.push_back(std::move(p)); }
+
+private:
+    std::vector<std::unique_ptr<Primitive>> primitives;
+};
+
 class Line : public Primitive
 {
 public:
