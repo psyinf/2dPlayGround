@@ -4,17 +4,23 @@
 #include <font/Font.hpp>
 #include "SDL_ttf.h"
 
+sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, std::string_view resource_name)
+{
+    sdl::Surface surface(IMG_Load(resource_name.data()));
+    return sdl::Texture(renderer.get(), surface.get());
+}
+
 pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_view resource_name)
 {
     sdl::Surface spriteSurface(IMG_Load(resource_name.data()));
-    return Sprite(sdl::Texture(renderer.get(), spriteSurface.get()));
+    return Sprite(std::make_shared<sdl::Texture>(renderer.get(), spriteSurface.get()));
 }
 
 pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer& renderer, SDLFont& font, std::string_view text)
 {
     static constexpr auto white = SDL_Color{255, 255, 255, 255};
     auto surface = sdl::Surface(TTF_RenderText_Blended(font.get(), text.data(), std::bit_cast<SDL_Color>(white)));
-    return Sprite(sdl::Texture(renderer.get(), surface.get()));
+    return Sprite(std::make_shared<sdl::Texture>(renderer.get(), surface.get()));
 }
 
 pg::FramedSprite pg::SpriteFactory::makeFramedSprite(sdl::Renderer&   renderer,
@@ -23,5 +29,5 @@ pg::FramedSprite pg::SpriteFactory::makeFramedSprite(sdl::Renderer&   renderer,
                                                      std::string_view resource_name)
 {
     sdl::Surface surface(IMG_Load(resource_name.data()));
-    return FramedSprite(sdl::Texture(renderer.get(), surface.get()), width, height);
+    return FramedSprite(std::make_shared<sdl::Texture>(renderer.get(), surface.get()), width, height);
 }
