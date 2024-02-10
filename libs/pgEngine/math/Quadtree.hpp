@@ -90,11 +90,10 @@ public:
         std::vector<fBox> intersectedPoints;
         rangeQueryHelper(root, queryBox, intersectedPoints, collector);
         // sort by distance to queryBox mid
-        std::ranges::sort_heap(
-            intersectedPoints.begin(), intersectedPoints.end(), [&queryBox](const fBox& a, const fBox& b) {
-                return lengthSquared(a.midpoint() - queryBox.midpoint()) <
-                       lengthSquared(b.midpoint() - queryBox.midpoint());
-            });
+        std::ranges::sort(intersectedPoints, [&queryBox](const fBox& a, const fBox& b) {
+            return lengthSquared(a.midpoint() - queryBox.midpoint()) <
+                   lengthSquared(b.midpoint() - queryBox.midpoint());
+        });
         return intersectedPoints;
     }
 
