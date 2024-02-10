@@ -53,7 +53,7 @@ public:
                     std::vector<pg::Transform2D> transforms;
                     for (auto& result : results)
                     {
-                        transforms.push_back({.pos{result.midpoint()}, .scale{0.005, 0.005}});
+                        transforms.push_back({.pos{result.midpoint()}, .scale{0.0015, 0.0015}});
                     }
                     sprites->getTransforms() = transforms;
                     auto i = 0;
@@ -68,13 +68,19 @@ public:
                 else
                 {
                     auto i = 0;
-                    for (auto i = 0; i < 4; ++i)
+                    for (auto i = 0; i < 16; ++i)
                     {
                         auto cell = game.getSingleton<entt::entity>(fmt::format("galaxy.debug.cell_{}", i));
                         auto&& [transform, drawable] =
                             game.getRegistry().get<pg::Transform2D, pg::game::Drawable>(cell);
                         drawable.prim = std::make_shared<pg::Placeholder>();
                     }
+
+                    auto  marker = game.getSingleton<entt::entity>("galaxy.debug.marker");
+                    auto& drawable = game.getRegistry().get<pg::game::Drawable>(marker);
+
+                    auto sprites = std::dynamic_pointer_cast<pg::Sprites>(drawable.prim);
+                    sprites->getTransforms().clear();
                 }
             });
 

@@ -99,6 +99,7 @@ private:
         auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
         for (const auto& box : visitor.results)
         {
+            // continue;
             auto box_prim = std::make_shared<pg::BoxPrimitive>(box, pg::Color{100, 0, 0, 50});
 
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
@@ -111,7 +112,7 @@ private:
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
                 game->getRegistry(), {}, pg::game::Drawable{sprites}, {});
         game->addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
-        sprites->getTransforms().emplace_back(pg::Transform2D{.pos{0, 0}, .scale{0.005, 0.005}});
+        sprites->getTransforms().emplace_back(pg::Transform2D{.pos{0, 0}, .scale{0.015, 0.015}});
 
         for (auto i = 0; i < 16; ++i)
         {

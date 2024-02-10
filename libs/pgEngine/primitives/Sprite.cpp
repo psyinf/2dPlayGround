@@ -22,13 +22,26 @@ void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& 
 
 void pg::Sprites::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states)
 {
+    auto& texture = getTexture();
+    auto  dimensions = vec_cast<float>(getDimensions());
+    states.apply(r);
+    states.apply(r, texture);
     for (auto& transform : instanceTransforms)
     {
-        // add parent transform
-        auto newTransform = t;
-        newTransform.pos += transform.pos;
-        newTransform.scale *= transform.scale;
-        newTransform.rotation_deg += transform.rotation_deg;
-        Sprite::draw(r, newTransform, states);
+        auto box = pg::fBox{transform.pos, dimensions};
+        auto b = box;
+        b.pos -= box.midpoint();
+        b.pos *= transform.scale * t.scale;
+        b.dim *= transform.scale * t.scale;
+        b.pos += b.midpoint();
+
+        b.pos += t.pos;
+        SDL_FRect dest_rect = {b.left(), b.top(), b.width(), b.height()};
+
+        // TODO: SDL_RenderCopyExF is not available in sdlpp
+        SDL_RenderCopyExF(r.get(), texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
+        // r.copyExF(texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
     }
+    states.restore(r);
+    states.restore(r, texture);
 }
