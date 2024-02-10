@@ -1,6 +1,7 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
+#include <pgGame/core/Game.hpp>
 #include <pgEngine/math/Vec.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 #include <pgEngine/math/Box.hpp>
@@ -32,57 +33,21 @@ public:
 
     void handle(const pg::game::FrameStamp& frameStamp) override
     {
+        if (lastPicks.empty()) { return; }
+        const auto pick = lastPicks.back();
+
         auto& quadtree = game.getSingleton<const pg::Quadtree&>("galaxy.quadtree");
-        std::ranges::for_each(
-            lastPicks,
-            [&](const auto& pick)
+        auto& marker = game.getSingleton<entt::entity>("galaxy.debug.marker");
+        auto& transform = game.getRegistry().get<pg::Transform2D>(marker);
+        auto  scaled_range = pg::fVec2{5, 5} * (1.0f / pick.scale);
 
-            {
-                fmt::print("PickingSystem::processPick {} {}\n",
-                           fmt::join(pick.screen_position, ","),
-                           fmt::join(pick.world_position, ","));
-                pg::DebugIntersectionCollector collector;
-                auto                           results = quadtree.rangeQuery({pick.world_position, {5, 5}}, collector);
-                if (!results.empty())
-                {
-                    fmt::print("PickingSystem::processPick found {} results\n", results.size());
-                    auto marker = game.getSingleton<entt::entity>("galaxy.debug.marker");
-                    auto&& [transform, drawable] = game.getRegistry().get<pg::Transform2D, pg::game::Drawable>(marker);
-                    transform.pos = {results.at(0).midpoint()};
-                    auto                         sprites = std::dynamic_pointer_cast<pg::Sprites>(drawable.prim);
-                    std::vector<pg::Transform2D> transforms;
-                    for (auto& result : results)
-                    {
-                        transforms.push_back({.pos{result.midpoint()}, .scale{0.0015, 0.0015}});
-                    }
-                    sprites->getTransforms() = transforms;
-                    auto i = 0;
-                    for (auto& node : collector.intersectedQuadTreeNodes)
-                    {
-                        auto cell = game.getSingleton<entt::entity>(fmt::format("galaxy.debug.cell_{}", i++));
-                        auto&& [transform, drawable] =
-                            game.getRegistry().get<pg::Transform2D, pg::game::Drawable>(cell);
-                        drawable.prim = std::make_shared<pg::BoxPrimitive>(node, pg::Color{255, 0, 0, 255});
-                    }
-                }
-                else
-                {
-                    auto i = 0;
-                    for (auto i = 0; i < 16; ++i)
-                    {
-                        auto cell = game.getSingleton<entt::entity>(fmt::format("galaxy.debug.cell_{}", i));
-                        auto&& [transform, drawable] =
-                            game.getRegistry().get<pg::Transform2D, pg::game::Drawable>(cell);
-                        drawable.prim = std::make_shared<pg::Placeholder>();
-                    }
-
-                    auto  marker = game.getSingleton<entt::entity>("galaxy.debug.marker");
-                    auto& drawable = game.getRegistry().get<pg::game::Drawable>(marker);
-
-                    auto sprites = std::dynamic_pointer_cast<pg::Sprites>(drawable.prim);
-                    sprites->getTransforms().clear();
-                }
-            });
+        auto results = quadtree.rangeQuery({pick.world_position - scaled_range, 2.0f * scaled_range});
+        if (!results.empty())
+        {
+            transform.pos = results.at(0).midpoint();
+            transform.scale = results.at(0).size() * 0.5f;
+        }
+        else { transform.scale = {0, 0}; }
 
         lastPicks.clear();
     };

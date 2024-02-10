@@ -64,7 +64,8 @@ public:
                 world_pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
                 world_pos = (world_pos) * (1.0f / globalTransform.scale);
                 world_pos -= globalTransform.pos;
-                auto event = galaxy::events::PickEvent{.screen_position{pos}, .world_position{world_pos}};
+                auto event = galaxy::events::PickEvent{
+                    .screen_position{pos}, .world_position{world_pos}, .scale{globalTransform.scale}};
                 game->getDispatcher().trigger(event);
             };
         });
@@ -106,26 +107,15 @@ private:
                 game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
         auto dot_texture = game->getTypedResourceCache<sdl::Texture>().load("../data/circle_05.png");
-        auto sprites = std::make_shared<pg::Sprites>(dot_texture);
+        auto marker = std::make_shared<pg::Sprite>(dot_texture);
 
         entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                game->getRegistry(), {}, pg::game::Drawable{sprites}, {});
+                game->getRegistry(), {.pos{0, 0}, .scale{0.015, 0.015}}, pg::game::Drawable{marker}, {});
         game->addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
-        sprites->getTransforms().emplace_back(pg::Transform2D{.pos{0, 0}, .scale{0.015, 0.015}});
-
-        for (auto i = 0; i < 16; ++i)
-        {
-            auto         debug_cell = std::make_shared<pg::BoxPrimitive>(pg::fBox{{}, {}});
-            entt::entity cell =
-                pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                    game->getRegistry(), {.pos{}, .scale{1.00, 1.00}}, pg::game::Drawable{debug_cell}, {});
-            game->addSingleton_as<entt::entity>(fmt::format("galaxy.debug.cell_{}", i), cell);
-        }
     }
 
     void setupGalaxy()
-
     {
         galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::random_device              rd;
@@ -150,50 +140,6 @@ private:
         auto background_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way.jpg");
         pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
             game->getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite});
-    }
-
-    void setupStarSystems()
-    {
-        auto dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
-
-        for (auto i : std::ranges::iota_view{1, 5000})
-        {
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState>(
-                game->getRegistry(),
-                {.pos{pg::getPointInCircle(375)}, .scale{0.0125, 0.0125}},
-                pg::game::Drawable{dot_sprite},
-                galaxy::StarSystemState{});
-        }
-        // add some background
-        auto background_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way.jpg");
-        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
-            game->getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite});
-    }
-
-    void setupRegularGrid()
-    {
-        galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-750, -750}, {1500, 1500}});
-        // centered around 0,0
-        auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
-        auto dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
-        auto midpoint = pg::dimsFromRect<float>(windowRect) * 0.5f;
-
-        for (auto x : std::ranges::iota_view{0, windowRect.w / 100})
-        {
-            for (auto y : std::ranges::iota_view{0, windowRect.h / 100})
-            {
-                auto new_pos = pg::fVec2{midpoint - 10.0f * pg::fVec2{static_cast<float>(x), static_cast<float>(y)}};
-                auto new_size = pg::fVec2{0.025, 0.025};
-                galaxyQuadtree->insert({new_pos, new_size}, galaxyQuadtree->root);
-                pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState>(
-                    game->getRegistry(),
-                    {.pos{new_pos}, .scale{new_size}},
-                    pg::game::Drawable{dot_sprite},
-                    galaxy::StarSystemState{(x == windowRect.w / 20 && y == windowRect.h / 20)
-                                                ? ColonizationStatus::Colonized
-                                                : ColonizationStatus::Unexplored});
-            }
-        }
     }
 
 private:
