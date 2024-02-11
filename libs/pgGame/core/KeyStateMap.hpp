@@ -22,19 +22,7 @@ class KeyStateMap
 public:
     using MouseButtonsState = uint8_t;
 
-    KeyStateMap(sdl::EventHandler& eventHandler)
-    {
-        eventHandler.keyDown = [this](const SDL_KeyboardEvent& keyboardEvent) { keyDown(keyboardEvent.keysym.sym); };
-        eventHandler.keyUp = [this](const SDL_KeyboardEvent& keyboardEvent) { keyUp(keyboardEvent.keysym.sym); };
-        eventHandler.mouseMotion = [this](const SDL_MouseMotionEvent& mouseMotionEvent) {
-            mouseMotion(mouseMotionEvent);
-        };
-        eventHandler.mouseButtonDown = [this](const SDL_MouseButtonEvent& buttonEvent) {
-            mouseButtonEvent(buttonEvent);
-        };
-        eventHandler.mouseButtonUp = [this](const SDL_MouseButtonEvent& buttonEvent) { mouseButtonEvent(buttonEvent); };
-        eventHandler.mouseWheel = [this](const SDL_MouseWheelEvent& wheelEvent) { mouseWheelEvent(wheelEvent); };
-    }
+    KeyStateMap(sdl::EventHandler& eventHandler);
 
     enum class CallbackTrigger
     {
@@ -56,9 +44,7 @@ public:
     using MouseWheelCallback = std::function<void(pg::iVec2)>;
 
 public:
-    void keyDown(SDL_Keycode keyCode);
-
-    void keyUp(SDL_Keycode keyCode);
+    void keyEvent(const SDL_KeyboardEvent& keyCode);
 
     void mouseMotion(const SDL_MouseMotionEvent& event);
 
@@ -66,7 +52,6 @@ public:
 
     void mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent);
 
-    bool isPressed(SDL_Keycode keyCode);
     /**
      * Register a callback that will be issued immediately when the key is pressed or released
      *
@@ -80,8 +65,9 @@ public:
      *
      * @param code
      * @param callback
+     * @param once if true, the callback will not report another key press until key is released before again
      */
-    void registerKeyCallback(SDL_Keycode code, Callback&& callback);
+    void registerKeyCallback(SDL_Keycode code, Callback&& callback, bool once = false);
 
     void registerMouseMovedCallback(MouseMovedCallback&& callback) { mouseMovedCallback = callback; }
 
@@ -99,10 +85,23 @@ public:
     void evaluateCallbacks() const;
 
 private:
-    std::unordered_map<SDL_Keycode, bool>           pressed;
-    std::unordered_map<SDL_Keycode, DirectCallback> directCallbacks;
-    std::unordered_map<SDL_Keycode, Callback>       callbacks;
-    pg::iVec2                                       mousePosition{};
+    struct CallbackData
+    {
+        CallbackTrigger trigger;
+        Callback        callback;
+        bool            once{false};
+    };
+
+    struct KeyState
+    {
+        bool pressed{false};
+        bool repeated{false};
+    };
+
+    mutable std::unordered_map<SDL_Keycode, KeyState> pressed; // pressed and repeated
+    std::unordered_map<SDL_Keycode, DirectCallback>   directCallbacks;
+    std::unordered_map<SDL_Keycode, CallbackData>     callbacks;
+    pg::iVec2                                         mousePosition{};
 
     MouseMovedCallback   mouseMovedCallback;
     MouseDraggedCallback mouseDraggedCallback;

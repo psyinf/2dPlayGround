@@ -3,11 +3,14 @@
 #include <pgEngine/math/Vec.hpp>
 #include <pgEngine/core/States.hpp>
 #include <pgEngine/math/Transform.hpp>
+#include <pgEngine/math/Box.hpp>
 
 #include <bit>
 #include <memory>
 #include <sdlpp.hpp>
 #include <vector>
+
+#include <SDL_rect.h>
 
 namespace pg {
 
@@ -49,6 +52,32 @@ class Primitive
 {
 public:
     virtual void draw(sdl::Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
+};
+
+class Placeholder : public Primitive
+{
+public:
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        // do nothing
+    }
+};
+
+class Group : public Primitive
+{
+public:
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        for (auto& p : primitives)
+        {
+            p->draw(r, transform, rendererStates);
+        }
+    }
+
+    void addPrimitive(std::unique_ptr<Primitive>&& p) { primitives.push_back(std::move(p)); }
+
+private:
+    std::vector<std::unique_ptr<Primitive>> primitives;
 };
 
 class Line : public Primitive
@@ -95,6 +124,37 @@ public:
 
 private:
     std::vector<iVec2> points;
+};
+
+class BoxPrimitive : public pg::Primitive
+{
+public:
+    BoxPrimitive(const pg::fBox& box, Color color = {255, 255, 255, 255})
+      : box(box)
+      , color(color)
+    {
+    }
+
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        // transform the box
+        auto b = box;
+        b.pos -= (box.midpoint());
+        b.pos *= transform.scale;
+        b.dim *= transform.scale;
+        b.pos += transform.pos;
+        // TODO: this seems awkward
+        b.pos += (box.midpoint() * transform.scale);
+        auto rect = (SDL_FRect{b.left(), b.top(), b.width(), b.height()});
+        // r.setDrawColor(255, 255, 255, 255);
+        pg::ScopedColor sc{r, color};
+        // draw the polygon
+        SDL_RenderDrawRectF(r.get(), &rect);
+    }
+
+private:
+    const pg::fBox box;
+    const Color    color;
 };
 
 class Points : public pg::Primitive

@@ -43,7 +43,7 @@ void debugDisplay(pg::SpritePixelData&          pixelData,
     auto          frame = 0u;
     pg::RefPoints rp{contour};
     pg::SDLApp    app{pg::config::WindowConfig{.screen{}, .offset{200, 200}, .size{pixelData.getDimensions() * 5}}};
-    pg::Sprite    sprite(sdl::Texture(app.getRenderer().get(), pixelData.getSurface().get()));
+    pg::Sprite    sprite(std::make_shared<sdl::Texture>(app.getRenderer().get(), pixelData.getSurface().get()));
 
     pg::RefLines rpConvex{convexHull};
     rpConvex.setMaxElement(1);

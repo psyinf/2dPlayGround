@@ -1,9 +1,9 @@
 #include <primitives/Sprite.hpp>
 
-pg::Sprite::Sprite(sdl::Texture&& tex)
-  : texture(std::move(tex))
+pg::Sprite::Sprite(std::shared_ptr<sdl::Texture> tex)
+  : texture(tex)
 {
-    texture.query(nullptr, nullptr, &dimensions[0], &dimensions[1]);
+    texture->query(nullptr, nullptr, &dimensions[0], &dimensions[1]);
 }
 
 void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states)
@@ -11,11 +11,37 @@ void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& 
     auto      calcPos = t.pos - (vec_cast<float>(dimensions) * 0.5f * t.scale);
     SDL_FRect dest_rect = {calcPos[0], calcPos[1], (dimensions[0] * t.scale[0]), (dimensions[1] * t.scale[1])};
     states.apply(r);
-    states.apply(r, texture);
+    states.apply(r, *texture);
     // TODO: SDL_RenderCopyExF is not available in sdlpp
-    SDL_RenderCopyExF(r.get(), texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
+    SDL_RenderCopyExF(r.get(), texture->get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
     // r.copyExF(texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
 
+    states.restore(r);
+    states.restore(r, *texture);
+}
+
+void pg::Sprites::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states)
+{
+    auto& texture = getTexture();
+    auto  dimensions = vec_cast<float>(getDimensions());
+    states.apply(r);
+    states.apply(r, texture);
+    for (auto& transform : instanceTransforms)
+    {
+        auto box = pg::fBox{transform.pos, dimensions};
+        auto b = box;
+        b.pos -= box.midpoint();
+        b.pos *= transform.scale * t.scale;
+        b.dim *= transform.scale * t.scale;
+        b.pos += b.midpoint();
+
+        b.pos += t.pos;
+        SDL_FRect dest_rect = {b.left(), b.top(), b.width(), b.height()};
+
+        // TODO: SDL_RenderCopyExF is not available in sdlpp
+        SDL_RenderCopyExF(r.get(), texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
+        // r.copyExF(texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
+    }
     states.restore(r);
     states.restore(r, texture);
 }

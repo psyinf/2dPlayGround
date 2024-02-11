@@ -6,8 +6,8 @@ namespace pg {
 class FramedSprite : public pg::Sprite
 {
 public:
-    FramedSprite(sdl::Texture&& tex, uint16_t width, uint16_t height)
-      : Sprite(std::move(tex))
+    FramedSprite(std::shared_ptr<sdl::Texture> tex, uint16_t width, uint16_t height)
+      : Sprite(tex)
       , width(width)
       , height(height)
     {

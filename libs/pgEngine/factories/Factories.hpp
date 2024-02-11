@@ -11,6 +11,8 @@ namespace pg {
 class SpriteFactory
 {
 public:
+    static sdl::Texture makeTexture(sdl::Renderer& renderer, std::string_view resource_name);
+
     static Sprite makeSprite(sdl::Renderer& renderer, std::string_view resource_name);
 
     static Sprite makeTextSprite(sdl::Renderer& renderer, SDLFont& font, std::string_view text);
