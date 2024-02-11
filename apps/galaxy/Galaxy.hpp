@@ -106,7 +106,7 @@ private:
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
                 game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
-        auto dot_texture = game->getTypedResourceCache<sdl::Texture>().load("../data/circle_05.png");
+        auto dot_texture = game->getTypedResourceCache<sdl::Texture>().load("../data/reticle.png");
         auto marker = std::make_shared<pg::Sprite>(dot_texture);
 
         entt::entity markers =

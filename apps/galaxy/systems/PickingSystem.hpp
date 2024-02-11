@@ -45,7 +45,7 @@ public:
         if (!results.empty())
         {
             transform.pos = results.at(0).midpoint();
-            transform.scale = results.at(0).size() * 0.5f;
+            transform.scale = {0.025, 0.025};
         }
         else { transform.scale = {0, 0}; }
 
