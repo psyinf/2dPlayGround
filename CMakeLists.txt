@@ -10,12 +10,11 @@ include(cmake/stacktrace.cmake)
 include(cmake/setup_cpm.cmake)
 
 conan_cmake_configure(REQUIRES 
-    catch2/3.4.0
     sdl/2.28.3
     sdl_image/2.6.3
     sdl_ttf/2.20.2
-    fmt/10.1.1
-    entt/3.12.2
+    #fmt/10.1.1
+    #entt/3.12.2
     libpng/1.6.42 #resolve conflicts
     GENERATORS CMakeDeps CMakeToolchain
 )
@@ -25,15 +24,47 @@ conan_cmake_install(PATH_OR_REFERENCE .
                     BUILD missing
                     REMOTE conancenter
                     SETTINGS ${settings})
-
+CPMAddPackage(
+    NAME fmt
+    GITHUB_REPOSITORY "fmtlib/fmt"
+    GIT_TAG 10.2.1
+)
 
 CPMAddPackage(
-    NAME sdlpp    
+    NAME EnTT    
+
+    GITHUB_REPOSITORY "skypjack/entt"
+    GIT_TAG v3.13.1
+)
+CPMAddPackage(
+    NAME sdlpp
 
     GITHUB_REPOSITORY "mika314/sdlpp"
     GIT_TAG HEAD
     #OPTIONS USE_SDLGFX
 )
+
+CPMAddPackage(
+    NAME cereal
+
+    GITHUB_REPOSITORY "USCiLab/cereal"
+    GIT_TAG HEAD
+    OPTIONS "SKIP_PERFORMANCE_COMPARISON ON" "BUILD_SANDBOX OFF"
+)
+
+CPMAddPackage(
+    NAME Catch2
+
+    GITHUB_REPOSITORY "catchorg/Catch2"
+    GIT_TAG v3.5.2
+     OPTIONS
+    "CATCH_BUILD_TESTING OFF"
+    "CATCH_BUILD_EXAMPLES OFF"
+    "CATCH_BUILD_EXTRA_TESTS OFF"
+    "CATCH_BUILD_FUZZERS OFF"
+)
+
+
 enable_testing()
 add_subdirectory(libs)
 add_subdirectory(apps)

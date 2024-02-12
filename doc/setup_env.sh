@@ -14,3 +14,5 @@ sudo -Hiu $USER env conan profile new default --detect
 sudo -Hiu $USER env conan profile update settings.compiler.libcxx=libstdc++11 default
 sudo -Hiu $USER env conan profile update conf.tools.system.package_manager:mode=install default
 sudo -Hiu $USER env conan profile update conf.tools.system.package_manager:sudo=True default
+
+export CPM_SOURCE_CACHE=$HOME/.cache/CPM
