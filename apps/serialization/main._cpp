@@ -225,11 +225,43 @@ bool unique_ptr_case()
     }
 }
 
+bool simple()
+{
+    entt::registry registry;
+    auto           entity = registry.create();
+
+    // initialize
+    auto d = Data{std::make_unique<double>(10.0)};
+    registry.emplace<Data>(entity, std::move(d));
+
+    // back up
+    std::stringstream ss;
+    {
+        cereal::BinaryOutputArchive ar(ss);
+        ar(entity);
+    }
+    // update
+    {
+        auto comp = registry.try_get<Data>(entity);
+        comp->value = nullptr;
+    }
+    // undo
+    {
+        cereal::BinaryInputArchive ar(ss);
+        ar(entity);
+    }
+    // check
+    {
+        auto comp = registry.try_get<Data>(entity);
+        return (comp != nullptr) && (comp->value != nullptr) && (*(comp->value) == 10.0);
+    }
+}
+
 int main()
 {
     RegisterComponentForSerialize<Position>();
     RegisterComponentForSerialize<Data>();
-
+    simple();
     assert(trivially_copyable_case() && L"fail to trivially_copyable_case");
     assert(unique_ptr_case() && L"fail to unique_ptr_case");
 }
