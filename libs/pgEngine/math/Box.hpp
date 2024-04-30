@@ -17,6 +17,11 @@ public:
     {
     }
 
+    static Box fromMidpoint(const Vec2<T>& midpoint, const Vec2<T>& dims) noexcept
+    {
+        return Box(midpoint - dims * static_cast<T>(0.5), dims);
+    }
+
     constexpr decltype(auto) getMin() const noexcept { return pos; }
 
     constexpr decltype(auto) getMax() const noexcept { return pos + dim; }

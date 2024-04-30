@@ -13,13 +13,19 @@ struct DebugIntersectionCollector
     std::vector<pg::fBox> intersectedQuadTreeNodes;
 };
 
-// Define the Quadtree node class
+template <typename T>
 class QuadTreeNode
 {
 public:
+    struct Box
+    {
+        fBox           box;
+        std::vector<T> data;
+    };
+
     fBox                                         bounds;
-    std::vector<fBox>                            boxes;
-    std::array<std::unique_ptr<QuadTreeNode>, 4> children; // Use std::unique_ptr instead of raw pointers
+    std::vector<Box>                             boxes;
+    std::array<std::unique_ptr<QuadTreeNode>, 4> children;
 
     QuadTreeNode(const fBox& b)
       : bounds(b)
@@ -32,16 +38,21 @@ public:
     bool isLeaf() const { return children[0] == nullptr; }
 };
 
-// Define the Quadtree class
+template <typename T = int>
 class Quadtree
 {
 public:
-    std::unique_ptr<QuadTreeNode> root; // Use std::unique_ptr for the root node
+    using Node = QuadTreeNode<T>;
+    using Data = std::vector<T>;
+    using Result = Node::Box;
+    std::unique_ptr<Node> root; // Use std::unique_ptr for the root node
 
-    Quadtree(const fBox& b) { root = std::make_unique<QuadTreeNode>(b); }
+    Quadtree(const fBox& b) { root = std::make_unique<Node>(b); }
+
+    void insert(const fBox& box, T data, std::unique_ptr<Node>& node) { insert(box, Data{{data}}, node); }
 
     // Function to insert a point into the quadtree
-    void insert(const fBox& box, std::unique_ptr<QuadTreeNode>& node)
+    void insert(const fBox& box, Data data, std::unique_ptr<Node>& node)
     {
         //  Check if the point is within the node's bounds
         if (!node->bounds.intersects(box)) { return; }
@@ -51,64 +62,64 @@ public:
         {
             for (int i = 0; i < 4; ++i)
             {
-                insert(box, node->children[i]);
+                insert(box, data, node->children[i]);
             }
             return;
         }
 
         // Otherwise, insert the point into the node's points vector
-        node->boxes.push_back(box);
+
+        node->boxes.push_back({.box{box}, .data{data}});
 
         // Split the node if it exceeds the capacity (e.g., number of points per node)
         if (node->boxes.size() > MAX_POINTS_PER_NODE) { splitNode(node); }
     }
 
     // Function to split a node into four child nodes
-    void splitNode(std::unique_ptr<QuadTreeNode>& node)
+    void splitNode(std::unique_ptr<Node>& node)
     {
         auto [midX, midY] = node->bounds.midpoint();
         const auto splitBoxDim = pg::fVec2{node->bounds.width() / 2, node->bounds.height() / 2};
-        node->children[0] =
-            std::make_unique<QuadTreeNode>(fBox({node->bounds.left(), node->bounds.top()}, splitBoxDim));
-        node->children[1] = std::make_unique<QuadTreeNode>(fBox({midX, node->bounds.top()}, splitBoxDim));
-        node->children[2] = std::make_unique<QuadTreeNode>(fBox({node->bounds.left(), midY}, splitBoxDim));
-        node->children[3] = std::make_unique<QuadTreeNode>(fBox({midX, midY}, splitBoxDim));
+        node->children[0] = std::make_unique<Node>(fBox({node->bounds.left(), node->bounds.top()}, splitBoxDim));
+        node->children[1] = std::make_unique<Node>(fBox({midX, node->bounds.top()}, splitBoxDim));
+        node->children[2] = std::make_unique<Node>(fBox({node->bounds.left(), midY}, splitBoxDim));
+        node->children[3] = std::make_unique<Node>(fBox({midX, midY}, splitBoxDim));
 
         // Distribute points to children
-        for (const auto& point : node->boxes)
+        for (const auto& [point, data] : node->boxes)
         {
             for (int i = 0; i < 4; ++i)
             {
-                insert(point, node->children[i]);
+                insert(point, data, node->children[i]);
             }
         }
         node->boxes.clear();
     }
 
-    std::vector<fBox> rangeQuery(const fBox& queryBox, DebugIntersectionCollector& collector) const
+    std::vector<Result> rangeQuery(const fBox& queryBox, DebugIntersectionCollector& collector) const
     {
-        std::vector<fBox> intersectedPoints;
-        rangeQueryHelper(root, queryBox, intersectedPoints, collector);
+        std::vector<Result> intersections;
+        rangeQueryHelper(root, queryBox, intersections, collector);
         // sort by distance to queryBox mid
-        std::ranges::sort(intersectedPoints, [&queryBox](const fBox& a, const fBox& b) {
-            return lengthSquared(a.midpoint() - queryBox.midpoint()) <
-                   lengthSquared(b.midpoint() - queryBox.midpoint());
+        std::ranges::sort(intersections, [&queryBox](const Result& a, const Result& b) {
+            return lengthSquared(a.box.midpoint() - queryBox.midpoint()) <
+                   lengthSquared(b.box.midpoint() - queryBox.midpoint());
         });
-        return intersectedPoints;
+        return intersections;
     }
 
     // Function to perform a range query and return intersected points
-    std::vector<fBox> rangeQuery(const fBox& queryBox) const
+    std::vector<Result> rangeQuery(const fBox& queryBox) const
     {
         DebugIntersectionCollector collector;
         return rangeQuery(queryBox, collector);
     }
 
     // Recursive helper function for range query
-    void rangeQueryHelper(const std::unique_ptr<QuadTreeNode>& node,
-                          const fBox&                          queryBox,
-                          std::vector<fBox>&                   intersectedPoints,
-                          DebugIntersectionCollector&          collector) const
+    void rangeQueryHelper(const std::unique_ptr<Node>& node,
+                          const fBox&                  queryBox,
+                          std::vector<Result>&         intersections,
+                          DebugIntersectionCollector&  collector) const
     {
         if (!node) { return; }
 
@@ -118,17 +129,17 @@ public:
             {
                 for (int i = 0; i < 4; ++i)
                 {
-                    rangeQueryHelper(node->children[i], queryBox, intersectedPoints, collector);
+                    rangeQueryHelper(node->children[i], queryBox, intersections, collector);
                 }
             }
             else
             {
                 collector.intersectedQuadTreeNodes.push_back(node->bounds);
-                for (const auto& point : node->boxes)
+                for (const auto& [point, data] : node->boxes)
                 {
                     if (queryBox.intersects(point)) //
                     {
-                        intersectedPoints.push_back(point);
+                        intersections.push_back({point, data});
                     }
                 }
             }

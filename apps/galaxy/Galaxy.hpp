@@ -11,6 +11,7 @@
 #include <systems/RenderSystem.hpp>
 #include <systems/UpdateSystem.hpp>
 #include <systems/PickingSystem.hpp>
+#include <systems/DroneSystem.hpp>
 
 #include "entities/StarSystem.hpp"
 #include "events/PickEvent.hpp"
@@ -83,19 +84,32 @@ public:
         // setupRegularGrid();
         setupGalaxy();
         setupQuadtreeDebug();
+        setupSelectionMarker();
         game->switchScene("start");
         // TODO: add some wrapper that holds a map of registered singleton names used as configuration items
         // Better: generic mechanism that wraps a config struct
         game->addSingleton_as<const bool&>("galaxy.debug.draw", drawDebugItems);
-        game->addSingleton_as<const pg::Quadtree&>("galaxy.quadtree", *galaxyQuadtree);
+        game->addSingleton_as<const bool&>("galaxy.draw_quadtree", drawQuadTree);
+        game->addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
     }
 
     void run() { game->loop(); }
 
 private:
+    void setupSelectionMarker()
+    {
+        auto         dot_texture = game->getTypedResourceCache<sdl::Texture>().load("../data/reticle.png");
+        auto         marker = std::make_shared<pg::Sprite>(dot_texture);
+        entt::entity markers =
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
+                game->getRegistry(), {.pos{0, 0}, .scale{0.015, 0.015}}, pg::game::Drawable{marker}, {});
+        game->addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
+    }
+
     void setupQuadtreeDebug()
     {
-        CollectBoundsVisitor<pg::QuadTreeNode> visitor;
+        if (!drawQuadTree) { return; }
+        CollectBoundsVisitor<pg::QuadTreeNode<entt::entity>> visitor;
         galaxyQuadtree->root->accept(visitor);
         auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
         for (const auto& box : visitor.results)
@@ -106,18 +120,11 @@ private:
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
                 game->getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
-        auto dot_texture = game->getTypedResourceCache<sdl::Texture>().load("../data/reticle.png");
-        auto marker = std::make_shared<pg::Sprite>(dot_texture);
-
-        entt::entity markers =
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                game->getRegistry(), {.pos{0, 0}, .scale{0.015, 0.015}}, pg::game::Drawable{marker}, {});
-        game->addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
     }
 
     void setupGalaxy()
     {
-        galaxyQuadtree = std::make_unique<pg::Quadtree>(pg::fBox{{-750, -750}, {1500, 1500}});
+        galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::random_device              rd;
         std::mt19937                    gen(rd());
         std::normal_distribution<float> d(0, 150);
@@ -129,12 +136,13 @@ private:
         {
             auto new_pos = pg::fVec2{d(gen), d(gen)};
             auto new_size = star_size_dist(gen) * pg::fVec2{1.0f, 1.0f};
-            galaxyQuadtree->insert({new_pos, new_size}, galaxyQuadtree->root);
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState>(
+            auto entity = pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState>(
                 game->getRegistry(),
                 {.pos{new_pos}, .scale{new_size}},
                 pg::game::Drawable{dot_sprite},
                 galaxy::StarSystemState{});
+
+            galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
         // add some background
         auto background_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way.jpg");
@@ -143,10 +151,11 @@ private:
     }
 
 private:
-    std::unique_ptr<pg::game::Game> game;
-    std::unique_ptr<pg::Quadtree>   galaxyQuadtree;
-    bool                            isDragging{};
-    bool                            drawDebugItems{true};
+    std::unique_ptr<pg::game::Game>             game;
+    std::unique_ptr<pg::Quadtree<entt::entity>> galaxyQuadtree;
+    bool                                        isDragging{};
+    bool                                        drawDebugItems{true};
+    bool                                        drawQuadTree{false};
 };
 
 } // namespace galaxy

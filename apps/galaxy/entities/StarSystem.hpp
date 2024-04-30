@@ -1,5 +1,4 @@
 #pragma once
-#include <pgEngine/math/Vec.hpp>
 
 namespace galaxy {
 enum class ColonizationStatus
