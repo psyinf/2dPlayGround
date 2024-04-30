@@ -23,7 +23,7 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos)
     auto dot_sprite = game.getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
     // create a drone
     pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::Drone>(
-        game.getRegistry(), {.pos{pos}, .scale{0.01, 0.01}}, pg::game::Drawable{dot_sprite}, {});
+        game.getRegistry(), {.pos{pos}, .scale{0.005, 0.005}}, pg::game::Drawable{dot_sprite}, {});
 }
 
 void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
@@ -33,6 +33,17 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
     for (auto entity : view)
     {
         auto&& [drone, transform] = view.get<galaxy::Drone, pg::Transform2D>(entity);
+        drone.lifetime += 1;
+        // exponential failure rate
+        auto l = 1.0 - (std::exp(0.000001f * drone.lifetime) - 1);
+
+        if (pg::randomBetween(0.0f, 1.0f) > l)
+        {
+            game.getRegistry().destroy(entity);
+            std::cout << "Died at " << drone.lifetime << " with likelihood: " << l << "\n";
+            continue;
+        }
+
         // find nearest star
         if (lengthSquared(transform.pos - drone.targetPos) < 0.01f)
         {
@@ -41,6 +52,15 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
             drone.atTarget = true;
             drone.waitCycles = 100;
             // mark the star as visited
+            auto& starsystem = game.getRegistry().get<galaxy::StarSystemState>(drone.targetId);
+            if (starsystem.colonizationStatus == galaxy::ColonizationStatus::Explored)
+            {
+                // suicide
+                game.getRegistry().destroy(entity);
+                continue;
+            }
+
+            starsystem.colonizationStatus = galaxy::ColonizationStatus::Explored;
         }
         if (drone.atTarget)
         {
@@ -49,7 +69,10 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
             {
                 drone.atTarget = false;
                 drone.hasTarget = false;
+                drone.targetId = entt::null;
                 // build new drones
+                // TODO: constant for replication factor
+                makeDrone(transform.pos);
                 makeDrone(transform.pos);
             }
         }
@@ -57,8 +80,15 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
         { // filter out own position using ranges
             auto r =
 
-                quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, {20, 20})) |
-                std::views::filter([&transform](auto result) { return !equal(result.box.midpoint(), transform.pos); });
+                quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, {40, 40})) |
+                std::views::filter([&transform](auto result) { return !equal(result.box.midpoint(), transform.pos); }) |
+                // remove stars that are already visited
+                std::views::filter([&game = game](auto result) {
+                    auto& starsystem = game.getRegistry().get<galaxy::StarSystemState>(result.data.front());
+                    return starsystem.colonizationStatus == galaxy::ColonizationStatus::Unexplored;
+                })
+
+                ;
             // to vector
             auto res = std::ranges::to<std::vector<pg::Quadtree<entt::entity>::Result>>(r);
             if (!r.empty())
@@ -67,6 +97,7 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
                 auto index = pg::randomBetween(static_cast<size_t>(0), res.size() - 1);
                 drone.targetPos = res[index].box.midpoint();
                 drone.hasTarget = true;
+                drone.targetId = res[index].data.front();
             }
             else
             {

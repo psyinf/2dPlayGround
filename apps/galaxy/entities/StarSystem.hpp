@@ -10,6 +10,6 @@ enum class ColonizationStatus
 
 struct StarSystemState
 {
-    ColonizationStatus colonizationStatus;
+    ColonizationStatus colonizationStatus{ColonizationStatus::Unexplored};
 };
 } // namespace galaxy

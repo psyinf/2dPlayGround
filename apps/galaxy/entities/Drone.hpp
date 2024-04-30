@@ -5,8 +5,7 @@ namespace galaxy {
 
 struct Drone
 {
-    uint8_t      id;
-    bool         isAlive{true};
+    uint16_t     lifetime{0};
     bool         hasTarget{false};
     bool         atTarget{false};
     entt::entity targetId;

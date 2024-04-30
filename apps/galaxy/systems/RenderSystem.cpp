@@ -32,7 +32,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
         switch (systemState.colonizationStatus)
         {
-        case galaxy::ColonizationStatus::Colonized:
+        case galaxy::ColonizationStatus::Explored:
             rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
             drawable.prim->draw(renderer, new_transform, rendererStates);
             rendererStates.pop<pg::TextureColorState>();
