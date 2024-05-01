@@ -11,6 +11,9 @@ struct Drone
     entt::entity targetId;
     uint16_t     waitCycles{100};
     pg::fVec2    targetPos{};
+
+    pg::fVec2 maxAcceleration{0.0001f, 0.0001f};
+    pg::fVec2 velocity{};
 };
 
 } // namespace galaxy

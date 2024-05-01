@@ -14,14 +14,16 @@
 #include <systems/DroneSystem.hpp>
 
 #include "entities/StarSystem.hpp"
+#include "entities/Faction.hpp"
 #include "events/PickEvent.hpp"
 #include <pgEngine/math/Random.hpp>
 #include <pgGame/entities/WindowDetails.hpp>
-
+#include <Config.hpp>
 #include <cmath>
 
 namespace galaxy {
 class GalacticCore
+
 {
 public:
     GalacticCore()
@@ -86,6 +88,8 @@ public:
         setupGalaxy();
         setupQuadtreeDebug();
         setupSelectionMarker();
+        setupConfig();
+
         game->switchScene("start");
         // TODO: add some wrapper that holds a map of registered singleton names used as configuration items
         // Better: generic mechanism that wraps a config struct
@@ -97,6 +101,12 @@ public:
     void run() { game->loop(); }
 
 private:
+    void setupConfig()
+    {
+        game->addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
+        game->addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
+    }
+
     void setupSelectionMarker()
     {
         auto         dot_texture = game->getTypedResourceCache<sdl::Texture>().load("../data/reticle.png");
@@ -133,15 +143,17 @@ private:
 
         auto dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
 
-        for (auto i : std::ranges::iota_view{1, 4000})
+        for (auto i : std::ranges::iota_view{1, 14000})
         {
             auto new_pos = pg::fVec2{d(gen), d(gen)};
             auto new_size = star_size_dist(gen) * pg::fVec2{1.0f, 1.0f};
-            auto entity = pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState>(
-                game->getRegistry(),
-                {.pos{new_pos}, .scale{new_size}},
-                pg::game::Drawable{dot_sprite},
-                galaxy::StarSystemState{});
+            auto entity =
+                pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState, galaxy::Faction>(
+                    game->getRegistry(),
+                    {.pos{new_pos}, .scale{new_size}},
+                    pg::game::Drawable{dot_sprite},
+                    galaxy::StarSystemState{},
+                    galaxy::Faction{"None"});
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
@@ -157,6 +169,7 @@ private:
     bool                                        isDragging{};
     bool                                        drawDebugItems{true};
     bool                                        drawQuadTree{false};
+    config::Galaxy                              galaxyConfig;
 };
 
 } // namespace galaxy

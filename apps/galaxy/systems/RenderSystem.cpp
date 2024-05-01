@@ -6,6 +6,7 @@
 #include <pgEngine/math/VecUtils.hpp>
 #include <entities/Tags.hpp>
 #include <entities/Drone.hpp>
+#include <entities/Faction.hpp>
 
 void galaxy::RenderSystem::setup() {}
 
@@ -18,13 +19,17 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
     rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
     rendererStates.apply(renderer);
     auto windowRect = game.getSingleton<pg::game::WindowDetails>().windowRect;
+    auto star_default_color = game.getSingleton<const pg::Color&>("galaxy.star.default_color");
+
     auto globalTransform = game.getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
     // star systems
-    for (auto  view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>();
+
+    for (auto view =
+             game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
          auto& entity : view)
     {
-        auto&& [drawable, transform, systemState] =
-            view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>(entity);
+        auto&& [drawable, transform, systemState, faction] =
+            view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>(entity);
         // TODO: make this a camera class and use homogeneous matrices
         auto new_transform = transform;
         new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
@@ -33,22 +38,24 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         switch (systemState.colonizationStatus)
         {
         case galaxy::ColonizationStatus::Explored:
-            rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
+            rendererStates.push(pg::TextureColorState{faction.systemColor});
             drawable.prim->draw(renderer, new_transform, rendererStates);
             rendererStates.pop<pg::TextureColorState>();
             break;
 
         default:
-            rendererStates.push(pg::TextureColorState{pg::Color{255, 0, 0, 255}});
+            rendererStates.push(pg::TextureColorState{star_default_color});
             drawable.prim->draw(renderer, new_transform, rendererStates);
             rendererStates.pop<pg::TextureColorState>();
             break;
         }
     }
     // drones
-    for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::Drone>(); auto& entity : view)
+    for (auto  view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>();
+         auto& entity : view)
     {
-        auto&& [drawable, transform, drone] = view.get<pg::game::Drawable, pg::Transform2D, galaxy::Drone>(entity);
+        auto&& [drawable, transform, drone, faction] =
+            view.get<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>(entity);
 
         auto new_transform = transform;
         new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
@@ -56,7 +63,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
         new_transform.scale *= globalTransform.scale;
 
-        rendererStates.push(pg::TextureColorState{pg::Color{0, 255, 255, 255}});
+        rendererStates.push(pg::TextureColorState{faction.entityColor});
         drawable.prim->draw(renderer, new_transform, rendererStates);
         rendererStates.pop<pg::TextureColorState>();
     }
