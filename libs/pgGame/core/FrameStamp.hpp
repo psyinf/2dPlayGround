@@ -4,8 +4,8 @@
 namespace pg::game {
 struct FrameStamp
 {
-    std::uint64_t             frameNumber;
-    std::chrono::milliseconds lastFrameDuration;
+    std::uint64_t             frameNumber{0};
+    std::chrono::milliseconds lastFrameDuration{0};
 
     float getFrameDuration_sec() const
     {
