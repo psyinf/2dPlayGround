@@ -96,7 +96,7 @@ public:
         node->boxes.clear();
     }
 
-    std::vector<Result> rangeQuery(const fBox& queryBox, DebugIntersectionCollector& collector) const
+    std::vector<Result> debugRangeQuery(const fBox& queryBox, DebugIntersectionCollector& collector) const
     {
         std::vector<Result> intersections;
         rangeQueryHelper(root, queryBox, intersections, collector);
@@ -108,11 +108,47 @@ public:
         return intersections;
     }
 
+    template <typename QueryPrimitive>
     // Function to perform a range query and return intersected points
-    std::vector<Result> rangeQuery(const fBox& queryBox) const
+    std::vector<Result> rangeQuery(const QueryPrimitive& prim) const
     {
-        DebugIntersectionCollector collector;
-        return rangeQuery(queryBox, collector);
+        std::vector<Result> intersections;
+        internalRangeQuery(root, prim, intersections);
+        std::ranges::sort(intersections, [&prim](const Result& a, const Result& b) {
+            return lengthSquared(a.box.midpoint() - prim.midpoint()) <
+                   lengthSquared(b.box.midpoint() - prim.midpoint());
+        });
+        return intersections;
+    }
+
+protected:
+    template <typename QueryPrimitive>
+    void internalRangeQuery(const std::unique_ptr<Node>& node,
+                            const QueryPrimitive&        queryPrim,
+                            std::vector<Result>&         intersections) const
+    {
+        if (!node) { return; }
+
+        if (node->bounds.intersects(queryPrim))
+        {
+            if (!node->isLeaf())
+            {
+                for (int i = 0; i < 4; ++i)
+                {
+                    internalRangeQuery(node->children[i], queryPrim, intersections);
+                }
+            }
+            else
+            {
+                for (const auto& [point, data] : node->boxes)
+                {
+                    if (queryPrim.intersects(point)) //
+                    {
+                        intersections.push_back({point, data});
+                    }
+                }
+            }
+        }
     }
 
     // Recursive helper function for range query
