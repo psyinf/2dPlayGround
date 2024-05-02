@@ -23,6 +23,7 @@ public:
     void handle(const pg::game::FrameStamp& frameStamp);
 
 private:
+    void createFactions(const pg::game::FrameStamp& frameStamp);
     /**
      * @brief check if there is a terminal failure
      * @return false if handling can be terminated for this entity

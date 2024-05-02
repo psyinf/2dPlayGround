@@ -16,11 +16,19 @@ struct StartingParameters
     uint8_t  start_drones{1};
 };
 
+struct DroneParameters
+{
+    float max_acceleration{0.1f};
+    float max_speed{1.0f};
+    float max_range{1000.0f};
+};
+
 struct Faction
 {
     std::string        name;
     pg::Color          color{0, 0, 255, 255};
     StartingParameters startParams;
+    DroneParameters    droneParams;
 };
 
 struct Galaxy
@@ -30,6 +38,7 @@ struct Galaxy
     std::vector<Faction> factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
         {.name{"Vogons"}, .color{255, 0, 0, 255}},
+        {.name{"Grays"}, .color{255, 255, 0, 255}},
         {.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .start_drones{0}}}
         //
     };
