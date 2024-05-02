@@ -21,6 +21,8 @@ public:
 
     void handle(const pg::game::FrameStamp& frameStamp) override
     {
+        auto& fpsCounter = game.getApp().getFPSCounter();
+        if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
         return; // no rotation for now
         auto& registry = game.getRegistry();
         auto  view = registry.view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>();
@@ -35,8 +37,6 @@ public:
             angle += 0.0001 * sqrt(1.0 / distance);
             transform.pos = {distance * cos(angle), distance * sin(angle)};
         }
-        auto& fpsCounter = game.getApp().getFPSCounter();
-        if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
     };
 };
 } // namespace galaxy

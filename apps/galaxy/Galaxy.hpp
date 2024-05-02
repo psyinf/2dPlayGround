@@ -143,7 +143,7 @@ private:
 
         auto dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
 
-        for (auto i : std::ranges::iota_view{1, 14000})
+        for (auto i : std::ranges::iota_view{1, 10000})
         {
             auto new_pos = pg::fVec2{d(gen), d(gen)};
             auto new_size = star_size_dist(gen) * pg::fVec2{1.0f, 1.0f};
@@ -158,7 +158,8 @@ private:
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
         // add some background
-        auto background_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way.jpg");
+        auto background_sprite =
+            game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way_blurred.png");
         pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
             game->getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite});
     }

@@ -38,7 +38,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         switch (systemState.colonizationStatus)
         {
         case galaxy::ColonizationStatus::Explored:
-            rendererStates.push(pg::TextureColorState{faction.systemColor});
+            rendererStates.push(pg::TextureColorState{faction.entityColor});
             drawable.prim->draw(renderer, new_transform, rendererStates);
             rendererStates.pop<pg::TextureColorState>();
             break;
@@ -50,9 +50,11 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
             break;
         }
     }
-    // drones
-    for (auto  view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>();
-         auto& entity : view)
+    auto view = game.getRegistry().group<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>();
+    view.sort<galaxy::Faction>(
+        [](const galaxy::Faction& lhs, const galaxy::Faction& rhs) { return lhs.name < rhs.name; });
+
+    for (auto& entity : view)
     {
         auto&& [drawable, transform, drone, faction] =
             view.get<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>(entity);
