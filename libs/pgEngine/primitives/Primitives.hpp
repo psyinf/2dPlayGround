@@ -51,6 +51,7 @@ private:
 class Primitive
 {
 public:
+    virtual ~Primitive() = default;
     virtual void draw(sdl::Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
 };
 
