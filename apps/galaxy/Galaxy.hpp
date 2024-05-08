@@ -15,6 +15,7 @@
 
 #include "entities/StarSystem.hpp"
 #include "entities/Faction.hpp"
+#include "entities/RenderState.hpp"
 #include "events/PickEvent.hpp"
 #include <pgEngine/math/Random.hpp>
 #include <pgGame/entities/WindowDetails.hpp>
@@ -160,7 +161,7 @@ private:
         // add some background
         auto background_sprite =
             game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way_blurred.png");
-        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable>(
+        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState>(
             game->getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite});
     }
 

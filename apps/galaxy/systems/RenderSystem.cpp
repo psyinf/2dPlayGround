@@ -9,6 +9,8 @@
 #include <entities/Faction.hpp>
 
 void galaxy::RenderSystem::setup() {}
+///TODO: drawables should carry their respective states. This is a temporary solution which determines the state by the type of entities
+
 
 void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
@@ -50,6 +52,8 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
             break;
         }
     }
+
+    // drones
     auto view = game.getRegistry().group<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>();
     view.sort<galaxy::Faction>(
         [](const galaxy::Faction& lhs, const galaxy::Faction& rhs) { return lhs.name < rhs.name; });
@@ -69,7 +73,9 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         drawable.prim->draw(renderer, new_transform, rendererStates);
         rendererStates.pop<pg::TextureColorState>();
     }
-    rendererStates.push(pg::TextureAlphaState{128});
+
+    //non-debug, generic items
+    rendererStates.push(pg::TextureAlphaState{64});
     for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(
              entt::exclude<StarSystemState, pg::tags::DebugRenderingItemTag>);
          auto& entity : view)
@@ -82,8 +88,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         new_transform.scale *= globalTransform.scale;
         drawable.prim->draw(renderer, new_transform, rendererStates);
     }
-
-    rendererStates.pop<pg::TextureAlphaState>();
+     rendererStates.pop<pg::TextureAlphaState>();
     // debug items, TODO: check why this not drawn reliably over other items
     if (game.getSingleton<const bool>("galaxy.debug.draw"))
     {

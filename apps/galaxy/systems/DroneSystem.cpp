@@ -14,7 +14,7 @@
 
 void galaxy::DroneSystem::setup()
 {
-8    createFactions(pg::game::FrameStamp{});
+
 }
 
 void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)

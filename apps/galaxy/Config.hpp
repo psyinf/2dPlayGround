@@ -20,7 +20,7 @@ struct DroneParameters
 {
     float max_acceleration{0.1f};
     float max_speed{1.0f};
-    float max_range{1000.0f};
+    float max_range{40.0f};
 };
 
 struct Faction
@@ -31,9 +31,15 @@ struct Faction
     DroneParameters    droneParams;
 };
 
+struct BackgoundParameters
+{
+    float opacity{0.1f};
+};
+
 struct Galaxy
 {
     Star star;
+    BackgoundParameters background;
 
     std::vector<Faction> factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
