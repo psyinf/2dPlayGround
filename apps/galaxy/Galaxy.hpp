@@ -161,8 +161,13 @@ private:
         // add some background
         auto background_sprite =
             game->getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way_blurred.png");
+        auto states = pg::States{};
+        states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
         pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState>(
-            game->getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite});
+            game->getRegistry(),
+            {.pos{0, 0}, .scale{0.5, 0.5}},
+            pg::game::Drawable{background_sprite},
+            {std::move(states)});
     }
 
 private:

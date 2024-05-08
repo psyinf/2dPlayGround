@@ -1,8 +1,9 @@
 #pragma once
-#include <pgGame/core/States.hpp>
+#include <pgEngine/core/States.hpp>
+
 namespace pg::game {
 struct RenderState
 {
-    pg::States{};
+    pg::States states{};
 };
 } // namespace pg::game
