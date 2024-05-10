@@ -2,6 +2,8 @@
 #include <entt/entt.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
 #include <pgEngine/math/Vec.hpp>
+
+#include <events/DroneEvents.hpp>
 #include <Config.hpp>
 
 namespace galaxy {
@@ -21,6 +23,8 @@ public:
     void makeDrone(pg::fVec2 pos, galaxy::Faction);
 
     void handle(const pg::game::FrameStamp& frameStamp);
+
+    void handleDroneFailed(galaxy::events::DroneFailedEvent& event);
 
 private:
     void createFactions(const pg::game::FrameStamp& frameStamp);

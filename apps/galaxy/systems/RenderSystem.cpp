@@ -28,56 +28,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
     auto globalTransform = game.getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
     // star systems
 
-    for (auto view =
-             game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
-         auto& entity : view)
-    {
-        continue;
-
-        auto&& [drawable, transform, systemState, faction] =
-            view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>(entity);
-        // TODO: make this a camera class and use homogeneous matrices
-        auto new_transform = transform;
-        new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
-        new_transform.pos = (globalTransform.pos + transform.pos) * globalTransform.scale;
-        new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
-        switch (systemState.colonizationStatus)
-        {
-        case galaxy::ColonizationStatus::Explored:
-            rendererStates.push(pg::TextureColorState{faction.entityColor});
-            drawable.prim->draw(renderer, new_transform, rendererStates);
-            rendererStates.pop<pg::TextureColorState>();
-            break;
-
-        default:
-            rendererStates.push(pg::TextureColorState{star_default_color});
-            drawable.prim->draw(renderer, new_transform, rendererStates);
-            rendererStates.pop<pg::TextureColorState>();
-            break;
-        }
-    }
-
     // drones
-    auto view = game.getRegistry().group<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>();
-    view.sort<galaxy::Faction>(
-        [](const galaxy::Faction& lhs, const galaxy::Faction& rhs) { return lhs.name < rhs.name; });
-
-    for (auto& entity : view)
-    {
-        auto&& [drawable, transform, drone, faction] =
-            view.get<pg::game::Drawable, pg::Transform2D, galaxy::Drone, galaxy::Faction>(entity);
-
-        auto new_transform = transform;
-        new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
-        new_transform.pos = (globalTransform.pos + transform.pos) * globalTransform.scale;
-        new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
-        new_transform.scale *= globalTransform.scale;
-
-        rendererStates.push(pg::TextureColorState{faction.entityColor});
-        drawable.prim->draw(renderer, new_transform, rendererStates);
-        rendererStates.pop<pg::TextureColorState>();
-    }
-
     // non-debug, generic items
 
     for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, pg::game::RenderState>(

@@ -9,12 +9,15 @@
 #include <Config.hpp>
 #include <entities/Faction.hpp>
 #include <pgEngine/math/Random.hpp>
+#include <events/DroneEvents.hpp>
 
 #include <ranges>
+#include <pgGame/entities/RenderState.hpp>
 
 void galaxy::DroneSystem::setup()
 {
-
+    game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
+        *this);
 }
 
 void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
@@ -30,13 +33,15 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
     auto& drone_params = (*iter).droneParams;
 
     // create a drone
-
-    pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::Drone, galaxy::Faction>(
+    auto renderState = pg::States{};
+    renderState.push(pg::TextureColorState{faction.entityColor});
+    pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::Drone, galaxy::Faction, pg::game::RenderState>(
         game.getRegistry(),
         {.pos{pos}, .scale{0.00125, 0.00125}},
         pg::game::Drawable{dot_sprite},
         {Drone::fromConfig(drone_params)},
-        std::move(faction));
+        std::move(faction),
+        {std::move(renderState)});
 
     // TODO: event, that might be handled by showing a blip on galaxy map
 }
@@ -82,6 +87,13 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
     }
 }
 
+void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent& event)
+{
+    // later: decide if the drone dies or becomes a drifter
+    // for now send a signal to destroy the entity
+    game.getRegistry().destroy(event.entity);
+}
+
 void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
 {
     static std::random_device rd;
@@ -119,10 +131,11 @@ bool galaxy::DroneSystem::checkForFailure(galaxy::Drone& drone, entt::entity ent
         if (drone.hasTarget)
         {
             auto& starsystem = game.getRegistry().get<galaxy::StarSystemState>(drone.targetId);
+            // TODO: unmark only if planned (not explored)
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Unexplored;
         }
-        game.getRegistry().destroy(entity);
-        // std::cout << "Died at " << drone.lifetime << " with likelihood: " << l << "\n";
+
+        auto event = galaxy::events::DroneFailedEvent{entity};
         return false;
     }
     return true;
