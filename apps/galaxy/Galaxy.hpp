@@ -15,7 +15,7 @@
 
 #include "entities/StarSystem.hpp"
 #include "entities/Faction.hpp"
-#include "entities/RenderState.hpp"
+#include "pgGame/entities/RenderState.hpp"
 #include "events/PickEvent.hpp"
 #include <pgEngine/math/Random.hpp>
 #include <pgGame/entities/WindowDetails.hpp>
@@ -148,13 +148,17 @@ private:
         {
             auto new_pos = pg::fVec2{d(gen), d(gen)};
             auto new_size = star_size_dist(gen) * pg::fVec2{1.0f, 1.0f};
-            auto entity =
-                pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::StarSystemState, galaxy::Faction>(
-                    game->getRegistry(),
-                    {.pos{new_pos}, .scale{new_size}},
-                    pg::game::Drawable{dot_sprite},
-                    galaxy::StarSystemState{},
-                    galaxy::Faction{"None"});
+            auto entity = pg::game::makeEntity<pg::Transform2D,
+                                               pg::game::Drawable,
+                                               galaxy::StarSystemState,
+                                               galaxy::Faction,
+                                               pg::game::RenderState> //
+                (game->getRegistry(),
+                 {.pos{new_pos}, .scale{new_size}},
+                 pg::game::Drawable{dot_sprite},
+                 galaxy::StarSystemState{},
+                 galaxy::Faction{"None"},
+                 {});
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }

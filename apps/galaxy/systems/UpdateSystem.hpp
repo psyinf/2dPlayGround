@@ -4,7 +4,11 @@
 #include <pgGame/systems/SystemInterface.hpp>
 #include <pgEngine/math/Vec.hpp>
 #include <pgGame/entities/Drawable.hpp>
+#include <entities/Faction.hpp>
 #include <entities/StarSystem.hpp>
+#include <pgGame/entities/RenderState.hpp>
+
+#include <Config.hpp>
 #include <iostream>
 
 namespace galaxy {
@@ -23,20 +27,47 @@ public:
     {
         auto& fpsCounter = game.getApp().getFPSCounter();
         if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
-        return; // no rotation for now
+
+        updateStarSystems(frameStamp);
+        // move the stars on a circle at the distance from center
+        //             auto distance = normalize(transform.pos);
+        //             auto angle = atan2(transform.pos[1], transform.pos[0]);
+        //             angle += 0.0001 * sqrt(1.0 / distance);
+        //             transform.pos = {distance * cos(angle), distance * sin(angle)};
+        //
+    }
+
+    void updateStarSystems(const pg::game::FrameStamp& frameStamp)
+    {
+        // get config from singleton
+        auto& galaxyConfig = game.getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
+
         auto& registry = game.getRegistry();
-        auto  view = registry.view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>();
+        auto  view = registry.view<pg::game::Drawable,
+                                  pg::Transform2D,
+                                  galaxy::StarSystemState,
+                                  pg::game::RenderState,
+                                  galaxy::Faction>();
         for (auto& entity : view)
         {
-            auto&& [drawable, transform, starSystemState] =
-                view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>(entity);
-            // move the stars on a circle at the distance from center
-            auto distance = normalize(transform.pos);
-            // auto angle = angleBetween(pg::fVec2{0, 1}, transform.pos);
-            auto angle = atan2(transform.pos[1], transform.pos[0]);
-            angle += 0.0001 * sqrt(1.0 / distance);
-            transform.pos = {distance * cos(angle), distance * sin(angle)};
+            auto&& [drawable, transform, starSystemState, state, faction] = view.get<pg::game::Drawable,
+                                                                                     pg::Transform2D,
+                                                                                     galaxy::StarSystemState,
+                                                                                     pg::game::RenderState,
+                                                                                     galaxy::Faction>(entity);
+            state.states = std::move(pg::States{});
+            switch (starSystemState.colonizationStatus)
+            {
+            case galaxy::ColonizationStatus::Explored:
+
+                state.states.push(pg::TextureColorState{faction.entityColor});
+                break;
+
+            default:
+                state.states.push(pg::TextureColorState{galaxyConfig.star.default_color});
+                break;
+            }
         }
-    };
+    }
 };
 } // namespace galaxy

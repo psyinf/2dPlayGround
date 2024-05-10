@@ -15,6 +15,9 @@ public:
 
     States(States&&) = default;
 
+    // move operator
+    States& operator=(States&&) = default;
+
     States(std::vector<RendererStatePointer>&& rendererState, std::vector<TextureStatePointer>&& textureState)
       : rendererStates{std::move(rendererState)}
       , textureStates{std::move(textureState)}
