@@ -2,11 +2,18 @@
 #include <pgEngine/math/Vec.hpp>
 
 namespace pg {
+enum class TransformScaleSpace
+{
+    Local, // global scale not applied
+    World  // global scale applied
+};
+
 struct Transform2D
 {
-    fVec2 pos{};
-    float rotation_deg{};
-    fVec2 scale{1, 1};
+    fVec2               pos{};
+    float               rotation_deg{};
+    fVec2               scale{1, 1};
+    TransformScaleSpace scaleSpace{TransformScaleSpace::World};
 
     friend Transform2D operator+(const Transform2D& lhs, const Transform2D& rhs)
     {

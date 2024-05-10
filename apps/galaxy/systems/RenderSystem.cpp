@@ -26,7 +26,6 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
     auto star_default_color = game.getSingleton<const pg::Color&>("galaxy.star.default_color");
 
     auto globalTransform = game.getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
-    // star systems
 
     // drones
     // non-debug, generic items
@@ -43,8 +42,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
         new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
         new_transform.pos = (globalTransform.pos + transform.pos) * globalTransform.scale;
         new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
-        // TODO: scale globally should be a flag
-        new_transform.scale *= globalTransform.scale;
+        if (transform.scaleSpace == pg::TransformScaleSpace::World) { new_transform.scale *= globalTransform.scale; }
         drawable.prim->draw(renderer, new_transform, rendererStates);
         rendererStates.pop_states(renderState.states);
     }

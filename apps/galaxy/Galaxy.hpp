@@ -154,7 +154,7 @@ private:
                                                galaxy::Faction,
                                                pg::game::RenderState> //
                 (game->getRegistry(),
-                 {.pos{new_pos}, .scale{new_size}},
+                 {.pos{new_pos}, .scale{new_size}, .scaleSpace{pg::TransformScaleSpace::Local}},
                  pg::game::Drawable{dot_sprite},
                  galaxy::StarSystemState{},
                  galaxy::Faction{"None"},
