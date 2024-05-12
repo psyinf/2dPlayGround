@@ -92,7 +92,7 @@ CPMAddPackage(
 
 
 CPMAddPackage(
-	NAME entt
+	NAME EnTT
 	GITHUB_REPOSITORY skypjack/entt
 	GIT_TAG v3.12.2
 )
