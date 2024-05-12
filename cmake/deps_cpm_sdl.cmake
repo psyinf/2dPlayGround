@@ -38,21 +38,21 @@ string(TIMESTAMP AFTER "%s")
 math(EXPR DELTASDL "${AFTER} - ${BEFORE}")
 MESSAGE(STATUS "SDL2 TIME: ${DELTASDL}s")
 
-## SDL_ttf
-#string(TIMESTAMP BEFORE "%s")
-#CPMAddPackage(GITHUB_REPOSITORY libsdl-org/SDL_ttf
-#        GIT_TAG release-2.20.1
-#        OPTIONS
-#        "SDL2TTF_INSTALL OFF"
-#        "SDL2TTF_BUILD_SHARED_LIBS OFF"
-#        "SDL2TTF_VENDORED ON"
-#        "SDL2TTF_SAMPLES OFF"
-#) # vendor is required for mingw builds
-#find_package(SDL_ttf REQUIRED)
-#include_directories(${SDL_ttf_SOURCE_DIR})
-#string(TIMESTAMP AFTER "%s")
-#math(EXPR DELTASDL_ttf "${AFTER} - ${BEFORE}")
-#MESSAGE(STATUS "SDL_ttf TIME: ${DELTASDL_ttf}s")
+#SDL_ttf
+string(TIMESTAMP BEFORE "%s")
+CPMAddPackage(GITHUB_REPOSITORY libsdl-org/SDL_ttf
+        GIT_TAG release-2.20.1
+        OPTIONS
+        "SDL2TTF_INSTALL OFF"
+        "SDL2TTF_BUILD_SHARED_LIBS OFF"
+        "SDL2TTF_VENDORED ON"
+        "SDL2TTF_SAMPLES OFF"
+) # vendor is required for mingw builds
+find_package(SDL_ttf REQUIRED)
+include_directories(${SDL_ttf_SOURCE_DIR})
+string(TIMESTAMP AFTER "%s")
+math(EXPR DELTASDL_ttf "${AFTER} - ${BEFORE}")
+MESSAGE(STATUS "SDL_ttf TIME: ${DELTASDL_ttf}s")
 
 # SDL_image
 string(TIMESTAMP BEFORE "%s")

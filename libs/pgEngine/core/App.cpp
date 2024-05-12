@@ -1,18 +1,18 @@
 #include <core/App.hpp>
 #include "Lifetime.hpp"
-// #include <SDL_ttf.h>
+#include <SDL_ttf.h>
 #include <primitives/Primitives.hpp>
 
 using namespace pg;
 
 void pg::ttfInitDelegate()
 {
-    //  TTF_Init();
+    TTF_Init();
 }
 
 void pg::ttfQuitDelegate()
 {
-    // TTF_Quit();
+    TTF_Quit();
 }
 
 SDLApp::~SDLApp() {}

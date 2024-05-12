@@ -51,7 +51,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2::SDL2main
 	SDL2_image::SDL2_image-static
 	PRIVATE
-	#SDL2_ttf::SDL2_ttf-static
+	SDL2_ttf::SDL2_ttf-static
 )
 
 target_include_directories(
