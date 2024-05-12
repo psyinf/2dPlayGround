@@ -8,14 +8,15 @@ include(cmake/PreventInSourceBuilds.cmake)
 include(cmake/coverage.cmake)
 include(cmake/stacktrace.cmake)
 include(cmake/setup_cpm.cmake)
+include(cmake/deps_cpm.cmake)
 
 conan_cmake_configure(REQUIRES 
-    catch2/3.4.0
+    #catch2/3.4.0
     sdl/2.28.3
     sdl_image/2.6.3
     sdl_ttf/2.20.2
-    fmt/10.1.1
-    entt/3.12.2
+    #fmt/10.1.1
+    #entt/3.12.2
     libpng/1.6.42 #resolve conflicts
     GENERATORS CMakeDeps CMakeToolchain
 )
@@ -27,13 +28,7 @@ conan_cmake_install(PATH_OR_REFERENCE .
                     SETTINGS ${settings})
 
 
-CPMAddPackage(
-    NAME sdlpp    
 
-    GITHUB_REPOSITORY "mika314/sdlpp"
-    GIT_TAG HEAD
-    #OPTIONS USE_SDLGFX
-)
 enable_testing()
 add_subdirectory(libs)
 add_subdirectory(apps)
