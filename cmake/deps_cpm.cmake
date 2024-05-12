@@ -1,5 +1,5 @@
 include (cmake/setup_cpm.cmake)
-
+include (cmake/deps_cpm_sdl.cmake)
 CPMAddPackage(
     NAME sdlpp    
 
