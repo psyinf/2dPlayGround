@@ -178,7 +178,7 @@ bool galaxy::DroneSystem::findNewTarget(entt::entity entity)
                  return starsystem.colonizationStatus == galaxy::ColonizationStatus::Unexplored;
              });
     // to vector
-    auto res = std::ranges::to<std::vector<pg::Quadtree<entt::entity>::Result>>(r);
+    auto res = r | std::ranges::to<std::vector<pg::Quadtree<entt::entity>::Result>>();
     if (!res.empty())
     {
         // pick an index
