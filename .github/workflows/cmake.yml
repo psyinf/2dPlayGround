@@ -22,14 +22,6 @@ jobs:
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
     steps:
-    - name: Using the builtin GitHub Cache Action for .conan
-      id: github-cache-conan
-      uses: actions/cache@v2
-      env:
-        cache-name: cache-conan-modules
-      with:
-        path: ${{ env.CONAN_USER_HOME }}
-        key: host-${{ runner.os }}-target-${{ runner.os }}-${{ hashFiles('conanfile.py') }}
     - name: Set up cache
       id: cache-cpm
       uses: actions/cache@v2
@@ -39,27 +31,15 @@ jobs:
        restore-keys: |
          ${{ runner.os }}-cpm-    
     - uses: actions/checkout@v3
-    
-    - name: Install Conan
-      id: conan
-      uses: turtlebrowser/get-conan@main
+    - name: Setup GCC
+      uses: pkgxdev/setup@v1
       with:
-        version: 1.60.2
-    - name: Install GCC prepare env
-      uses: egor-tensin/setup-gcc@v1
-      with:
-        version: 11
-        platform: x64 
-    - name: Create default Conan profile
-      run: conan profile new default --detect    
-    - name: Conan profile update
-      run:  |
-            conan profile update conf.tools.system.package_manager:mode=install default
-            conan profile update conf.tools.system.package_manager:sudo=True default    
+        +: gcc@14
+
     - name: Configure CMake
       # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
       # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCPM_SOURCE_CACHE=~/cpm-cache
     
     - name: Build
       # Build your program with the given configuration

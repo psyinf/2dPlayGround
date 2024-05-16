@@ -69,6 +69,10 @@
         "CMAKE_CXX_COMPILER": "cl",
         "CMAKE_BUILD_TYPE": "Debug",
         "ENABLE_DEVELOPER_MODE": "ON"
+      },
+      "environment": {
+        "CFLAGS": "/fsanitize=address",
+        "CXXFLAGS": "/fsanitize=address"
       }
     },
     {

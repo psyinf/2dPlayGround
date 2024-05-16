@@ -2,8 +2,8 @@
 #include <pgEngine/core/State.hpp>
 
 namespace pg {
-using RendererStatePointer = std::unique_ptr<RendererState>;
-using TextureStatePointer = std::unique_ptr<TextureState>;
+using RendererStatePointer = std::shared_ptr<RendererState>;
+using TextureStatePointer = std::shared_ptr<TextureState>;
 
 class States
 {
@@ -12,6 +12,11 @@ class States
 
 public:
     States() = default;
+
+    States(States&&) = default;
+
+    // move operator
+    States& operator=(States&&) = default;
 
     States(std::vector<RendererStatePointer>&& rendererState, std::vector<TextureStatePointer>&& textureState)
       : rendererStates{std::move(rendererState)}
@@ -48,6 +53,24 @@ public:
         for (auto& state : textureStates)
         {
             state->restore(renderer, texture);
+        }
+    }
+
+    void push_states(const States& states)
+    {
+        rendererStates.insert(rendererStates.end(), states.rendererStates.begin(), states.rendererStates.end());
+        textureStates.insert(textureStates.end(), states.textureStates.begin(), states.textureStates.end());
+    }
+
+    void pop_states(const States& states)
+    {
+        for (const auto& state : states.rendererStates)
+        {
+            rendererStates.pop_back();
+        }
+        for (const auto& state : states.textureStates)
+        {
+            textureStates.pop_back();
         }
     }
 

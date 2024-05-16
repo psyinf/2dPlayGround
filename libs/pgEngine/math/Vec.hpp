@@ -6,6 +6,8 @@
 #include <cstdint>
 #include <ostream>
 #include <ranges>
+#include <type_traits>
+#include <limits>
 
 namespace pg {
 
@@ -270,4 +272,16 @@ static constexpr pg::Vec<CAST_T, SIZE> vec_cast(const pg::Vec<T, SIZE>& lhs)
         res[idx] = static_cast<CAST_T>(lhs[idx]);
     }
     return res;
+}
+
+template <typename T, size_t SIZE>
+static constexpr bool equal(const pg::Vec<T, SIZE>& lhs,
+                            const pg::Vec<T, SIZE>& rhs,
+                            T                       epsilon = std::numeric_limits<T>::epsilon())
+{
+    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    {
+        if (std::abs(lhs[idx] - rhs[idx]) > epsilon) { return false; }
+    }
+    return true;
 }

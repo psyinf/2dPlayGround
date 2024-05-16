@@ -36,15 +36,15 @@ public:
         if (lastPicks.empty()) { return; }
         const auto pick = lastPicks.back();
 
-        auto& quadtree = game.getSingleton<const pg::Quadtree&>("galaxy.quadtree");
+        auto& quadtree = game.getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
         auto& marker = game.getSingleton<entt::entity>("galaxy.debug.marker");
         auto& transform = game.getRegistry().get<pg::Transform2D>(marker);
         auto  scaled_range = pg::fVec2{5, 5} * (1.0f / pick.scale);
 
-        auto results = quadtree.rangeQuery({pick.world_position - scaled_range, 2.0f * scaled_range});
+        auto results = quadtree.rangeQuery(pg::fBox{pick.world_position - scaled_range, 2.0f * scaled_range});
         if (!results.empty())
         {
-            transform.pos = results.at(0).midpoint();
+            transform.pos = results.at(0).box.midpoint();
             transform.scale = {0.025, 0.025};
         }
         else { transform.scale = {0, 0}; }
