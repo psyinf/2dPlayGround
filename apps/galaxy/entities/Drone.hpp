@@ -5,6 +5,42 @@
 
 namespace galaxy {
 
+struct Dynamic
+{
+    pg::fVec2 velocity{};     // percent light speed
+    pg::fVec2 acceleration{}; // m/s^2
+
+    void update(float dt) { velocity += acceleration * dt; }
+
+    float calculateBreakinDistance(float maxAcceleration) const
+    {
+        return (lengthSquared(velocity)) / (2 * maxAcceleration);
+    }
+
+    void calculateDynamics(const pg::fVec2& currentPos,
+                           const pg::fVec2& targetPos,
+                           float            maxAcceleration,
+                           float            maxVelocity,
+                           float            dt)
+    {
+        // breaking distance
+        auto breakingDistance = calculateBreakinDistance(maxAcceleration);
+        auto dir = targetPos - currentPos;
+        auto dist = normalize(dir);
+
+        if (dist <= breakingDistance)
+        {
+            acceleration = -maxAcceleration * dir;
+            return;
+        }
+        else { acceleration = maxAcceleration * dir; }
+        // adapt velocity
+        velocity += acceleration * dt;
+        // limit velocity
+        if (length(velocity) > maxVelocity) { velocity = makeNormal(velocity) * maxVelocity; }
+    }
+};
+
 struct Drone
 {
     static Drone fromConfig(const galaxy::config::DroneParameters& config)
