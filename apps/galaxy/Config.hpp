@@ -36,15 +36,24 @@ struct BackgoundParameters
     float opacity{0.1f};
 };
 
+struct ZoomParameters
+{
+    float min{0.5f};
+    float max{50.0f};
+    float factor{0.1f};
+};
+
 struct Galaxy
 {
-    Star star;
-    BackgoundParameters background;
-
+    Star                 star;
+    BackgoundParameters  background;
+    ZoomParameters       zoom;
     std::vector<Faction> factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
         {.name{"Vogons"}, .color{255, 0, 0, 255}},
         {.name{"Grays"}, .color{255, 255, 0, 255}},
+        //{.name{"Vogons"}, .color{255, 0, 0, 255}},
+        //{.name{"Grays"}, .color{255, 255, 0, 255}},
         {.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .start_drones{0}}}
         //
     };
