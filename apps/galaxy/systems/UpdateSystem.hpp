@@ -31,7 +31,7 @@ public:
     void handleDroneCreated(galaxy::events::DroneCreatedEvent& event)
     {
         // TODO: use an animation
-        std::cout << "Drone created\n";
+
         auto& transform = game.getRegistry().get<pg::Transform2D>(event.entity);
         auto& marker_transform =
             game.getRegistry().get<pg::Transform2D>(game.getSingleton<entt::entity>("galaxy.debug.marker"));
@@ -78,7 +78,7 @@ public:
                 state.states.push(pg::TextureColorState{faction.entityColor});
                 break;
             case galaxy::ColonizationStatus::Planned:
-                state.states.push(pg::TextureColorState{{222, 0, 0, 255}});
+                state.states.push(pg::TextureColorState{scale(faction.entityColor, 0.2)});
                 break;
             default:
                 state.states.push(pg::TextureColorState{galaxyConfig.star.default_color});
