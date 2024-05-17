@@ -42,6 +42,7 @@ void SDLApp::initialize(const config::WindowConfig& windowConfig)
                                            windowConfig.size[1], //
                                            SDL_WINDOW_BORDERLESS);
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1"); // TODO: move to config
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
     renderer = std::make_unique<sdl::Renderer>(window->get(), -1, SDL_RENDERER_ACCELERATED);
 }
 
