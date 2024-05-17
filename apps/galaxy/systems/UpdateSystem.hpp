@@ -6,6 +6,8 @@
 #include <pgGame/entities/Drawable.hpp>
 #include <entities/Faction.hpp>
 #include <entities/StarSystem.hpp>
+
+#include <events/DroneEvents.hpp>
 #include <pgGame/entities/RenderState.hpp>
 
 #include <Config.hpp>
@@ -21,7 +23,20 @@ class UpdateSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup() override{};
+    void setup() override
+    {
+        game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateSystem::handleDroneCreated>(this);
+    };
+
+    void handleDroneCreated(galaxy::events::DroneCreatedEvent& event)
+    {
+        // TODO: use an animation
+        std::cout << "Drone created\n";
+        auto& transform = game.getRegistry().get<pg::Transform2D>(event.entity);
+        auto& marker_transform =
+            game.getRegistry().get<pg::Transform2D>(game.getSingleton<entt::entity>("galaxy.debug.marker"));
+        marker_transform.pos = transform.pos;
+    }
 
     void handle(const pg::game::FrameStamp& frameStamp) override
     {
@@ -62,7 +77,9 @@ public:
 
                 state.states.push(pg::TextureColorState{faction.entityColor});
                 break;
-
+            case galaxy::ColonizationStatus::Planned:
+                state.states.push(pg::TextureColorState{{222, 0, 0, 255}});
+                break;
             default:
                 state.states.push(pg::TextureColorState{galaxyConfig.star.default_color});
                 break;
