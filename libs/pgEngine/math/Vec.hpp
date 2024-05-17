@@ -26,6 +26,7 @@ using Vec4 = Vec<ELEMENT_TYPE, 4>;
 using Vec2Window = Vec2<int32_t>;
 using iVec2 = Vec2Window;
 using fVec2 = Vec2<float>;
+using dVec2 = Vec2<double>;
 using Color = Vec4<uint8_t>;
 
 } // namespace pg

@@ -8,17 +8,27 @@ enum class TransformScaleSpace
     World  // global scale applied
 };
 
-struct Transform2D
+template <typename T>
+struct GenTransform2D
 {
-    fVec2               pos{};
-    float               rotation_deg{};
-    fVec2               scale{1, 1};
+    Vec2<T>             pos{};
+    T                   rotation_deg{};
+    Vec2<T>             scale{1, 1};
     TransformScaleSpace scaleSpace{TransformScaleSpace::World};
 
-    friend Transform2D operator+(const Transform2D& lhs, const Transform2D& rhs)
+    friend GenTransform2D<T> operator+(const GenTransform2D<T>& lhs, const GenTransform2D<T>& rhs)
     {
         return {lhs.pos + rhs.pos, lhs.rotation_deg + rhs.rotation_deg, lhs.scale};
     }
+
+    template <typename U>
+    friend GenTransform2D<U> operator-(const GenTransform2D<T>& lhs, const GenTransform2D<U>& rhs)
+    {
+        return {lhs.pos - rhs.pos, lhs.rotation_deg - rhs.rotation_deg, lhs.scale};
+    }
 };
+
+using Transform2D = GenTransform2D<float>;
+using PrecTransform2D = GenTransform2D<double>;
 
 } // namespace pg
