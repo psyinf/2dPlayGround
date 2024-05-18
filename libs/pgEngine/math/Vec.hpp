@@ -26,6 +26,7 @@ using Vec4 = Vec<ELEMENT_TYPE, 4>;
 using Vec2Window = Vec2<int32_t>;
 using iVec2 = Vec2Window;
 using fVec2 = Vec2<float>;
+using dVec2 = Vec2<double>;
 using Color = Vec4<uint8_t>;
 
 } // namespace pg
@@ -197,6 +198,18 @@ constexpr auto operator*(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rh
     return res;
 }
 
+// unary minus
+template <typename T, size_t SIZE>
+constexpr auto operator-(const pg::Vec<T, SIZE>& rhs)
+{
+    pg::Vec<T, SIZE> res;
+    for (auto idx : std::views::iota(size_t{}, rhs.size()))
+    {
+        res[idx] = -rhs[idx];
+    }
+    return res;
+}
+
 template <typename T, size_t SIZE>
 static constexpr T dot(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
@@ -284,4 +297,34 @@ static constexpr bool equal(const pg::Vec<T, SIZE>& lhs,
         if (std::abs(lhs[idx] - rhs[idx]) > epsilon) { return false; }
     }
     return true;
+}
+
+template <typename T, size_t SIZE>
+static constexpr pg::Vec<T, SIZE> clampBetween(const pg::Vec<T, SIZE>& lhs,
+                                               const pg::Vec<T, SIZE>& min,
+                                               const pg::Vec<T, SIZE>& max)
+{
+    pg::Vec<T, SIZE> res;
+    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    {
+        res[idx] = std::clamp(lhs[idx], min[idx], max[idx]);
+    }
+    return res;
+}
+
+template <typename T, size_t SIZE>
+static constexpr T distance(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
+{
+    return length(lhs - rhs);
+}
+
+template <typename T, typename U, size_t SIZE>
+static constexpr pg::Vec<T, SIZE> scale(const pg::Vec<T, SIZE>& lhs, U scale)
+{
+    pg::Vec<T, SIZE> res;
+    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    {
+        res[idx] = lhs[idx] * scale;
+    }
+    return res;
 }

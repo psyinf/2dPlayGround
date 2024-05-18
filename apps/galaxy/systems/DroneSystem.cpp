@@ -35,25 +35,30 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
     // create a drone
     auto renderState = pg::States{};
     renderState.push(pg::TextureColorState{faction.entityColor});
-    pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, galaxy::Drone, galaxy::Faction, pg::game::RenderState>(
-        game.getRegistry(),
-        {.pos{pos}, .scale{0.00125, 0.00125}},
-        pg::game::Drawable{dot_sprite},
-        {Drone::fromConfig(drone_params)},
-        std::move(faction),
-        {std::move(renderState)});
+    auto entity = pg::game::makeEntity<pg::Transform2D,
+                                       pg::game::Drawable,
+                                       galaxy::Drone,
+                                       galaxy::Dynamic,
+                                       galaxy::Faction,
+                                       pg::game::RenderState>(game.getRegistry(),
+                                                              {.pos{pos}, .scale{0.00125, 0.00125}},
+                                                              pg::game::Drawable{dot_sprite},
+                                                              {Drone::fromConfig(drone_params)},
+                                                              galaxy::Dynamic{},
+                                                              std::move(faction),
+                                                              {std::move(renderState)});
 
-    // TODO: event, that might be handled by showing a blip on galaxy map
+    game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, pos});
 }
 
 void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     createFactions(frameStamp);
     // TODO statemachine (e.g. https://github.com/digint/tinyfsm)
-    auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D>();
+    auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>();
     for (auto entity : view)
     {
-        auto&& [drone, transform] = view.get<galaxy::Drone, pg::Transform2D>(entity);
+        auto&& [drone, transform, dynamic] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>(entity);
         drone.lifetime += 1;
         if (!checkForFailure(drone, entity)) { continue; }
         if (drone.atTarget)
@@ -63,12 +68,14 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
         if (drone.hasTarget)
         {
             // travel to target
-            transform.pos += (drone.targetPos - transform.pos) * 0.01f;
+            // transform.pos += (drone.targetPos - transform.pos) * 0.01f;
+            transform.pos = dynamic.calculateDynamics(
+                vec_cast<float>(transform.pos), drone.targetPos, drone.maxAcceleration, drone.maxVelocity, 0.02f);
             // check if we are at the target
-            if (lengthSquared(transform.pos - drone.targetPos) < 0.01f)
+            if (lengthSquared(transform.pos - drone.targetPos) < 0.001f)
             {
                 transform.pos = drone.targetPos;
-
+                dynamic.reset();
                 drone.hasTarget = false;
                 drone.atTarget = true;
                 drone.waitCycles = 100;
