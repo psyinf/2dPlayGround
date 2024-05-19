@@ -1,8 +1,8 @@
 #include "Background.h"
 #include <pgGame/core/Game.hpp>
-#include <pgGame/entities/WindowDetails.hpp>
-#include "entities/Entities.h"
-#include <pgGame/entities/Drawable.hpp>
+#include <pgGame/components/WindowDetails.hpp>
+#include "components/Entities.h"
+#include <pgGame/components/Drawable.hpp>
 
 void asteroids::Background::handle(const pg::game::FrameStamp& frameStamp)
 {

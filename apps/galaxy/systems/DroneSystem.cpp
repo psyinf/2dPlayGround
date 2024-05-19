@@ -1,18 +1,20 @@
 #include "DroneSystem.hpp"
-#include <entities/Drone.hpp>
-#include <entities/StarSystem.hpp>
-#include <pgGame/entities/Drawable.hpp>
+#include <components/Drone.hpp>
+#include <components/Lifetime.hpp>
+#include <components/StarSystem.hpp>
+
+#include <pgGame/components/Drawable.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 #include <pgEngine/math/VecOperations.hpp>
 #include <Config.hpp>
-#include <entities/Faction.hpp>
+#include <components/Faction.hpp>
 #include <pgEngine/math/Random.hpp>
 #include <events/DroneEvents.hpp>
 
 #include <ranges>
-#include <pgGame/entities/RenderState.hpp>
+#include <pgGame/components/RenderState.hpp>
 
 void galaxy::DroneSystem::setup()
 {
@@ -40,12 +42,14 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
                                        galaxy::Drone,
                                        galaxy::Dynamic,
                                        galaxy::Faction,
+                                       galaxy::Lifetime,
                                        pg::game::RenderState>(game.getRegistry(),
                                                               {.pos{pos}, .scale{0.00125, 0.00125}},
                                                               pg::game::Drawable{dot_sprite},
                                                               {Drone::fromConfig(drone_params)},
                                                               galaxy::Dynamic{},
                                                               std::move(faction),
+                                                              galaxy::Lifetime{},
                                                               {std::move(renderState)});
 
     game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, pos});
@@ -60,7 +64,6 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
     {
         auto&& [drone, transform, dynamic] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>(entity);
         drone.lifetime += 1;
-        if (!checkForFailure(drone, entity)) { continue; }
         if (drone.atTarget)
         {
             if (!handleProduction(entity)) { continue; }
@@ -98,6 +101,17 @@ void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent& ev
 {
     // later: decide if the drone dies or becomes a drifter
     // for now send a signal to destroy the entity
+    std::cout << "Drone failed\n";
+    auto& drone = game.getRegistry().get<galaxy::Drone>(event.entity);
+    if (drone.hasTarget)
+    {
+        auto&& [starsystem, faction] = game.getRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
+        // TODO: unmark only if planned by our faction
+        if (starsystem.colonizationStatus == galaxy::ColonizationStatus::Planned)
+        {
+            starsystem.colonizationStatus = galaxy::ColonizationStatus::Unexplored;
+        }
+    }
     game.getRegistry().destroy(event.entity);
 }
 
@@ -115,7 +129,7 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
         auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>();
         auto it = view.begin();
         auto size = static_cast<size_t>(std::distance(view.begin(), view.end()));
-        std::advance(it, pg::randomBetween<size_t>({0}, {size}));
+        std::advance(it, pg::randomBetween<size_t>(0, size));
         auto entity = *it;
         auto&& [drawable, transform, starsystem] =
             view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>(entity);
@@ -126,26 +140,6 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
             makeDrone(transform.pos, factionComponent);
         }
     }
-}
-
-bool galaxy::DroneSystem::checkForFailure(galaxy::Drone& drone, entt::entity entity)
-{
-    auto l = 1.0 - (std::exp(0.0000005f * drone.lifetime) - 1);
-
-    if (pg::randomBetween(0.0f, 1.0f) > l)
-    {
-        // if we have a target, that is marked as planned, we need to unmark it
-        if (drone.hasTarget)
-        {
-            auto& starsystem = game.getRegistry().get<galaxy::StarSystemState>(drone.targetId);
-            // TODO: unmark only if planned (not explored)
-            starsystem.colonizationStatus = galaxy::ColonizationStatus::Unexplored;
-        }
-
-        auto event = galaxy::events::DroneFailedEvent{entity};
-        return false;
-    }
-    return true;
 }
 
 bool galaxy::DroneSystem::handleProduction(entt::entity entity)

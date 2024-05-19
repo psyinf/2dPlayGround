@@ -1,13 +1,13 @@
 #include "RenderSystem.hpp"
-#include <entities/StarSystem.hpp>
-#include <pgGame/entities/Drawable.hpp>
+#include <components/StarSystem.hpp>
+#include <pgGame/components/Drawable.hpp>
 #include <pgGame/core/Game.hpp>
-#include <pgGame/entities/WindowDetails.hpp>
+#include <pgGame/components/WindowDetails.hpp>
 #include <pgEngine/math/VecUtils.hpp>
-#include <entities/Tags.hpp>
-#include <entities/Drone.hpp>
-#include <entities/Faction.hpp>
-#include <pgGame/entities/RenderState.hpp>
+#include <components/Tags.hpp>
+#include <components/Drone.hpp>
+#include <components/Faction.hpp>
+#include <pgGame/components/RenderState.hpp>
 
 void galaxy::RenderSystem::setup() {}
 

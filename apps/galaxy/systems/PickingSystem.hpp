@@ -5,7 +5,7 @@
 #include <pgEngine/math/Vec.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 #include <pgEngine/math/Box.hpp>
-#include <pgGame/entities/Drawable.hpp>
+#include <pgGame/components/Drawable.hpp>
 #include "events/PickEvent.hpp"
 #include <fmt/core.h>
 #include <fmt/ranges.h>

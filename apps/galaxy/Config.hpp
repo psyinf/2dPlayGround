@@ -54,7 +54,7 @@ struct Galaxy
         {.name{"Grays"}, .color{255, 255, 0, 255}},
         //{.name{"Vogons"}, .color{255, 0, 0, 255}},
         //{.name{"Grays"}, .color{255, 255, 0, 255}},
-        {.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .start_drones{0}}}
+        {.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .start_drones{}}}
         //
     };
 };

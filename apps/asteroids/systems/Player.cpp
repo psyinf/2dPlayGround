@@ -1,10 +1,10 @@
 #include "Player.h"
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
-#include <pgGame/entities/WindowDetails.hpp>
-#include <pgGame/entities/Drawable.hpp>
+#include <pgGame/components/WindowDetails.hpp>
+#include <pgGame/components/Drawable.hpp>
 
-#include "entities/Entities.h"
+#include "components/Entities.h"
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/primitives/Primitives.hpp>
 #include <fmt/format.h>

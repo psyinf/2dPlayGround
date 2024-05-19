@@ -1,24 +1,25 @@
 #pragma once
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
-#include <pgGame/entities/Drawable.hpp>
+#include <pgGame/components/Drawable.hpp>
 
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgEngine/math/VecUtils.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 
-#include <entities/Tags.hpp>
+#include <components/Tags.hpp>
 #include <systems/RenderSystem.hpp>
 #include <systems/UpdateSystem.hpp>
 #include <systems/PickingSystem.hpp>
 #include <systems/DroneSystem.hpp>
+#include <systems/LifetimeSystem.hpp>
 
-#include "entities/StarSystem.hpp"
-#include "entities/Faction.hpp"
-#include "pgGame/entities/RenderState.hpp"
+#include "components/StarSystem.hpp"
+#include "components/Faction.hpp"
+#include "pgGame/components/RenderState.hpp"
 #include "events/PickEvent.hpp"
 #include <pgEngine/math/Random.hpp>
-#include <pgGame/entities/WindowDetails.hpp>
+#include <pgGame/components/WindowDetails.hpp>
 #include <Config.hpp>
 #include <cmath>
 
@@ -40,6 +41,7 @@ public:
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::PickingSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::DroneSystem>(*game));
+        systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(*game));
         // TODO: maybe encapsulate this into a class
         // TODO: add a mechanism that watches the mouse position and triggers a pick event in case it was not moved for
         // a while

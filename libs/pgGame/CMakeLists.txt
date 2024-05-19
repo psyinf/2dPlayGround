@@ -21,7 +21,7 @@ target_sources(${PROJECT_NAME}
 		
 		systems/SystemInterface.hpp
 		
-		entities/WindowDetails.hpp
+		components/WindowDetails.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}
