@@ -7,6 +7,18 @@ CPMAddPackage(
     GIT_TAG HEAD
     #OPTIONS USE_SDLGFX
 )
+CPMAddPackage(
+    Name BehaviorTree.CPP
+    GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
+    GIT_TAG 4.6.1
+    OPTIONS 
+    "BTCPP_SHARED_LIBS OFF"
+    "BTCPP_BUILD_TOOLS OFF"
+    "BTCPP_EXAMPLES   OFF"
+    "BTCPP_UNIT_TESTS OFF"
+    "BTCPP_GROOT_INTERFACE OFF"
+    "BTCPP_SQLITE_LOGGING OFF"
+)
 
 CPMAddPackage(
     NAME Catch2
