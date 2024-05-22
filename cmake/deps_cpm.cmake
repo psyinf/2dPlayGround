@@ -8,7 +8,7 @@ CPMAddPackage(
     #OPTIONS USE_SDLGFX
 )
 CPMAddPackage(
-    Name BehaviorTree.CPP
+    Name btcpp
     GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
     GIT_TAG 4.6.1
     OPTIONS 

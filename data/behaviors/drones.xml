@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4"
+      main_tree_to_execute="Drone">
+  <BehaviorTree ID="Drone">
+    <Sequence name="Colonize">
+      <Fallback>
+        <Sequence name="FindTarget">
+          <FindNextSystem/>
+        </Sequence>
+        <AlwaysSuccess name="Terminate"
+                       _description="Later: The drone instead could be refunctioned for defense "/>
+      </Fallback>
+      <Sequence name="Travel">
+        <AlwaysFailure/>
+      </Sequence>
+      <Sequence name="MakeDrones">
+        <AlwaysSuccess/>
+      </Sequence>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Action ID="FindNextSystem"
+            editable="true"/>
+  </TreeNodesModel>
+
+</root>
