@@ -5,6 +5,7 @@
 
 #include <events/DroneEvents.hpp>
 #include <Config.hpp>
+#include "behaviortree_cpp/bt_factory.h"
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -32,5 +33,7 @@ private:
     bool handleProduction(entt::entity entity);
 
     bool findNewTarget(entt::entity entity);
+
+    BT::BehaviorTreeFactory factory;
 };
 } // namespace galaxy

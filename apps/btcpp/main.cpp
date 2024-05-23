@@ -3,6 +3,11 @@
 class FindNextSystem : public BT::SyncActionNode
 {
 public:
+    FindNextSystem(const std::string& name, int x)
+      : BT::SyncActionNode(name, {})
+    {
+    }
+
     FindNextSystem(const std::string& name)
       : BT::SyncActionNode(name, {})
     {
@@ -20,9 +25,9 @@ int main(int argc, char** argv)
 try
 {
     BT::BehaviorTreeFactory factory;
-
+    int                     x = 110;
     // The recommended way to create a Node is through inheritance.
-    factory.registerNodeType<FindNextSystem>("FindNextSystem");
+    factory.registerNodeType<FindNextSystem>("FindNextSystem", x);
 
     // Registering a SimpleActionNode using a function pointer.
     // You can use C++11 lambdas or std::bind
@@ -43,7 +48,10 @@ try
     // The tick is propagated to the children based on the logic of the tree.
     // In this case, the entire sequence is executed, because all the children
     // of the Sequence return SUCCESS.
-    tree.tickWhileRunning();
+    // tree.tickWhileRunning();
+
+    tree.tickExactlyOnce();
+    tree.tickExactlyOnce();
 
     return 0;
 }

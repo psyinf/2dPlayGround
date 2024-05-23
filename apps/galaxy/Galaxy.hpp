@@ -13,6 +13,7 @@
 #include <systems/PickingSystem.hpp>
 #include <systems/DroneSystem.hpp>
 #include <systems/LifetimeSystem.hpp>
+#include <systems/BehaviorSystem.hpp>
 
 #include "components/StarSystem.hpp"
 #include "components/Faction.hpp"
@@ -42,6 +43,7 @@ public:
         systems.emplace_back(std::make_unique<galaxy::PickingSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::DroneSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(*game));
+        systems.emplace_back(std::make_unique<galaxy::BehaviorSystem>(*game));
         // TODO: maybe encapsulate this into a class
         // TODO: add a mechanism that watches the mouse position and triggers a pick event in case it was not moved for
         // a while

@@ -10,16 +10,21 @@
 #include <pgEngine/math/VecOperations.hpp>
 #include <Config.hpp>
 #include <components/Faction.hpp>
+
+#include <components/Behavior.hpp>
 #include <pgEngine/math/Random.hpp>
 #include <events/DroneEvents.hpp>
 
 #include <ranges>
 #include <pgGame/components/RenderState.hpp>
+#include <behaviors/FindNextTarget.hpp>
 
 void galaxy::DroneSystem::setup()
 {
     game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
         *this);
+
+    factory.registerNodeType<behavior::FindNextSystem>("FindNextSystem");
 }
 
 void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
@@ -43,14 +48,17 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
                                        galaxy::Dynamic,
                                        galaxy::Faction,
                                        galaxy::Lifetime,
-                                       pg::game::RenderState>(game.getRegistry(),
-                                                              {.pos{pos}, .scale{0.00125, 0.00125}},
-                                                              pg::game::Drawable{dot_sprite},
-                                                              {Drone::fromConfig(drone_params)},
-                                                              galaxy::Dynamic{},
-                                                              std::move(faction),
-                                                              galaxy::Lifetime{},
-                                                              {std::move(renderState)});
+                                       galaxy::Behavior,
+                                       pg::game::RenderState>(
+        game.getRegistry(),
+        {.pos{pos}, .scale{0.00125, 0.00125}},
+        pg::game::Drawable{dot_sprite},
+        {Drone::fromConfig(drone_params)},
+        galaxy::Dynamic{},
+        std::move(faction),
+        galaxy::Lifetime{},
+        galaxy::Behavior{factory.createTreeFromFile("../data/behaviors/drones.xml")},
+        {std::move(renderState)});
 
     game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, pos});
 }
