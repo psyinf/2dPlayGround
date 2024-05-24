@@ -5,24 +5,27 @@
     <Sequence name="ColonizeUniverse">
       <Fallback>
         <FindNextSystem/>
-        <AlwaysSuccess name="Terminate"
-                       _description="Later: The drone instead could be refunctioned for defense "/>
+        <Terminate/>
       </Fallback>
       <ReactiveSequence>
         <CheckForDamage/>
         <Travel/>
       </ReactiveSequence>
       <Sequence name="Colonize">
-        <AlwaysSuccess/>
+        <BuildDrone/>
       </Sequence>
     </Sequence>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
+    <Action ID="BuildDrone"
+            editable="true"/>
     <Condition ID="CheckForDamage"
                editable="true"/>
     <Action ID="FindNextSystem"
+            editable="true"/>
+    <Action ID="Terminate"
             editable="true"/>
     <Action ID="Travel"
             editable="true"/>

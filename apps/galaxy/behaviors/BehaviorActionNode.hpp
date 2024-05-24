@@ -35,7 +35,7 @@ public:
 
     void onHalted() override
     {
-        std::cout << "Halted " << registrationName() << entt::to_integral(entity()) << std::endl;
+        // std::cout << "Halted " << registrationName() << entt::to_integral(entity()) << std::endl;
     }
 
 private:

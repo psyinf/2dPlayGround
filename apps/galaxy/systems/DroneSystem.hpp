@@ -30,10 +30,6 @@ public:
 private:
     void createFactions(const pg::game::FrameStamp& frameStamp);
 
-    bool handleProduction(entt::entity entity);
-
-    bool findNewTarget(entt::entity entity);
-
     BT::BehaviorTreeFactory factory;
 };
 } // namespace galaxy

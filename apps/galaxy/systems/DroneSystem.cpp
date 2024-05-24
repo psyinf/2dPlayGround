@@ -19,18 +19,30 @@
 #include <pgGame/components/RenderState.hpp>
 #include <behaviors/FindNextTarget.hpp>
 #include <behaviors/Travel.hpp>
+#include <behaviors/BuildDrone.hpp>
 
 void galaxy::DroneSystem::setup()
 {
     game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
         *this);
 
-    factory.registerSimpleCondition("CheckForDamage", [&](BT::TreeNode& node) {
-        std::cout << "CheckForDamage\n" << std::endl;
-        return BT::NodeStatus::SUCCESS;
-    });
+    factory.registerSimpleCondition("CheckForDamage", [&](BT::TreeNode& node) { return BT::NodeStatus::SUCCESS; });
     factory.registerNodeType<behavior::FindNextSystem>("FindNextSystem", &game);
     factory.registerNodeType<behavior::Travel>("Travel", &game);
+    factory.registerSimpleAction("BuildDrone", [this](const BT::TreeNode& node) {
+        auto entity = node.config().blackboard->get<entt::entity>("entity");
+        auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
+        auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity);
+        makeDrone(transform.pos, faction);
+        return BT::NodeStatus::SUCCESS;
+    });
+
+    factory.registerSimpleAction("Terminate", [this](const BT::TreeNode& node) {
+        auto entity = node.config().blackboard->get<entt::entity>("entity");
+        game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({entity});
+        return BT::NodeStatus::SUCCESS;
+    });
+    // factory.registerNodeType<behavior::BuildDrone>("BuildDrone", &game);
 }
 
 void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
@@ -66,6 +78,7 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
 
     // add behavior
     auto behavior_tree = factory.createTreeFromFile("../data/behaviors/drones.xml");
+
     auto visitor = [&entity](BT::TreeNode* node) {
         if (auto action_B_node = dynamic_cast<behavior::BehaviorActionNode*>(node))
         {
@@ -74,7 +87,7 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
     };
     // Apply the visitor to ALL the nodes of the tree
     behavior_tree.applyVisitor(visitor);
-
+    behavior_tree.rootBlackboard()->set("entity", entity);
     pg::game::addComponent<galaxy::Behavior>(game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
 
     game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, pos});
@@ -83,32 +96,14 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
 void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     createFactions(frameStamp);
-    return;
-    auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>();
-    for (auto entity : view)
-    {
-        auto&& [drone, transform, dynamic] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>(entity);
-        drone.lifetime += 1;
-        if (drone.atTarget)
-        {
-            if (!handleProduction(entity)) { continue; }
-        }
-        if (drone.hasTarget) { continue; }
-
-        if (!drone.hasTarget)
-        {
-            if (!findNewTarget(entity)) { continue; }
-        }
-    }
 }
 
 void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent& event)
 {
     // later: decide if the drone dies or becomes a drifter
     // for now send a signal to destroy the entity
-    std::cout << "Drone failed\n";
     auto& drone = game.getRegistry().get<galaxy::Drone>(event.entity);
-    if (drone.hasTarget)
+    if (drone.targetId != entt::null)
     {
         auto&& [starsystem, faction] = game.getRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
         // TODO: unmark only if planned by our faction
@@ -145,68 +140,4 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
             makeDrone(transform.pos, factionComponent);
         }
     }
-}
-
-bool galaxy::DroneSystem::handleProduction(entt::entity entity)
-{
-    auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
-    auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity);
-
-    drone.waitCycles -= 1;
-    if (drone.waitCycles == 50) { makeDrone(transform.pos, faction); }
-    if (drone.waitCycles == 0)
-    {
-        // get view
-        drone.atTarget = false;
-        drone.hasTarget = false;
-        drone.targetId = entt::null;
-        // build new drones
-        // TODO: constant for replication factor
-        makeDrone(transform.pos, faction);
-
-        drone.waitCycles = 100;
-        return true;
-    }
-    return false;
-}
-
-bool galaxy::DroneSystem::findNewTarget(entt::entity entity)
-{
-    return true;
-    auto& quadtree = game.getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
-    auto  view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
-    auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity);
-
-    auto r = quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, {drone.range * 0.5f, drone.range * 0.5f})) |
-             std::views::filter([&transform](auto result) { return !equal(result.box.midpoint(), transform.pos); }) |
-             // remove stars that are already visited
-             std::views::filter([&game = game](auto result) {
-                 auto& starsystem = game.getRegistry().get<galaxy::StarSystemState>(result.data.front());
-                 return starsystem.colonizationStatus == galaxy::ColonizationStatus::Unexplored;
-             });
-    // to vector
-    auto res = r | std::ranges::to<std::vector<pg::Quadtree<entt::entity>::Result>>();
-    if (!res.empty())
-    {
-        // pick an index
-        auto index = pg::randomBetween(static_cast<size_t>(0), res.size() - 1);
-        drone.targetPos = res[index].box.midpoint();
-        drone.hasTarget = true;
-        drone.targetId = res[index].data.front();
-        auto&& [starsystem, sys_faction] =
-            game.getRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
-        sys_faction = faction;
-        starsystem.colonizationStatus = galaxy::ColonizationStatus::Planned;
-        return false;
-    }
-    else
-    {
-        // kill the drone
-        // std::cout << "No target found in range\n";
-        game.getRegistry().destroy(entity);
-
-        return false;
-    }
-
-    return true;
 }

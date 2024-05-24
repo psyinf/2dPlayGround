@@ -30,7 +30,7 @@ public:
             // pick an index
             auto index = pg::randomBetween(static_cast<size_t>(0), res.size() - 1);
             drone.targetPos = res[index].box.midpoint();
-            drone.hasTarget = true;
+
             drone.targetId = res[index].data.front();
             auto&& [starsystem, sys_faction] =
                 game().getRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);

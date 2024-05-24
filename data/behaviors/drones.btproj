@@ -3,8 +3,11 @@
     <include path="drones.xml"/>
     <!-- Description of Node Models (used by Groot) -->
     <TreeNodesModel>
+        <Action ID="BuildDrone" editable="true"/>
         <Condition ID="CheckForDamage" editable="true"/>
         <Action ID="FindNextSystem" editable="true"/>
+        <Action ID="Survey" editable="true"/>
+        <Action ID="Terminate" editable="true"/>
         <Action ID="Travel" editable="true"/>
     </TreeNodesModel>
 </root>

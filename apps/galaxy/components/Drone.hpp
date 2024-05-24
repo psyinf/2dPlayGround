@@ -52,8 +52,6 @@ struct Drone
     }
 
     uint16_t lifetime{0};
-    bool     hasTarget{false};
-    bool     atTarget{false};
 
     entt::entity targetId;
     uint16_t     waitCycles{100};

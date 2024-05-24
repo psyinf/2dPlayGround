@@ -12,19 +12,17 @@ class Travel : public BehaviorActionNode
     using BehaviorActionNode::BehaviorActionNode;
 
 public:
-    BT::NodeStatus onStart()
-    {
-        return BT::NodeStatus::RUNNING;
-        std::cout << "Running Travel" << entt::to_integral(entity()) << std::endl;
-    }
+    BT::NodeStatus onStart() { return BT::NodeStatus::RUNNING; }
 
     // You must override the virtual function tick()
     BT::NodeStatus onRunning() override
     {
-        std::cout << "Running Travel" << entt::to_integral(entity()) << std::endl;
         auto view = game().getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>();
         auto&& [drone, transform, dynamic] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>(entity());
-
+        if (drone.targetId == entt::null)
+        { //
+            return BT::NodeStatus::FAILURE;
+        }
         // travel to target
         // transform.pos += (drone.targetPos - transform.pos) * 0.01f;
         transform.pos = dynamic.calculateDynamics(
@@ -34,8 +32,7 @@ public:
         {
             transform.pos = drone.targetPos;
             dynamic.reset();
-            drone.hasTarget = false;
-            drone.atTarget = true;
+
             drone.waitCycles = 100;
             // TODO: event
             // mark the star as visited

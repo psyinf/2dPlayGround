@@ -21,9 +21,11 @@ public:
         for (auto entity : view)
         {
             auto& behavior = view.get<galaxy::Behavior>(entity);
-            behavior.tree.tickOnce();
-            std::cout << "BehaviorSystem: " << entt::to_integral(entity) << std::endl;
+            behavior.tree.tickExactlyOnce();
+            // std::cout << "BehaviorSystem: " << entt::to_integral(entity) << std::endl;
         }
+        // delay deletions after the update
+        game.getDispatcher().update();
     };
 };
 } // namespace galaxy
