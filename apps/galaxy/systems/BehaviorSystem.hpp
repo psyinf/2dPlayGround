@@ -22,6 +22,7 @@ public:
         {
             auto& behavior = view.get<galaxy::Behavior>(entity);
             behavior.tree.tickOnce();
+            std::cout << "BehaviorSystem: " << entt::to_integral(entity) << std::endl;
         }
     };
 };

@@ -3,6 +3,8 @@
     <include path="drones.xml"/>
     <!-- Description of Node Models (used by Groot) -->
     <TreeNodesModel>
+        <Condition ID="CheckForDamage" editable="true"/>
         <Action ID="FindNextSystem" editable="true"/>
+        <Action ID="Travel" editable="true"/>
     </TreeNodesModel>
 </root>

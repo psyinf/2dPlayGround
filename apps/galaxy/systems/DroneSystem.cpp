@@ -18,13 +18,19 @@
 #include <ranges>
 #include <pgGame/components/RenderState.hpp>
 #include <behaviors/FindNextTarget.hpp>
+#include <behaviors/Travel.hpp>
 
 void galaxy::DroneSystem::setup()
 {
     game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
         *this);
 
-    factory.registerNodeType<behavior::FindNextSystem>("FindNextSystem");
+    factory.registerSimpleCondition("CheckForDamage", [&](BT::TreeNode& node) {
+        std::cout << "CheckForDamage\n" << std::endl;
+        return BT::NodeStatus::SUCCESS;
+    });
+    factory.registerNodeType<behavior::FindNextSystem>("FindNextSystem", &game);
+    factory.registerNodeType<behavior::Travel>("Travel", &game);
 }
 
 void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
@@ -42,23 +48,34 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
     // create a drone
     auto renderState = pg::States{};
     renderState.push(pg::TextureColorState{faction.entityColor});
+
     auto entity = pg::game::makeEntity<pg::Transform2D,
                                        pg::game::Drawable,
                                        galaxy::Drone,
                                        galaxy::Dynamic,
                                        galaxy::Faction,
                                        galaxy::Lifetime,
-                                       galaxy::Behavior,
-                                       pg::game::RenderState>(
-        game.getRegistry(),
-        {.pos{pos}, .scale{0.00125, 0.00125}},
-        pg::game::Drawable{dot_sprite},
-        {Drone::fromConfig(drone_params)},
-        galaxy::Dynamic{},
-        std::move(faction),
-        galaxy::Lifetime{},
-        galaxy::Behavior{factory.createTreeFromFile("../data/behaviors/drones.xml")},
-        {std::move(renderState)});
+                                       pg::game::RenderState>(game.getRegistry(),
+                                                              {.pos{pos}, .scale{0.00125, 0.00125}},
+                                                              pg::game::Drawable{dot_sprite},
+                                                              {Drone::fromConfig(drone_params)},
+                                                              galaxy::Dynamic{},
+                                                              std::move(faction),
+                                                              galaxy::Lifetime{},
+                                                              {std::move(renderState)});
+
+    // add behavior
+    auto behavior_tree = factory.createTreeFromFile("../data/behaviors/drones.xml");
+    auto visitor = [&entity](BT::TreeNode* node) {
+        if (auto action_B_node = dynamic_cast<behavior::BehaviorActionNode*>(node))
+        {
+            action_B_node->setEntity(entity);
+        }
+    };
+    // Apply the visitor to ALL the nodes of the tree
+    behavior_tree.applyVisitor(visitor);
+
+    pg::game::addComponent<galaxy::Behavior>(game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
 
     game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, pos});
 }
@@ -66,7 +83,7 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
 void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     createFactions(frameStamp);
-    // TODO statemachine (e.g. https://github.com/digint/tinyfsm)
+    return;
     auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>();
     for (auto entity : view)
     {
@@ -76,27 +93,7 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
         {
             if (!handleProduction(entity)) { continue; }
         }
-        if (drone.hasTarget)
-        {
-            // travel to target
-            // transform.pos += (drone.targetPos - transform.pos) * 0.01f;
-            transform.pos = dynamic.calculateDynamics(
-                vec_cast<float>(transform.pos), drone.targetPos, drone.maxAcceleration, drone.maxVelocity, 0.02f);
-            // check if we are at the target
-            if (lengthSquared(transform.pos - drone.targetPos) < 0.001f)
-            {
-                transform.pos = drone.targetPos;
-                dynamic.reset();
-                drone.hasTarget = false;
-                drone.atTarget = true;
-                drone.waitCycles = 100;
-                // mark the star as visited
-                auto& starsystem = game.getRegistry().get<galaxy::StarSystemState>(drone.targetId);
-                starsystem.colonizationStatus = galaxy::ColonizationStatus::Explored;
-                continue;
-            }
-            continue;
-        }
+        if (drone.hasTarget) { continue; }
 
         if (!drone.hasTarget)
         {
@@ -175,6 +172,7 @@ bool galaxy::DroneSystem::handleProduction(entt::entity entity)
 
 bool galaxy::DroneSystem::findNewTarget(entt::entity entity)
 {
+    return true;
     auto& quadtree = game.getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
     auto  view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
     auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity);
