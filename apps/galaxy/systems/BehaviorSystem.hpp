@@ -22,7 +22,6 @@ public:
         {
             auto& behavior = view.get<galaxy::Behavior>(entity);
             behavior.tree.tickExactlyOnce();
-            // std::cout << "BehaviorSystem: " << entt::to_integral(entity) << std::endl;
         }
         // delay deletions after the update
         game.getDispatcher().update();

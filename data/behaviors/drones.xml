@@ -12,7 +12,10 @@
         <Travel/>
       </ReactiveSequence>
       <Sequence name="Colonize">
-        <BuildDrone/>
+        <GetTargetsAvailable targetsAvailable=""/>
+        <KeepRunningUntilFailure>
+          <BuildDrone/>
+        </KeepRunningUntilFailure>
       </Sequence>
     </Sequence>
   </BehaviorTree>
@@ -25,6 +28,10 @@
                editable="true"/>
     <Action ID="FindNextSystem"
             editable="true"/>
+    <Action ID="GetTargetsAvailable"
+            editable="true">
+      <output_port name="targetsAvailable">available targets list</output_port>
+    </Action>
     <Action ID="Terminate"
             editable="true"/>
     <Action ID="Travel"

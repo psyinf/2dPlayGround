@@ -4,12 +4,19 @@
 
 namespace behavior {
 
-class BuildDrone : public BehaviorActionNode
+class Produce : public BehaviorActionNode
 {
     using BehaviorActionNode::BehaviorActionNode;
 
 public:
-    BT::NodeStatus onStart() override { return BT::NodeStatus::RUNNING; }
+    static BT::PortsList providedPorts() { return {}; }
+
+    BT::NodeStatus onStart() override
+    {
+        auto res = getInput<std::vector<entt::entity>>("targetsAvailable");
+
+        return BT::NodeStatus::RUNNING;
+    }
 
     BT::NodeStatus onRunning() override
     {

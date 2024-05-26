@@ -5,12 +5,30 @@
 
 namespace behavior {
 
+struct Context
+{
+    pg::game::Game&          game;
+    BT::BehaviorTreeFactory& factory;
+};
+
 class BehaviorActionNode : public BT::StatefulActionNode
 {
 public:
-    BehaviorActionNode(const std::string& name, pg::game::Game* game)
+    BehaviorActionNode(const std::string& name, std::shared_ptr<Context>& ctx)
       : BT::StatefulActionNode(name, {})
-      , game_ptr(game)
+      , context(ctx)
+    {
+    }
+
+    BehaviorActionNode(const std::string& name, const BT::NodeConfig& config, std::shared_ptr<Context>& ctx)
+      : BT::StatefulActionNode(name, config)
+      , context(ctx)
+    {
+    }
+
+    BehaviorActionNode(const std::string& name, const BT::NodeConfig& config)
+      : BT::StatefulActionNode(name, config)
+
     {
     }
 
@@ -21,11 +39,7 @@ public:
 
     void setEntity(entt::entity entity) { entity_ref = entity; }
 
-    pg::game::Game& game()
-    {
-        if (!game_ptr) { throw std::runtime_error("Game is not set"); }
-        return *game_ptr;
-    }
+    pg::game::Game& game() { return context->game; }
 
     auto entity()
     {
@@ -38,9 +52,17 @@ public:
         // std::cout << "Halted " << registrationName() << entt::to_integral(entity()) << std::endl;
     }
 
+    BT::NodeStatus onRunning() override
+    {
+        // should not be called
+        return BT::NodeStatus::SUCCESS;
+    }
+
+    auto& ctx() { return *context.get(); }
+
 private:
-    pg::game::Game* game_ptr{nullptr};
-    entt::entity    entity_ref{entt::null};
+    std::shared_ptr<Context> context{};
+    entt::entity             entity_ref{entt::null};
 };
 
 } // namespace behavior

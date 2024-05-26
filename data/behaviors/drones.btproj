@@ -6,6 +6,9 @@
         <Action ID="BuildDrone" editable="true"/>
         <Condition ID="CheckForDamage" editable="true"/>
         <Action ID="FindNextSystem" editable="true"/>
+        <Action ID="GetTargetsAvailable" editable="true">
+            <output_port name="targetsAvailable">available targets list</output_port>
+        </Action>
         <Action ID="Survey" editable="true"/>
         <Action ID="Terminate" editable="true"/>
         <Action ID="Travel" editable="true"/>
