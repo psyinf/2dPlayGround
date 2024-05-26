@@ -21,8 +21,6 @@ public:
 
     void setup();
 
-    void makeDrone(pg::fVec2 pos, galaxy::Faction);
-
     void handle(const pg::game::FrameStamp& frameStamp);
 
     void handleDroneFailed(galaxy::events::DroneFailedEvent& event);

@@ -3,12 +3,14 @@
     <include path="drones.xml"/>
     <!-- Description of Node Models (used by Groot) -->
     <TreeNodesModel>
-        <Action ID="BuildDrone" editable="true"/>
         <Condition ID="CheckForDamage" editable="true"/>
         <Action ID="FindNextSystem" editable="true"/>
         <Action ID="GetTargetsAvailable" editable="true">
             <output_port name="targetsAvailable">available targets list</output_port>
+            <input_port name="findMax" default="-1">Maximum number of targets to find</input_port>
         </Action>
+        <Action ID="MakeDrone" editable="true"/>
+        <Action ID="SetFactionBlackboard" editable="true"/>
         <Action ID="Survey" editable="true"/>
         <Action ID="Terminate" editable="true"/>
         <Action ID="Travel" editable="true"/>

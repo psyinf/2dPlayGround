@@ -12,18 +12,23 @@
         <Travel/>
       </ReactiveSequence>
       <Sequence name="Colonize">
-        <GetTargetsAvailable targetsAvailable=""/>
-        <KeepRunningUntilFailure>
-          <BuildDrone/>
-        </KeepRunningUntilFailure>
+        <GetTargetsAvailable targetsAvailable=""
+                             findMax="0"/>
       </Sequence>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="Seed">
+    <Sequence>
+      <SetFactionBlackboard/>
+      <GetTargetsAvailable targetsAvailable=""
+                           findMax="1"/>
+      <MakeDrone/>
     </Sequence>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
-    <Action ID="BuildDrone"
-            editable="true"/>
     <Condition ID="CheckForDamage"
                editable="true"/>
     <Action ID="FindNextSystem"
@@ -31,7 +36,13 @@
     <Action ID="GetTargetsAvailable"
             editable="true">
       <output_port name="targetsAvailable">available targets list</output_port>
+      <input_port name="findMax"
+                  default="-1">Maximum number of targets to find</input_port>
     </Action>
+    <Action ID="MakeDrone"
+            editable="true"/>
+    <Action ID="SetFactionBlackboard"
+            editable="true"/>
     <Action ID="Terminate"
             editable="true"/>
     <Action ID="Travel"

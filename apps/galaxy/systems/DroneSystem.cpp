@@ -17,42 +17,43 @@
 
 #include <ranges>
 #include <pgGame/components/RenderState.hpp>
-#include <behaviors/FindNextTarget.hpp>
+#include <behaviors/FindNextSystem.hpp>
 #include <behaviors/Travel.hpp>
-#include <behaviors/Produce.hpp>
-
 #include <behaviors/MakeDrone.hpp>
 #include <behaviors/GetTargetsAvailable.hpp>
+#include <behaviors/SetFactionBlackboard.hpp>
 
 void galaxy::DroneSystem::setup()
 {
     game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
         *this);
-    auto ctx = std::make_shared<behavior::Context>(game, factory);
+    behavior::ContextPtr ctx = std::make_shared<behavior::Context>(&game, factory);
     factory.registerSimpleCondition("CheckForDamage", [&](BT::TreeNode& node) { return BT::NodeStatus::SUCCESS; });
     factory.registerNodeType<behavior::FindNextSystem>("FindNextSystem", ctx);
     factory.registerNodeType<behavior::Travel>("Travel", ctx);
-
-    factory.registerSimpleAction("BuildDrone", [this](const BT::TreeNode& node) {
-        auto entity = node.config().blackboard->get<entt::entity>("entity");
-        auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
-        auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity);
-
-        makeDrone(transform.pos, faction);
-        return BT::NodeStatus::SUCCESS;
-    });
+    factory.registerNodeType<behavior::GetTargetsAvailable>("GetTargetsAvailable", ctx);
+    factory.registerNodeType<behavior::MakeDrone>("MakeDrone", ctx);
+    factory.registerNodeType<behavior::SetFactionBlackboard>("SetFactionBlackboard", ctx);
+    //     factory.registerSimpleAction("BuildDrone", [this](const BT::TreeNode& node) {
+    //         auto entity = node.config().blackboard->get<entt::entity>("entity");
+    //         auto view = game.getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
+    //         auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity);
+    //
+    //         makeDrone(transform.pos, faction);
+    //         return BT::NodeStatus::SUCCESS;
+    //     });
 
     factory.registerSimpleAction("Terminate", [this](const BT::TreeNode& node) {
         auto entity = node.config().blackboard->get<entt::entity>("entity");
         game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({entity});
         return BT::NodeStatus::SUCCESS;
     });
-    behavior::GetTargetsAvailable x("", {}, ctx);
-    factory.registerNodeType<behavior::GetTargetsAvailable, std::shared_ptr<behavior::Context>>("GetTargetsAvailable",
-                                                                                                ctx);
-    //  factory.registerNodeType<behavior::BuildDrone>("BuildDrone", &game);
+    // factory.registerNodeType<behavior::BuildDrone>("BuildDrone", &game);
+
+    factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");
 }
 
+/*
 void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
 {
     auto dot_sprite = game.getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
@@ -102,7 +103,7 @@ void galaxy::DroneSystem::makeDrone(pg::fVec2 pos, galaxy::Faction faction)
 
     game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, pos});
 }
-
+*/
 void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
     createFactions(frameStamp);
@@ -136,18 +137,23 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
     {
         if (faction.startParams.start_cycle != frameStamp.frameNumber) { continue; }
 
-        auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>();
+        auto view =
+            game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
         auto it = view.begin();
         auto size = static_cast<size_t>(std::distance(view.begin(), view.end()));
         std::advance(it, pg::randomBetween<size_t>(0, size));
         auto entity = *it;
-        auto&& [drawable, transform, starsystem] =
-            view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState>(entity);
+        auto&& [drawable, transform, starsystem, system_faction] =
+            view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>(entity);
         // get a single star system
-        galaxy::Faction factionComponent{faction.name, faction.color, faction.color};
-        for (auto num : std::ranges::iota_view{0u, faction.startParams.start_drones})
-        {
-            makeDrone(transform.pos, factionComponent);
-        }
+        system_faction = {faction.name, faction.color, faction.color};
+        starsystem.colonizationStatus = galaxy::ColonizationStatus::Colonized;
+        // add faction
+
+        std::cout << "createFactions " << entt::to_integral(entity) << " " << system_faction.name << "\n";
+        // add seed behaviortree
+        auto behavior_tree = behavior::setupTree(factory, "Seed", entity);
+        pg::game::addComponent<galaxy::Behavior>(
+            game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
     }
 }

@@ -23,6 +23,7 @@
 #include <pgGame/components/WindowDetails.hpp>
 #include <Config.hpp>
 #include <cmath>
+#include <ranges>
 
 namespace galaxy {
 class GalacticCore
