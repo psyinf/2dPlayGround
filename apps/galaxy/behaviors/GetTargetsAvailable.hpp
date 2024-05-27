@@ -1,23 +1,8 @@
 #pragma once
 
 #include <behaviors/BehaviorActionNode.hpp>
+#include <behaviors/PortDefinitions.hpp>
 #include <helpers/GalaxyHelpers.hpp>
-
-namespace BT {
-template <>
-inline std::vector<entt::entity> convertFromString(StringView str)
-{
-    // We expect real numbers separated by semicolons
-    auto                      parts = splitString(str, ';');
-    std::vector<entt::entity> output;
-    for (auto& part : parts)
-    {
-        output.push_back(convertFromString<entt::entity>(part));
-    }
-
-    return output;
-}
-} // end namespace BT
 
 namespace behavior {
 
@@ -28,8 +13,8 @@ public:
 
     static BT::PortsList providedPorts()
     {
-        return {BT::OutputPort<std::vector<entt::entity>>("targetsAvailable"), //
-                BT::InputPort<uint32_t>("findMax")};
+        return {BT::OutputPort<behavior::port::TargetSystems>("available_target_list"), //
+                BT::InputPort<uint32_t>("max_targets_to_find")};
     }
 
     BT::NodeStatus onStart() override
@@ -54,9 +39,9 @@ public:
         if (result_systems.empty()) { return BT::NodeStatus::FAILURE; }
         else
         {
-            auto res = result_systems | std::views::take(getInput<size_t>("findMax").value());
+            auto res = result_systems | std::views::take(getInput<size_t>("max_targets_to_find").value());
 
-            setOutput("targetsAvailable", res);
+            setOutput("available_target_list", res);
             return BT::NodeStatus::SUCCESS;
         }
     }

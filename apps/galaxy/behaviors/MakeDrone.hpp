@@ -16,6 +16,12 @@ class MakeDrone : public BehaviorActionNode
     using BehaviorActionNode::BehaviorActionNode;
 
 public:
+    static BT::PortsList providedPorts()
+    {
+        return {BT::OutputPort<std::vector<entt::entity>>("targetsAvailable"), //
+                BT::InputPort<std::vector<entt::entity>>("targetsAvailable")};
+    }
+
     // You must override the virtual function tick()
     BT::NodeStatus onStart() override
     {
@@ -56,6 +62,11 @@ public:
         game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, transform.pos});
         return BT::NodeStatus::SUCCESS;
     }
-};
 
+    BT::NodeStatus onRunning() override
+    {
+        // should not be called
+        return BT::NodeStatus::SUCCESS;
+    }
+};
 } // namespace behavior

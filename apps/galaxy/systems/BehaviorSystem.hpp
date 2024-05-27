@@ -21,7 +21,11 @@ public:
         for (auto entity : view)
         {
             auto& behavior = view.get<galaxy::Behavior>(entity);
-            behavior.tree.tickExactlyOnce();
+            auto  res = behavior.tree.tickExactlyOnce();
+            if (res == BT::NodeStatus::SUCCESS || res == BT::NodeStatus::FAILURE)
+            {
+                game.getRegistry().remove<galaxy::Behavior>(entity);
+            }
         }
         // delay deletions after the update
         game.getDispatcher().update();

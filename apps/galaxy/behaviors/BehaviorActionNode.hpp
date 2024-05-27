@@ -56,11 +56,7 @@ public:
         // std::cout << "Halted " << registrationName() << entt::to_integral(entity()) << std::endl;
     }
 
-    BT::NodeStatus onRunning() override
-    {
-        // should not be called
-        return BT::NodeStatus::SUCCESS;
-    }
+    BT::NodeStatus onRunning() override { return BT::NodeStatus::SUCCESS; }
 
 private:
     ContextPtr   context{nullptr};

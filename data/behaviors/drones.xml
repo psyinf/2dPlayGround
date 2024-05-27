@@ -12,8 +12,8 @@
         <Travel/>
       </ReactiveSequence>
       <Sequence name="Colonize">
-        <GetTargetsAvailable targetsAvailable=""
-                             findMax="0"/>
+        <GetTargetsAvailable available_target_list=""
+                             max_targets_to_find="0"/>
       </Sequence>
     </Sequence>
   </BehaviorTree>
@@ -21,8 +21,9 @@
   <BehaviorTree ID="Seed">
     <Sequence>
       <SetFactionBlackboard/>
-      <GetTargetsAvailable targetsAvailable=""
-                           findMax="1"/>
+      <GetTargetsAvailable available_target_list=""
+                           max_targets_to_find="0"
+                           _description="Find up to &apos;findMax&apos; target systems based on the factions range "/>
       <MakeDrone/>
     </Sequence>
   </BehaviorTree>
@@ -35,9 +36,9 @@
             editable="true"/>
     <Action ID="GetTargetsAvailable"
             editable="true">
-      <output_port name="targetsAvailable">available targets list</output_port>
-      <input_port name="findMax"
-                  default="-1">Maximum number of targets to find</input_port>
+      <output_port name="available_target_list">available targets list</output_port>
+      <input_port name="max_targets_to_find"
+                  default="0">Maximum number of targets to find</input_port>
     </Action>
     <Action ID="MakeDrone"
             editable="true"/>
