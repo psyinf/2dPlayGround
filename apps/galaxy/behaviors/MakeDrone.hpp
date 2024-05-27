@@ -18,8 +18,8 @@ class MakeDrone : public BehaviorActionNode
 public:
     static BT::PortsList providedPorts()
     {
-        return {BT::OutputPort<std::vector<entt::entity>>("targetsAvailable"), //
-                BT::InputPort<std::vector<entt::entity>>("targetsAvailable")};
+        return {BT::OutputPort<std::vector<entt::entity>>("available_target_list"), //
+                BT::InputPort<std::vector<entt::entity>>("available_target_list")};
     }
 
     // You must override the virtual function tick()

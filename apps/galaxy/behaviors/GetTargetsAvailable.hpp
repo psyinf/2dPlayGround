@@ -13,8 +13,8 @@ public:
 
     static BT::PortsList providedPorts()
     {
-        return {BT::OutputPort<behavior::port::TargetSystems>("available_target_list"), //
-                BT::InputPort<uint32_t>("max_targets_to_find")};
+        return {BT::OutputPort<BT::SharedQueue<uint64_t>>("available_target_list"), //
+                BT::InputPort<uint8_t>("max_targets_to_find")};
     }
 
     BT::NodeStatus onStart() override
@@ -32,16 +32,20 @@ public:
         const auto& drone_conf = galaxy::getFactionConfig(game(), faction).droneParams;
         const auto  range = pg::fVec2{drone_conf.max_range * 0.5f, drone_conf.max_range * 0.5f};
         //clang-format off
-        auto result_systems = quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, range)) |
-                              std::views::filter(filterOutOwnSystem) | std::views::filter(onlyUnexplored) |
-                              std::ranges::to<std::vector<pg::Quadtree<entt::entity>::Result>>();
+        // TODO: assert result.data is always of size 1
+        auto result_systems =
+            quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, range)) | std::views::filter(filterOutOwnSystem) |
+            std::views::filter(onlyUnexplored) |
+            // take only .data member of the result
+            std::views::transform([](auto result) { return entt::to_integral(result.data.front()); }) |
+            std::ranges::to<std::deque<uint64_t>>();
         //clang-format on
         if (result_systems.empty()) { return BT::NodeStatus::FAILURE; }
         else
         {
             auto res = result_systems | std::views::take(getInput<size_t>("max_targets_to_find").value());
-
-            setOutput("available_target_list", res);
+            auto shared_queue = std::make_shared<std::deque<uint64_t>>(res.begin(), res.end());
+            setOutput("available_target_list", shared_queue);
             return BT::NodeStatus::SUCCESS;
         }
     }
