@@ -1,6 +1,7 @@
 #pragma once
 #include <pgGame/core/Game.hpp>
 #include <components/Faction.hpp>
+#include <Config.hpp>
 #include <ranges>
 
 namespace galaxy {

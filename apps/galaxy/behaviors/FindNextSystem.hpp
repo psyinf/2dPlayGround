@@ -1,6 +1,6 @@
 #pragma once
 
-#include <behaviors/BehaviorActionNode.hpp>
+#include <behaviors/utils/BehaviorActionNode.hpp>
 
 namespace behavior {
 

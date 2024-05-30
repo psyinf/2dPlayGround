@@ -5,7 +5,8 @@
 
 #include <events/DroneEvents.hpp>
 #include <Config.hpp>
-#include "behaviortree_cpp/bt_factory.h"
+#include <behaviors/utils/Context.hpp>
+#include <behaviortree_cpp/bt_factory.h>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -28,6 +29,6 @@ public:
 private:
     void createFactions(const pg::game::FrameStamp& frameStamp);
 
-    BT::BehaviorTreeFactory factory;
+    behavior::ContextPtr ctx{};
 };
 } // namespace galaxy

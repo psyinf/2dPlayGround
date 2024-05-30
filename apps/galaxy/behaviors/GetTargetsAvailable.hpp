@@ -1,8 +1,29 @@
 #pragma once
 
-#include <behaviors/BehaviorActionNode.hpp>
-#include <behaviors/PortDefinitions.hpp>
+#include <behaviors/utils/BehaviorActionNode.hpp>
 #include <helpers/GalaxyHelpers.hpp>
+
+namespace BT {
+
+template <>
+inline entt::entity convertFromString<entt::entity>(StringView str)
+{
+    return entt::entity(convertFromString<uint64_t>(str));
+}
+
+template <>
+inline SharedQueue<entt::entity> convertFromString<SharedQueue<entt::entity>>(StringView str)
+{
+    auto                      parts = splitString(str, ';');
+    SharedQueue<entt::entity> output = std::make_shared<std::deque<entt::entity>>();
+    for (const StringView& part : parts)
+    {
+        output->push_back(convertFromString<entt::entity>(part));
+    }
+    return output;
+}
+
+} // namespace BT
 
 namespace behavior {
 
@@ -13,7 +34,7 @@ public:
 
     static BT::PortsList providedPorts()
     {
-        return {BT::OutputPort<BT::SharedQueue<uint64_t>>("available_target_list"), //
+        return {BT::OutputPort<BT::SharedQueue<entt::entity>>("available_target_list"), //
                 BT::InputPort<uint8_t>("max_targets_to_find")};
     }
 
@@ -33,18 +54,18 @@ public:
         const auto  range = pg::fVec2{drone_conf.max_range * 0.5f, drone_conf.max_range * 0.5f};
         //clang-format off
         // TODO: assert result.data is always of size 1
-        auto result_systems =
-            quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, range)) | std::views::filter(filterOutOwnSystem) |
-            std::views::filter(onlyUnexplored) |
-            // take only .data member of the result
-            std::views::transform([](auto result) { return entt::to_integral(result.data.front()); }) |
-            std::ranges::to<std::deque<uint64_t>>();
+        auto result_systems = quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, range)) |
+                              std::views::filter(filterOutOwnSystem) | std::views::filter(onlyUnexplored) |
+                              // take only .data member of the result
+                              std::views::transform([](auto result) { return (result.data.front()); }) |
+                              std::ranges::to<std::deque<entt::entity>>();
         //clang-format on
         if (result_systems.empty()) { return BT::NodeStatus::FAILURE; }
         else
         {
-            auto res = result_systems | std::views::take(getInput<size_t>("max_targets_to_find").value());
-            auto shared_queue = std::make_shared<std::deque<uint64_t>>(res.begin(), res.end());
+            auto max_to_find = getInput<size_t>("max_targets_to_find").value();
+            auto res = result_systems | std::views::take(max_to_find);
+            auto shared_queue = std::make_shared<std::deque<entt::entity>>(res.begin(), res.end());
             setOutput("available_target_list", shared_queue);
             return BT::NodeStatus::SUCCESS;
         }

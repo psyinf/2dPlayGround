@@ -1,13 +1,13 @@
 #pragma once
 
-#include <behaviors/TreeSetupHelper.hpp>
+#include <behaviors/utils/TreeSetupHelper.hpp>
 
 #include <pgEngine/math/Transform.hpp>
 #include <components/Drone.hpp>
 #include <pgEngine/math/Vec.hpp>
 
 #include <helpers/GalaxyHelpers.hpp>
-#include <behaviors/BehaviorActionNode.hpp>
+#include <behaviors/utils/BehaviorActionNode.hpp>
 
 namespace behavior {
 
@@ -55,7 +55,7 @@ public:
                                                         {std::move(renderState)});
 
         // add behavior"
-        auto behavior_tree = setupTree(ctx()->factory, "Drone", entity);
+        auto behavior_tree = ctx()->setupTree("Drone", entity);
         pg::game::addComponent<galaxy::Behavior>(
             game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
 

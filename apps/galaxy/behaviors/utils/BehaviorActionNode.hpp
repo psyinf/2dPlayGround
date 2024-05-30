@@ -5,31 +5,12 @@
 
 namespace behavior {
 
-struct Context
-{
-    pg::game::Game*          game;
-    BT::BehaviorTreeFactory& factory;
-};
-
-using ContextPtr = std::shared_ptr<Context>;
-
 class BehaviorActionNode : public BT::StatefulActionNode
 {
 public:
     BehaviorActionNode(const std::string& name, const BT::NodeConfig& config, ContextPtr ctx)
-      : BT::StatefulActionNode(name, config)
+      : BT::StatefulActionNode(name, ctx->getPortInjector(name).injectPorts(config))
       , context(ctx)
-    {
-    }
-
-    BehaviorActionNode(const std::string& name, ContextPtr ctx)
-      : BT::StatefulActionNode(name, {})
-      , context(ctx)
-    {
-    }
-
-    BehaviorActionNode(const std::string& name)
-      : BT::StatefulActionNode(name, {})
     {
     }
 

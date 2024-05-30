@@ -9,9 +9,9 @@
             <output_port name="available_target_list">available targets list</output_port>
             <input_port name="max_targets_to_find" default="0">Maximum number of targets to find</input_port>
         </Action>
+        <Decorator ID="LoopProductionQueue" editable="true"/>
         <Action ID="MakeDrone" editable="true"/>
         <Action ID="SetFactionBlackboard" editable="true"/>
-        <Action ID="Survey" editable="true"/>
         <Action ID="Terminate" editable="true"/>
         <Action ID="Travel" editable="true"/>
     </TreeNodesModel>

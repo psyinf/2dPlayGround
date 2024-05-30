@@ -20,11 +20,12 @@
 
   <BehaviorTree ID="Seed">
     <Sequence>
-      <SetFactionBlackboard/>
       <GetTargetsAvailable available_target_list=""
                            max_targets_to_find="0"
                            _description="Find up to &apos;findMax&apos; target systems based on the factions range "/>
-      <MakeDrone/>
+      <LoopProductionQueue>
+        <MakeDrone/>
+      </LoopProductionQueue>
     </Sequence>
   </BehaviorTree>
 
@@ -40,9 +41,9 @@
       <input_port name="max_targets_to_find"
                   default="0">Maximum number of targets to find</input_port>
     </Action>
+    <Decorator ID="LoopProductionQueue"
+               editable="true"/>
     <Action ID="MakeDrone"
-            editable="true"/>
-    <Action ID="SetFactionBlackboard"
             editable="true"/>
     <Action ID="Terminate"
             editable="true"/>
