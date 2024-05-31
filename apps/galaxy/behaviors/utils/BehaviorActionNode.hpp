@@ -14,6 +14,13 @@ public:
     {
     }
 
+    static BehaviorActionNode& as(BT::TreeNode& node)
+    {
+        auto action = dynamic_cast<BehaviorActionNode*>(&node);
+        if (!action) { throw std::runtime_error("Node is not an action node"); }
+        return *action;
+    }
+
     static BT::PortsList providedPorts() { return {}; }
 
     void setEntity(entt::entity entity) { entity_ref = entity; }
@@ -32,10 +39,9 @@ public:
 
     auto ctx() { return context; }
 
-    void onHalted() override
-    {
-        // std::cout << "Halted " << registrationName() << entt::to_integral(entity()) << std::endl;
-    }
+    BT::NodeStatus onStart() override { throw std::runtime_error("onStart expected to be overriden"); }
+
+    void onHalted() override {}
 
     BT::NodeStatus onRunning() override { return BT::NodeStatus::SUCCESS; }
 

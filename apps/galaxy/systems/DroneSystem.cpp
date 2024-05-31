@@ -22,7 +22,7 @@
 #include <behaviors/MakeDrone.hpp>
 #include <behaviors/GetTargetsAvailable.hpp>
 
-#include <behaviors/TestLoop.hpp>
+#include <behaviors/ProductionQueueLoop.hpp>
 
 void galaxy::DroneSystem::setup()
 {
@@ -36,10 +36,11 @@ void galaxy::DroneSystem::setup()
     factory.registerNodeType<behavior::GetTargetsAvailable>("GetTargetsAvailable", ctx);
     factory.registerNodeType<behavior::MakeDrone>("MakeDrone", ctx);
     // factory.registerNodeType<BT::LoopNode<entt::entity>>("LoopProductionQueue");
-    factory.registerNodeType<behavior::TestLoop>("LoopProductionQueue");
-    factory.registerSimpleAction("Terminate", [this](const BT::TreeNode& node) {
-        // auto entity = node.getInput<entt::entity>("entity");
-        // game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({entity.value()});
+    factory.registerNodeType<behavior::ProductionQueueLoop>("LoopProductionQueue", ctx);
+    factory.registerSimpleAction("Terminate", [this](BT::TreeNode& node) {
+        // downcast to access the entity
+        auto& behavior = behavior::BehaviorActionNode::as(node);
+        game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({behavior.entity()});
         return BT::NodeStatus::SUCCESS;
     });
     factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");
@@ -97,7 +98,7 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
         ctx->injectors["GetTargetsAvailable"].input("max_targets_to_find",
                                                     std::to_string(faction.startParams.start_drones));
         ctx->injectors["GetTargetsAvailable"].output("available_target_list", "{available_target_list}");
-
+        ctx->injectors["LoopProductionQueue"].input("queue", "{available_target_list}", true);
         auto behavior_tree = ctx->setupTree("Seed", entity);
         pg::game::addComponent<galaxy::Behavior>(
             game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
