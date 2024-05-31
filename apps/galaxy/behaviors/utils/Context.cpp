@@ -10,6 +10,8 @@ behavior::PortInjector& behavior::Context::getPortInjector(const std::string& na
 
 void behavior::Context::setupBlackboard(BT::Blackboard::Ptr blackboard, entt::entity entity)
 {
+    // TODO: check if this is needed.
+    return;
     auto        view = game->getRegistry().view<galaxy::Faction>();
     auto&&      faction = view.get<galaxy::Faction>(entity);
     const auto& factionConfig = galaxy::getFactionConfig(*game, faction);

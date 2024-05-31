@@ -92,10 +92,13 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
         // add faction
 
         std::cout << "createFactions " << entt::to_integral(entity) << " " << system_faction.name << "\n";
-        // add seed behaviortree
-        ctx->injectors["GetTargetsAvailable"].input("max_targets_to_find", "{max_targets_to_find}");
-        auto behavior_tree =
-            ctx->setupTree("Seed", entity);
+        // setup port connections
+        // initial queue size is setup
+        ctx->injectors["GetTargetsAvailable"].input("max_targets_to_find",
+                                                    std::to_string(faction.startParams.start_drones));
+        ctx->injectors["GetTargetsAvailable"].output("available_target_list", "{available_target_list}");
+
+        auto behavior_tree = ctx->setupTree("Seed", entity);
         pg::game::addComponent<galaxy::Behavior>(
             game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
     }
