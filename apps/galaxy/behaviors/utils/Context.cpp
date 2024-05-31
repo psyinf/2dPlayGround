@@ -8,22 +8,8 @@ behavior::PortInjector& behavior::Context::getPortInjector(const std::string& na
     return injectors[name];
 }
 
-void behavior::Context::setupBlackboard(BT::Blackboard::Ptr blackboard, entt::entity entity)
+BT::Tree behavior::Context::setupTree(const std::string& name, entt::entity entity, BT::Blackboard::Ptr blackboard)
 {
-    // TODO: check if this is needed.
-    return;
-    auto        view = game->getRegistry().view<galaxy::Faction>();
-    auto&&      faction = view.get<galaxy::Faction>(entity);
-    const auto& factionConfig = galaxy::getFactionConfig(*game, faction);
-
-    blackboard->set("entity", entity);
-    blackboard->set("max_targets_to_find", factionConfig.startParams.start_drones);
-}
-
-BT::Tree behavior::Context::setupTree(const std::string& name, entt::entity entity)
-{
-    BT::Blackboard::Ptr blackboard = BT::Blackboard::create();
-    setupBlackboard(blackboard, entity);
     auto behavior_tree = factory().createTree(name, blackboard);
 
     auto visitor = [&entity](BT::TreeNode* node) {

@@ -2,6 +2,7 @@
 
 #include <behaviors/utils/BehaviorActionNode.hpp>
 #include <helpers/GalaxyHelpers.hpp>
+#include <spdlog/spdlog.h>
 
 namespace BT {
 
@@ -63,7 +64,11 @@ public:
         if (result_systems.empty()) { return BT::NodeStatus::FAILURE; }
         else
         {
-            auto max_to_find = getInput<size_t>("max_targets_to_find").value();
+            auto max_to_find = getInput<size_t>("max_targets_to_find").value_or(([this]() {
+                spdlog::warn("max_targets_to_find not set in {}, using default value of 0", fullPath());
+                return 0;
+            })());
+
             auto res = result_systems | std::views::take(max_to_find);
             auto shared_queue = std::make_shared<std::deque<entt::entity>>(res.begin(), res.end());
             setOutput("available_target_list", shared_queue);

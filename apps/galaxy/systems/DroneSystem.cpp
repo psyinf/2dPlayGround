@@ -22,11 +22,11 @@
 #include <behaviors/MakeDrone.hpp>
 #include <behaviors/GetTargetsAvailable.hpp>
 
-#include <behaviors/ProductionQueueLoop.hpp>
+#include <behaviors/EntityQueueLoop.hpp>
 
 void galaxy::DroneSystem::setup()
 {
-    ctx = std::make_shared<behavior::Context>(&game);
+    ctx = std::make_shared<behavior::Context>(&game, std::make_unique<BT::BehaviorTreeFactory>());
     game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
         *this);
     auto& factory = ctx->factory();
@@ -36,7 +36,7 @@ void galaxy::DroneSystem::setup()
     factory.registerNodeType<behavior::GetTargetsAvailable>("GetTargetsAvailable", ctx);
     factory.registerNodeType<behavior::MakeDrone>("MakeDrone", ctx);
     // factory.registerNodeType<BT::LoopNode<entt::entity>>("LoopProductionQueue");
-    factory.registerNodeType<behavior::ProductionQueueLoop>("LoopProductionQueue", ctx);
+    factory.registerNodeType<behavior::EntityQueueLoop>("LoopProductionQueue", ctx);
     factory.registerSimpleAction("Terminate", [this](BT::TreeNode& node) {
         // downcast to access the entity
         auto& behavior = behavior::BehaviorActionNode::as(node);
@@ -94,12 +94,14 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
 
         std::cout << "createFactions " << entt::to_integral(entity) << " " << system_faction.name << "\n";
         // setup port connections
-        // initial queue size is setup
-        ctx->injectors["GetTargetsAvailable"].input("max_targets_to_find",
-                                                    std::to_string(faction.startParams.start_drones));
+
+        ctx->injectors["GetTargetsAvailable"].input("max_targets_to_find", "{max_targets_to_find}");
         ctx->injectors["GetTargetsAvailable"].output("available_target_list", "{available_target_list}");
         ctx->injectors["LoopProductionQueue"].input("queue", "{available_target_list}", true);
-        auto behavior_tree = ctx->setupTree("Seed", entity);
+        BT::Blackboard::Ptr blackboard = BT::Blackboard::create();
+        blackboard->set("max_targets_to_find", faction.startParams.num_start_drones);
+        auto behavior_tree = ctx->setupTree("Seed", entity, blackboard);
+
         pg::game::addComponent<galaxy::Behavior>(
             game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
     }

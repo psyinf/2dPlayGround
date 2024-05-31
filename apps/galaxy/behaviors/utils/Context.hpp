@@ -9,17 +9,14 @@ namespace behavior {
 struct Context
 {
     pg::game::Game*                               game;
-    BT::BehaviorTreeFactory                       factory_;
+    std::shared_ptr<BT::BehaviorTreeFactory>      factory_;
     std::unordered_map<std::string, PortInjector> injectors;
 
     PortInjector& getPortInjector(const std::string& name);
 
-    void setupBlackboard(BT::Blackboard::Ptr blackboard, entt::entity entity);
+    BT::Tree setupTree(const std::string& name, entt::entity entity, BT::Blackboard::Ptr = BT::Blackboard::create());
 
-    // TODO: maybe pass a function for setting ip the blackboard
-    BT::Tree setupTree(const std::string& name, entt::entity entity);
-
-    auto factory() -> BT::BehaviorTreeFactory& { return factory_; }
+    auto factory() -> BT::BehaviorTreeFactory& { return *factory_; }
 };
 
 using ContextPtr = std::shared_ptr<Context>;

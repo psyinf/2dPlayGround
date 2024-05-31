@@ -6,7 +6,7 @@
 #include <helpers/GalaxyHelpers.hpp>
 
 namespace behavior {
-
+// NOT YET USED
 class BehaviorTreeSetup
 {
 public:

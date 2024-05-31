@@ -55,7 +55,14 @@ public:
                                                         {std::move(renderState)});
 
         // add behavior"
-        auto behavior_tree = ctx()->setupTree("Drone", entity);
+
+        // setup port connections
+        // initial queue size is setup
+        // make a new context for the drone
+        auto blackboard = BT::Blackboard::create();
+        blackboard->set("max_targets_to_find", 3);
+        auto behavior_tree = ctx()->setupTree("Drone", entity, blackboard);
+
         pg::game::addComponent<galaxy::Behavior>(
             game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
 
