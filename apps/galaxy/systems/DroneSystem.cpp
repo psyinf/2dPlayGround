@@ -37,10 +37,12 @@ void galaxy::DroneSystem::setup()
     factory.registerNodeType<behavior::MakeDrone>("MakeDrone", ctx);
     // factory.registerNodeType<BT::LoopNode<entt::entity>>("LoopProductionQueue");
     factory.registerNodeType<behavior::EntityQueueLoop>("LoopProductionQueue", ctx);
-    factory.registerSimpleAction("Terminate", [this](BT::TreeNode& node) {
+    factory.registerSimpleAction("Terminate", [this](const BT::TreeNode& node) {
         // downcast to access the entity
-        auto& behavior = behavior::BehaviorActionNode::as(node);
-        game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({behavior.entity()});
+        auto entity = node.config().blackboard->get<entt::entity>("entity");
+        std::cout << "Terminate " << entt::to_integral(entity) << "\n";
+
+        game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({entity});
         return BT::NodeStatus::SUCCESS;
     });
     factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");
@@ -94,14 +96,21 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
 
         std::cout << "createFactions " << entt::to_integral(entity) << " " << system_faction.name << "\n";
         // setup port connections
+        // defaults
 
         ctx->injectors["GetTargetsAvailable"].input("max_targets_to_find", "{max_targets_to_find}");
         ctx->injectors["GetTargetsAvailable"].output("available_target_list", "{available_target_list}");
         ctx->injectors["LoopProductionQueue"].input("queue", "{available_target_list}", true);
+
         BT::Blackboard::Ptr blackboard = BT::Blackboard::create();
+        std::cout << "making Seed";
         blackboard->set("max_targets_to_find", faction.startParams.num_start_drones);
+
+        blackboard->set("ID", fmt::format("Seed: {}", entt::to_integral(entity)));
+        blackboard->set("entity", entt::to_integral(entity));
         auto behavior_tree = ctx->setupTree("Seed", entity, blackboard);
 
+        std::cout << ".. done\n";
         pg::game::addComponent<galaxy::Behavior>(
             game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
     }

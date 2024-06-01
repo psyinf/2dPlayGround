@@ -9,6 +9,8 @@
 #include <helpers/GalaxyHelpers.hpp>
 #include <behaviors/utils/BehaviorActionNode.hpp>
 
+#include <fmt/format.h>
+
 namespace behavior {
 
 class MakeDrone : public BehaviorActionNode
@@ -58,9 +60,12 @@ public:
 
         // setup port connections
         // initial queue size is setup
-        // make a new context for the drone
+
         auto blackboard = BT::Blackboard::create();
         blackboard->set("max_targets_to_find", 3);
+        blackboard->set("ID", fmt::format("Drone: {}", entt::to_integral(entity)));
+        blackboard->set("entity", entt::to_integral(entity));
+
         auto behavior_tree = ctx()->setupTree("Drone", entity, blackboard);
 
         pg::game::addComponent<galaxy::Behavior>(

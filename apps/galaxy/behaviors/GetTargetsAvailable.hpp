@@ -64,10 +64,17 @@ public:
         if (result_systems.empty()) { return BT::NodeStatus::FAILURE; }
         else
         {
-            auto max_to_find = getInput<size_t>("max_targets_to_find").value_or(([this]() {
-                spdlog::warn("max_targets_to_find not set in {}, using default value of 0", fullPath());
-                return 0;
-            })());
+            std::string id = config().blackboard->get<std::string>("ID");
+            std::cout << id << std::endl;
+            auto max_to_find_opt = getInput<size_t>("max_targets_to_find");
+            // TODO: refactor into a generic approach
+            size_t max_to_find = 0;
+            if (max_to_find_opt.has_value()) { max_to_find = max_to_find_opt.value(); }
+            else
+            {
+                spdlog::warn("max_targets_to_find not set in {}({}), using default value of 0", id, fullPath());
+                max_to_find = 0;
+            };
 
             auto res = result_systems | std::views::take(max_to_find);
             auto shared_queue = std::make_shared<std::deque<entt::entity>>(res.begin(), res.end());
