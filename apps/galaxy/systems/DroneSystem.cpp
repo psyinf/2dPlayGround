@@ -7,7 +7,7 @@
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
 #include <pgEngine/math/Quadtree.hpp>
-#include <pgEngine/math/VecOperations.hpp>
+#include <pgEngine/math/Vec.hpp>
 #include <Config.hpp>
 #include <components/Faction.hpp>
 

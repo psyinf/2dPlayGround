@@ -6,6 +6,7 @@
 
 #include "components/Entities.h"
 #include <pgEngine/math/Bounds.hpp>
+#include <pgEngine/math/VecOps.hpp>
 #include <pgEngine/primitives/Primitives.hpp>
 #include <fmt/format.h>
 #include <events/LaserFired.h>
@@ -55,5 +56,5 @@ void asteroids::Player::handle(const pg::game::FrameStamp& frameStamp)
     const auto windowDetails = game.getSingleton<pg::game::WindowDetails>();
     transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, windowDetails.windowRect.w);
     transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, windowDetails.windowRect.h);
-    dynamics.velocity = elementWise(std::truncl, dynamics.velocity);
+    dynamics.velocity = pg::elementWise(std::truncl, dynamics.velocity);
 }

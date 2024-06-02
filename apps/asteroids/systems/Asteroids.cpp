@@ -5,7 +5,7 @@
 #include <pgEngine/factories/Factories.hpp>
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/Transform.hpp>
-#include <pgEngine/math/VecOperations.hpp>
+#include <pgEngine/math/VecUtils.hpp>
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
