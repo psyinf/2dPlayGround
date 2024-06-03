@@ -72,7 +72,7 @@
       },
       "environment": {
         "CFLAGS": "/fsanitize=address",
-        "CXXFLAGS": "/fsanitize=address"
+        "CXXFLAGS": "/fsanitize=address,/W4"
       }
     },
     {
@@ -85,6 +85,10 @@
         "CMAKE_CXX_COMPILER": "cl",
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "ENABLE_DEVELOPER_MODE": "ON"
+      },
+      "environment": {
+        "CFLAGS": "/W4",
+        "CXXFLAGS": "/W4"
       }
     },
     {
