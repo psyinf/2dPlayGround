@@ -12,7 +12,7 @@ class Travel : public BehaviorActionNode
     using BehaviorActionNode::BehaviorActionNode;
 
 public:
-    BT::NodeStatus onStart() { return BT::NodeStatus::RUNNING; }
+    BT::NodeStatus onStart() override { return BT::NodeStatus::RUNNING; }
 
     // You must override the virtual function tick()
     BT::NodeStatus onRunning() override

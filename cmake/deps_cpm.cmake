@@ -9,8 +9,8 @@ CPMAddPackage(
 )
 CPMAddPackage(
     Name btcpp
-    GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
-    GIT_TAG 4.6.1
+    GITHUB_REPOSITORY psyinf/BehaviorTree.CPP
+    GIT_TAG c++23#4.6.1
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
     "BTCPP_BUILD_TOOLS OFF"
@@ -18,7 +18,10 @@ CPMAddPackage(
     "BTCPP_UNIT_TESTS OFF"
     "BTCPP_GROOT_INTERFACE OFF"
     "BTCPP_SQLITE_LOGGING OFF"
+    
 )
+
+
 
 CPMAddPackage(
     NAME Catch2
