@@ -65,10 +65,11 @@ try
     keyStateMap.registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
     keyStateMap.registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
     keyStateMap.registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
-    keyStateMap.registerMousePressedCallback(
-        [&mouseClickTransform](auto pos, auto state, bool updown) { mouseClickTransform.pos = vec_cast<float>(pos); });
+    keyStateMap.registerMousePressedCallback([&mouseClickTransform](auto pos, auto state, bool updown) {
+        mouseClickTransform.pos = pg::vec_cast<float>(pos);
+    });
     keyStateMap.registerMouseDraggedCallback(
-        [&mouseClickTransform](auto pos, auto state) { mouseClickTransform.pos = vec_cast<float>(pos); });
+        [&mouseClickTransform](auto pos, auto state) { mouseClickTransform.pos = pg::vec_cast<float>(pos); });
     pg::Line l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
     pg::Line l2{pg::iVec2{5, 5}, pg::iVec2{1285, 725}};
 

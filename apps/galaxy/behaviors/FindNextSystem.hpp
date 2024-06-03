@@ -17,7 +17,7 @@ public:
 
         auto r =
             quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, {drone.range * 0.5f, drone.range * 0.5f})) |
-            std::views::filter([&transform](auto result) { return !equal(result.box.midpoint(), transform.pos); }) |
+            std::views::filter([&transform](auto result) { return !pg::equal(result.box.midpoint(), transform.pos); }) |
             // remove stars that are already visited
             std::views::filter([this](auto result) {
                 auto& starsystem = game().getRegistry().get<galaxy::StarSystemState>(result.data.front());

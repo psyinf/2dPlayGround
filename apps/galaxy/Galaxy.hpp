@@ -52,8 +52,8 @@ public:
         game->getKeyStateMap().registerMouseRelativeDraggedCallback([&scene, this](auto pos, auto state) {
             if (state & SDL_BUTTON_LMASK)
             {
-                const auto absolute_drag_distance = vec_cast<float>(pos);
-                if (lengthSquared(absolute_drag_distance) < 4.0f) { return; };
+                const auto absolute_drag_distance = pg::vec_cast<float>(pos);
+                if (pg::lengthSquared(absolute_drag_distance) < 4.0f) { return; };
                 scene.getGlobalTransform().pos += absolute_drag_distance * (1.0f / scene.getGlobalTransform().scale);
                 isDragging = true;
             }
@@ -68,7 +68,7 @@ public:
             if (button == SDL_BUTTON_LEFT && !pressed)
             {
                 // fire a pick event. TODO: distinguish between drag and click
-                auto world_pos = vec_cast<float>(pos);
+                auto world_pos = pg::vec_cast<float>(pos);
                 auto windowRect = game->getSingleton<pg::game::WindowDetails>().windowRect;
                 auto globalTransform = scene.getGlobalTransform();
                 world_pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;

@@ -26,9 +26,9 @@ public:
         // travel to target
         // transform.pos += (drone.targetPos - transform.pos) * 0.01f;
         transform.pos = dynamic.calculateDynamics(
-            vec_cast<float>(transform.pos), drone.targetPos, drone.maxAcceleration, drone.maxVelocity, 0.02f);
+            pg::vec_cast<float>(transform.pos), drone.targetPos, drone.maxAcceleration, drone.maxVelocity, 0.02f);
         // check if we are at the target
-        if (lengthSquared(transform.pos - drone.targetPos) < 0.001f)
+        if (pg::lengthSquared(transform.pos - drone.targetPos) < 0.001f)
         {
             transform.pos = drone.targetPos;
             dynamic.reset();

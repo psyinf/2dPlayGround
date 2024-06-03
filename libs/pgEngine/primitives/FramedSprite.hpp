@@ -1,5 +1,6 @@
 #pragma once
 #include <pgEngine/primitives/Sprite.hpp>
+#include <pgEngine/math/VecOps.hpp>
 
 namespace pg {
 
@@ -18,7 +19,7 @@ public:
         // TODO: get from extern
         uint32_t    currentFrame = 0;
         const auto& dimensions = getDimensions();
-        const auto& fdimensions = vec_cast<float>(dimensions) * pg::fVec2{1.0f / width, 1.0f / height};
+        const auto& fdimensions = pg::vec_cast<float>(dimensions) * pg::fVec2{1.0f / width, 1.0f / height};
         auto&       texture = getTexture();
         auto        calcPos = t.pos - (fdimensions * 0.5f * t.scale);
         SDL_FRect   dest_rect = {

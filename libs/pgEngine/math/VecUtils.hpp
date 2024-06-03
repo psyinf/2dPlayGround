@@ -1,6 +1,6 @@
 #pragma once
 #include <pgEngine/math/Random.hpp>
-#include <pgEngine/math/Vec.hpp>
+#include <pgEngine/math/VecOps.hpp>
 #include <sdlpp.hpp>
 
 #include <numeric>
@@ -24,13 +24,13 @@ constexpr Vec<Type, 2> startFromRect(const SDL_Rect& rect)
 static std::vector<pg::fVec2> splitVector(const pg::fVec2& original, int numFragments)
 {
     std::vector<pg::fVec2> fragments;
-    auto                   scale = length(original);
+    auto                   scale = pg::length(original);
     for (int i = 0; i < numFragments - 1; ++i)
     {
         // Generate a random vector
         pg::fVec2 fragment = getRandomVector();
 
-        while (dot(makeNormal(fragment), makeNormal(original)) > 0.999f)
+        while (pg::dot(makeNormal(fragment), makeNormal(original)) > 0.999f)
         {
             fragment = getRandomVector();
         }
