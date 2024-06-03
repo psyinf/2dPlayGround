@@ -45,7 +45,9 @@ public:
         auto  view = game().getRegistry().view<pg::Transform2D, galaxy::Faction>();
         auto&& [transform, faction] = view.get<pg::Transform2D, galaxy::Faction>(entity());
 
-        auto filterOutOwnSystem = [&transform](auto result) { return !equal(result.box.midpoint(), transform.pos); };
+        auto filterOutOwnSystem = [&transform](auto result) {
+            return !pg::equal(result.box.midpoint(), transform.pos);
+        };
         auto onlyUnexplored = [this](auto result) {
             auto& starsystem = game().getRegistry().get<galaxy::StarSystemState>(result.data.front());
             return starsystem.colonizationStatus == galaxy::ColonizationStatus::Unexplored;

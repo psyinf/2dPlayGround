@@ -1,6 +1,6 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
-
+#include <pgEngine/math/VecOps.hpp>
 #include <Config.hpp>
 
 namespace galaxy {
@@ -14,7 +14,7 @@ struct Dynamic
 
     float calculateBreakinDistance(double maxAcceleration) const
     {
-        return (lengthSquared(velocity)) / (2 * maxAcceleration);
+        return (pg::lengthSquared(velocity)) / (2 * maxAcceleration);
     }
 
     pg::fVec2 calculateDynamics(const pg::fVec2& currentPos,
@@ -25,17 +25,17 @@ struct Dynamic
     {
         // breaking distance
         auto breakingDistance = calculateBreakinDistance(maxAcceleration);
-        auto dir = vec_cast<double>(targetPos - currentPos);
-        auto dist = normalize(dir);
+        auto dir = pg::vec_cast<double>(targetPos - currentPos);
+        auto dist = pg::normalize(dir);
 
         if (dist <= breakingDistance) { acceleration = -maxAcceleration * dir; }
         else { acceleration = maxAcceleration * dir; }
         // adapt velocity
         velocity += acceleration * dt;
         // limit velocity
-        if (length(velocity) > maxVelocity) { velocity = makeNormal(velocity) * maxVelocity; }
+        if (pg::length(velocity) > maxVelocity) { velocity = pg::makeNormal(velocity) * maxVelocity; }
 
-        return vec_cast<float>(vec_cast<double>(currentPos) + velocity * dt);
+        return pg::vec_cast<float>(pg::vec_cast<double>(currentPos) + velocity * dt);
     }
 };
 

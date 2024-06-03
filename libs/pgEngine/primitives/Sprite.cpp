@@ -1,4 +1,5 @@
 #include <primitives/Sprite.hpp>
+#include <math/VecOps.hpp>
 
 pg::Sprite::Sprite(std::shared_ptr<sdl::Texture> tex)
   : texture(tex)
@@ -8,7 +9,7 @@ pg::Sprite::Sprite(std::shared_ptr<sdl::Texture> tex)
 
 void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states)
 {
-    auto      calcPos = t.pos - (vec_cast<float>(dimensions) * 0.5f * t.scale);
+    auto      calcPos = t.pos - (pg::vec_cast<float>(dimensions) * 0.5f * t.scale);
     SDL_FRect dest_rect = {calcPos[0], calcPos[1], (dimensions[0] * t.scale[0]), (dimensions[1] * t.scale[1])};
     states.apply(r);
     states.apply(r, *texture);
@@ -23,7 +24,7 @@ void pg::Sprite::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& 
 void pg::Sprites::draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states)
 {
     auto& texture = getTexture();
-    auto  dimensions = vec_cast<float>(getDimensions());
+    auto  dimensions = pg::vec_cast<float>(getDimensions());
     states.apply(r);
     states.apply(r, texture);
     for (auto& transform : instanceTransforms)

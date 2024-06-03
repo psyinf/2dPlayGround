@@ -26,7 +26,7 @@ target_sources(${PROJECT_NAME}
 		math/ComputationalGeometry.hpp 
 		math/Random.hpp
 		math/Vec.hpp
-		math/VecOperations.hpp
+		math/VecOps.hpp
 		primitives/Primitives.hpp
 
 		primitives/BackgoundSprite.hpp

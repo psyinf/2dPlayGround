@@ -39,7 +39,7 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
                                      radius * sinf(i * std::numbers::pi / 180.0f)  //
                                  };
 
-        circle_points.push_back(vec_cast<int>(p));
+        circle_points.push_back(pg::vec_cast<int>(p));
     }
     renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), circle_points.size());
 }

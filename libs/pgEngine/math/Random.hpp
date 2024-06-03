@@ -1,5 +1,6 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
+#include <pgEngine/math/VecOps.hpp>
 #include <pgEngine/math/Random.hpp>
 #include <numbers>
 #include <random>

@@ -78,7 +78,7 @@ public:
                 state.states.push(pg::TextureColorState{faction.entityColor});
                 break;
             case galaxy::ColonizationStatus::Planned:
-                state.states.push(pg::TextureColorState{scale(faction.entityColor, 0.2)});
+                state.states.push(pg::TextureColorState{pg::scale(faction.entityColor, 0.2)});
                 break;
             default:
                 state.states.push(pg::TextureColorState{galaxyConfig.star.default_color});
