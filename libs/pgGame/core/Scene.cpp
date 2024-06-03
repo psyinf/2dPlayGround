@@ -1,6 +1,6 @@
 #include <core/Scene.hpp>
 #include <core/Game.hpp>
-#include <entities/WindowDetails.hpp>
+#include <components/WindowDetails.hpp>
 
 void pg::game::Scene::setup(Game& game)
 {

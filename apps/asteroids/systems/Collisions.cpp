@@ -1,7 +1,7 @@
 #include "Collisions.hpp"
 #include <pgEngine/math/BoundsOperations.hpp>
 #include <pgGame/core/Game.hpp>
-#include <entities/Entities.h>
+#include <components/Entities.h>
 #include <events/Collison.h>
 #include <iostream>
 

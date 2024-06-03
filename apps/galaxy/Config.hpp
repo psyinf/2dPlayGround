@@ -13,7 +13,7 @@ struct Star
 struct StartingParameters
 {
     uint64_t start_cycle{0};
-    uint8_t  start_drones{1};
+    uint8_t  num_start_drones{1};
 };
 
 struct DroneParameters
@@ -50,11 +50,11 @@ struct Galaxy
     ZoomParameters       zoom;
     std::vector<Faction> factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
-        {.name{"Vogons"}, .color{255, 0, 0, 255}},
-        {.name{"Grays"}, .color{255, 255, 0, 255}},
         //{.name{"Vogons"}, .color{255, 0, 0, 255}},
         //{.name{"Grays"}, .color{255, 255, 0, 255}},
-        {.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .start_drones{0}}}
+        //{.name{"Vogons"}, .color{255, 0, 0, 255}},
+        //{.name{"Grays"}, .color{255, 255, 0, 255}},
+        //{.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .num_start_drones{}}}
         //
     };
 };

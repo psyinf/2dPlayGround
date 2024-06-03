@@ -12,8 +12,10 @@ find_package(fmt REQUIRED)
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
-	pgGame::pgGame
+    pgGame::pgGame
     fmt::fmt
+    spdlog::spdlog
+    BT::behaviortree_cpp
 )
 target_include_directories(${PROJECT_NAME}
 	PRIVATE

@@ -2,8 +2,8 @@
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/Transform.hpp>
 #include <pgGame/core/Game.hpp>
-#include <pgGame/entities/Drawable.hpp>
-#include <entities/Entities.h>
+#include <pgGame/components/Drawable.hpp>
+#include <components/Entities.h>
 #include <numbers>
 #include <cmath>
 

@@ -3,8 +3,8 @@
 #include <pgEngine/math/Transform.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
-#include <entities/Entities.h>
-#include <pgGame/entities/Drawable.hpp>
+#include <components/Entities.h>
+#include <pgGame/components/Drawable.hpp>
 
 void asteroids::Lasers::setup()
 {

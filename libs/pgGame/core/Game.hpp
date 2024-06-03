@@ -59,6 +59,7 @@ public:
         return getSingleton<pg::TypedResourceCache<Resource>>();
     }
 
+    // TODO: check const-ness
     template <typename Type>
     auto& getSingleton(std::string_view id)
     {

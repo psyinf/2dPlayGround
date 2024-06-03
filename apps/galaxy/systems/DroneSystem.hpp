@@ -5,6 +5,8 @@
 
 #include <events/DroneEvents.hpp>
 #include <Config.hpp>
+#include <behaviors/utils/Context.hpp>
+#include <behaviortree_cpp/bt_factory.h>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -20,22 +22,13 @@ public:
 
     void setup();
 
-    void makeDrone(pg::fVec2 pos, galaxy::Faction);
-
     void handle(const pg::game::FrameStamp& frameStamp);
 
     void handleDroneFailed(galaxy::events::DroneFailedEvent& event);
 
 private:
     void createFactions(const pg::game::FrameStamp& frameStamp);
-    /**
-     * @brief check if there is a terminal failure
-     * @return false if handling can be terminated for this entity
-     */
-    bool checkForFailure(galaxy::Drone& drone, entt::entity entity);
 
-    bool handleProduction(entt::entity entity);
-
-    bool findNewTarget(entt::entity entity);
+    behavior::ContextPtr ctx{};
 };
 } // namespace galaxy

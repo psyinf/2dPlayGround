@@ -1,6 +1,6 @@
 #include "Game.hpp"
 #include "FrameStamp.hpp"
-#include <entities/WindowDetails.hpp>
+#include <components/WindowDetails.hpp>
 #include <systems/SystemInterface.hpp>
 
 #include <ranges>

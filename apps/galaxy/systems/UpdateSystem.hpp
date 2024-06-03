@@ -3,12 +3,12 @@
 #include <pgGame/core/Game.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
 #include <pgEngine/math/Vec.hpp>
-#include <pgGame/entities/Drawable.hpp>
-#include <entities/Faction.hpp>
-#include <entities/StarSystem.hpp>
+#include <pgGame/components/Drawable.hpp>
+#include <components/Faction.hpp>
+#include <components/StarSystem.hpp>
 
 #include <events/DroneEvents.hpp>
-#include <pgGame/entities/RenderState.hpp>
+#include <pgGame/components/RenderState.hpp>
 
 #include <Config.hpp>
 #include <iostream>

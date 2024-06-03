@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4" project_name="Project">
+    <include path="drones.xml"/>
+    <!-- Description of Node Models (used by Groot) -->
+    <TreeNodesModel>
+        <Condition ID="CheckForDamage" editable="true"/>
+        <Action ID="FindNextSystem" editable="true"/>
+        <Action ID="GetTargetsAvailable" editable="true">
+            <output_port name="available_target_list">available targets list</output_port>
+            <input_port name="max_targets_to_find" default="0">Maximum number of targets to find</input_port>
+        </Action>
+        <Decorator ID="LoopProductionQueue" editable="true"/>
+        <Action ID="MakeDrone" editable="true"/>
+        <Action ID="SetFactionBlackboard" editable="true"/>
+        <Action ID="Terminate" editable="true"/>
+        <Action ID="Travel" editable="true"/>
+    </TreeNodesModel>
+</root>

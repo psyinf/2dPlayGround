@@ -1,6 +1,6 @@
 #include "DynamicsSystem.hpp"
 #include "Player.h"
-#include "entities/Entities.h"
+#include "components/Entities.h"
 #include <pgGame/core/Game.hpp>
 
 void asteroids::DynamicsSystem::setup() {}

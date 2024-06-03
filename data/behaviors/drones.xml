@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4"
+      main_tree_to_execute="Drone">
+  <BehaviorTree ID="Drone">
+    <Sequence name="ColonizeUniverse">
+      <Fallback>
+        <FindNextSystem/>
+        <Terminate/>
+      </Fallback>
+      <ReactiveSequence>
+        <CheckForDamage/>
+        <Travel/>
+      </ReactiveSequence>
+      <Sequence name="Colonize">
+        <GetTargetsAvailable available_target_list=""
+                             max_targets_to_find="0"/>
+        <LoopProductionQueue>
+          <MakeDrone/>
+        </LoopProductionQueue>
+      </Sequence>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="Seed">
+    <Sequence>
+      <GetTargetsAvailable available_target_list=""
+                           max_targets_to_find="0"
+                           _description="Find up to &apos;findMax&apos; target systems based on the factions range "/>
+      <LoopProductionQueue>
+        <MakeDrone/>
+      </LoopProductionQueue>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Condition ID="CheckForDamage"
+               editable="true"/>
+    <Action ID="FindNextSystem"
+            editable="true"/>
+    <Action ID="GetTargetsAvailable"
+            editable="true">
+      <output_port name="available_target_list">available targets list</output_port>
+      <input_port name="max_targets_to_find"
+                  default="0">Maximum number of targets to find</input_port>
+    </Action>
+    <Decorator ID="LoopProductionQueue"
+               editable="true"/>
+    <Action ID="MakeDrone"
+            editable="true"/>
+    <Action ID="Terminate"
+            editable="true"/>
+    <Action ID="Travel"
+            editable="true"/>
+  </TreeNodesModel>
+
+</root>

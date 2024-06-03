@@ -52,14 +52,12 @@ struct Drone
     }
 
     uint16_t lifetime{0};
-    bool     hasTarget{false};
-    bool     atTarget{false};
 
     entt::entity targetId;
     uint16_t     waitCycles{100};
     pg::fVec2    targetPos{};
 
-    float range{100};
+    float range{1000};
     float maxAcceleration{0.0001f};
     float maxVelocity{};
 };

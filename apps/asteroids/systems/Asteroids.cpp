@@ -1,6 +1,6 @@
 #include "Asteroids.h"
 
-#include "entities/Entities.h"
+#include "components/Entities.h"
 
 #include <pgEngine/factories/Factories.hpp>
 #include <pgEngine/math/Bounds.hpp>
@@ -9,7 +9,7 @@
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
-#include <pgGame/entities/Drawable.hpp>
+#include <pgGame/components/Drawable.hpp>
 #include <algorithm>
 #include <random>
 

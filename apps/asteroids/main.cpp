@@ -2,7 +2,7 @@
 #include <pgGame/core/Game.hpp>
 #include <fmt/format.h>
 
-#include <entities/Entities.h>
+#include <components/Entities.h>
 #include <systems/Asteroids.h>
 #include <systems/Background.h>
 #include <systems/Collisions.hpp>
