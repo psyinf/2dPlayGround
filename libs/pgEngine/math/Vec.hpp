@@ -33,8 +33,8 @@ using Color = Vec4<uint8_t>;
 template <typename T, size_t SIZE>
 constexpr pg::Vec<T, SIZE> operator+(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    pg::Vec<T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = lhs[idx] + rhs[idx];
     }
@@ -44,7 +44,7 @@ constexpr pg::Vec<T, SIZE> operator+(const pg::Vec<T, SIZE>& lhs, const pg::Vec<
 template <typename T, size_t SIZE>
 constexpr auto operator+=(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         lhs[idx] += rhs[idx];
     }
@@ -54,7 +54,7 @@ constexpr auto operator+=(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 template <typename T, size_t SIZE>
 constexpr auto operator-=(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         lhs[idx] -= rhs[idx];
     }
@@ -64,7 +64,7 @@ constexpr auto operator-=(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 template <typename T, size_t SIZE>
 constexpr auto operator*=(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         lhs[idx] *= rhs[idx];
     }
@@ -74,8 +74,8 @@ constexpr auto operator*=(pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 template <typename T, size_t SIZE>
 static constexpr pg::Vec<T, SIZE> operator-(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    pg::Vec<T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = lhs[idx] - rhs[idx];
     }
@@ -85,8 +85,9 @@ static constexpr pg::Vec<T, SIZE> operator-(const pg::Vec<T, SIZE>& lhs, const p
 template <typename T, size_t SIZE>
 static constexpr pg::Vec<T, SIZE> operator*(const pg::Vec<T, SIZE>& lhs, const T& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    pg::Vec<T, SIZE> res{};
+    // static_assert((lhs.size() == SIZE));
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = lhs[idx] * rhs;
     }
@@ -96,8 +97,8 @@ static constexpr pg::Vec<T, SIZE> operator*(const pg::Vec<T, SIZE>& lhs, const T
 template <typename T, size_t SIZE>
 static constexpr pg::Vec<T, SIZE> operator*(const T& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, rhs.size()))
+    pg::Vec<T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = rhs[idx] * lhs;
     }
@@ -107,8 +108,8 @@ static constexpr pg::Vec<T, SIZE> operator*(const T& lhs, const pg::Vec<T, SIZE>
 template <typename T, size_t SIZE>
 static constexpr pg::Vec<T, SIZE> operator/(const pg::Vec<T, SIZE>& lhs, const T& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    pg::Vec<T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = lhs[idx] / rhs;
     }
@@ -118,8 +119,8 @@ static constexpr pg::Vec<T, SIZE> operator/(const pg::Vec<T, SIZE>& lhs, const T
 template <typename T, size_t SIZE>
 static constexpr pg::Vec<T, SIZE> operator/(const T& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, rhs.size()))
+    pg::Vec<T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = lhs / rhs[idx];
     }
@@ -129,7 +130,7 @@ static constexpr pg::Vec<T, SIZE> operator/(const T& lhs, const pg::Vec<T, SIZE>
 template <typename T, size_t SIZE>
 static constexpr void operator*=(pg::Vec<T, SIZE>& lhs, const T& rhs)
 {
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         lhs[idx] *= rhs;
     }
@@ -138,7 +139,7 @@ static constexpr void operator*=(pg::Vec<T, SIZE>& lhs, const T& rhs)
 template <typename T, size_t SIZE>
 static constexpr void operator*=(const T& lhs, pg::Vec<T, SIZE>& rhs)
 {
-    for (auto idx : std::views::iota(size_t{}, rhs.size()))
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         rhs[idx] *= lhs;
     }
@@ -147,7 +148,7 @@ static constexpr void operator*=(const T& lhs, pg::Vec<T, SIZE>& rhs)
 template <typename T, size_t SIZE>
 static constexpr void operator/=(pg::Vec<T, SIZE>& lhs, const T& rhs)
 {
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         lhs[idx] /= rhs;
     }
@@ -156,7 +157,7 @@ static constexpr void operator/=(pg::Vec<T, SIZE>& lhs, const T& rhs)
 template <typename T, size_t SIZE>
 static constexpr void operator/=(const T& lhs, pg::Vec<T, SIZE>& rhs)
 {
-    for (auto idx : std::views::iota(size_t{}, rhs.size()))
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         rhs[idx] = lhs / rhs[idx];
     }
@@ -165,8 +166,8 @@ static constexpr void operator/=(const T& lhs, pg::Vec<T, SIZE>& rhs)
 template <typename T, size_t SIZE>
 constexpr auto operator*(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    pg::Vec<T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = lhs[idx] * rhs[idx];
     }
@@ -177,8 +178,8 @@ constexpr auto operator*(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>& rh
 template <typename T, size_t SIZE>
 constexpr auto operator-(const pg::Vec<T, SIZE>& rhs)
 {
-    pg::Vec<T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, rhs.size()))
+    pg::Vec<T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = -rhs[idx];
     }

@@ -17,7 +17,7 @@ pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_vi
     return Sprite(std::make_shared<sdl::Texture>(renderer.get(), spriteSurface.get()));
 }
 
-pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer& renderer, SDLFont& font, std::string_view text)
+pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer&, SDLFont&, std::string_view)
 {
     throw std::runtime_error("Not implemented");
     //     static constexpr auto white = SDL_Color{255, 255, 255, 255};

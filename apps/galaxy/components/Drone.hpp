@@ -12,7 +12,7 @@ struct Dynamic
 
     void reset() { velocity = acceleration = {}; }
 
-    float calculateBreakinDistance(double maxAcceleration) const
+    double calculateBreakinDistance(double maxAcceleration) const
     {
         return (pg::lengthSquared(velocity)) / (2 * maxAcceleration);
     }

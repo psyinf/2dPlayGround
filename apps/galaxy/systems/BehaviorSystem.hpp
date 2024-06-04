@@ -15,7 +15,7 @@ public:
 
     void setup() {}
 
-    void handle(const pg::game::FrameStamp& frameStamp)
+    void handle(const pg::game::FrameStamp&)
     {
         auto view = game.getRegistry().view<galaxy::Behavior>();
         for (auto entity : view)

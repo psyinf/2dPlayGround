@@ -26,9 +26,9 @@ public:
     pg::Transform2D frame(int frame)
     {
         pg::Transform2D t{};
-        t.pos[0] = mid[0] + sin(frame / static_cast<float>(period_frames) * 3.1412) * radius;
-        t.pos[1] = mid[1] + cos(frame / static_cast<float>(period_frames) * 3.1412) * radius;
-        t.rotation_deg = 90 - (frame / static_cast<float>(period_frames) * 180);
+        t.pos[0] = mid[0] + sin(frame / static_cast<float>(period_frames) * 3.1412f) * radius;
+        t.pos[1] = mid[1] + cos(frame / static_cast<float>(period_frames) * 3.1412f) * radius;
+        t.rotation_deg = 90 - (frame / static_cast<float>(period_frames) * 180.0f);
         return t;
     }
 
@@ -38,7 +38,12 @@ protected:
     int       period_frames;
 };
 
-int main(int argc, char** argv)
+static void setRendererDrawColor(sdl::Renderer& renderer, SDL_Color color)
+{
+    renderer.setDrawColor(color.r, color.g, color.b, color.a);
+}
+
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
     pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
@@ -65,11 +70,13 @@ try
     keyStateMap.registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
     keyStateMap.registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
     keyStateMap.registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
-    keyStateMap.registerMousePressedCallback([&mouseClickTransform](auto pos, auto state, bool updown) {
+    keyStateMap.registerMousePressedCallback(
+        [&mouseClickTransform](auto pos, [[maybe_unused]] auto state, [[maybe_unused]] bool updown) {
+            mouseClickTransform.pos = pg::vec_cast<float>(pos);
+        });
+    keyStateMap.registerMouseDraggedCallback([&mouseClickTransform](auto pos, [[maybe_unused]] auto state) {
         mouseClickTransform.pos = pg::vec_cast<float>(pos);
     });
-    keyStateMap.registerMouseDraggedCallback(
-        [&mouseClickTransform](auto pos, auto state) { mouseClickTransform.pos = pg::vec_cast<float>(pos); });
     pg::Line l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
     pg::Line l2{pg::iVec2{5, 5}, pg::iVec2{1285, 725}};
 
@@ -89,15 +96,16 @@ try
         while (sdlApp.getEventHandler().poll()) {}
         keyStateMap.evaluateCallbacks();
 
-        renderer.setDrawColor(0x00, 0x00, 0x00, 0xff);
+        setRendererDrawColor(renderer, {0, 0, 0, 255});
         renderer.clear();
         background->draw(renderer, bgTransform, {});
 
-        renderer.setDrawColor(0xff, 0x00, 0xff, 0xff);
+        setRendererDrawColor(renderer, {255, 0, 255, 255});
         l.draw(renderer, {}, {});
         l2.draw(renderer, {}, {});
 
-        renderer.setDrawColor(0xff, 0x00, 0x00, 0xff);
+        setRendererDrawColor(renderer, {255, 0, 0, 255});
+
         p1.draw(renderer, {}, {});
         p2.draw(renderer, {}, {});
         p3.draw(renderer, {}, {});

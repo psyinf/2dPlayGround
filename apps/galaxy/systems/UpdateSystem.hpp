@@ -52,7 +52,7 @@ public:
         //
     }
 
-    void updateStarSystems(const pg::game::FrameStamp& frameStamp)
+    void updateStarSystems(const pg::game::FrameStamp&)
     {
         // get config from singleton
         auto& galaxyConfig = game.getSingleton<const galaxy::config::Galaxy&>("galaxy.config");

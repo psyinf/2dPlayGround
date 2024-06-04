@@ -31,7 +31,7 @@ auto SDLApp::getRenderer() -> sdl::Renderer&
     return *renderer;
 }
 
-void SDLApp::initialize(const config::WindowConfig& windowConfig)
+void SDLApp::initialize()
 {
     init = std::make_unique<sdl::Init>(SDL_INIT_EVERYTHING);
     ttfInit = std::make_unique<TTFInit>();
@@ -49,7 +49,7 @@ void SDLApp::initialize(const config::WindowConfig& windowConfig)
 SDLApp::SDLApp(const config::WindowConfig& windowConfig)
   : windowConfig(windowConfig)
 {
-    initialize(windowConfig);
+    initialize();
 }
 
 void SDLApp::getNumDisplays() const

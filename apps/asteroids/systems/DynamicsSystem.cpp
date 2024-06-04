@@ -7,8 +7,6 @@ void asteroids::DynamicsSystem::setup() {}
 
 void asteroids::DynamicsSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
-    auto& registry = game.getRegistry();
-
     auto view = game.getRegistry().view<pg::Transform2D, asteroids::Dynamics>();
     for (auto& entity : view)
     {

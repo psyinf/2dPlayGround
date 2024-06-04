@@ -19,7 +19,7 @@ public:
     SDLApp(const config::WindowConfig& windowConfig);
     ~SDLApp();
 
-    void initialize(const config::WindowConfig& windowConfig);
+    void initialize();
 
     auto getRenderer() -> sdl::Renderer&;
 

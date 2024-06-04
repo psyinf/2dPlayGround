@@ -14,7 +14,7 @@ void galaxy::RenderSystem::setup() {}
 /// TODO: drawables should carry their respective states. This is a temporary solution which determines the state by the
 /// type of entities
 
-void galaxy::RenderSystem::handle(const pg::game::FrameStamp& frameStamp)
+void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
 {
     auto& renderer = game.getApp().getRenderer();
     renderer.clear();

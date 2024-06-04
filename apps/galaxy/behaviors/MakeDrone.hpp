@@ -48,7 +48,7 @@ public:
                                  galaxy::Faction,
                                  galaxy::Lifetime,
                                  pg::game::RenderState>(game.getRegistry(),
-                                                        {.pos{transform.pos}, .scale{0.00125, 0.00125}},
+                                                        {.pos{transform.pos}, .scale{0.00125f, 0.00125f}},
                                                         pg::game::Drawable{dot_sprite},
                                                         {galaxy::Drone::fromConfig(drone_params)},
                                                         galaxy::Dynamic{},

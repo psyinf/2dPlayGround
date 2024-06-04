@@ -28,12 +28,12 @@ struct AsteroidsRandomGen
         return std::make_pair(position, velocity);
     }
 
-    static auto makeFragment(const pg::fVec2& pos)
+    static auto makeFragment(const pg::fVec2& position)
     {
         // todo add velocity components outwards
         // bonus multiple fragments should add up to the same impulse as the original asteroid
         auto velocity = pg::fVec2{0, std::fabs(speed(rd))};
-        return std::make_pair(pos, velocity);
+        return std::make_pair(position, velocity);
     }
 };
 
@@ -59,7 +59,7 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(
 
 void asteroids::Asteroids::setup()
 {
-    for (auto _ : std::views::iota(0, 4))
+    for ([[maybe_unused]] auto _ : std::views::iota(0, 4))
     {
         auto [pos, vel] = AsteroidsRandomGen::makeInitial();
         createAsteroid(pos, vel, Size::Large);
@@ -117,7 +117,7 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
     pg::game::addComponents<PassiveCollider, tag>(game.getRegistry(), entity);
 }
 
-void asteroids::Asteroids::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::Asteroids::handle(const pg::game::FrameStamp&)
 {
     std::random_device              rd;
     std::normal_distribution<float> dist(1, 2);

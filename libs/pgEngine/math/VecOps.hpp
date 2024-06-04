@@ -97,8 +97,8 @@ static constexpr pg::Vec<T, SIZE> makeNormal(const pg::Vec<T, SIZE>& lhs)
 template <typename CAST_T, typename T, size_t SIZE>
 static constexpr pg::Vec<CAST_T, SIZE> vec_cast(const pg::Vec<T, SIZE>& lhs)
 {
-    pg::Vec<CAST_T, SIZE> res;
-    for (auto idx : std::views::iota(size_t{}, lhs.size()))
+    pg::Vec<CAST_T, SIZE> res{};
+    for (auto idx : std::views::iota(size_t{}, SIZE))
     {
         res[idx] = static_cast<CAST_T>(lhs[idx]);
     }
@@ -139,7 +139,7 @@ static constexpr T distance(const pg::Vec<T, SIZE>& lhs, const pg::Vec<T, SIZE>&
 template <typename T, typename U, size_t SIZE>
 static constexpr pg::Vec<T, SIZE> scale(const pg::Vec<T, SIZE>& lhs, U scale)
 {
-    pg::Vec<T, SIZE> res;
+    pg::Vec<T, SIZE> res{};
     for (auto idx : std::views::iota(size_t{}, lhs.size()))
     {
         res[idx] = lhs[idx] * scale;
