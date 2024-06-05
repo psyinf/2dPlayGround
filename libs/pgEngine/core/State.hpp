@@ -20,7 +20,6 @@ public:
     virtual void restore(sdl::Renderer& renderer, sdl::Texture& texture) = 0;
 };
 
-
 class BlendModeState : public RendererState
 {
 public:
@@ -74,13 +73,13 @@ public:
     {
     }
 
-    void apply(sdl::Renderer& renderer, sdl::Texture& texture) override
+    void apply(sdl::Renderer&, sdl::Texture& texture) override
     {
         texture.getColorMod(&prevColor[0], &prevColor[1], &prevColor[2]);
         texture.setColorMod(color[0], color[1], color[2]);
     }
 
-    void restore(sdl::Renderer& renderer, sdl::Texture& texture) override
+    void restore(sdl::Renderer&, sdl::Texture& texture) override
     {
         texture.setColorMod(prevColor[0], prevColor[1], prevColor[2]);
     }
@@ -98,13 +97,13 @@ public:
     {
     }
 
-    void apply(sdl::Renderer& renderer, sdl::Texture& texture) override
+    void apply(sdl::Renderer&, sdl::Texture& texture) override
     {
         texture.getBlendMode(&storeBlendMode);
         texture.setBlendMode(blendMode);
     }
 
-    void restore(sdl::Renderer& renderer, sdl::Texture& texture) override { texture.setBlendMode(storeBlendMode); }
+    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setBlendMode(storeBlendMode); }
 
 private:
     SDL_BlendMode       storeBlendMode;
@@ -119,13 +118,13 @@ public:
     {
     }
 
-    void apply(sdl::Renderer& renderer, sdl::Texture& texture) override
+    void apply(sdl::Renderer&, sdl::Texture& texture) override
     {
         texture.getAlphaMod(&storeAlpha);
         texture.setAlphaMod(alpha);
     }
 
-    void restore(sdl::Renderer& renderer, sdl::Texture& texture) override { texture.setAlphaMod(storeAlpha); }
+    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setAlphaMod(storeAlpha); }
 
 private:
     uint8_t       storeAlpha;

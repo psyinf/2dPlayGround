@@ -13,6 +13,7 @@
 #include <SDL_rect.h>
 
 namespace pg {
+static constexpr auto white = SDL_Color{255, 255, 255, 255};
 
 class ScopedScale
 {
@@ -58,7 +59,7 @@ public:
 class Placeholder : public Primitive
 {
 public:
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    void draw(sdl::Renderer&, const Transform2D&, const States&) override
     {
         // do nothing
     }
@@ -113,13 +114,13 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform2D&, const States&) override
     {
-        r.setDrawColor(255, 255, 255, 255);
+        r.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
-        for (const auto& p : points)
+        // for (const auto& p : points)
         {
-            r.drawLines(std::bit_cast<SDL_Point*>(points.data()), points.size());
+            r.drawLines(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
         }
     }
 
@@ -136,7 +137,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States&) override
     {
         // transform the box
         auto b = box;
@@ -166,14 +167,12 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform2D&, const States&) override
     {
-        r.setDrawColor(255, 255, 255, 255);
+        r.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
-        for (const auto& p : points)
-        {
-            r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), points.size());
-        }
+
+        r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
     }
 
 private:
@@ -189,19 +188,16 @@ public:
     {
     }
 
-    void setMaxElement(size_t maxElement) { this->maxElement = maxElement; }
+    void setMaxElement(size_t max_element) { this->maxElement = max_element; }
 
     size_t getMaxElement() const { return maxElement; }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States&) override
     {
         ScopedScale ss(r, transform.scale);
-        r.setDrawColor(255, 255, 255, 255);
-        // draw the polygon
-        for (const auto& p : points)
-        {
-            r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), std::min(maxElement, points.size()));
-        }
+        r.setDrawColor(white.r, white.g, white.b, white.a);
+
+        r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(std::min(maxElement, points.size())));
     }
 
 private:
@@ -218,21 +214,18 @@ public:
     {
     }
 
-    void setMaxElement(size_t maxElement) { this->maxElement = maxElement; }
+    void setMaxElement(size_t max_element) { this->maxElement = max_element; }
 
     size_t getMaxElement() const { return maxElement; }
 
     size_t size() const { return points.size(); }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    void draw(sdl::Renderer& r, const Transform2D& transform, const States&) override
     {
         ScopedScale ss(r, transform.scale);
-        r.setDrawColor(255, 255, 255, 255);
+        r.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
-        for (const auto& p : points)
-        {
-            r.drawLines(std::bit_cast<SDL_Point*>(points.data()), std::min(maxElement, points.size()));
-        }
+        r.drawLines(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(std::min(maxElement, points.size())));
     }
 
 private:

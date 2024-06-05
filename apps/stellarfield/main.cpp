@@ -56,8 +56,8 @@ void updateStars(std::vector<Particle>& particles, float frameTime, const SDL_Re
             if (&particle != &particle2)
             {
                 auto dir = particle2.pos - particle.pos;
-                auto len = lengthSquared(dir);
-                if (len > 1.0f) { particle.dir += makeNormal(dir) * (0.5f / len); }
+                auto len = pg::lengthSquared(dir);
+                if (len > 1.0f) { particle.dir += pg::makeNormal(dir) * (0.5f / len); }
             }
         }
     }
@@ -78,7 +78,7 @@ void textdemo_main()
     //
     std::vector<Particle> particles;
     auto                  windowSize = app.getWindowConfig().size;
-    createStars(particles, 150, {0, 0}, vec_cast<float>(windowSize));
+    createStars(particles, 150, {0, 0}, pg::vec_cast<float>(windowSize));
     // TODO: entt based rendering and update
 
     auto render = [&](auto& app) {

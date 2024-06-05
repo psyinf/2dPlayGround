@@ -25,7 +25,7 @@ void textdemo_main()
     app.loop(done, render);
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
     textdemo_main();
     return 0;

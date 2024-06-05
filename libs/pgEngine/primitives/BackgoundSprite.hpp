@@ -12,7 +12,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const pg::Transform2D& trans, const States& states) override
+    void draw(sdl::Renderer& r, const pg::Transform2D& trans, const States&) override
     {
         auto& dims = getDimensions();
 

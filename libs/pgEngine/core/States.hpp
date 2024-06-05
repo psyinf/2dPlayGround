@@ -64,11 +64,11 @@ public:
 
     void pop_states(const States& states)
     {
-        for (const auto& state : states.rendererStates)
+        for ([[maybe_unused]] const auto& _ : states.rendererStates)
         {
             rendererStates.pop_back();
         }
-        for (const auto& state : states.textureStates)
+        for ([[maybe_unused]] const auto& _ : states.textureStates)
         {
             textureStates.pop_back();
         }

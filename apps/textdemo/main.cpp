@@ -33,7 +33,7 @@ void textdemo_main()
         text.draw(app.getRenderer(), {.pos{512, 512}}, rendererStates2);
 
         text.draw(app.getRenderer(),
-                  {.pos{200, 200}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
+                  {.pos{200, 200}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
                   rendererStates3);
         text.draw(app.getRenderer(), {.pos{512, 200}}, {});
     };
@@ -42,7 +42,7 @@ void textdemo_main()
     app.loop(done, render);
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
     textdemo_main();
     return 0;

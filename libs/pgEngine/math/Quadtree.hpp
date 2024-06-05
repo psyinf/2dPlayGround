@@ -1,5 +1,6 @@
 #pragma once
 #include <pgEngine/math/Box.hpp>
+#include <pgEngine/math/VecOps.hpp>
 #include <pgEngine/math/QuadtreeVisitor.hpp>
 #include <iostream>
 #include <vector>
@@ -102,8 +103,8 @@ public:
         rangeQueryHelper(root, queryBox, intersections, collector);
         // sort by distance to queryBox mid
         std::ranges::sort(intersections, [&queryBox](const Result& a, const Result& b) {
-            return lengthSquared(a.box.midpoint() - queryBox.midpoint()) <
-                   lengthSquared(b.box.midpoint() - queryBox.midpoint());
+            return pg::lengthSquared(a.box.midpoint() - queryBox.midpoint()) <
+                   pg::lengthSquared(b.box.midpoint() - queryBox.midpoint());
         });
         return intersections;
     }
@@ -115,8 +116,8 @@ public:
         std::vector<Result> intersections;
         internalRangeQuery(root, prim, intersections);
         std::ranges::sort(intersections, [&prim](const Result& a, const Result& b) {
-            return lengthSquared(a.box.midpoint() - prim.midpoint()) <
-                   lengthSquared(b.box.midpoint() - prim.midpoint());
+            return pg::lengthSquared(a.box.midpoint() - prim.midpoint()) <
+                   pg::lengthSquared(b.box.midpoint() - prim.midpoint());
         });
         return intersections;
     }

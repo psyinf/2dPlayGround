@@ -129,11 +129,11 @@ std::vector<Vec2> convexHull(const std::vector<Vec2>& points)
 /**
  * @brief merge consecutive co-linear points
  * @param points A vector of points, asserted to be in order
- * @param dotError allowed error in the dot-product
+ * @param pg::dotError allowed error in the pg::dot-product
  * @todo this is not working as intended, as it removes too many points at to steep angles
  * @return
  */
-std::vector<iVec2> mergeColinear(const std::vector<iVec2>& points, float dotError)
+std::vector<iVec2> mergeColinear(const std::vector<iVec2>& points, float pg::dotError)
 {
     auto               indicesToRemove = std::vector<size_t>{};
     std::vector<iVec2> filteredPoints;
@@ -143,7 +143,7 @@ std::vector<iVec2> mergeColinear(const std::vector<iVec2>& points, float dotErro
     {
         auto&& [v1, v2, v3] = vec;
         auto d1 = std::fabs(dot(makeNormal(v2 - v1), makeNormal(v3 - v2)));
-        if (d1 < 1.0 - dotError)
+        if (d1 < 1.0 - pg::dotError)
         {
             filteredPoints.push_back(points[index + 1]); //
         }
