@@ -27,13 +27,13 @@ void textdemo_main()
 
     auto render = [&](auto& app) {
         text.draw(app.getRenderer(),
-                  {.pos{100, 100}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
+                  {.pos{100, 100}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
                   rendererStates);
 
         text.draw(app.getRenderer(), {.pos{512, 512}}, rendererStates2);
 
         text.draw(app.getRenderer(),
-                  {.pos{200, 200}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1)), 0.5}},
+                  {.pos{200, 200}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
                   rendererStates3);
         text.draw(app.getRenderer(), {.pos{512, 200}}, {});
     };

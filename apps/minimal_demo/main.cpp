@@ -30,8 +30,8 @@ static void mainloop(pg::SDLApp& sdlApp, std::vector<Star>& stars)
         for (auto& star : stars)
         {
             if (star.z < 0xff) star.z += 1;
-            star.x = (star.x - 1280 / 2) * (1 + 0.0001 * star.z) + 1280 / 2;
-            star.y = (star.y - 720 / 2) * (1 + 0.0001 * star.z) + 720 / 2;
+            star.x = (star.x - 1280 / 2) * (1 + 0.0001f * star.z) + 1280 / 2;
+            star.y = (star.y - 720 / 2) * (1 + 0.0001f * star.z) + 720 / 2;
             if (star.x < 0 || star.x > 1280 || star.y < 0 || star.y > 720)
                 star = Star{1.0f * (rand() % 1280), 1.0f * (rand() % 720), 0};
             renderer.setDrawColor(star.z, star.z, star.z, 0xff);
@@ -57,7 +57,7 @@ static void mainloop(pg::SDLApp& sdlApp, std::vector<Star>& stars)
     */
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
     pg::config::WindowConfig windowConfig{0, {65, 126}, {1280, 720}, "minimal demo"};

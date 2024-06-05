@@ -8,7 +8,7 @@ class CellVisitor
 public:
     virtual void apply(Cell& c) { traverse(c); }
 
-    virtual void done(const Cell& c) {}
+    virtual void done(const Cell&) {}
 
     void traverse(const Cell& c)
     {
@@ -60,7 +60,7 @@ public:
         CellVisitor<T>::traverse(c);
     }
 
-    virtual void done(T& c) {}
+    virtual void done(T&) {}
 
     ResultVector results;
 };

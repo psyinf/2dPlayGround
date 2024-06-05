@@ -4,7 +4,7 @@
 
 TEST_CASE("serialize", "[VecSerializationTests]")
 {
-    pg::fVec2      v1{10.0, -5.2};
+    pg::fVec2      v1{10.0f, -5.2f};
     nlohmann::json j = v1;
     auto           v2 = j.get<pg::fVec2>();
     REQUIRE(pg::equal(v1, v2));

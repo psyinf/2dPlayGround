@@ -31,7 +31,7 @@ public:
         // TODO: build a quadtree for picking
     };
 
-    void handle(const pg::game::FrameStamp& frameStamp) override
+    void handle(const pg::game::FrameStamp&) override
     {
         if (lastPicks.empty()) { return; }
         const auto pick = lastPicks.back();
@@ -45,7 +45,7 @@ public:
         if (!results.empty())
         {
             transform.pos = results.at(0).box.midpoint();
-            transform.scale = {0.025, 0.025};
+            transform.scale = {0.025f, 0.025f};
         }
         else { transform.scale = {0, 0}; }
 
