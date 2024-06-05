@@ -1,12 +1,13 @@
 # 2dPlayGround
 
-A small playground to create a mini-game based on SDL, entt using modern C++, cmake, CPM and conan
+A small playground to create a mini-game based on SDL, entt using modern C++, cmake, CPM 
 
 ## Prerequisites
-The project uses [CMake Package Manager](https://github.com/cpm-cmake/CPM.cmake "CMake Package Manager") and [Conan](https://conan.io "Conan") for dependencies.
+The project uses [CMake Package Manager](https://github.com/cpm-cmake/CPM.cmake "CMake Package Manager")
 
 ## Setting up the build environment Linux/via WSL
-The process is tested in an Ubuntu environment (22.04) but might also work on other distributions.
+The process is tested on Windows using VS2022 and inside an Ubuntu environment (22.04) but might also work on other distributions.
+Currently this requires a recent compiler (GCC> 14.1, Clang 17.0.3) or the MSVC 2022 compiler. 
 
 In order to setup your apt linux environment check the /doc/setup.sh script.
 It basically get's all the needed packages to get building as well as Conan up and running.
