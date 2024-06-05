@@ -2,6 +2,7 @@
 #include "Lifetime.hpp"
 #include <SDL_ttf.h>
 #include <primitives/Primitives.hpp>
+#include <iostream>
 
 using namespace pg;
 
@@ -58,6 +59,11 @@ void SDLApp::getNumDisplays() const
     SDL_GetNumVideoDisplays();
 }
 
+auto SDLApp::getWindow() -> sdl::Window&
+{
+    return *window;
+}
+
 SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
 {
     checkInitialized();
@@ -76,10 +82,10 @@ auto pg::SDLApp::getFPSCounter() -> FPSCounter&
     return fpsCounter;
 }
 
-void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
+void SDLApp::loop(bool& done, const RenderFunction& renderFunc, const EventCallback& e)
 {
     getEventHandler().quit = [&done](const SDL_QuitEvent&) { done = true; };
-
+    getEventHandler().setCallback(e);
     while (!done)
     {
         while (getEventHandler().poll()) {}
