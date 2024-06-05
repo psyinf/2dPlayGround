@@ -142,7 +142,7 @@ static constexpr pg::Vec<T, SIZE> scale(const pg::Vec<T, SIZE>& lhs, U scale)
     pg::Vec<T, SIZE> res{};
     for (auto idx : std::views::iota(size_t{}, lhs.size()))
     {
-        res[idx] = lhs[idx] * scale;
+        res[idx] = T(lhs[idx] * scale);
     }
     return res;
 }

@@ -121,7 +121,7 @@ private:
         auto         marker = std::make_shared<pg::Sprite>(dot_texture);
         entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                game->getRegistry(), {.pos{0, 0}, .scale{0.015, 0.015}}, pg::game::Drawable{marker}, {});
+                game->getRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {});
         game->addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
     }
 
@@ -143,15 +143,16 @@ private:
 
     void setupGalaxy()
     {
+        // TODO: Configuration
         galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::random_device              rd;
         std::mt19937                    gen(rd());
-        std::normal_distribution<float> d(0, 150);
-        std::normal_distribution<float> star_size_dist(0.0075, 0.0025);
+        std::normal_distribution<float> d(0.0f, 150.0f);
+        std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
         auto dot_sprite = game->getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
 
-        for (auto i : std::ranges::iota_view{1, 10000})
+        for ([[maybe_unused]] auto i : std::ranges::iota_view{1, 10000})
         {
             auto new_pos = pg::fVec2{d(gen), d(gen)};
             auto new_size = star_size_dist(gen) * pg::fVec2{1.0f, 1.0f};
