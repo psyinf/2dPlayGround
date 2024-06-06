@@ -15,6 +15,7 @@ target_sources(${PROJECT_NAME}
 		factories/Factories.cpp
 		font/Font.cpp
 		"core/FPSCounter.cpp"
+		core/Gui.cpp
 	PUBLIC
 		factories/Factories.hpp
 		
@@ -51,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2::SDL2main
 	SDL2_image::SDL2_image-static
 	nlohmann_json::nlohmann_json
+    imgui
 	PRIVATE
 	SDL2_ttf::SDL2_ttf-static
 )

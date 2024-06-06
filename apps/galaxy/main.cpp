@@ -11,7 +11,8 @@ try
 {
     galaxy::config::Galaxy config;
     pg::save("../data/galaxy_default_config.json", config);
-    config = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json");
+
+    config = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", config);
     galaxy::GalacticCore gc(std::move(config));
     gc.setup();
     gc.run();

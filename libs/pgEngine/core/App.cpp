@@ -85,7 +85,7 @@ auto pg::SDLApp::getFPSCounter() -> FPSCounter&
 void SDLApp::loop(bool& done, const RenderFunction& renderFunc, const EventCallback& e)
 {
     getEventHandler().quit = [&done](const SDL_QuitEvent&) { done = true; };
-    getEventHandler().setCallback(e);
+    // getEventHandler().setCallback(e);
     while (!done)
     {
         while (getEventHandler().poll()) {}

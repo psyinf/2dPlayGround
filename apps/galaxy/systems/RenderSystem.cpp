@@ -17,7 +17,7 @@ void galaxy::RenderSystem::setup() {}
 void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
 {
     auto& renderer = game.getApp().getRenderer();
-    renderer.clear();
+
     auto rendererStates = pg::States{};
     // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});

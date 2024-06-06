@@ -27,7 +27,7 @@ static inline T load(const std::filesystem::path& file_name)
 }
 
 template <typename T>
-static inline T load(const std::filesystem::path& file_name, const T& default_value)
+static inline T load(const std::filesystem::path& file_name, const T& default_)
 {
     try
     {
@@ -41,7 +41,7 @@ static inline T load(const std::filesystem::path& file_name, const T& default_va
     {
         spdlog::warn("Failed to load file {} : {}, resorting to default", file_name.string(), e.what());
         // throw std::runtime_error("Failed to load file " + file_name.string() + " : " + e.what());
-        return default_value;
+        return default_;
     }
 }
 

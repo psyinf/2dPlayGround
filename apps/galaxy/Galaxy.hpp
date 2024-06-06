@@ -14,6 +14,8 @@
 #include <systems/DroneSystem.hpp>
 #include <systems/LifetimeSystem.hpp>
 #include <systems/BehaviorSystem.hpp>
+#include <systems/GuiSystem.hpp>
+#include <systems/LambdaSystem.hpp>
 
 #include "components/StarSystem.hpp"
 #include "components/Faction.hpp"
@@ -26,6 +28,13 @@
 #include <ranges>
 
 namespace galaxy {
+
+template <typename Func>
+auto makeLambdaSystem(pg::game::Game& game, Func&& f)
+{
+    return std::make_unique<LambdaSystem<Func>>(game, std::forward<Func>(f));
+}
+
 class GalacticCore
 
 {
@@ -40,7 +49,11 @@ public:
     {
         auto& scene = game->createScene("start");
         auto& systems = scene.getSystems();
+        systems.emplace_back(makeLambdaSystem(*game, [this]() { game->getApp().getRenderer().clear(); }));
+        systems.emplace_back(std::make_unique<galaxy::GuiSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::RenderSystem>(*game));
+        systems.emplace_back(makeLambdaSystem(*game, [this]() { game->getApp().getRenderer().present(); }));
+
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::PickingSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::DroneSystem>(*game));
