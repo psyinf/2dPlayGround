@@ -4,7 +4,7 @@
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
-#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/primitives/Renderable.hpp>
 #include <pgEngine/math/Vec.hpp>
 #include <SDL_image.h>
 #include <iostream>

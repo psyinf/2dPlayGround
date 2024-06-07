@@ -12,10 +12,11 @@ class Gui
 public:
     Gui(pg::SDLApp& app);
     ~Gui();
-
+    void begin();
+    void end();
     void render(std::function<void()> rendering);
 
-    void processEvent(const SDL_Event& event);
+    bool processEvent(const SDL_Event& event);
 
 private:
     pg::SDLApp& app;

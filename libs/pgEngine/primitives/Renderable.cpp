@@ -1,4 +1,4 @@
-#include <primitives/Primitives.hpp>
+#include <primitives/Renderable.hpp>
 
 pg::Line::Line(iVec2&& start, iVec2&& end)
   : start(start)

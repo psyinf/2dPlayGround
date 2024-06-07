@@ -9,7 +9,7 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
 	PRIVATE
 		"core/App.cpp"
-		primitives/Primitives.cpp
+		"primitives/Renderable.cpp"
 		"primitives/Sprite.cpp"
 
 		factories/Factories.cpp
@@ -28,7 +28,7 @@ target_sources(${PROJECT_NAME}
 		math/Random.hpp
 		math/Vec.hpp
 		math/VecOps.hpp
-		primitives/Primitives.hpp
+		primitives/Renderable.hpp
 
 		primitives/BackgoundSprite.hpp
 		primitives/Sprite.hpp

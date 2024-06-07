@@ -11,18 +11,12 @@ class GuiSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup() override
-    {
-        gui = std::make_unique<pg::Gui>(game.getApp());
-        game.getApp().getEventHandler().setCallback([&](auto e) {
-            gui->processEvent(e);
-            return false;
-        });
-    }
+    void setup() override {}
 
     void handle(const pg::game::FrameStamp& frameStamp) override
     {
-        gui->render([]() { ImGui::ShowDemoWindow(nullptr); });
+        // TODO: iterate entities
+        // gui->render([]() { ImGui::ShowDemoWindow(nullptr); });
     }
 
     std::unique_ptr<pg::Gui> gui;

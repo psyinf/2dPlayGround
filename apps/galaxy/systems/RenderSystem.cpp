@@ -17,7 +17,7 @@ void galaxy::RenderSystem::setup() {}
 void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
 {
     auto& renderer = game.getApp().getRenderer();
-
+    renderer.clear();
     auto rendererStates = pg::States{};
     // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
@@ -62,7 +62,18 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
             drawable.prim->draw(renderer, new_transform, rendererStates);
         }
     }
-
     rendererStates.restore(renderer);
+    game.getRegistry().sort<pg::game::Drawable>(
+        [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
+    // draw overlays
+    auto view = game.getRegistry().view<pg::game::Drawable, pg::tags::OverlayRenderingTag>();
+    view.use<pg::game::Drawable>();
+    for (auto& entity : view)
+    {
+        auto& drawable = view.get<pg::game::Drawable>(entity);
+
+        drawable.prim->draw(renderer, {}, rendererStates);
+    }
+
     renderer.present();
 }

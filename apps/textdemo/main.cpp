@@ -2,7 +2,7 @@
 #include <pgEngine/factories/Factories.hpp>
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/core/ErrorTrace.hpp>
-#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/primitives/Renderable.hpp>
 #include <pgEngine/core/State.hpp>
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"

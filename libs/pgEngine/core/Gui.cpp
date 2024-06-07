@@ -1,9 +1,9 @@
 #include "Gui.hpp"
 #include "App.hpp"
 
-void pg::Gui::processEvent(const SDL_Event& event)
+bool pg::Gui::processEvent(const SDL_Event& event)
 {
-    ImGui_ImplSDL2_ProcessEvent(&event);
+    return ImGui_ImplSDL2_ProcessEvent(&event);
 }
 
 pg::Gui::~Gui()
@@ -33,16 +33,27 @@ pg::Gui::Gui(SDLApp& app)
     ImGui_ImplSDLRenderer2_Init(renderer.get());
 }
 
-void pg::Gui::render(std::function<void()> rendering)
+void pg::Gui::begin()
 {
-    ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
     ImGui::NewFrame();
-    if (rendering) { rendering(); }
+}
+
+void pg::Gui::end()
+{
     ImGui::Render();
+    ImGuiIO& io = ImGui::GetIO();
+
     SDL_RenderSetScale(app.getRenderer().get(), io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
     // SDL_SetRenderDrawColor(renderer.get(), (Uint8)(255), (Uint8)(255), (Uint8)(255), (Uint8)(255));
     // SDL_RenderClear(renderer.get());
     ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), app.getRenderer().get());
+}
+
+void pg::Gui::render(std::function<void()> rendering)
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    if (rendering) { rendering(); }
 }
