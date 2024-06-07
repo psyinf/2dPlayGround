@@ -63,17 +63,23 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
         }
     }
     rendererStates.restore(renderer);
-    game.getRegistry().sort<pg::game::Drawable>(
-        [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
-    // draw overlays
-    auto view = game.getRegistry().view<pg::game::Drawable, pg::tags::OverlayRenderingTag>();
-    view.use<pg::game::Drawable>();
-    for (auto& entity : view)
-    {
-        auto& drawable = view.get<pg::game::Drawable>(entity);
 
-        drawable.prim->draw(renderer, {}, rendererStates);
-    }
+    drawOverlays(renderer, rendererStates);
 
     renderer.present();
+}
+
+void galaxy::RenderSystem::drawOverlays(sdl::Renderer& renderer, pg::States& rendererStates)
+{
+    // draw overlays
+    auto& gui = game.getSingleton<pg::Gui&>("galaxy.gui");
+    game.getRegistry().sort<pg::game::GuiDrawable>(
+        [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
+    auto view = game.getRegistry().view<pg::game::GuiDrawable>();
+    for (auto& entity : view)
+    {
+        auto& drawable = view.get<pg::game::GuiDrawable>(entity);
+
+        drawable.prim->draw(gui);
+    }
 }

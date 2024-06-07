@@ -4,8 +4,7 @@
 #include <pgGame/components/Drawable.hpp>
 
 #include <pgEngine/primitives/Sprite.hpp>
-
-#include <pgEngine/primitives/GuiRenderer.hpp>
+#include <pgEngine/primitives/GuiRenderable.hpp>
 
 #include <pgEngine/math/VecUtils.hpp>
 #include <pgEngine/math/Quadtree.hpp>
@@ -17,7 +16,6 @@
 #include <systems/DroneSystem.hpp>
 #include <systems/LifetimeSystem.hpp>
 #include <systems/BehaviorSystem.hpp>
-#include <systems/GuiSystem.hpp>
 #include <systems/LambdaSystem.hpp>
 
 #include "components/StarSystem.hpp"
@@ -29,6 +27,7 @@
 #include <Config.hpp>
 #include <cmath>
 #include <ranges>
+#include <gui/DemoToolBox.hpp>
 
 namespace galaxy {
 
@@ -52,10 +51,7 @@ public:
     {
         auto& scene = game->createScene("start");
         auto& systems = scene.getSystems();
-        // systems.emplace_back(makeLambdaSystem(*game, [this]() { game->getApp().getRenderer().clear(); }));
-        systems.emplace_back(std::make_unique<galaxy::GuiSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::RenderSystem>(*game));
-        // systems.emplace_back(makeLambdaSystem(*game, [this]() { game->getApp().getRenderer().present(); }));
 
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::PickingSystem>(*game));
@@ -162,6 +158,8 @@ private:
     void setupOverlay()
     {
         gui = std::make_unique<pg::Gui>(game->getApp());
+
+        game->addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
         // update events
         game->getApp().getEventHandler().setCallback([&](auto e) {
             auto prc = gui->processEvent(e);
@@ -169,15 +167,13 @@ private:
             return false;
         });
 
-        pg::game::makeEntity<pg::game::Drawable, pg::tags::OverlayRenderingTag>(
-            game->getRegistry(),
-            pg::game::Drawable{std::make_unique<pg::game::GuiBeginDrawable>(*gui), pg::game::DRAWABLE_FIRST},
-            {});
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        pg::game::makeEntity<pg::game::Drawable, pg::tags::OverlayRenderingTag>(
-            game->getRegistry(),
-            pg::game::Drawable{std::make_unique<pg::game::GuiEndDrawable>(*gui), pg::game::DRAWABLE_LAST},
-            {});
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(), {std::make_unique<galaxy::DemoToolBox>()});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
     }
 
     void setupGalaxy()

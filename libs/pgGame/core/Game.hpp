@@ -64,7 +64,11 @@ public:
     template <typename Type>
     auto& getSingleton(std::string_view id)
     {
-        // TODO: find and throw if not found
+        if (!registry.ctx().contains<Type>(entt::hashed_string{id.data()}))
+        {
+            throw std::runtime_error("Singleton not found");
+        }
+
         return registry.ctx().get<Type>(entt::hashed_string{id.data()});
     }
 

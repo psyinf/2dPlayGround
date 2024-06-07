@@ -1,5 +1,5 @@
 #pragma once
-#include <pgEngine/primitives/Renderable.hpp>
+#include <pgEngine/primitives/GuiRenderable.hpp>
 
 #include <memory>
 
@@ -14,4 +14,9 @@ struct Drawable
     int32_t                         order{0};
 };
 
+struct GuiDrawable
+{
+    std::shared_ptr<pg::game::GuiRenderable> prim;
+    int32_t                                  order{0};
+};
 } // namespace pg::game

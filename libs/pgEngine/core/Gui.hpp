@@ -11,6 +11,9 @@ class Gui
 {
 public:
     Gui(pg::SDLApp& app);
+    Gui(const Gui&) = delete;
+    Gui& operator=(const Gui&) = delete;
+
     ~Gui();
     void begin();
     void end();
