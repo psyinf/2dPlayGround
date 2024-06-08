@@ -163,8 +163,10 @@ private:
         game->addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
         // update events
         game->getApp().getEventHandler().setCallback([&](auto e) {
-            auto prc = gui->processEvent(e);
-            std::cout << prc << "\n";
+            ImGuiIO& io = ImGui::GetIO();
+            gui->processEvent(e);
+            // TODO: differentiat if event was mouse or keyboard
+            if (io.WantCaptureMouse || io.WantCaptureKeyboard) { return true; }
             return false;
         });
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
