@@ -17,6 +17,12 @@ public:
     }
 
     template <typename T>
+    void addGetter(const std::string& name, const std::function<T()>& getter)
+    {
+        this->getter[name] = [getter]() -> std::any { return getter(); };
+    }
+
+    template <typename T>
     T get(const std::string& name)
     {
         return std::any_cast<T>(getter[name]());

@@ -8,12 +8,15 @@ namespace galaxy {
 class DemoToolBox : public pg::game::GuiRenderable
 {
 public:
-    DemoToolBox() { gva().add("my_tool_active", true); }
+    using pg::game::GuiRenderable::GuiRenderable;
+
+    DemoToolBox() {}
 
     virtual void draw(pg::Gui& gui) override
     {
+        gva().add("my_tool_active", true);
         auto my_tool_active = gva().get<bool>("my_tool_active");
-
+        auto entity = gva().get<entt::entity>("testEntity");
         ImGui::Begin("My First Tool", my_tool_active ? &my_tool_active : nullptr, ImGuiWindowFlags_MenuBar);
         if (ImGui::BeginMenuBar())
         {
@@ -41,7 +44,9 @@ public:
         ImGui::PlotLines("Samples", samples, 100);
 
         // Display contents in a scrolling region
-        ImGui::TextColored(ImVec4(1, 1, 0, 1), "Important Stuff");
+        // ImGui::TextColored(ImVec4(1, 1, 0, 1), fmt:);
+        auto entity_int = (int)entt::to_integral(entity);
+        ImGui::InputInt("entity", &entity_int);
         ImGui::BeginChild("Scrolling");
         for (int n = 0; n < 50; n++)
             ImGui::Text("%04d: Some text", n);

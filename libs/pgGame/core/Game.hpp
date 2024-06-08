@@ -72,6 +72,26 @@ public:
         return registry.ctx().get<Type>(entt::hashed_string{id.data()});
     }
 
+    template <typename Type>
+    auto getSingleton_or(std::string_view id, Type default_fallback)
+    {
+        if (!registry.ctx().contains<Type>(entt::hashed_string{id.data()})) { return default_fallback; }
+
+        return registry.ctx().get<Type>(entt::hashed_string{id.data()});
+    }
+
+    // works only with default constructible types
+    template <typename Type>
+    auto& getOrCreateSingleton(std::string_view id)
+    {
+        if (!registry.ctx().contains<Type>(entt::hashed_string{id.data()}))
+        {
+            return registry.ctx().emplace_as<Type>(entt::hashed_string{id.data()});
+        }
+
+        return registry.ctx().get<Type>(entt::hashed_string{id.data()});
+    }
+
     template <typename Type, typename... Args>
     auto& addSingleton_as(std::string_view id, Args&&... args)
     {

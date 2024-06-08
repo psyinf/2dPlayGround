@@ -28,6 +28,7 @@
 #include <cmath>
 #include <ranges>
 #include <gui/DemoToolBox.hpp>
+#include <gui/SystemInfo.hpp>
 
 namespace galaxy {
 
@@ -166,11 +167,22 @@ private:
             std::cout << prc << "\n";
             return false;
         });
-
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(), {std::make_unique<galaxy::DemoToolBox>()});
+        // for testing
+
+        pg::game::GuiValueAccessor testAccessor;
+        testAccessor.addGetter<entt::entity>("testEntity", [this]() -> entt::entity {
+            static auto null_entt = entt::null;
+            return game->getOrCreateSingleton<PickedEntity>("picked.entity").entity;
+        });
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<galaxy::gui::SystemInfoWidget>(*game)});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<galaxy::DemoToolBox>(std::move(testAccessor))});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
