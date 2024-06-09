@@ -104,8 +104,14 @@ public:
         game->getKeyStateMap().registerKeyCallback(SDLK_SPACE, [&scene](auto) { scene.getGlobalTransform() = {}; });
         game->getKeyStateMap().registerKeyCallback(
             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
-        // setupStarSystems();
-        // setupRegularGrid();
+        // TODO: in game
+        game->getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
+            if (e.event == SDL_WINDOWEVENT_RESIZED)
+            {
+                auto& windowDetails = game->getSingleton<pg::game::WindowDetails>();
+                windowDetails.windowRect = {0, 0, e.data1, e.data2};
+            }
+        };
         setupGalaxy();
         setupQuadtreeDebug();
         setupSelectionMarker();
@@ -165,26 +171,16 @@ private:
         game->getApp().getEventHandler().setCallback([&](auto e) {
             ImGuiIO& io = ImGui::GetIO();
             gui->processEvent(e);
-            // TODO: differentiat if event was mouse or keyboard
+            // TODO: differentiate if event was mouse or keyboard
             if (io.WantCaptureMouse || io.WantCaptureKeyboard) { return true; }
             return false;
         });
+
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        // for testing
-
-        pg::game::GuiValueAccessor testAccessor;
-        testAccessor.addGetter<entt::entity>("testEntity", [this]() -> entt::entity {
-            static auto null_entt = entt::null;
-            return game->getOrCreateSingleton<PickedEntity>("picked.entity").entity;
-        });
-
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
                                                     {std::make_unique<galaxy::gui::SystemInfoWidget>(*game)});
-
-        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
-                                                    {std::make_unique<galaxy::DemoToolBox>(std::move(testAccessor))});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});

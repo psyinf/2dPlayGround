@@ -15,6 +15,7 @@
 #include <entt/entt.hpp>
 #include <memory>
 #include <unordered_map>
+#include <pgGame/components/WindowDetails.hpp>
 
 namespace pg::game {
 
@@ -25,12 +26,15 @@ public:
     using Systems = Scene::Systems;
 
 private:
-    pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"}; // TODO: from config
-    pg::SDLApp               sdlApp{windowConfig};
-    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
-    pg::ResourceCache        resourceCache{"../data/"}; // TODO: from config
-    entt::registry           registry;
-    entt::dispatcher         dispatcher;
+    pg::config::WindowConfig windowConfig{0, {0, 0}, {500, 500}, "minimal demo"}; // TODO: from config
+    // TODO vec4 from 2 vec2
+    WindowDetails windowDetails{
+        {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
+    pg::SDLApp        sdlApp{windowConfig};
+    pg::KeyStateMap   keyStateMap{sdlApp.getEventHandler()};
+    pg::ResourceCache resourceCache{"../data/"}; // TODO: from config
+    entt::registry    registry;
+    entt::dispatcher  dispatcher;
 
     Scenes scenes;
 
