@@ -18,7 +18,11 @@ public:
         auto pos_str = fmt::format("Pos: {},{}", transform.pos[0], transform.pos[1]);
         auto system_state_str = fmt::format("State: {}", magic_enum::enum_name(system.colonizationStatus));
         auto faction_str = fmt::format("Faction: {}", faction.name);
-        ImGui::Begin("System Info");
+        ImGui::BeginMainMenuBar();
+        // Add menu bar items here
+        ImGui::EndMainMenuBar();
+
+        ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_MenuBar);
         ImGui::Text("System Info");
         ImGui::Text(pos_str.data());
         ImGui::Text(system_state_str.data());

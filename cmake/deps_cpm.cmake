@@ -140,7 +140,7 @@ CPMAddPackage(
 CPMAddPackage(
     NAME imgui
     GITHUB_REPOSITORY ocornut/imgui
-    GIT_TAG v1.90.7
+    GIT_TAG v1.90.8-docking
     
 )
 #if (imgui_ADDED)
@@ -156,6 +156,8 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC ${imgui_SOURCE_DIR} ${imgui_SOURCE_DIR}/backends/)
 target_compile_definitions(imgui PUBLIC -DIMGUI_DISABLE_OBSOLETE_FUNCTIONS) # optional imgui setting
 set_target_properties(imgui PROPERTIES FOLDER third-party) # optoinal IDE dir
+#alias
+add_library(imgui::imgui ALIAS imgui)
 #endif()
 
 if(SCRIPTING)

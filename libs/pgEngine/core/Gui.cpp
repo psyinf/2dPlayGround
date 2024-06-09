@@ -21,7 +21,8 @@ pg::Gui::Gui(SDLApp& app)
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-
+    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    // ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     // Setup Dear ImGui style
     // TODO:config
     ImGui::StyleColorsDark();
@@ -37,7 +38,16 @@ void pg::Gui::begin()
 {
     ImGui_ImplSDLRenderer2_NewFrame();
     ImGui_ImplSDL2_NewFrame();
+
     ImGui::NewFrame();
+    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+
+    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
+    dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+
+    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
+    bool t = true;
+    ImGui::ShowDemoWindow(&t);
 }
 
 void pg::Gui::end()
