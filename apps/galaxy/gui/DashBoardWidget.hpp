@@ -42,15 +42,18 @@ public:
             const ImGuiViewport* viewport = ImGui::GetMainViewport();
 
             ImGui::SetNextWindowPos(viewport->WorkPos);
-            ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x * 0.2, viewport->WorkSize.y));
+            // ImGuiWindowFlags_NoResize |
+            // TODO: only set intial size, but allow for resizing
+            ImGui::SetNextWindowSize(ImVec2(viewport->WorkSize.x, viewport->WorkSize.y));
             ImGui::SetNextWindowViewport(viewport->ID);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
             ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize |
-                            ImGuiWindowFlags_NoMove;
+            window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
             window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
         }
         else { dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode; }
+
+        dockspace_flags |= ImGuiDockNodeFlags_PassthruCentralNode;
 
         // When using ImGuiDockNodeFlags_PassthruCentralNode, DockSpace() will render our background
         // and handle the pass-thru hole, so we ask Begin() to not render a background.
