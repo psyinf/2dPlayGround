@@ -1,11 +1,6 @@
 #include "Gui.hpp"
 #include "App.hpp"
 
-bool pg::Gui::processEvent(const SDL_Event& event)
-{
-    return ImGui_ImplSDL2_ProcessEvent(&event);
-}
-
 pg::Gui::~Gui()
 {
     ImGui_ImplSDL2_Shutdown();
@@ -22,6 +17,9 @@ pg::Gui::Gui(SDLApp& app)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+
+    bindEventProcessing();
+
     // ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
     // Setup Dear ImGui style
     // TODO:config
@@ -43,11 +41,11 @@ void pg::Gui::begin()
     ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
 
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
+    // dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
 
-    ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
-    bool t = true;
-    ImGui::ShowDemoWindow(&t);
+    // ImGui::DockSpace(dockspace_id, ImVec2(10.0f, app.getWindowConfig().size[1]), dockspace_flags);
+    // bool t = true;
+    // ImGui::ShowDemoWindow(&t);
 }
 
 void pg::Gui::end()
@@ -66,4 +64,15 @@ void pg::Gui::render(std::function<void()> rendering)
     ImGuiIO& io = ImGui::GetIO();
 
     if (rendering) { rendering(); }
+}
+
+void pg::Gui::bindEventProcessing()
+{
+    app.getEventHandler().setCallback([&](auto e) {
+        ImGuiIO& io = ImGui::GetIO();
+        ImGui_ImplSDL2_ProcessEvent(&e);
+        // TODO: differentiate if event was mouse or keyboard
+        if (io.WantCaptureMouse || io.WantCaptureKeyboard) { return true; }
+        return false;
+    });
 }

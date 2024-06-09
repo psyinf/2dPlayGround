@@ -26,7 +26,7 @@ public:
     using Systems = Scene::Systems;
 
 private:
-    pg::config::WindowConfig windowConfig{0, {0, 0}, {500, 500}, "minimal demo"}; // TODO: from config
+    pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "minimal demo"}; // TODO: from config
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};

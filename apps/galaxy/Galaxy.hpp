@@ -29,6 +29,7 @@
 #include <ranges>
 #include <gui/DemoToolBox.hpp>
 #include <gui/SystemInfo.hpp>
+#include <gui/DashBoardWidget.hpp>
 
 namespace galaxy {
 
@@ -104,12 +105,13 @@ public:
         game->getKeyStateMap().registerKeyCallback(SDLK_SPACE, [&scene](auto) { scene.getGlobalTransform() = {}; });
         game->getKeyStateMap().registerKeyCallback(
             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
-        // TODO: in game
+        // TODO: in Game class
         game->getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
             if (e.event == SDL_WINDOWEVENT_RESIZED)
             {
                 auto& windowDetails = game->getSingleton<pg::game::WindowDetails>();
-                windowDetails.windowRect = {0, 0, e.data1, e.data2};
+                windowDetails.windowRect.w = e.data1;
+                windowDetails.windowRect.h = e.data2;
             }
         };
         setupGalaxy();
@@ -168,22 +170,19 @@ private:
 
         game->addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
         // update events
-        game->getApp().getEventHandler().setCallback([&](auto e) {
-            ImGuiIO& io = ImGui::GetIO();
-            gui->processEvent(e);
-            // TODO: differentiate if event was mouse or keyboard
-            if (io.WantCaptureMouse || io.WantCaptureKeyboard) { return true; }
-            return false;
-        });
 
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
-                                                    {std::make_unique<galaxy::gui::SystemInfoWidget>(*game)});
+                                                    {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(
+            game->getRegistry(),
+            {std::make_unique<galaxy::gui::DashBoardWidget>(*game), pg::game::DRAWABLE_DOCKING_AREA});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
-                                                    {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
+                                                    {std::make_unique<galaxy::gui::SystemInfoWidget>(*game)});
     }
 
     void setupGalaxy()

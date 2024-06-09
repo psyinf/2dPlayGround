@@ -22,7 +22,7 @@ public:
         // Add menu bar items here
         ImGui::EndMainMenuBar();
 
-        ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_MenuBar);
+        ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("System Info");
         ImGui::Text(pos_str.data());
         ImGui::Text(system_state_str.data());

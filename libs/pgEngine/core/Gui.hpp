@@ -19,9 +19,9 @@ public:
     void end();
     void render(std::function<void()> rendering);
 
-    bool processEvent(const SDL_Event& event);
-
 private:
+    void bindEventProcessing();
+
     pg::SDLApp& app;
 };
 } // namespace pg

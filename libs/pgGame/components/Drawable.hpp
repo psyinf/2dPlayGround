@@ -5,8 +5,10 @@
 
 namespace pg::game {
 
-static const int32_t DRAWABLE_FIRST = std::numeric_limits<int32_t>::min();
-static const int32_t DRAWABLE_LAST = std::numeric_limits<int32_t>::max();
+static constexpr int32_t DRAWABLE_FIRST = std::numeric_limits<int32_t>::min();
+static constexpr int32_t DRAWABLE_LAST = std::numeric_limits<int32_t>::max();
+static constexpr int32_t DRAWABLE_DOCKING_AREA = std::numeric_limits<int32_t>::min() / 2;
+static constexpr int32_t DRAWABLE_DEFAULT = 0;
 
 struct Drawable
 {
