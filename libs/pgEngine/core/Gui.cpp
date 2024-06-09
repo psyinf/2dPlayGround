@@ -229,7 +229,7 @@ pg::Gui::Gui(SDLApp& app)
     // TODO:config
 
     ImGui::StyleColorsDark();
-    ImGui::GetIO().Fonts->AddFontFromFileTTF("../data/fonts/Roboto-Regular.ttf", 16);
+    ImGui::GetIO().Fonts->AddFontFromFileTTF("../data/fonts/CONSOLA.ttf", 16);
     SetupImGuiStyleVS();
     // Setup Platform/Renderer bindings
     ImGui_ImplSDL2_InitForSDLRenderer(window.get(), renderer.get());

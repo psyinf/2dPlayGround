@@ -31,7 +31,7 @@ public:
         //      in your code, but we don't here because we allow the window to be floating)
 
         static bool               opt_fullscreen = true;
-        static bool               opt_padding = false;
+        static bool               opt_padding = true;
         static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
         // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
