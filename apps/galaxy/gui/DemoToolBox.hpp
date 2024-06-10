@@ -12,7 +12,7 @@ public:
 
     DemoToolBox() {}
 
-    virtual void draw(pg::Gui& gui) override
+    virtual void draw(pg::Gui&) override
     {
         gva().add("my_tool_active", true);
         auto my_tool_active = gva().get<bool>("my_tool_active");

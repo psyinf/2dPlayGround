@@ -16,8 +16,9 @@ struct DroneFailedEvent
     entt::entity entity;
 };
 
-struct DroneDestroyedEvent
-{
-    entt::entity entity;
-};
+// NOT YET USED- currently using DroneFailedEvent
+//  struct DroneDestroyedEvent
+//  {
+//      entt::entity entity;
+//  };
 } // namespace galaxy::events

@@ -39,8 +39,7 @@ static inline T load(const std::filesystem::path& file_name, const T& default_)
     }
     catch (const std::exception& e)
     {
-        spdlog::warn("Failed to load file {} : {}, resorting to default", file_name.string(), e.what());
-        // throw std::runtime_error("Failed to load file " + file_name.string() + " : " + e.what());
+        spdlog::warn("Failed to load file {} : {}, resorting to default values", file_name.string(), e.what());
         return default_;
     }
 }

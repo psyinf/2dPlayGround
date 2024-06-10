@@ -40,8 +40,7 @@ void galaxy::DroneSystem::setup()
     factory.registerSimpleAction("Terminate", [this](const BT::TreeNode& node) {
         // downcast to access the entity
         auto entity = node.config().blackboard->get<entt::entity>("entity");
-        std::cout << "Terminate " << entt::to_integral(entity) << "\n";
-
+        spdlog::debug("Drone {} failed", entt::to_integral(entity));
         game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({entity});
         return BT::NodeStatus::SUCCESS;
     });
@@ -53,7 +52,7 @@ void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
     createFactions(frameStamp);
 }
 
-void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent& event)
+void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent event)
 {
     // later: decide if the drone dies or becomes a drifter
     // for now send a signal to destroy the entity
@@ -93,8 +92,8 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
         system_faction = {faction.name, faction.color, faction.color};
         starsystem.colonizationStatus = galaxy::ColonizationStatus::Colonized;
         // add faction
+        spdlog::info("Create faction {}", system_faction.name);
 
-        std::cout << "createFactions " << entt::to_integral(entity) << " " << system_faction.name << "\n";
         // setup port connections
         // defaults
 
@@ -103,14 +102,11 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
         ctx->injectors["LoopProductionQueue"].input("queue", "{available_target_list}", true);
 
         BT::Blackboard::Ptr blackboard = BT::Blackboard::create();
-        std::cout << "making Seed";
         blackboard->set("max_targets_to_find", faction.startParams.num_start_drones);
-
         blackboard->set("ID", fmt::format("Seed: {}", entt::to_integral(entity)));
         blackboard->set("entity", entt::to_integral(entity));
         auto behavior_tree = ctx->setupTree("Seed", entity, blackboard);
 
-        std::cout << ".. done\n";
         pg::game::addComponent<galaxy::Behavior>(
             game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
     }

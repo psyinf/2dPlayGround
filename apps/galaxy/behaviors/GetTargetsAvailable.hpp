@@ -67,7 +67,7 @@ public:
         else
         {
             std::string id = config().blackboard->get<std::string>("ID");
-            std::cout << id << std::endl;
+
             auto max_to_find_opt = getInput<size_t>("max_targets_to_find");
             // TODO: refactor into a generic approach
             size_t max_to_find = 0;

@@ -30,6 +30,7 @@
 #include <gui/DemoToolBox.hpp>
 #include <gui/SystemInfo.hpp>
 #include <gui/DashBoardWidget.hpp>
+#include <systems/StatsSystem.hpp>
 
 namespace galaxy {
 
@@ -60,6 +61,7 @@ public:
         systems.emplace_back(std::make_unique<galaxy::DroneSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::BehaviorSystem>(*game));
+        systems.emplace_back(std::make_unique<galaxy::StatsSystem>(*game));
         // TODO: maybe encapsulate this into a class
         // TODO: add a mechanism that watches the mouse position and triggers a pick event in case it was not moved for
         // a while

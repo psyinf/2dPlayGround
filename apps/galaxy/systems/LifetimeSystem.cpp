@@ -9,7 +9,7 @@ void galaxy::LifetimeSystem::setup() {}
 
 bool lifeTimeExceeded(const galaxy::Lifetime& lifetime)
 {
-    auto r = 1.0f; // reliability factor. smaller values mean higher reliability
+    auto r = lifetime.reliability_factor; // reliability factor. smaller values mean higher reliability
 
     auto l = 1.0 - (std::exp(-r * static_cast<float>(lifetime.time_alive / lifetime.expected_lifetime)));
 

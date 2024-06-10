@@ -35,7 +35,7 @@ public:
 
         auto        dot_sprite = game.getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
         const auto& drone_params = galaxy::getFactionConfig(game, faction).droneParams;
-
+        const auto& faction_start_params = galaxy::getFactionConfig(game, faction).startParams;
         // create a drone
         auto renderState = pg::States{};
         renderState.push(pg::TextureColorState{faction.entityColor});
@@ -47,14 +47,16 @@ public:
                                  galaxy::Dynamic,
                                  galaxy::Faction,
                                  galaxy::Lifetime,
-                                 pg::game::RenderState>(game.getRegistry(),
-                                                        {.pos{transform.pos}, .scale{0.00125f, 0.00125f}},
-                                                        pg::game::Drawable{dot_sprite},
-                                                        {galaxy::Drone::fromConfig(drone_params)},
-                                                        galaxy::Dynamic{},
-                                                        std::move(f),
-                                                        galaxy::Lifetime{},
-                                                        {std::move(renderState)});
+                                 pg::game::RenderState>(
+                game.getRegistry(),
+                {.pos{transform.pos}, .scale{0.00125f, 0.00125f}},
+                pg::game::Drawable{dot_sprite},
+                {galaxy::Drone::fromConfig(drone_params)},
+                galaxy::Dynamic{},
+                std::move(f),
+                galaxy::Lifetime{.expected_lifetime{drone_params.expected_lifetime},
+                                 .reliability_factor{drone_params.reliability_factor}},
+                {std::move(renderState)});
 
         // add behavior"
 
@@ -62,7 +64,7 @@ public:
         // initial queue size is setup
 
         auto blackboard = BT::Blackboard::create();
-        blackboard->set("max_targets_to_find", 3);
+        blackboard->set("max_targets_to_find", faction_start_params.num_start_drones);
         blackboard->set("ID", fmt::format("Drone: {}", entt::to_integral(entity)));
         blackboard->set("entity", entt::to_integral(entity));
 
