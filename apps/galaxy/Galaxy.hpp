@@ -31,6 +31,7 @@
 #include <gui/SystemInfo.hpp>
 #include <gui/DashBoardWidget.hpp>
 #include <systems/StatsSystem.hpp>
+#include <gui/StatsWidget.hpp>
 
 namespace galaxy {
 
@@ -185,6 +186,9 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
                                                     {std::make_unique<galaxy::gui::SystemInfoWidget>(*game)});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<galaxy::gui::StatsWidget>(*game)});
     }
 
     void setupGalaxy()

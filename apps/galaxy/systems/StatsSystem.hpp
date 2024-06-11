@@ -1,12 +1,7 @@
 #pragma once
-#include <entt/entt.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
-#include <pgEngine/math/Vec.hpp>
-
 #include <events/DroneEvents.hpp>
-#include <Config.hpp>
-
-#include <unordered_map>
+#include <components/Stats.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -16,13 +11,6 @@ class Game;
 class StatsSystem : public pg::game::SystemInterface
 {
 public:
-    struct FactionStatsValues
-    {
-        uint64_t numDronesFailed;
-    };
-
-    using FactionStats = std::unordered_map<std::string, FactionStatsValues>;
-
 public:
     using SystemInterface::SystemInterface;
 
@@ -32,7 +20,9 @@ public:
 
     void onDroneDestroyed(events::DroneFailedEvent event);
 
+    void onDroneCreated(events::DroneCreatedEvent event);
+
 private:
-    FactionStats factionStats;
+    Stats stats;
 };
 } // namespace galaxy
