@@ -4,7 +4,7 @@ CPMAddPackage(
     NAME sdlpp    
 
     GITHUB_REPOSITORY "mika314/sdlpp"
-    GIT_TAG HEAD
+    GIT_TAG d41a494
     #OPTIONS USE_SDLGFX
 )
 CPMAddPackage(
@@ -22,8 +22,6 @@ CPMAddPackage(
     
 )
 
-
-
 CPMAddPackage(
     NAME Catch2
 
@@ -35,6 +33,7 @@ CPMAddPackage(
     "CATCH_BUILD_EXTRA_TESTS OFF"
     "CATCH_BUILD_FUZZERS OFF"
 )
+
 CPMAddPackage(
     NAME fmt
     GITHUB_REPOSITORY fmtlib/fmt
