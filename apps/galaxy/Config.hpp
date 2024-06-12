@@ -18,9 +18,11 @@ struct StartingParameters
 
 struct DroneParameters
 {
-    float max_acceleration{0.1f};
-    float max_speed{1.0f};
-    float max_range{40.0f};
+    float    max_acceleration{0.1f};
+    float    max_speed{1.0f};
+    float    max_range{40.0f};
+    uint32_t expected_lifetime{10000};
+    float    reliability_factor{1.0};
 };
 
 struct Faction

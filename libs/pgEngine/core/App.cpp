@@ -1,7 +1,8 @@
 #include <core/App.hpp>
 #include "Lifetime.hpp"
 #include <SDL_ttf.h>
-#include <primitives/Primitives.hpp>
+#include <primitives/Renderable.hpp>
+#include <iostream>
 
 using namespace pg;
 
@@ -40,9 +41,10 @@ void SDLApp::initialize()
                                            windowConfig.offset[1], //
                                            windowConfig.size[0],
                                            windowConfig.size[1], //
-                                           SDL_WINDOW_BORDERLESS);
+                                           SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     SDL_SetHint(SDL_HINT_RENDER_VSYNC, "1"); // TODO: move to config
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
+
     renderer = std::make_unique<sdl::Renderer>(window->get(), -1, SDL_RENDERER_ACCELERATED);
 }
 
@@ -56,6 +58,11 @@ void SDLApp::getNumDisplays() const
 {
     checkInitialized();
     SDL_GetNumVideoDisplays();
+}
+
+auto SDLApp::getWindow() -> sdl::Window&
+{
+    return *window;
 }
 
 SDL_Rect pg::SDLApp::getDisplayBounds(const uint8_t screenNumber) const
@@ -76,10 +83,10 @@ auto pg::SDLApp::getFPSCounter() -> FPSCounter&
     return fpsCounter;
 }
 
-void SDLApp::loop(bool& done, const RenderFunction& renderFunc)
+void SDLApp::loop(bool& done, const RenderFunction& renderFunc, const EventCallback& e)
 {
     getEventHandler().quit = [&done](const SDL_QuitEvent&) { done = true; };
-
+    // getEventHandler().setCallback(e);
     while (!done)
     {
         while (getEventHandler().poll()) {}

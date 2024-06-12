@@ -7,7 +7,7 @@
 #include "components/Entities.h"
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/VecOps.hpp>
-#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/primitives/Renderable.hpp>
 #include <fmt/format.h>
 #include <events/LaserFired.h>
 

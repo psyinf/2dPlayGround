@@ -53,7 +53,7 @@ struct Drone
 
     uint16_t lifetime{0};
 
-    entt::entity targetId;
+    entt::entity targetId{entt::null};
     uint16_t     waitCycles{100};
     pg::fVec2    targetPos{};
 

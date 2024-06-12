@@ -2,7 +2,7 @@
 #include <pgEngine/factories/Factories.hpp>
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/core/ErrorTrace.hpp>
-#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/primitives/Renderable.hpp>
 #include <pgEngine/core/States.hpp>
 #include <random>
 

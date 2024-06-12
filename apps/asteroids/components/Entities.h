@@ -1,6 +1,6 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
-#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/primitives/Renderable.hpp>
 #include <memory>
 #include <entt/entt.hpp>
 

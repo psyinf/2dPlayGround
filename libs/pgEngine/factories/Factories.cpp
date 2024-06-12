@@ -3,7 +3,7 @@
 #include <SDL_image.h>
 #include <font/Font.hpp>
 
-// #include "SDL_ttf.h"
+#include "SDL_ttf.h"
 
 sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, std::string_view resource_name)
 {
@@ -17,13 +17,11 @@ pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_vi
     return Sprite(std::make_shared<sdl::Texture>(renderer.get(), spriteSurface.get()));
 }
 
-pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer&, SDLFont&, std::string_view)
+pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer& renderer, SDLFont& font, std::string_view text)
 {
-    throw std::runtime_error("Not implemented");
-    //     static constexpr auto white = SDL_Color{255, 255, 255, 255};
-    //     auto surface = sdl::Surface(TTF_RenderText_Blended(font.get(), text.data(),
-    //     std::bit_cast<SDL_Color>(white))); return Sprite(std::make_shared<sdl::Texture>(renderer.get(),
-    //     surface.get()));
+    static constexpr auto white = SDL_Color{255, 255, 255, 255};
+    auto surface = sdl::Surface(TTF_RenderText_Blended(font.get(), text.data(), std::bit_cast<SDL_Color>(white)));
+    return Sprite(std::make_shared<sdl::Texture>(renderer.get(), surface.get()));
 }
 
 pg::FramedSprite pg::SpriteFactory::makeFramedSprite(sdl::Renderer&   renderer,

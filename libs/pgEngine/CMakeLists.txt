@@ -9,12 +9,13 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
 	PRIVATE
 		"core/App.cpp"
-		primitives/Primitives.cpp
+		"primitives/Renderable.cpp"
 		"primitives/Sprite.cpp"
 
 		factories/Factories.cpp
 		font/Font.cpp
 		"core/FPSCounter.cpp"
+		core/Gui.cpp
 	PUBLIC
 		factories/Factories.hpp
 		
@@ -27,7 +28,7 @@ target_sources(${PROJECT_NAME}
 		math/Random.hpp
 		math/Vec.hpp
 		math/VecOps.hpp
-		primitives/Primitives.hpp
+		primitives/Renderable.hpp
 
 		primitives/BackgoundSprite.hpp
 		primitives/Sprite.hpp
@@ -51,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
     SDL2::SDL2main
 	SDL2_image::SDL2_image-static
 	nlohmann_json::nlohmann_json
+    imgui
 	PRIVATE
 	SDL2_ttf::SDL2_ttf-static
 )

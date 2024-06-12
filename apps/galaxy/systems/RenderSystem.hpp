@@ -2,6 +2,14 @@
 #include <entt/entt.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
 
+namespace sdl {
+class Renderer;
+}
+
+namespace pg {
+class States;
+}
+
 namespace galaxy {
 using entt::literals::operator""_hs;
 
@@ -15,5 +23,7 @@ public:
     void setup();
 
     void handle(const pg::game::FrameStamp& frameStamp);
+
+    void drawOverlays(sdl::Renderer& renderer, pg::States& rendererStates);
 };
 } // namespace galaxy

@@ -2,11 +2,10 @@
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
 #include <pgGame/components/Drawable.hpp>
-
 #include <pgEngine/primitives/Sprite.hpp>
+#include <pgEngine/primitives/GuiRenderable.hpp>
 #include <pgEngine/math/VecUtils.hpp>
 #include <pgEngine/math/Quadtree.hpp>
-
 #include <components/Tags.hpp>
 #include <systems/RenderSystem.hpp>
 #include <systems/UpdateSystem.hpp>
@@ -14,18 +13,28 @@
 #include <systems/DroneSystem.hpp>
 #include <systems/LifetimeSystem.hpp>
 #include <systems/BehaviorSystem.hpp>
-
+#include <systems/LambdaSystem.hpp>
 #include "components/StarSystem.hpp"
 #include "components/Faction.hpp"
 #include "pgGame/components/RenderState.hpp"
 #include "events/PickEvent.hpp"
-#include <pgEngine/math/Random.hpp>
 #include <pgGame/components/WindowDetails.hpp>
 #include <Config.hpp>
 #include <cmath>
 #include <ranges>
+#include <gui/SystemInfo.hpp>
+#include <gui/DashBoardWidget.hpp>
+#include <systems/StatsSystem.hpp>
+#include <gui/StatsWidget.hpp>
 
 namespace galaxy {
+
+template <typename Func>
+auto makeLambdaSystem(pg::game::Game& game, Func&& f)
+{
+    return std::make_unique<LambdaSystem<Func>>(game, std::forward<Func>(f));
+}
+
 class GalacticCore
 
 {
@@ -41,11 +50,13 @@ public:
         auto& scene = game->createScene("start");
         auto& systems = scene.getSystems();
         systems.emplace_back(std::make_unique<galaxy::RenderSystem>(*game));
+
         systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::PickingSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::DroneSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(*game));
         systems.emplace_back(std::make_unique<galaxy::BehaviorSystem>(*game));
+        systems.emplace_back(std::make_unique<galaxy::StatsSystem>(*game));
         // TODO: maybe encapsulate this into a class
         // TODO: add a mechanism that watches the mouse position and triggers a pick event in case it was not moved for
         // a while
@@ -91,11 +102,20 @@ public:
         game->getKeyStateMap().registerKeyCallback(SDLK_SPACE, [&scene](auto) { scene.getGlobalTransform() = {}; });
         game->getKeyStateMap().registerKeyCallback(
             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
-        // setupStarSystems();
-        // setupRegularGrid();
+        // TODO: in Game class
+        game->getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
+            if (e.event == SDL_WINDOWEVENT_RESIZED)
+            {
+                auto& windowDetails = game->getSingleton<pg::game::WindowDetails>();
+                windowDetails.windowRect.w = e.data1;
+                windowDetails.windowRect.h = e.data2;
+            }
+        };
         setupGalaxy();
         setupQuadtreeDebug();
         setupSelectionMarker();
+        setupOverlay();
+
         setupConfig();
 
         game->switchScene("start");
@@ -141,9 +161,32 @@ private:
         }
     }
 
+    void setupOverlay()
+    {
+        gui = std::make_unique<pg::Gui>(game->getApp());
+
+        game->addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
+        // update events
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(
+            game->getRegistry(),
+            {std::make_unique<galaxy::gui::DashBoardWidget>(*game), pg::game::DRAWABLE_DOCKING_AREA});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<galaxy::gui::SystemInfoWidget>(*game)});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(game->getRegistry(),
+                                                    {std::make_unique<galaxy::gui::StatsWidget>(*game)});
+    }
+
     void setupGalaxy()
     {
-        // TODO: Configuration
         galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::random_device              rd;
         std::mt19937                    gen(rd());
@@ -184,6 +227,7 @@ private:
 
 private:
     std::unique_ptr<pg::game::Game>             game;
+    std::unique_ptr<pg::Gui>                    gui;
     std::unique_ptr<pg::Quadtree<entt::entity>> galaxyQuadtree;
     bool                                        isDragging{};
     bool                                        drawDebugItems{true};

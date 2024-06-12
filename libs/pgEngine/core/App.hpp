@@ -16,6 +16,7 @@ class SDLApp
 
 public:
     using RenderFunction = std::function<void(SDLApp&)>;
+    using EventCallback = std::function<bool(SDL_Event)>;
     SDLApp(const config::WindowConfig& windowConfig);
     ~SDLApp();
 
@@ -24,6 +25,8 @@ public:
     auto getRenderer() -> sdl::Renderer&;
 
     auto getEventHandler() -> sdl::EventHandler&;
+
+    auto getWindow() -> sdl::Window&;
 
     void deinitialize();
 
@@ -34,7 +37,9 @@ public:
     auto getWindowConfig() const -> const config::WindowConfig&;
 
     auto                                  getFPSCounter() -> FPSCounter&;
-    [[deprecated("Use Game class")]] void loop(bool& done, const RenderFunction& renderFunction);
+    [[deprecated("Use Game class")]] void loop(bool&                 done,
+                                               const RenderFunction& renderFunction,
+                                               const EventCallback&  eventCallback = {});
 
 protected:
     void checkInitialized() const;

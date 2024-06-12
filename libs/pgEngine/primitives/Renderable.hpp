@@ -49,14 +49,14 @@ private:
     Color          color;
 };
 
-class Primitive
+class Renderable
 {
 public:
-    virtual ~Primitive() = default;
+    virtual ~Renderable() = default;
     virtual void draw(sdl::Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
 };
 
-class Placeholder : public Primitive
+class Placeholder : public Renderable
 {
 public:
     void draw(sdl::Renderer&, const Transform2D&, const States&) override
@@ -65,7 +65,7 @@ public:
     }
 };
 
-class Group : public Primitive
+class Group : public Renderable
 {
 public:
     void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
@@ -76,13 +76,13 @@ public:
         }
     }
 
-    void addPrimitive(std::unique_ptr<Primitive>&& p) { primitives.push_back(std::move(p)); }
+    void addPrimitive(std::unique_ptr<Renderable>&& p) { primitives.push_back(std::move(p)); }
 
 private:
-    std::vector<std::unique_ptr<Primitive>> primitives;
+    std::vector<std::unique_ptr<Renderable>> primitives;
 };
 
-class Line : public Primitive
+class Line : public Renderable
 {
 public:
     Line(iVec2&& start, iVec2&& end);
@@ -94,7 +94,7 @@ protected:
     iVec2 end;
 };
 
-class Point : Primitive
+class Point : Renderable
 {
 public:
     Point(iVec2&& pos)
@@ -106,7 +106,7 @@ protected:
     iVec2 pos;
 };
 
-class LineStrip : public pg::Primitive
+class LineStrip : public pg::Renderable
 {
 public:
     LineStrip(std::vector<iVec2>&& points)
@@ -128,7 +128,7 @@ private:
     std::vector<iVec2> points;
 };
 
-class BoxPrimitive : public pg::Primitive
+class BoxPrimitive : public pg::Renderable
 {
 public:
     BoxPrimitive(const pg::fBox& box, Color color = {255, 255, 255, 255})
@@ -159,7 +159,7 @@ private:
     const Color    color;
 };
 
-class Points : public pg::Primitive
+class Points : public pg::Renderable
 {
 public:
     Points(std::vector<iVec2>&& points)
@@ -179,7 +179,7 @@ private:
     std::vector<iVec2> points;
 };
 
-class RefPoints : public pg::Primitive
+class RefPoints : public pg::Renderable
 {
 public:
     RefPoints(const std::vector<pg::iVec2>& points)
@@ -205,7 +205,7 @@ private:
     size_t                    maxElement{points.size()};
 };
 
-class RefLines : public pg::Primitive
+class RefLines : public pg::Renderable
 {
 public:
     RefLines(const std::vector<pg::iVec2>& points)

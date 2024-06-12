@@ -1,11 +1,11 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
-#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/primitives/Renderable.hpp>
 #include <pgEngine/core/State.hpp>
 
 namespace pg {
 
-struct Sprite : public pg::Primitive
+struct Sprite : public pg::Renderable
 {
     Sprite(std::shared_ptr<sdl::Texture> tex);
 

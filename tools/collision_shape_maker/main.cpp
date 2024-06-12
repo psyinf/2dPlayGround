@@ -1,7 +1,7 @@
 #include <pgEngine/math/ComputationalGeometry.hpp>
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/core/ErrorTrace.hpp>
-#include <pgEngine/primitives/Primitives.hpp>
+#include <pgEngine/primitives/Renderable.hpp>
 #include <pgEngine/sprite/SpritePixelData.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
 #include <SDL_image.h>

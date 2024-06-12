@@ -12,6 +12,7 @@
 
 #include <Config.hpp>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -41,8 +42,11 @@ public:
     void handle(const pg::game::FrameStamp& frameStamp) override
     {
         auto& fpsCounter = game.getApp().getFPSCounter();
-        if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
-
+        if (fpsCounter.getCurrentFrameCount() % 100 == 0)
+        {
+            auto fpsStats = fpsCounter.getAverageFPSAndReset();
+            spdlog::info("FPS Avg/Min/Max: {:.2}/{:.2}/{:.2}", fpsStats.minFPS, fpsStats.maxFPS, fpsStats.averageFPS);
+        }
         updateStarSystems(frameStamp);
         // move the stars on a circle at the distance from center
         //             auto distance = normalize(transform.pos);

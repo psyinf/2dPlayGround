@@ -62,7 +62,24 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
             drawable.prim->draw(renderer, new_transform, rendererStates);
         }
     }
-
     rendererStates.restore(renderer);
+
+    drawOverlays(renderer, rendererStates);
+
     renderer.present();
+}
+
+void galaxy::RenderSystem::drawOverlays(sdl::Renderer& renderer, pg::States& rendererStates)
+{
+    // draw overlays
+    auto& gui = game.getSingleton<pg::Gui&>("galaxy.gui");
+    game.getRegistry().sort<pg::game::GuiDrawable>(
+        [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
+    auto view = game.getRegistry().view<pg::game::GuiDrawable>();
+    for (auto& entity : view)
+    {
+        auto& drawable = view.get<pg::game::GuiDrawable>(entity);
+
+        drawable.prim->draw(gui);
+    }
 }

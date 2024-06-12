@@ -24,7 +24,7 @@ public:
 
     void handle(const pg::game::FrameStamp& frameStamp);
 
-    void handleDroneFailed(galaxy::events::DroneFailedEvent& event);
+    void handleDroneFailed(galaxy::events::DroneFailedEvent event);
 
 private:
     void createFactions(const pg::game::FrameStamp& frameStamp);
