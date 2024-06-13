@@ -45,7 +45,7 @@ void asteroids::Player::setup()
     game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, trigger, true);
 }
 
-void asteroids::Player::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::Player::handle(const pg::game::FrameStamp& )
 {
     auto playerId = game.getSingleton<const entt::entity>("Player");
 

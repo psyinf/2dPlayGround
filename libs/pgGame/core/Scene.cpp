@@ -2,11 +2,6 @@
 #include <core/Game.hpp>
 #include <components/WindowDetails.hpp>
 
-void pg::game::Scene::setup(Game& game)
-{
-    game.addSingleton_as<pg::Transform2D&>(GlobalTransformName, globalTransform);
-    std::ranges::for_each(systems, [](auto& system) { system->setup(); });
-}
 
 void pg::game::Scene::frame(FrameStamp frameStamp)
 {

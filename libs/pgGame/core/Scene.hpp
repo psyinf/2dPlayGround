@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <ranges>
+#include <entt/entt.hpp>
 
 namespace pg::game {
 /**
@@ -19,6 +20,7 @@ public:
     using Systems = std::vector<std::shared_ptr<SystemInterface>>;
 
     Scene() = default;
+
     virtual ~Scene() = default;
 
     const Systems& getSystems() const;
@@ -31,12 +33,20 @@ public:
 
     void frame(FrameStamp frameStamp);
 
-    void setup(Game& game);
+    entt::registry& getRegistry() { return registry; }
+
+    void start()
+    {
+        std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
+    }
+
+    void stop() {}
 
 private:
-    Systems systems;
-    // TODO: scenestate
+    Systems     systems;
     Transform2D globalTransform;
+    // States         globalState;
+    entt::registry registry;
 };
 
 } // namespace pg::game

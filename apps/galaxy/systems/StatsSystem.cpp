@@ -10,7 +10,7 @@ void galaxy::StatsSystem::setup()
     game.getDispatcher().sink<events::DroneCreatedEvent>().connect<&StatsSystem::onDroneCreated>(this);
 }
 
-void galaxy::StatsSystem::handle(const pg::game::FrameStamp& frameStamp) {}
+void galaxy::StatsSystem::handle(const pg::game::FrameStamp& ) {}
 
 void galaxy::StatsSystem::onDroneDestroyed(events::DroneFailedEvent event)
 {
