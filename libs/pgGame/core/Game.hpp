@@ -122,11 +122,39 @@ public:
     }
 
     /// Scene interfaces
-    void   createScene(std::string_view id);
+    //     template <typename Type = pg::game::Scene, typename... Args>
+    //     void createScene(std::string_view id, Args&&... args)
+    //     {
+    //         // static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
+    //         if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
+    //         createScene(id, std::make_unique<Type>(*this, std::forward<Args>(args)...));
+    //     }
+
+    template <typename Type = pg::game::Scene>
+    void createScene(std::string_view id)
+    {
+        // static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
+        if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
+        createScene(id, std::make_unique<Type>(*this));
+    }
+
+    Scene& getCurrentScene() { return getScene(currentSceneId); }
+
     Scene& getScene(std::string_view id);
     Scene& switchScene(std::string_view id);
-    Scene& createAndSwitchScene(std::string_view id);
+
+    template <typename Type = pg::game::Scene, typename... Args>
+    Scene& createAndSwitchScene(std::string_view id, Args&&... args)
+    {
+        // compile time switch for emtpy args
+        if constexpr (sizeof...(Args) == 0) { createScene<Type>(id); }
+        // else { createScene<Type>(id, std::forward<Args>(args)...); }
+        return switchScene(id);
+    }
 
     void loop();
+
+private:
+    void createScene(std::string_view id, std::unique_ptr<Scene>&& scene);
 };
 } // namespace pg::game

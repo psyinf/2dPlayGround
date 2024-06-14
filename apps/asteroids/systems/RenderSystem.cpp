@@ -35,8 +35,8 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
     for (int i = 0; i < 360; i++)
     {
         auto p = transform.pos + pg::fVec2{
-                                     radius * cosf(i * std::numbers::pi / 180.0f), //
-                                     radius * sinf(i * std::numbers::pi / 180.0f)  //
+                                     radius * cosf(static_cast<float>(i * std::numbers::pi) / 180.0f), //
+                                     radius * sinf(static_cast<float>(i * std::numbers::pi) / 180.0f)  //
                                  };
 
         circle_points.push_back(pg::vec_cast<int>(p));
@@ -44,7 +44,7 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
     renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), circle_points.size());
 }
 
-void asteroids::RenderSystem::handle(const pg::game::FrameStamp& )
+void asteroids::RenderSystem::handle(const pg::game::FrameStamp&)
 {
     auto& renderer = game.getApp().getRenderer();
     renderer.clear();

@@ -39,31 +39,14 @@ class GalacticCore
 
 {
 public:
-    GalacticCore(config::Galaxy&& config);
+    GalacticCore();
 
     void setup();
 
     void run();
 
 private:
-    void setupConfig();
-
-    void setupSelectionMarker();
-
-    void setupQuadtreeDebug();
-
-    void setupOverlay();
-
-    void setupGalaxy();
-
-private:
-    std::unique_ptr<pg::game::Game>             game;
-    std::unique_ptr<pg::Gui>                    gui;
-    std::unique_ptr<pg::Quadtree<entt::entity>> galaxyQuadtree;
-    bool                                        isDragging{};
-    bool                                        drawDebugItems{true};
-    bool                                        drawQuadTree{false};
-    config::Galaxy                              galaxyConfig;
+    std::unique_ptr<pg::game::Game> game;
 };
 
 } // namespace galaxy

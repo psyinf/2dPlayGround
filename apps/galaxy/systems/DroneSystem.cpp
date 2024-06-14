@@ -84,6 +84,13 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
             game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
         auto it = view.begin();
         auto size = static_cast<size_t>(std::distance(view.begin(), view.end()));
+
+        if (size == 0)
+        {
+            spdlog::error("No star systems found");
+            continue;
+        }
+
         std::advance(it, pg::randomBetween<size_t>(0, size));
         auto entity = *it;
         auto&& [drawable, transform, starsystem, system_faction] =

@@ -47,7 +47,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
         rendererStates.pop_states(renderState.states);
     }
     // debug items, TODO: check why this not drawn reliably over other items
-    if (game.getSingleton<const bool>("galaxy.debug.draw"))
+    if (game.getSingleton<const galaxy::config::Galaxy&>("galaxy.config").debugging.draw_debug_items)
     {
         for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, pg::tags::DebugRenderingItemTag>(
                  entt::exclude<StarSystemState>);
@@ -69,7 +69,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     renderer.present();
 }
 
-void galaxy::RenderSystem::drawOverlays(sdl::Renderer& renderer, pg::States& rendererStates)
+void galaxy::RenderSystem::drawOverlays(sdl::Renderer&, pg::States&)
 {
     // draw overlays
     auto& gui = game.getSingleton<pg::Gui&>("galaxy.gui");

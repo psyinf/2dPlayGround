@@ -45,11 +45,18 @@ struct ZoomParameters
     float factor{0.1f};
 };
 
+struct Debugging
+{
+    bool draw_debug_items{false};
+    bool draw_quadtree{false};
+};
+
 struct Galaxy
 {
     Star                 star;
     BackgoundParameters  background;
     ZoomParameters       zoom;
+    Debugging            debugging;
     std::vector<Faction> factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
         //{.name{"Vogons"}, .color{255, 0, 0, 255}},

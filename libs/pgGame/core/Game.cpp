@@ -93,22 +93,19 @@ pg::game::Scene& game::Game::getScene(std::string_view id)
     return *scenes.at(std::string(id));
 }
 
-void game::Game::createScene(std::string_view id)
+void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
 {
-    if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
-
     // internal switch of scene for setup
     {
         SwitchSceneId switcher(currentSceneId, std::string{id});
+        scenes.emplace(std::string{id}, std::move(scene));
 
-        scenes.emplace(std::string{id}, std::make_unique<pg::game::Scene>());
-        auto& scene = scenes.at(std::string{id});
         addSingleton<pg::TypedResourceCache<pg::Sprite>>(
             "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
         addSingleton<pg::TypedResourceCache<sdl::Texture>>(
             "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
         addSingleton<WindowDetails&>(windowDetails);
-        addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName, scene->getGlobalTransform());
+        addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName, getCurrentScene().getGlobalTransform());
     }
 }
 
@@ -118,12 +115,6 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
     currentSceneId = id;
     // setup systems
     // TODO: only first time?
-   
-    return *scene;
-}
 
-pg::game::Scene& game::Game::createAndSwitchScene(std::string_view id)
-{
-    createScene(id);
-    return switchScene(id);
+    return *scene;
 }

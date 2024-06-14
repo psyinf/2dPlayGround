@@ -4,7 +4,7 @@ CPMAddPackage(
     NAME sdlpp    
 
     GITHUB_REPOSITORY "mika314/sdlpp"
-    GIT_TAG d41a494
+    GIT_TAG HEAD
     #OPTIONS USE_SDLGFX
 )
 CPMAddPackage(

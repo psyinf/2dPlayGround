@@ -9,11 +9,7 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
-    galaxy::config::Galaxy config;
-    pg::save("../data/galaxy_default_config.json", config);
-
-    config = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", config);
-    galaxy::GalacticCore gc(std::move(config));
+    galaxy::GalacticCore gc;
     gc.setup();
     gc.run();
 

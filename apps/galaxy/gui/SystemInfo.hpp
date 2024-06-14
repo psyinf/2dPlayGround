@@ -9,7 +9,7 @@ class SystemInfoWidget : public galaxy::gui::GameGuiWidget
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
-    void draw(pg::Gui& gui) override
+    void draw([[maybe_unused]] pg::Gui& gui) override
     {
         auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
         if (selected_entity == entt::null) { return; }

@@ -11,7 +11,7 @@ class StatsWidget : public galaxy::gui::GameGuiWidget
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
-    void draw(pg::Gui& gui) override
+    void draw([[maybe_unused]] pg::Gui& gui) override
     {
         auto& stats = getGame().getSingleton<const Stats&>("galaxy.stats");
 
@@ -19,7 +19,7 @@ public:
         ImGui::Text("Stats");
         for (const auto& faction : std::views::keys(stats.factionStats))
         {
-            ImGui::Text("%s", faction);
+            ImGui::Text("%s", faction.data());
             ImGui::Indent();
             for (const auto& [name, value] : stats.factionStats)
             {
@@ -29,6 +29,10 @@ public:
             ImGui::Unindent();
             ImGui::Separator();
         }
+
+        ImGui::SeparatorText("Galaxy");
+        ImGui::Text("Systems: %d", stats.galaxyStats.numSystems);
+
         ImGui::End();
     }
 };
