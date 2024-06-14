@@ -38,8 +38,8 @@ public:
         if (lastPicks.empty()) { return; }
         const auto pick = lastPicks.back();
 
-        auto& quadtree = game.getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
-        auto& marker = game.getSingleton<entt::entity>("galaxy.debug.marker");
+        auto& quadtree = game.getCurrentScene().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
+        auto& marker = game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker");
         auto& transform = game.getRegistry().get<pg::Transform2D>(marker);
         auto  scaled_range = pg::fVec2{5, 5} * (1.0f / pick.scale);
 
@@ -51,7 +51,8 @@ public:
             transform.pos = results.at(0).box.midpoint();
             transform.scale = {0.025f, 0.025f};
 
-            game.getOrCreateSingleton<PickedEntity>("picked.entity").entity = results.at(0).data.at(0);
+            game.getCurrentScene().getOrCreateSingleton<PickedEntity>("picked.entity").entity =
+                results.at(0).data.at(0);
 
             auto event = galaxy::events::PickResult{.world_position{transform.pos}, .entity{results.at(0).data[0]}};
             game.getDispatcher().trigger(event);

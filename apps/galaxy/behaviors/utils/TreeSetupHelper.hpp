@@ -3,7 +3,6 @@
 #include <behaviortree_cpp/bt_factory.h>
 
 #include <pgGame/core/Game.hpp>
-#include <helpers/GalaxyHelpers.hpp>
 
 namespace behavior {
 // NOT YET USED

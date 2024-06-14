@@ -7,7 +7,7 @@
 
 void galaxy::StatsSystem::setup()
 {
-    game.addSingleton_as<const Stats&>("galaxy.stats", stats);
+    game.getCurrentScene().addSingleton_as<const Stats&>("galaxy.stats", stats);
     game.getDispatcher().sink<events::DroneFailedEvent>().connect<&StatsSystem::onDroneDestroyed>(this);
     game.getDispatcher().sink<events::DroneCreatedEvent>().connect<&StatsSystem::onDroneCreated>(this);
 }

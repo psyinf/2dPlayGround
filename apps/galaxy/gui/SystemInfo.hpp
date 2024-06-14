@@ -11,7 +11,8 @@ public:
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
-        auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
+        auto selected_entity =
+            getGame().getCurrentScene().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
         if (selected_entity == entt::null) { return; }
         auto&& [system, transform, faction] =
             getGame().getRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(selected_entity);

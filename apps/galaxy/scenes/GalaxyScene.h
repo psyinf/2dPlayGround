@@ -38,8 +38,8 @@ public:
         setupSelectionMarker();
         setupGalaxy();
 
-        getGame().addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
-        getGame().addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
+        addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
+        addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
 
         Scene::start();
     }
@@ -50,7 +50,7 @@ private:
     void setupKeyHandler()
     {
         auto& game = getGame();
-        game.addSingleton_as<pg::KeyStateMap&>("galaxy.keyStateMap", game.getKeyStateMap());
+        addSingleton_as<pg::KeyStateMap&>("galaxy.keyStateMap", game.getKeyStateMap());
 
         game.getKeyStateMap().registerMouseRelativeDraggedCallback([this](auto pos, auto state) {
             if (state & SDL_BUTTON_LMASK)
@@ -72,7 +72,7 @@ private:
             {
                 // fire a pick event. TODO: distinguish between drag and click
                 auto world_pos = pg::vec_cast<float>(pos);
-                auto windowRect = getGame().getSingleton<pg::game::WindowDetails>().windowRect;
+                auto windowRect = getSingleton<pg::game::WindowDetails>().windowRect;
                 auto globalTransform = getGlobalTransform();
                 world_pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
                 world_pos = (world_pos) * (1.0f / globalTransform.scale);
@@ -97,7 +97,7 @@ private:
         game.getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
             if (e.event == SDL_WINDOWEVENT_RESIZED)
             {
-                auto& windowDetails = getGame().getSingleton<pg::game::WindowDetails>();
+                auto& windowDetails = getSingleton<pg::game::WindowDetails>();
                 windowDetails.windowRect.w = e.data1;
                 windowDetails.windowRect.h = e.data2;
             }
@@ -109,23 +109,23 @@ private:
         gui = std::make_unique<pg::Gui>(getGame().getApp());
 
         // TODO: this is a hack. the addSingleton functionality should be moved to a separate interface
-        getGame().addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
+        addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
         // update events
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
-            getGame().getRegistry(),
+            getRegistry(),
             {std::make_unique<galaxy::gui::DashBoardWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
                                                     {std::make_unique<galaxy::gui::SystemInfoWidget>(getGame())});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
                                                     {std::make_unique<galaxy::gui::StatsWidget>(getGame())});
     }
 
@@ -137,7 +137,7 @@ private:
         std::normal_distribution<float> d(0.0f, 150.0f);
         std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
-        auto dot_sprite = getGame().getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
+        auto dot_sprite = getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
 
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 10000})
         {
@@ -148,7 +148,7 @@ private:
                                                galaxy::StarSystemState,
                                                galaxy::Faction,
                                                pg::game::RenderState> //
-                (getGame().getRegistry(),
+                (getRegistry(),
                  {.pos{new_pos}, .scale{new_size}, .scaleSpace{pg::TransformScaleSpace::Local}},
                  pg::game::Drawable{dot_sprite},
                  galaxy::StarSystemState{},
@@ -158,42 +158,37 @@ private:
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
         // add some background
-        auto background_sprite =
-            getGame().getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way_blurred.png");
+        auto background_sprite = getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way_blurred.png");
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
         pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState>(
-            getGame().getRegistry(),
-            {.pos{0, 0}, .scale{0.5, 0.5}},
-            pg::game::Drawable{background_sprite},
-            {std::move(states)});
+            getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite}, {std::move(states)});
 
-        getGame().addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
+        addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
     }
 
     void setupQuadtreeDebug()
     {
         CollectBoundsVisitor<pg::QuadTreeNode<entt::entity>> visitor;
         galaxyQuadtree->root->accept(visitor);
-        auto windowRect = getGame().getSingleton<pg::game::WindowDetails>().windowRect;
+        auto windowRect = getSingleton<pg::game::WindowDetails>().windowRect;
         for (const auto& box : visitor.results)
         {
-            // continue;
             auto box_prim = std::make_shared<pg::BoxPrimitive>(box, pg::Color{100, 0, 0, 50});
 
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                getGame().getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::MarkerTag>(
+                getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
     }
 
     void setupSelectionMarker()
     {
-        auto         dot_texture = getGame().getTypedResourceCache<sdl::Texture>().load("../data/reticle.png");
+        auto         dot_texture = getTypedResourceCache<sdl::Texture>().load("../data/reticle.png");
         auto         marker = std::make_shared<pg::Sprite>(dot_texture);
         entt::entity markers =
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::DebugRenderingItemTag>(
-                getGame().getRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {});
-        getGame().addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::MarkerTag>(
+                getRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {}, {});
+        addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
     }
 
 private:

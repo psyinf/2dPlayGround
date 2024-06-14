@@ -16,8 +16,8 @@ void asteroids::Player::setup()
     auto& registry = game.getRegistry();
     auto& keyStateMap = game.getKeyStateMap();
 
-    auto sprite = game.getTypedResourceCache<pg::Sprite>().load("playerShip1_blue.png");
-    auto windowDetails = game.getSingleton<pg::game::WindowDetails>();
+    auto sprite = game.getCurrentScene().getTypedResourceCache<pg::Sprite>().load("playerShip1_blue.png");
+    auto windowDetails = game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
     auto player = pg::game::makeEntity<pg::BoundingSphere, pg::game::Drawable, pg::Transform2D, asteroids::Dynamics>(
         game.getRegistry(),
         {.radius = pg::BoundingSphere::fromRectangle(sprite->getDimensions())},                               //
@@ -27,8 +27,8 @@ void asteroids::Player::setup()
 
     pg::game::addComponents<playerTag, asteroids::ActiveCollider>(game.getRegistry(), player);
 
-    game.addSingleton_as<const entt::entity>("Player", player);
-    game.addSingleton_as<pg::iVec2>("Player.sprite.size", sprite->getDimensions());
+    game.getCurrentScene().addSingleton_as<const entt::entity>("Player", player);
+    game.getCurrentScene().addSingleton_as<pg::iVec2>("Player.sprite.size", sprite->getDimensions());
 
     auto view = game.getRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
     auto entity = view.front();
@@ -45,15 +45,15 @@ void asteroids::Player::setup()
     game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, trigger, true);
 }
 
-void asteroids::Player::handle(const pg::game::FrameStamp& )
+void asteroids::Player::handle(const pg::game::FrameStamp&)
 {
-    auto playerId = game.getSingleton<const entt::entity>("Player");
+    auto playerId = game.getCurrentScene().getSingleton<const entt::entity>("Player");
 
     auto view = game.getRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
     auto entity = view.front();
     auto&& [transform, dynamics] = view.get<pg::Transform2D, asteroids::Dynamics>(entity);
 
-    const auto windowDetails = game.getSingleton<pg::game::WindowDetails>();
+    const auto windowDetails = game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
     transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, windowDetails.windowRect.w);
     transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, windowDetails.windowRect.h);
     dynamics.velocity = pg::elementWise(std::truncl, dynamics.velocity);

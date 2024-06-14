@@ -11,7 +11,7 @@ class FindNextSystem : public BehaviorActionNode
 public:
     BT::NodeStatus onStart() override
     {
-        auto& quadtree = game().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
+        auto& quadtree = game().getCurrentScene().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
         auto  view = game().getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
         auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity());
 

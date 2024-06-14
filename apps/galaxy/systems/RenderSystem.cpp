@@ -22,10 +22,10 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
     rendererStates.apply(renderer);
-    auto windowRect = game.getSingleton<pg::game::WindowDetails>().windowRect;
-    auto star_default_color = game.getSingleton<const pg::Color&>("galaxy.star.default_color");
+    auto windowRect = game.getCurrentScene().getSingleton<pg::game::WindowDetails>().windowRect;
+    auto star_default_color = game.getCurrentScene().getSingleton<const pg::Color&>("galaxy.star.default_color");
 
-    auto globalTransform = game.getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
+    auto globalTransform = game.getCurrentScene().getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
 
     // drones
     // non-debug, generic items
@@ -47,7 +47,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
         rendererStates.pop_states(renderState.states);
     }
     // debug items, TODO: check why this not drawn reliably over other items
-    if (game.getSingleton<const galaxy::config::Galaxy&>("galaxy.config").debugging.draw_debug_items)
+    if (game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config").debugging.draw_debug_items)
     {
         for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, pg::tags::DebugRenderingItemTag>(
                  entt::exclude<StarSystemState>);
@@ -72,14 +72,13 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
 void galaxy::RenderSystem::drawOverlays(sdl::Renderer&, pg::States&)
 {
     // draw overlays
-    auto& gui = game.getSingleton<pg::Gui&>("galaxy.gui");
+    auto& gui = game.getCurrentScene().getSingleton<pg::Gui&>("galaxy.gui");
     game.getRegistry().sort<pg::game::GuiDrawable>(
         [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
-    auto view = game.getRegistry().view<pg::game::GuiDrawable>();
-    for (auto& entity : view)
+
+    for (auto& entity : game.getRegistry().view<pg::game::GuiDrawable>())
     {
         auto& drawable = view.get<pg::game::GuiDrawable>(entity);
-
         drawable.prim->draw(gui);
     }
 }

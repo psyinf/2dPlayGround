@@ -34,8 +34,8 @@ public:
         // TODO: use an animation
 
         auto& transform = game.getRegistry().get<pg::Transform2D>(event.entity);
-        auto& marker_transform =
-            game.getRegistry().get<pg::Transform2D>(game.getSingleton<entt::entity>("galaxy.debug.marker"));
+        auto& marker_transform = game.getRegistry().get<pg::Transform2D>(
+            game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker"));
         marker_transform.pos = transform.pos;
     }
 
@@ -59,7 +59,7 @@ public:
     void updateStarSystems(const pg::game::FrameStamp&)
     {
         // get config from singleton
-        auto& galaxyConfig = game.getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
+        auto& galaxyConfig = game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
         auto& registry = game.getRegistry();
         auto  view = registry.view<pg::game::Drawable,

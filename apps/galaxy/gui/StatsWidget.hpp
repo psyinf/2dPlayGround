@@ -13,7 +13,7 @@ public:
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
-        auto& stats = getGame().getSingleton<const Stats&>("galaxy.stats");
+        auto& stats = getGame().getCurrentScene().getSingleton<const Stats&>("galaxy.stats");
 
         ImGui::Begin("Stats", nullptr, ImGuiWindowFlags_MenuBar);
         ImGui::Text("Stats");

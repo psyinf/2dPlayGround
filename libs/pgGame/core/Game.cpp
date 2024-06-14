@@ -76,16 +76,6 @@ void game::Game::loop()
 game::Game::Game()
 {
     createAndSwitchScene("__default__");
-
-    // TODO: we either need a global registry for this or we need to pass the registry to the systems
-    //  alternatively we have registries per scene (which would make sense for most cases)
-    //  additionally there could be an mechanism where we copy certain singleton from the "default" registry to the
-    //  scene registries
-    addSingleton<pg::TypedResourceCache<pg::Sprite>>(
-        "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-    addSingleton<pg::TypedResourceCache<sdl::Texture>>(
-        "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
-    addSingleton<WindowDetails&>(windowDetails);
 }
 
 pg::game::Scene& game::Game::getScene(std::string_view id)
@@ -99,13 +89,14 @@ void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scen
     {
         SwitchSceneId switcher(currentSceneId, std::string{id});
         scenes.emplace(std::string{id}, std::move(scene));
-
-        addSingleton<pg::TypedResourceCache<pg::Sprite>>(
+        auto scenePtr = scenes.at(std::string(id)).get();
+        scenePtr->addSingleton<pg::TypedResourceCache<pg::Sprite>>(
             "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-        addSingleton<pg::TypedResourceCache<sdl::Texture>>(
+        scenePtr->addSingleton<pg::TypedResourceCache<sdl::Texture>>(
             "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
-        addSingleton<WindowDetails&>(windowDetails);
-        addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName, getCurrentScene().getGlobalTransform());
+        scenePtr->addSingleton<WindowDetails&>(windowDetails);
+        scenePtr->addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName,
+                                                    getCurrentScene().getGlobalTransform());
     }
 }
 

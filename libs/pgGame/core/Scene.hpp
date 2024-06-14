@@ -6,13 +6,14 @@
 #include <vector>
 #include <ranges>
 #include <entt/entt.hpp>
+#include <pgGame/core/SingletonInterface.hpp>
 
 namespace pg::game {
 /**
  * A scene is basically a level or a screen in a game and is represented by a collection of entities and systems.
  * Currently the entities are stored in a shared registry and the systems are stored in a vector.
  */
-class Scene
+class Scene : public SingletonInterface
 {
     // TODO: we probably need to switch/store keystatemap, scene-transform, and modify some global singletons
 public:

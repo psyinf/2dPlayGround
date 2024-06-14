@@ -1,15 +1,10 @@
 #pragma once
 
-#include <behaviors/utils/TreeSetupHelper.hpp>
-
 #include <pgEngine/math/Transform.hpp>
 #include <components/Drone.hpp>
-#include <pgEngine/math/Vec.hpp>
-
-#include <helpers/GalaxyHelpers.hpp>
 #include <behaviors/utils/BehaviorActionNode.hpp>
-
-#include <fmt/format.h>
+#include <helpers/GalaxyHelpers.hpp>
+#include <fmt/core.h>
 
 namespace behavior {
 
@@ -33,7 +28,7 @@ public:
 
         auto&& [transform, faction] = view.get<pg::Transform2D, galaxy::Faction>(maker_entity);
 
-        auto        dot_sprite = game.getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
+        auto dot_sprite = game.getCurrentScene().getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
         const auto& drone_params = galaxy::getFactionConfig(game, faction).droneParams;
         const auto& faction_start_params = galaxy::getFactionConfig(game, faction).startParams;
         // create a drone

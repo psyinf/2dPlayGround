@@ -96,7 +96,7 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
     }
     }
 
-    auto sprite = game.getTypedResourceCache<pg::Sprite>().load(std::string(asteroidConf.resource));
+    auto sprite = game.getCurrentScene().getTypedResourceCache<pg::Sprite>().load(std::string(asteroidConf.resource));
 
     auto entity = pg::game::makeEntity<pg::game::Drawable,
                                        pg::Transform2D,

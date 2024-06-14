@@ -55,7 +55,7 @@ void asteroids::RenderSystem::handle(const pg::game::FrameStamp&)
         drawable.prim->draw(renderer, transform, {});
     }
 
-    auto renderConfig = game.getSingleton<RenderConfig>();
+    auto renderConfig = game.getCurrentScene().getSingleton<RenderConfig>();
 
     if (renderConfig.renderBroadPhaseCollisionShapes)
     {

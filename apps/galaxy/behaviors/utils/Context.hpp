@@ -3,7 +3,8 @@
 #include <behaviortree_cpp/bt_factory.h>
 #include <unordered_map>
 #include <memory>
-#include <helpers/GalaxyHelpers.hpp>
+
+#include <pgGame/core/Game.hpp>
 
 namespace behavior {
 struct Context
