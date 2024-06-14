@@ -1,7 +1,6 @@
 #include "Galaxy.hpp"
 #include <scenes/GalaxyScene.h>
-
-#include <pgEngine/core/LoadSave.hpp>
+#include <scenes/SplashScreen.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -10,8 +9,10 @@ galaxy::GalacticCore::GalacticCore()
 
 void galaxy::GalacticCore::setup()
 {
-    auto& scene = game->createAndSwitchScene<galaxy::GalaxyScene>("galaxy");
+    game->createScene<galaxy::SplashScreen>("splashScreen");
+    game->createScene<galaxy::GalaxyScene>("galaxy");
 
+    auto& scene = game->switchScene("splashScreen");
     scene.start();
 }
 

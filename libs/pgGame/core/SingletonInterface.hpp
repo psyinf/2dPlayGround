@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <string_view>
 #include <pgGame/core/ResourceCache.hpp>
+#include <spdlog/spdlog.h>
 
 namespace pg {
 
@@ -29,7 +30,8 @@ public:
     {
         if (!getRegistry().ctx().contains<Type>(entt::hashed_string{id.data()}))
         {
-            throw std::runtime_error("Singleton not found");
+            spdlog::error("Singleton '{}' not found", id);
+            throw std::runtime_error(fmt::format("Singleton '{}' not found", id));
         }
 
         return getRegistry().ctx().get<Type>(entt::hashed_string{id.data()});
