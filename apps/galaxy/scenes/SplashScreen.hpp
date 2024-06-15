@@ -2,6 +2,7 @@
 #include <pgGame/core/Scene.hpp>
 #include <pgEngine/core/Gui.hpp>
 #include <memory>
+#include <gui/SplashScreenWidget.hpp>
 
 namespace galaxy {
 
@@ -37,7 +38,7 @@ public:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getRegistry(),
-            {std::make_unique<galaxy::gui::DashBoardWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
+            {std::make_unique<galaxy::gui::SplashScreenWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
 
 private:
