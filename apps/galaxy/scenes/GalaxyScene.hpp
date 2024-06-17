@@ -102,16 +102,14 @@ private:
                 windowDetails.windowRect.h = e.data2;
             }
         };
+
+        // TODO: ESC/ESC
+        game.getKeyStateMap().registerKeyCallback(SDLK_ESCAPE, [this](auto) { getGlobalTransform() = {}; });
+        //
     }
 
     void setupOverlay()
     {
-        gui = std::make_unique<pg::Gui>(getGame().getApp());
-
-        // TODO: this is a hack. the addSingleton functionality should be moved to a separate interface
-        addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
-        // update events
-
         pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
@@ -192,8 +190,6 @@ private:
     }
 
 private:
-    std::unique_ptr<pg::Gui> gui;
-
     std::unique_ptr<pg::Quadtree<entt::entity>> galaxyQuadtree;
     config::Galaxy                              galaxyConfig;
     bool                                        isDragging{};

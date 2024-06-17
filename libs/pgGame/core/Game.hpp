@@ -20,6 +20,11 @@
 
 namespace pg::game {
 
+namespace events {
+
+struct SwitchSceneEvent;
+}
+
 class Game
 {
 public:
@@ -31,17 +36,16 @@ private:
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
-    pg::SDLApp        sdlApp{windowConfig};
-    pg::KeyStateMap   keyStateMap{sdlApp.getEventHandler()};
-    pg::ResourceCache resourceCache{"../data/"}; // TODO: from config
+    pg::SDLApp               sdlApp{windowConfig};
+    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
+    pg::ResourceCache        resourceCache{"../data/"}; // TODO: from config
+    std::unique_ptr<pg::Gui> gui;
 
     entt::dispatcher dispatcher;
 
     Scenes scenes;
 
-    void frame(FrameStamp frameStamp);
-
-    std::string currentSceneId = "__default__";
+    std::string currentSceneId{"__default__"};
 
 public:
     Game();
@@ -51,6 +55,8 @@ public:
     entt::dispatcher& getDispatcher();
 
     pg::SDLApp& getApp();
+
+    pg::Gui& getGui();
 
     pg::KeyStateMap& getKeyStateMap();
 
@@ -64,7 +70,7 @@ public:
     //         if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
     //         createScene(id, std::make_unique<Type>(*this, std::forward<Args>(args)...));
     //     }
-
+    // TODO: scene management interace?
     template <typename Type = pg::game::Scene>
     void createScene(std::string_view id)
     {
@@ -81,7 +87,7 @@ public:
     template <typename Type = pg::game::Scene, typename... Args>
     Scene& createAndSwitchScene(std::string_view id, Args&&... args)
     {
-        // compile time switch for emtpy args
+        // compile time switch for empty args
         if constexpr (sizeof...(Args) == 0) { createScene<Type>(id); }
         // else { createScene<Type>(id, std::forward<Args>(args)...); }
         return switchScene(id);
@@ -90,6 +96,10 @@ public:
     void loop();
 
 private:
+    void frame(FrameStamp frameStamp);
+
+    void handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse);
+
     void createScene(std::string_view id, std::unique_ptr<Scene>&& scene);
 };
 } // namespace pg::game

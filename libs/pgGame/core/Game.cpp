@@ -2,7 +2,8 @@
 #include "FrameStamp.hpp"
 #include <components/WindowDetails.hpp>
 #include <systems/SystemInterface.hpp>
-
+#include <core/GameExceptions.hpp>
+#include <events/SceneManagementEvents.hpp>
 #include <ranges>
 
 using namespace pg;
@@ -23,8 +24,19 @@ struct SwitchSceneId
     T& value_holder;
 };
 
+game::Game::Game()
+{
+    gui = std::make_unique<pg::Gui>(getApp());
+    // register event handlers
+    dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&game::Game::handleSceneSwitchEvent>(*this);
+
+    createAndSwitchScene("__default__");
+}
+
 void game::Game::frame(FrameStamp frameStamp)
 {
+    // dispatcher update
+    dispatcher.update();
     // check preconditions
     if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
     // poll all events
@@ -73,11 +85,6 @@ void game::Game::loop()
     }
 }
 
-game::Game::Game()
-{
-    createAndSwitchScene("__default__");
-}
-
 pg::game::Scene& game::Game::getScene(std::string_view id)
 {
     return *scenes.at(std::string(id));
@@ -102,10 +109,37 @@ void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scen
 
 pg::game::Scene& game::Game::switchScene(std::string_view id)
 {
-    auto scene = scenes.at(std::string(id)).get();
-    currentSceneId = id;
-    // setup systems
-    // TODO: only first time?
+    try
+    {
+        auto scene = scenes.at(std::string(id)).get();
+        currentSceneId = id;
+        return *scene;
+    }
 
-    return *scene;
+    catch (std::out_of_range& e)
+    {
+        spdlog::error(fmt::format("Cannot switch scene to {}, not found: {}", id, e.what()));
+        throw e;
+    }
+}
+
+void game::Game::handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse)
+{
+    // TODO: callbacks?
+    try
+    {
+        switchScene(sse.new_scene);
+        auto& scene = getCurrentScene();
+        if (!scene.started()) { scene.start(); }
+    }
+    catch (pg::game::ResourceNotFoundException&)
+    {
+        spdlog::error("Scene not found: {}", sse.new_scene);
+        // TODO: error event?
+    }
+}
+
+pg::Gui& game::Game::getGui()
+{
+    return *gui;
 }

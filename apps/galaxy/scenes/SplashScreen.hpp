@@ -24,10 +24,6 @@ public:
 
     void setupOverlay()
     {
-        gui = std::make_unique<pg::Gui>(getGame().getApp());
-
-        // TODO: this is a hack. the addSingleton functionality should be moved to a separate interface
-        addSingleton_as<pg::Gui&>("galaxy.gui", *gui);
         // update events
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
@@ -42,6 +38,5 @@ public:
     }
 
 private:
-    std::unique_ptr<pg::Gui> gui;
 };
 } // namespace galaxy

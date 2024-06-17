@@ -74,8 +74,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
 
 void galaxy::RenderSystem::drawOverlays(sdl::Renderer&, pg::States&)
 {
-    // draw overlays
-    auto& gui = game.getCurrentScene().getSingleton<pg::Gui&>("galaxy.gui");
+    auto& gui = game.getGui();
     game.getRegistry().sort<pg::game::GuiDrawable>(
         [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
     auto view = game.getRegistry().view<pg::game::GuiDrawable>();

@@ -1,5 +1,5 @@
 #include "Galaxy.hpp"
-#include <scenes/GalaxyScene.h>
+#include <scenes/GalaxyScene.hpp>
 #include <scenes/SplashScreen.hpp>
 
 galaxy::GalacticCore::GalacticCore()

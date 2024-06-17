@@ -20,10 +20,7 @@ public:
     static auto constexpr GlobalTransformName = "Scene.globalTransform";
     using Systems = std::vector<std::shared_ptr<SystemInterface>>;
 
-    Scene(Game& game)
-      : game_(game)
-    {
-    }
+    Scene(Game& game);
 
     virtual ~Scene() = default;
 
@@ -35,24 +32,24 @@ public:
 
     Transform2D& getGlobalTransform() { return globalTransform; }
 
-    void frame(FrameStamp frameStamp);
-
     entt::registry& getRegistry() { return registry; }
 
     pg::game::Game& getGame() { return game_; }
 
-    virtual void start()
-    {
-        std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
-    }
+    virtual void start();
 
     virtual void stop() {}
+
+    void frame(const FrameStamp& frameStamp);
+
+    bool started() const { return started_; }
 
 private:
     Game&       game_;
     Systems     systems_;
     Transform2D globalTransform;
-    // States         globalState;
+    bool        started_{false};
+
     entt::registry registry;
 };
 

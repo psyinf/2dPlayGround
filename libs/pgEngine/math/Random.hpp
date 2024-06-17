@@ -7,7 +7,7 @@
 
 namespace pg {
 
-static pg::fVec2 getRandomVector()
+inline pg::fVec2 getRandomVector()
 {
     static std::random_device                    rd;
     static std::mt19937                          gen(rd());
@@ -17,7 +17,7 @@ static pg::fVec2 getRandomVector()
 }
 
 template <typename T>
-static T randomBetween(T min, T max)
+inline T randomBetween(T min, T max)
 {
     if constexpr (std::is_floating_point<T>::value)
     {

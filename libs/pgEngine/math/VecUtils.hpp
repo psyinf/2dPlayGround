@@ -21,7 +21,7 @@ constexpr Vec<Type, 2> startFromRect(const SDL_Rect& rect)
 }
 
 // Function to split a vector into fragments that sum up to the original vector
-static std::vector<pg::fVec2> splitVector(const pg::fVec2& original, int numFragments)
+inline std::vector<pg::fVec2> splitVector(const pg::fVec2& original, int numFragments)
 {
     std::vector<pg::fVec2> fragments;
     auto                   scale = pg::length(original);

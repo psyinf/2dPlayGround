@@ -47,14 +47,14 @@ void asteroids::Player::setup()
 
 void asteroids::Player::handle(const pg::game::FrameStamp&)
 {
-    auto playerId = game.getCurrentScene().getSingleton<const entt::entity>("Player");
-
     auto view = game.getRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
     auto entity = view.front();
     auto&& [transform, dynamics] = view.get<pg::Transform2D, asteroids::Dynamics>(entity);
 
     const auto windowDetails = game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
-    transform.pos[0] = std::clamp(static_cast<int>(transform.pos[0]), 0, windowDetails.windowRect.w);
-    transform.pos[1] = std::clamp(static_cast<int>(transform.pos[1]), 0, windowDetails.windowRect.h);
-    dynamics.velocity = pg::elementWise(std::truncl, dynamics.velocity);
+    transform.pos[0] =
+        static_cast<float>(std::clamp(static_cast<int>(transform.pos[0]), 0, windowDetails.windowRect.w));
+    transform.pos[1] =
+        static_cast<float>(std::clamp(static_cast<int>(transform.pos[1]), 0, windowDetails.windowRect.h));
+    dynamics.velocity = pg::elementWise(std::truncf, dynamics.velocity);
 }
