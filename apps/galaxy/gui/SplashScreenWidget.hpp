@@ -7,18 +7,6 @@ namespace galaxy::gui {
 
 class SplashScreenWidget : public galaxy::gui::GameGuiWidget
 {
-    bool ImageButtonWithText(ImTextureID texture, const std::string& text, ImVec2 pos, ImVec2 dims)
-    {
-        ImGui::SetCursorPos(pos);
-        bool clicked = ImGui::ImageButton(
-            ("Button_" + text).c_str(), texture, dims, {0, 0}, {1, 1}, ImVec4{0, 0, 0, 1.0}, ImVec4{1, 1, 1, 1});
-        ImVec2 text_size = ImGui::CalcTextSize(text.c_str());
-        ImGui::SetCursorPos({pos.x + (dims.x - text_size.x) * 0.5f, pos.y + (dims.y - text_size.y) * 0.5f});
-
-        // ImGui::TextColored(ImVec4{0, 0, 0, 1}, text.c_str());
-        return clicked;
-    }
-
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
@@ -48,24 +36,35 @@ public:
         }
 
         bool open = false;
-        ImGui::Begin("Welcome", &open, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration);
+        ImGui::Begin(
+            "Welcome", &open, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
         ImGui::SetWindowPos(ImVec2(0, 0));
         // limit window size according to aspect ratio
-
         if (window_size.x / window_size.y > aspect_ratio)
         {
             ImGui::SetWindowSize(ImVec2(window_size.y * aspect_ratio, window_size.y));
         }
-        else { ImGui::SetWindowSize(ImVec2(window_size.x, window_size.x / aspect_ratio)); }
+        else { ImGui::SetWindowSize(ImVec2(window_size.x, 100 + window_size.x / aspect_ratio)); }
+
+        // center vertically
+        ImGui::SetCursorPos(ImVec2(0, 50));
         // background sprite
-
         ImGui::Image((void*)dot_texture.get()->get(), ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
-        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
-        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.9f);
-        ImGui::PushStyleColor(ImGuiCol_Button, {1, 0, 0, 1});
+        // TODO: style from config
 
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
+
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.9f);
+        ImGui::PushStyleColor(ImGuiCol_Border, {0.8, 0.6, 0, 1});
+        ImGui::PushStyleColor(ImGuiCol_BorderShadow, {0.6, 0.4, 0, 1});
+
+        ImGui::PushStyleColor(ImGuiCol_Button, {0, 0.1, 0.2, 1});
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0, 0.2, 0.3, 1});
+        // button text color orange
+        ImGui::PushStyleColor(ImGuiCol_Text, {1.0, 0.7, 0.0, 1});
         // centered frame
-        ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 2 - 100, ImGui::GetWindowSize().y / 2 - 50));
+        ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 20, ImGui::GetWindowSize().y / 6));
         ImGui::BeginGroup();
 
         // buttons
@@ -75,11 +74,14 @@ public:
             getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>("galaxy");
         }
         ImGui::Button("Options", ImVec2(200, 50));
+        ImGui::Button("Help", ImVec2(200, 50));
+        ImGui::Dummy(ImVec2(0.0f, 100));
+        ImGui::Button("About", ImVec2(200, 50));
 
         ImGui::End();
         ImGui::EndGroup();
-        ImGui::PopStyleVar(2);
-        ImGui::PopStyleColor();
+        ImGui::PopStyleVar(3);
+        ImGui::PopStyleColor(5);
     }
 };
 
