@@ -10,6 +10,8 @@ class SplashScreenWidget : public galaxy::gui::GameGuiWidget
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
+    static constexpr auto lineColor = ImU32{IM_COL32(255, 0.7 * 255, 0 * 255, 128)};
+
     void menuButton(const ImVec2& anchor, const std::string& name, std::function<void()> func = {})
     {
         auto current = ImGui::GetCursorPos();
@@ -18,7 +20,7 @@ public:
         auto off_size_y = 30;
 
         auto off_anchor = ImVec2(anchor.x + off_size_x, anchor.y);
-        ImGui::GetWindowDrawList()->AddLine(anchor, off_anchor, IM_COL32(255, 255, 255, 255), 2.0f);
+        ImGui::GetWindowDrawList()->AddLine(anchor, off_anchor, lineColor, 2.0f);
         // TODO: offsets as percentage of window size
         auto res = ImGui::Button(name.c_str(), ImVec2(200, 50));
         std::cout << ImGui::GetCursorPosX() << std::endl;
@@ -27,13 +29,13 @@ public:
         ImGui::GetWindowDrawList()->AddLine(
             off_anchor,
             ImVec2(ImGui::GetCursorPosX() - off_size_x, ImGui::GetCursorPosY() - off_size_y),
-            IM_COL32(255, 255, 255, 255),
+            lineColor,
             2.0f);
 
         ImGui::GetWindowDrawList()->AddLine(
             ImVec2(ImGui::GetCursorPosX() - off_size_x, ImGui::GetCursorPosY() - off_size_y),
             ImVec2(ImGui::GetCursorPosX(), ImGui::GetCursorPosY() - off_size_y),
-            IM_COL32(255, 255, 255, 255),
+            lineColor,
             2.0f);
 
         std::cout << ImGui::GetCursorPosX() << std::endl;
@@ -115,7 +117,7 @@ public:
         {
             ImGui::SetCursorPos(ImVec2(400, 50));
             ;
-            menuButton(current, "knallo", [this]() { options = false; });
+            menuButton(current, "Close ", [this]() { options = false; });
         }
 
         ImGui::End();
