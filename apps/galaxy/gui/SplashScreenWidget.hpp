@@ -10,32 +10,38 @@ class SplashScreenWidget : public galaxy::gui::GameGuiWidget
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
-    bool menuButton(const ImVec2& anchor, const std::string& name)
+    void menuButton(const ImVec2& anchor, const std::string& name, std::function<void()> func = {})
     {
-        //TODO: offsets as percentage of window size
+        auto current = ImGui::GetCursorPos();
+        // std::cout << ImGui::GetCursorPosX() << std::endl;
+        auto off_size_x = 25;
+        auto off_size_y = 30;
+
+        auto off_anchor = ImVec2(anchor.x + off_size_x, anchor.y);
+        ImGui::GetWindowDrawList()->AddLine(anchor, off_anchor, IM_COL32(255, 255, 255, 255), 2.0f);
+        // TODO: offsets as percentage of window size
         auto res = ImGui::Button(name.c_str(), ImVec2(200, 50));
-        ImGui::GetWindowDrawList()->AddLine(anchor,
-                                            ImVec2(ImGui::GetCursorPosX() - 25, ImGui::GetCursorPosY() - 25),
-                                            IM_COL32(255, 255, 255, 255),
-                                            2.0f);
+        std::cout << ImGui::GetCursorPosX() << std::endl;
+        // restore cursor position
+        ImGui::SetCursorPos(ImVec2(current.x, ImGui::GetCursorPosY()));
+        ImGui::GetWindowDrawList()->AddLine(
+            off_anchor,
+            ImVec2(ImGui::GetCursorPosX() - off_size_x, ImGui::GetCursorPosY() - off_size_y),
+            IM_COL32(255, 255, 255, 255),
+            2.0f);
 
         ImGui::GetWindowDrawList()->AddLine(
-            ImVec2(ImGui::GetCursorPosX() - 25, ImGui::GetCursorPosY() - 25), ImVec2(ImGui::GetCursorPosX(), ImGui::GetCursorPosY() - 25), IM_COL32(255, 255, 255, 255), 2.0f);
+            ImVec2(ImGui::GetCursorPosX() - off_size_x, ImGui::GetCursorPosY() - off_size_y),
+            ImVec2(ImGui::GetCursorPosX(), ImGui::GetCursorPosY() - off_size_y),
+            IM_COL32(255, 255, 255, 255),
+            2.0f);
 
-        return res;
+        std::cout << ImGui::GetCursorPosX() << std::endl;
+        if (res && func) { func(); }
     }
 
-    void draw([[maybe_unused]] pg::Gui& gui) override
+    void fitToScreen(int& size_x, int& size_y)
     {
-        auto dot_texture =
-            getGame().getCurrentScene().getTypedResourceCache<sdl::Texture>().load("../data/background/splash1.png");
-        auto button_texture =
-            getGame().getCurrentScene().getTypedResourceCache<sdl::Texture>().load("../data/UI/frame.png");
-
-        int size_x, size_y;
-        dot_texture->query(nullptr, nullptr, &size_x, &size_y);
-
-        // stretch or squeeze the image to fit the screen
         auto window_size = ImGui::GetIO().DisplaySize;
 
         float aspect_ratio = static_cast<float>(size_x) / static_cast<float>(size_y);
@@ -49,17 +55,24 @@ public:
             size_y = window_size.x / aspect_ratio;
             size_x = window_size.x;
         }
+    }
+
+    void draw([[maybe_unused]] pg::Gui& gui) override
+    {
+        auto dot_texture =
+            getGame().getCurrentScene().getTypedResourceCache<sdl::Texture>().load("../data/background/splash1.png");
+        auto button_texture =
+            getGame().getCurrentScene().getTypedResourceCache<sdl::Texture>().load("../data/UI/frame.png");
+
+        int size_x, size_y;
+        dot_texture->query(nullptr, nullptr, &size_x, &size_y);
+        // stretch or squeeze the image to fit the screen
+        fitToScreen(size_x, size_y);
 
         bool open = false;
         ImGui::Begin(
             "Welcome", &open, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
         ImGui::SetWindowPos(ImVec2(0, 0));
-        // limit window size according to aspect ratio
-        if (window_size.x / window_size.y > aspect_ratio)
-        {
-            ImGui::SetWindowSize(ImVec2(window_size.y * aspect_ratio, window_size.y));
-        }
-        else { ImGui::SetWindowSize(ImVec2(window_size.x, 100 + window_size.x / aspect_ratio)); }
 
         // center vertically
         ImGui::SetCursorPos(ImVec2(0, 50));
@@ -85,22 +98,33 @@ public:
         // buttons
         // draw a line to the left of the buttons from 0,middle of the screen
         auto anchor = ImVec2(0, ImGui::GetWindowSize().y / 2);
-        if (menuButton(anchor, "Start"))
-        {
+        menuButton(anchor, "Start", [this]() {
             getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>("galaxy");
-        }
-
-        menuButton(anchor, "Options");
+        });
+        auto current = ImGui::GetCursorPos();
+        // add size of button
+        current.x += 200;
+        current.y += 25;
+        menuButton(anchor, "Options", [this]() { options = true; });
         menuButton(anchor, "Help");
         ImGui::Dummy(ImVec2(0.0f, 100));
 
         menuButton(anchor, "About");
+        ImGui::EndGroup();
+        if (options)
+        {
+            ImGui::SetCursorPos(ImVec2(400, 50));
+            ;
+            menuButton(current, "knallo", [this]() { options = false; });
+        }
 
         ImGui::End();
-        ImGui::EndGroup();
+
         ImGui::PopStyleVar(3);
         ImGui::PopStyleColor(5);
     }
+
+    bool options{};
 };
 
 } // namespace galaxy::gui
