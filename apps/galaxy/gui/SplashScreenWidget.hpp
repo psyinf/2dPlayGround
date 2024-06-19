@@ -10,6 +10,21 @@ class SplashScreenWidget : public galaxy::gui::GameGuiWidget
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
+    bool menuButton(const ImVec2& anchor, const std::string& name)
+    {
+        //TODO: offsets as percentage of window size
+        auto res = ImGui::Button(name.c_str(), ImVec2(200, 50));
+        ImGui::GetWindowDrawList()->AddLine(anchor,
+                                            ImVec2(ImGui::GetCursorPosX() - 25, ImGui::GetCursorPosY() - 25),
+                                            IM_COL32(255, 255, 255, 255),
+                                            2.0f);
+
+        ImGui::GetWindowDrawList()->AddLine(
+            ImVec2(ImGui::GetCursorPosX() - 25, ImGui::GetCursorPosY() - 25), ImVec2(ImGui::GetCursorPosX(), ImGui::GetCursorPosY() - 25), IM_COL32(255, 255, 255, 255), 2.0f);
+
+        return res;
+    }
+
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
         auto dot_texture =
@@ -68,15 +83,18 @@ public:
         ImGui::BeginGroup();
 
         // buttons
-
-        if (ImGui::Button("Start", ImVec2(200, 50)))
+        // draw a line to the left of the buttons from 0,middle of the screen
+        auto anchor = ImVec2(0, ImGui::GetWindowSize().y / 2);
+        if (menuButton(anchor, "Start"))
         {
             getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>("galaxy");
         }
-        ImGui::Button("Options", ImVec2(200, 50));
-        ImGui::Button("Help", ImVec2(200, 50));
+
+        menuButton(anchor, "Options");
+        menuButton(anchor, "Help");
         ImGui::Dummy(ImVec2(0.0f, 100));
-        ImGui::Button("About", ImVec2(200, 50));
+
+        menuButton(anchor, "About");
 
         ImGui::End();
         ImGui::EndGroup();
