@@ -1,6 +1,7 @@
 #pragma once
 #include <gui/GameGuiWidget.hpp>
 #include <pgGame/events/SceneManagementEvents.hpp>
+#include <pgGame/events/GameEvents.hpp>
 #include <imgui.h>
 
 namespace galaxy::gui {
@@ -23,7 +24,6 @@ public:
         ImGui::GetWindowDrawList()->AddLine(anchor, off_anchor, lineColor, 2.0f);
         // TODO: offsets as percentage of window size
         auto res = ImGui::Button(name.c_str(), ImVec2(200, 50));
-        std::cout << ImGui::GetCursorPosX() << std::endl;
         // restore cursor position
         ImGui::SetCursorPos(ImVec2(current.x, ImGui::GetCursorPosY()));
         ImGui::GetWindowDrawList()->AddLine(
@@ -38,7 +38,6 @@ public:
             lineColor,
             2.0f);
 
-        std::cout << ImGui::GetCursorPosX() << std::endl;
         if (res && func) { func(); }
     }
 
@@ -112,11 +111,13 @@ public:
         ImGui::Dummy(ImVec2(0.0f, 100));
 
         menuButton(anchor, "About");
+        menuButton(anchor, "Quit", [this]() { getGame().getDispatcher().enqueue<pg::game::events::QuitEvent>(); });
+
         ImGui::EndGroup();
         if (options)
         {
             ImGui::SetCursorPos(ImVec2(400, 50));
-            ;
+
             menuButton(current, "Close ", [this]() { options = false; });
         }
 

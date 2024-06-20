@@ -25,6 +25,19 @@ namespace events {
 struct SwitchSceneEvent;
 }
 
+class GamePimpl
+{
+public:
+    virtual ~GamePimpl() = default;
+
+    GamePimpl(Game& game)
+      : game(game)
+    {
+    }
+
+    Game& game;
+};
+
 class Game
 {
 public:
@@ -95,11 +108,15 @@ public:
 
     void loop();
 
+    void quit();
+
 private:
     void frame(FrameStamp frameStamp);
 
-    void handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse);
-
     void createScene(std::string_view id, std::unique_ptr<Scene>&& scene);
+
+    bool running{true};
+
+    std::unique_ptr<GamePimpl> pimpl;
 };
 } // namespace pg::game

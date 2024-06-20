@@ -4,32 +4,59 @@
 #include <systems/SystemInterface.hpp>
 #include <core/GameExceptions.hpp>
 #include <events/SceneManagementEvents.hpp>
+#include <events/GameEvents.hpp>
 #include <ranges>
 
 using namespace pg;
 
 template <typename T>
-struct SwitchSceneId
+struct ScopedSwitchSceneId
 {
-    SwitchSceneId(T& holder, T value)
+    ScopedSwitchSceneId(T& holder, T value)
       : value_holder(holder)
       , previous_value(holder)
     {
         value_holder = value;
     }
 
-    ~SwitchSceneId() { value_holder = previous_value; }
+    ~ScopedSwitchSceneId() { value_holder = previous_value; }
 
     T  previous_value;
     T& value_holder;
 };
 
+class Pimpl : public pg::game::GamePimpl
+{
+public:
+    using pg::game::GamePimpl::GamePimpl;
+
+    void handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse)
+    {
+        // TODO: callbacks?
+        try
+        {
+            game.switchScene(sse.new_scene);
+            auto& scene = game.getCurrentScene();
+            if (!scene.started()) { scene.start(); }
+        }
+        catch (pg::game::ResourceNotFoundException&)
+        {
+            spdlog::error("Scene not found: {}", sse.new_scene);
+            // TODO: error event?
+        }
+    }
+
+    void handleQuitEvent(const pg::game::events::QuitEvent&) { game.quit(); }
+};
+
 game::Game::Game()
+  : pimpl(std::make_unique<Pimpl>(*this))
 {
     gui = std::make_unique<pg::Gui>(getApp());
     // register event handlers
-    dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&game::Game::handleSceneSwitchEvent>(*this);
-
+    dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&Pimpl::handleSceneSwitchEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
+    dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*pimpl));
     createAndSwitchScene("__default__");
 }
 
@@ -74,11 +101,10 @@ pg::ResourceCache& game::Game::getResourceCache()
 
 void game::Game::loop()
 {
-    bool done{};
-    sdlApp.getEventHandler().quit = [&done](auto) { done = true; };
+    sdlApp.getEventHandler().quit = [this](auto) { running = false; };
 
     uint64_t frameNumber{};
-    while (!done)
+    while (running)
     {
         frame({frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
         sdlApp.getFPSCounter().frame();
@@ -94,7 +120,7 @@ void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scen
 {
     // internal switch of scene for setup
     {
-        SwitchSceneId switcher(currentSceneId, std::string{id});
+        ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
         scenes.emplace(std::string{id}, std::move(scene));
         auto scenePtr = scenes.at(std::string(id)).get();
         scenePtr->addSingleton<pg::TypedResourceCache<pg::Sprite>>(
@@ -123,23 +149,12 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
     }
 }
 
-void game::Game::handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse)
-{
-    // TODO: callbacks?
-    try
-    {
-        switchScene(sse.new_scene);
-        auto& scene = getCurrentScene();
-        if (!scene.started()) { scene.start(); }
-    }
-    catch (pg::game::ResourceNotFoundException&)
-    {
-        spdlog::error("Scene not found: {}", sse.new_scene);
-        // TODO: error event?
-    }
-}
-
 pg::Gui& game::Game::getGui()
 {
     return *gui;
+}
+
+void game::Game::quit()
+{
+    running = false;
 }
