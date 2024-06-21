@@ -78,6 +78,26 @@ public:
         }
     }
 
+    // enforce minimum size, honoring aspect ratio, cutting off the image if necessary
+    // return a vector to be used by ImGui::SetCursorPos to center the image, cutting off left/right or top/bottom
+    ImVec2 enforceMinimumSize(int& size_x, int& size_y, int min_x, int min_y)
+    {
+        float aspect_ratio = static_cast<float>(size_x) / static_cast<float>(size_y);
+        auto  window_size = ImGui::GetIO().DisplaySize;
+        if (size_x < min_x)
+        {
+            size_x = min_x;
+            size_y = static_cast<int>(size_x / aspect_ratio);
+        }
+        if (size_y < min_y)
+        {
+            size_y = min_y;
+            size_x = static_cast<int>(size_y * aspect_ratio);
+        }
+
+        return ImVec2((window_size.x - size_x) / 2, (window_size.y - size_y) / 2);
+    }
+
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
         auto dot_texture =
@@ -89,14 +109,16 @@ public:
         dot_texture->query(nullptr, nullptr, &size_x, &size_y);
         // stretch or squeeze the image to fit the screen
         fitToScreen(size_x, size_y);
-
+        auto centering = enforceMinimumSize(size_x, size_y, 0, 600);
         bool open = false;
-        ImGui::Begin(
-            "Welcome", &open, ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove);
+        ImGui::Begin("Welcome",
+                     &open,
+                     ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
+                         ImGuiWindowFlags_NoScrollWithMouse);
         ImGui::SetWindowPos(ImVec2(0, 0));
-
+        ImGui::SetWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y));
         // center vertically
-        ImGui::SetCursorPos(ImVec2(0, 50));
+        ImGui::SetCursorPos(ImVec2(centering.x, (ImGui::GetIO().DisplaySize.y * 0.5) - (size_y * 0.5)));
         // background sprite
         ImGui::Image((void*)dot_texture.get()->get(), ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
         // TODO: style from config
@@ -113,14 +135,14 @@ public:
         // button text color orange
         ImGui::PushStyleColor(ImGuiCol_Text, {1.0f, 0.7f, 0.0f, 1});
         // centered frame
-        ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 20, ImGui::GetWindowSize().y / 6));
+        ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 10, ImGui::GetWindowSize().y / 6));
         ImGui::BeginGroup();
 
         // buttons
         // draw a line to the left of the buttons from 0,middle of the screen
         auto anchor = ImVec2(0, ImGui::GetWindowSize().y / 2);
         menuButton(anchor, "Start", [this]() {
-            getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>("galaxy");
+            getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
         });
         auto options_anchor = ImVec2(ImGui::GetCursorPosX() + 200, ImGui::GetCursorPosY() + 50);
         // add size of button
@@ -133,7 +155,7 @@ public:
 
         menuButton(anchor, "About", [this]() { active_menu = "about"; });
         menuButton(anchor, "Quit", [this]() { getGame().getDispatcher().enqueue<pg::game::events::QuitEvent>(); });
-
+        ImGui::Dummy(ImVec2(0.0f, 0));
         ImGui::EndGroup();
         if (active_menu == "options")
         {
@@ -152,15 +174,17 @@ public:
         else if (active_menu == "about")
         {
             ImGui::SetCursorPos(ImVec2(300, 50));
-            ImGui::BeginPopup("About");
-            ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
-            ImGui::EndPopup();
+            ImGui::OpenPopup("About");
+            if (ImGui::BeginPopup("About", {}))
+            {
+                ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
+                ImGui::EndPopup();
+            }
+            else { active_menu = {}; }
         }
-
-        ImGui::End();
-
         ImGui::PopStyleVar(3);
         ImGui::PopStyleColor(5);
+        ImGui::End();
     }
 
     std::string active_menu{};
