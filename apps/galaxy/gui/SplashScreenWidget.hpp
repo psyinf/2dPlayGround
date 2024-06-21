@@ -5,6 +5,24 @@
 #include <imgui.h>
 
 namespace galaxy::gui {
+class GuiPosStack
+{
+public:
+    GuiPosStack() = default;
+
+    void push() { stack.push_back(ImGui::GetCursorPos()); }
+
+    void pop()
+    {
+        ImGui::SetCursorPos(top());
+        stack.pop_back();
+    }
+
+    ImVec2 top() const { return stack.back(); }
+
+private:
+    std::vector<ImVec2> stack;
+};
 
 class SplashScreenWidget : public galaxy::gui::GameGuiWidget
 {
@@ -15,7 +33,8 @@ public:
 
     void menuButton(const ImVec2& anchor, const std::string& name, std::function<void()> func = {})
     {
-        auto current = ImGui::GetCursorPos();
+        GuiPosStack stack;
+        auto        current = ImGui::GetCursorPos();
         // std::cout << ImGui::GetCursorPosX() << std::endl;
         auto off_size_x = 25;
         auto off_size_y = 30;
@@ -23,6 +42,7 @@ public:
         auto off_anchor = ImVec2(anchor.x + off_size_x, anchor.y);
         ImGui::GetWindowDrawList()->AddLine(anchor, off_anchor, lineColor, 2.0f);
         // TODO: offsets as percentage of window size
+
         auto res = ImGui::Button(name.c_str(), ImVec2(200, 50));
         // restore cursor position
         ImGui::SetCursorPos(ImVec2(current.x, ImGui::GetCursorPosY()));
@@ -48,13 +68,13 @@ public:
         float aspect_ratio = static_cast<float>(size_x) / static_cast<float>(size_y);
         if (window_size.x / window_size.y >= aspect_ratio)
         {
-            size_x = window_size.y * aspect_ratio;
-            size_y = window_size.y;
+            size_x = static_cast<int>(window_size.y * aspect_ratio);
+            size_y = static_cast<int>(window_size.y);
         }
         else
         {
-            size_y = window_size.x / aspect_ratio;
-            size_x = window_size.x;
+            size_y = static_cast<int>(window_size.x / aspect_ratio);
+            size_x = static_cast<int>(window_size.x);
         }
     }
 
@@ -85,13 +105,13 @@ public:
         ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
 
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.9f);
-        ImGui::PushStyleColor(ImGuiCol_Border, {0.8, 0.6, 0, 1});
-        ImGui::PushStyleColor(ImGuiCol_BorderShadow, {0.6, 0.4, 0, 1});
+        ImGui::PushStyleColor(ImGuiCol_Border, {0.8f, 0.6f, 0, 1});
+        ImGui::PushStyleColor(ImGuiCol_BorderShadow, {0.6f, 0.4f, 0, 1});
 
-        ImGui::PushStyleColor(ImGuiCol_Button, {0, 0.1, 0.2, 1});
-        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0, 0.2, 0.3, 1});
+        ImGui::PushStyleColor(ImGuiCol_Button, {0, 0.1f, 0.2f, 1});
+        ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0, 0.2f, 0.3f, 1});
         // button text color orange
-        ImGui::PushStyleColor(ImGuiCol_Text, {1.0, 0.7, 0.0, 1});
+        ImGui::PushStyleColor(ImGuiCol_Text, {1.0f, 0.7f, 0.0f, 1});
         // centered frame
         ImGui::SetCursorPos(ImVec2(ImGui::GetWindowSize().x / 20, ImGui::GetWindowSize().y / 6));
         ImGui::BeginGroup();
@@ -102,23 +122,39 @@ public:
         menuButton(anchor, "Start", [this]() {
             getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>("galaxy");
         });
-        auto current = ImGui::GetCursorPos();
+        auto options_anchor = ImVec2(ImGui::GetCursorPosX() + 200, ImGui::GetCursorPosY() + 50);
         // add size of button
-        current.x += 200;
-        current.y += 25;
-        menuButton(anchor, "Options", [this]() { options = true; });
+
+        menuButton(anchor, "Options", [this]() { active_menu = "options"; });
+
         menuButton(anchor, "Help");
+
         ImGui::Dummy(ImVec2(0.0f, 100));
 
-        menuButton(anchor, "About");
+        menuButton(anchor, "About", [this]() { active_menu = "about"; });
         menuButton(anchor, "Quit", [this]() { getGame().getDispatcher().enqueue<pg::game::events::QuitEvent>(); });
 
         ImGui::EndGroup();
-        if (options)
+        if (active_menu == "options")
         {
+            if (0)
+            {
+                ImGui::SetCursorPos(ImVec2(300, 50));
+                ImGui::BeginChild("Options", ImVec2(350, 400), true);
+
+                ImGui::EndChild();
+            }
             ImGui::SetCursorPos(ImVec2(400, 50));
 
-            menuButton(current, "Close ", [this]() { options = false; });
+            menuButton(options_anchor, "Close ", [this]() { active_menu = {}; });
+        }
+
+        else if (active_menu == "about")
+        {
+            ImGui::SetCursorPos(ImVec2(300, 50));
+            ImGui::BeginPopup("About");
+            ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
+            ImGui::EndPopup();
         }
 
         ImGui::End();
@@ -127,7 +163,7 @@ public:
         ImGui::PopStyleColor(5);
     }
 
-    bool options{};
+    std::string active_menu{};
 };
 
 } // namespace galaxy::gui
