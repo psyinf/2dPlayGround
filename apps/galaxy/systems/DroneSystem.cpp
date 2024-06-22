@@ -30,7 +30,7 @@ void galaxy::DroneSystem::setup()
     game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
         *this);
     auto& factory = ctx->factory();
-    factory.registerSimpleCondition("CheckForDamage", [&](BT::TreeNode& node) { return BT::NodeStatus::SUCCESS; });
+    factory.registerSimpleCondition("CheckForDamage", [&](BT::TreeNode&) { return BT::NodeStatus::SUCCESS; });
     factory.registerNodeType<behavior::FindNextSystem>("FindNextSystem", ctx);
     factory.registerNodeType<behavior::Travel>("Travel", ctx);
     factory.registerNodeType<behavior::GetTargetsAvailable>("GetTargetsAvailable", ctx);
@@ -74,7 +74,7 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
     static std::random_device rd;
     static std::mt19937       gen{rd()};
     // setup for all factions
-    auto galaxy_config = game.getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
+    auto galaxy_config = game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
     for (const auto& faction : galaxy_config.factions)
     {
@@ -84,6 +84,13 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
             game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
         auto it = view.begin();
         auto size = static_cast<size_t>(std::distance(view.begin(), view.end()));
+
+        if (size == 0)
+        {
+            spdlog::error("No star systems found");
+            continue;
+        }
+
         std::advance(it, pg::randomBetween<size_t>(0, size));
         auto entity = *it;
         auto&& [drawable, transform, starsystem, system_faction] =

@@ -41,7 +41,7 @@ public:
 
     BT::NodeStatus onStart() override
     {
-        auto& quadtree = game().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
+        auto& quadtree = game().getCurrentScene().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
         auto  view = game().getRegistry().view<pg::Transform2D, galaxy::Faction>();
         auto&& [transform, faction] = view.get<pg::Transform2D, galaxy::Faction>(entity());
 

@@ -2,23 +2,32 @@
 #include <core/Game.hpp>
 #include <components/WindowDetails.hpp>
 
-void pg::game::Scene::setup(Game& game)
+void pg::game::Scene::frame(const FrameStamp& frameStamp)
 {
-    game.addSingleton_as<pg::Transform2D&>(GlobalTransformName, globalTransform);
-    std::ranges::for_each(systems, [](auto& system) { system->setup(); });
-}
-
-void pg::game::Scene::frame(FrameStamp frameStamp)
-{
-    std::ranges::for_each(systems, [&frameStamp](auto& system) { system->handle(frameStamp); });
+    std::ranges::for_each(systems_, [&frameStamp](auto& system) { system->handle(frameStamp); });
 }
 
 pg::game::Scene::Systems& pg::game::Scene::getSystems()
 {
-    return systems;
+    return systems_;
 }
 
 const pg::game::Scene::Systems& pg::game::Scene::getSystems() const
 {
-    return systems;
+    return systems_;
+}
+
+void pg::game::Scene::start()
+{
+    if (started_)
+    {
+        spdlog::warn("Scene already started");
+        return;
+    }
+    std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
+}
+
+pg::game::Scene::Scene(Game& game)
+  : game_(game)
+{
 }

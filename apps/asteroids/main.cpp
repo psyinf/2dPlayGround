@@ -15,8 +15,9 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
     pg::game::Game game;
-    auto&          scene = game.createScene("start");
-    auto&          systems = scene.getSystems();
+    game.createScene("start");
+    auto& scene = game.switchScene("start");
+    auto& systems = scene.getSystems();
     systems.emplace_back(std::make_unique<asteroids::Lasers>(game));
     systems.emplace_back(std::make_unique<asteroids::Player>(game));
     systems.emplace_back(std::make_unique<asteroids::Asteroids>(game));
@@ -27,8 +28,9 @@ try
     game.switchScene("start");
 
     // TODO: from external config
-    game.addSingleton<asteroids::RenderConfig>(asteroids::RenderConfig{.renderBroadPhaseCollisionShapes = true});
-
+    game.getCurrentScene().addSingleton<asteroids::RenderConfig>(
+        asteroids::RenderConfig{.renderBroadPhaseCollisionShapes = true});
+    scene.start();
     game.loop();
     return 0;
 }

@@ -9,7 +9,7 @@ class DashBoardWidget : public galaxy::gui::GameGuiWidget
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
-    void draw(pg::Gui& gui) override
+    void draw([[maybe_unused]] pg::Gui& gui) override
     {
         bool  open = true;
         bool* p_open = &open;

@@ -7,7 +7,7 @@
 
 namespace pg {
 
-static pg::fVec2 getRandomVector()
+inline pg::fVec2 getRandomVector()
 {
     static std::random_device                    rd;
     static std::mt19937                          gen(rd());
@@ -17,7 +17,7 @@ static pg::fVec2 getRandomVector()
 }
 
 template <typename T>
-static T randomBetween(T min, T max)
+inline T randomBetween(T min, T max)
 {
     if constexpr (std::is_floating_point<T>::value)
     {
@@ -35,14 +35,14 @@ static T randomBetween(T min, T max)
     }
 }
 
-static pg::fVec2 getPointInCircle(double radius)
-{
-    auto a = randomBetween(0.0, 1.0);
-    auto b = randomBetween(0.0, 1.0);
-    if (b < a) { std::swap(a, b); }
-
-    return {static_cast<float>(b * radius * std::cos(2.0f * std::numbers::pi * a / b)),
-            static_cast<float>(b * radius * std::sin(2.0f * std::numbers::pi * a / b))};
-}
+// static pg::fVec2 getPointInCircle(double radius)
+// {
+//     auto a = randomBetween(0.0, 1.0);
+//     auto b = randomBetween(0.0, 1.0);
+//     if (b < a) { std::swap(a, b); }
+//
+//     return {static_cast<float>(b * radius * std::cos(2.0f * std::numbers::pi * a / b)),
+//             static_cast<float>(b * radius * std::sin(2.0f * std::numbers::pi * a / b))};
+// }
 
 } // namespace pg

@@ -16,7 +16,7 @@ void asteroids::Background::setup()
     auto  background = game.getRegistry().create();
     auto& registry = game.getRegistry();
     auto  backgroundImg = pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), "../data/spr_stars01.png");
-    auto  windowDetails = game.getSingleton<pg::game::WindowDetails>();
+    auto  windowDetails = game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
     // TODO add entities as references to the classes
     auto backgroundRect = pg::iVec2{windowDetails.windowRect.w, windowDetails.windowRect.h};
 

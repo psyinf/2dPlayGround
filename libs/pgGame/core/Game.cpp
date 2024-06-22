@@ -2,13 +2,68 @@
 #include "FrameStamp.hpp"
 #include <components/WindowDetails.hpp>
 #include <systems/SystemInterface.hpp>
-
+#include <core/GameExceptions.hpp>
+#include <events/SceneManagementEvents.hpp>
+#include <events/GameEvents.hpp>
 #include <ranges>
 
 using namespace pg;
 
+template <typename T>
+struct ScopedSwitchSceneId
+{
+    ScopedSwitchSceneId(T& holder, T value)
+      : value_holder(holder)
+      , previous_value(holder)
+    {
+        value_holder = value;
+    }
+
+    ~ScopedSwitchSceneId() { value_holder = previous_value; }
+
+    T  previous_value;
+    T& value_holder;
+};
+
+class Pimpl : public pg::game::GamePimpl
+{
+public:
+    using pg::game::GamePimpl::GamePimpl;
+
+    void handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse)
+    {
+        // TODO: callbacks?
+        try
+        {
+            game.switchScene(sse.new_scene);
+            auto& scene = game.getCurrentScene();
+            if (!scene.started()) { scene.start(); }
+        }
+        catch (pg::game::ResourceNotFoundException&)
+        {
+            spdlog::error("Scene not found: {}", sse.new_scene);
+            // TODO: error event?
+        }
+    }
+
+    void handleQuitEvent(const pg::game::events::QuitEvent&) { game.quit(); }
+};
+
+game::Game::Game()
+  : pimpl(std::make_unique<Pimpl>(*this))
+{
+    gui = std::make_unique<pg::Gui>(getApp());
+    // register event handlers
+    dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&Pimpl::handleSceneSwitchEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
+    dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*pimpl));
+    createAndSwitchScene("__default__");
+}
+
 void game::Game::frame(FrameStamp frameStamp)
 {
+    // dispatcher update
+    dispatcher.update();
     // check preconditions
     if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
     // poll all events
@@ -21,7 +76,7 @@ void game::Game::frame(FrameStamp frameStamp)
 
 entt::registry& game::Game::getRegistry()
 {
-    return registry;
+    return getScene(currentSceneId).getRegistry();
 }
 
 entt::dispatcher& game::Game::getDispatcher()
@@ -46,24 +101,14 @@ pg::ResourceCache& game::Game::getResourceCache()
 
 void game::Game::loop()
 {
-    bool done{};
-    sdlApp.getEventHandler().quit = [&done](auto) { done = true; };
+    sdlApp.getEventHandler().quit = [this](auto) { running = false; };
 
     uint64_t frameNumber{};
-    while (!done)
+    while (running)
     {
         frame({frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
         sdlApp.getFPSCounter().frame();
     }
-}
-
-game::Game::Game()
-{
-    addSingleton<pg::TypedResourceCache<pg::Sprite>>(
-        "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-    addSingleton<pg::TypedResourceCache<sdl::Texture>>(
-        "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
-    addSingleton<WindowDetails&>(windowDetails);
 }
 
 pg::game::Scene& game::Game::getScene(std::string_view id)
@@ -71,15 +116,45 @@ pg::game::Scene& game::Game::getScene(std::string_view id)
     return *scenes.at(std::string(id));
 }
 
-pg::game::Scene& game::Game::createScene(std::string_view id)
+void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
 {
-    return *scenes.emplace(std::string(id), std::make_unique<pg::game::Scene>()).first->second;
+    // internal switch of scene for setup
+    {
+        ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
+        scenes.emplace(std::string{id}, std::move(scene));
+        auto scenePtr = scenes.at(std::string(id)).get();
+        scenePtr->addSingleton<pg::TypedResourceCache<pg::Sprite>>(
+            "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
+        scenePtr->addSingleton<pg::TypedResourceCache<sdl::Texture>>(
+            "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
+        scenePtr->addSingleton<WindowDetails&>(windowDetails);
+        scenePtr->addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName,
+                                                    getCurrentScene().getGlobalTransform());
+    }
 }
 
-void game::Game::switchScene(std::string_view id)
+pg::game::Scene& game::Game::switchScene(std::string_view id)
 {
-    auto scene = scenes.at(std::string(id)).get();
-    currentSceneId = id;
-    // TODO: we need to figure out how to handle the setup of the scene when switching back and forth
-    scene->setup(*this);
+    try
+    {
+        auto scene = scenes.at(std::string(id)).get();
+        currentSceneId = id;
+        return *scene;
+    }
+
+    catch (std::out_of_range& e)
+    {
+        spdlog::error(fmt::format("Cannot switch scene to {}, not found: {}", id, e.what()));
+        throw e;
+    }
+}
+
+pg::Gui& game::Game::getGui()
+{
+    return *gui;
+}
+
+void game::Game::quit()
+{
+    running = false;
 }

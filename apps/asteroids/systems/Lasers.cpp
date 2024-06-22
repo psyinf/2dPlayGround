@@ -40,7 +40,7 @@ void asteroids::Lasers::createShot(const events::LaserFired& event)
          {});
 }
 
-void asteroids::Lasers::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::Lasers::handle(const pg::game::FrameStamp& )
 {
     // TODO: This is should be in a system for updating transforms via dynamics
     auto view = game.getRegistry().view<pg::Transform2D, tag>();

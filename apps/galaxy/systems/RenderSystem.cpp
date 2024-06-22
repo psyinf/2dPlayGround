@@ -22,10 +22,9 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
     rendererStates.apply(renderer);
-    auto windowRect = game.getSingleton<pg::game::WindowDetails>().windowRect;
-    auto star_default_color = game.getSingleton<const pg::Color&>("galaxy.star.default_color");
+    auto windowRect = game.getCurrentScene().getSingleton<pg::game::WindowDetails>().windowRect;
 
-    auto globalTransform = game.getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
+    auto globalTransform = game.getCurrentScene().getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
 
     // drones
     // non-debug, generic items
@@ -46,22 +45,26 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
         drawable.prim->draw(renderer, new_transform, rendererStates);
         rendererStates.pop_states(renderState.states);
     }
+    // TODO: global config for debug items
+
     // debug items, TODO: check why this not drawn reliably over other items
-    if (game.getSingleton<const bool>("galaxy.debug.draw"))
-    {
-        for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, pg::tags::DebugRenderingItemTag>(
-                 entt::exclude<StarSystemState>);
-             auto& entity : view)
-        {
-            auto&& [drawable, transform] = view.get<pg::game::Drawable, pg::Transform2D>(entity);
-            auto new_transform = transform;
-            new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
-            new_transform.pos = (globalTransform.pos + transform.pos) * globalTransform.scale;
-            new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
-            new_transform.scale *= globalTransform.scale;
-            drawable.prim->draw(renderer, new_transform, rendererStates);
-        }
-    }
+    //     if (game.getCurrentScene().getSingleton_<const
+    //     galaxy::config::Galaxy&>("galaxy.config").debugging.draw_debug_items)
+    //     {
+    //         for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D,
+    //         pg::tags::DebugRenderingItemTag>(
+    //                  entt::exclude<StarSystemState>);
+    //              auto& entity : view)
+    //         {
+    //             auto&& [drawable, transform] = view.get<pg::game::Drawable, pg::Transform2D>(entity);
+    //             auto new_transform = transform;
+    //             new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
+    //             new_transform.pos = (globalTransform.pos + transform.pos) * globalTransform.scale;
+    //             new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
+    //             new_transform.scale *= globalTransform.scale;
+    //             drawable.prim->draw(renderer, new_transform, rendererStates);
+    //         }
+    //     }
     rendererStates.restore(renderer);
 
     drawOverlays(renderer, rendererStates);
@@ -69,17 +72,15 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     renderer.present();
 }
 
-void galaxy::RenderSystem::drawOverlays(sdl::Renderer& renderer, pg::States& rendererStates)
+void galaxy::RenderSystem::drawOverlays(sdl::Renderer&, pg::States&)
 {
-    // draw overlays
-    auto& gui = game.getSingleton<pg::Gui&>("galaxy.gui");
+    auto& gui = game.getGui();
     game.getRegistry().sort<pg::game::GuiDrawable>(
         [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
     auto view = game.getRegistry().view<pg::game::GuiDrawable>();
-    for (auto& entity : view)
+    for (const auto& entity : view)
     {
         auto& drawable = view.get<pg::game::GuiDrawable>(entity);
-
         drawable.prim->draw(gui);
     }
 }

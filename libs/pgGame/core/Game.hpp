@@ -16,8 +16,27 @@
 #include <memory>
 #include <unordered_map>
 #include <pgGame/components/WindowDetails.hpp>
+#include <pgGame/core/SingletonInterface.hpp>
 
 namespace pg::game {
+
+namespace events {
+
+struct SwitchSceneEvent;
+}
+
+class GamePimpl
+{
+public:
+    virtual ~GamePimpl() = default;
+
+    GamePimpl(Game& game)
+      : game(game)
+    {
+    }
+
+    Game& game;
+};
 
 class Game
 {
@@ -30,17 +49,16 @@ private:
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
-    pg::SDLApp        sdlApp{windowConfig};
-    pg::KeyStateMap   keyStateMap{sdlApp.getEventHandler()};
-    pg::ResourceCache resourceCache{"../data/"}; // TODO: from config
-    entt::registry    registry;
-    entt::dispatcher  dispatcher;
+    pg::SDLApp               sdlApp{windowConfig};
+    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
+    pg::ResourceCache        resourceCache{"../data/"}; // TODO: from config
+    std::unique_ptr<pg::Gui> gui;
+
+    entt::dispatcher dispatcher;
 
     Scenes scenes;
 
-    void frame(FrameStamp frameStamp);
-
-    std::string currentSceneId;
+    std::string currentSceneId{"__default__"};
 
 public:
     Game();
@@ -51,81 +69,54 @@ public:
 
     pg::SDLApp& getApp();
 
+    pg::Gui& getGui();
+
     pg::KeyStateMap& getKeyStateMap();
 
     pg::ResourceCache& getResourceCache();
 
-    /**
-     * Get the resource cache for a specific type of resource.
-     */
-    template <typename Resource>
-    pg::TypedResourceCache<Resource>& getTypedResourceCache()
-    {
-        return getSingleton<pg::TypedResourceCache<Resource>>();
-    }
-
-    // TODO: check const-ness
-    template <typename Type>
-    auto& getSingleton(std::string_view id)
-    {
-        if (!registry.ctx().contains<Type>(entt::hashed_string{id.data()}))
-        {
-            throw std::runtime_error("Singleton not found");
-        }
-
-        return registry.ctx().get<Type>(entt::hashed_string{id.data()});
-    }
-
-    template <typename Type>
-    auto getSingleton_or(std::string_view id, Type default_fallback)
-    {
-        if (!registry.ctx().contains<Type>(entt::hashed_string{id.data()})) { return default_fallback; }
-
-        return registry.ctx().get<Type>(entt::hashed_string{id.data()});
-    }
-
-    // works only with default constructible types
-    template <typename Type>
-    auto& getOrCreateSingleton(std::string_view id)
-    {
-        if (!registry.ctx().contains<Type>(entt::hashed_string{id.data()}))
-        {
-            return registry.ctx().emplace_as<Type>(entt::hashed_string{id.data()});
-        }
-
-        return registry.ctx().get<Type>(entt::hashed_string{id.data()});
-    }
-
-    template <typename Type, typename... Args>
-    auto& addSingleton_as(std::string_view id, Args&&... args)
-    {
-        return registry.ctx().emplace_as<Type>(entt::hashed_string{id.data()}, std::forward<Args>(args)...);
-    }
-
-    template <typename Type>
-    auto& getSingleton(const entt::id_type id = entt::type_id<Type>().hash())
-    {
-        // TODO: find and throw if not found
-        return registry.ctx().get<Type>(id);
-    }
-
-    template <typename Type, typename... Args>
-    auto& addSingleton_as(const entt::id_type id = entt::type_id<Type>().hash(), Args&&... args)
-    {
-        return registry.ctx().emplace_as<Type>(id, std::forward<Args>(args)...);
-    }
-
-    template <typename Type, typename... Args>
-    auto& addSingleton(Args&&... args)
-    {
-        return registry.ctx().emplace_as<Type>(entt::type_id<Type>().hash(), std::forward<Args>(args)...);
-    }
-
     /// Scene interfaces
-    Scene& createScene(std::string_view id);
+    //     template <typename Type = pg::game::Scene, typename... Args>
+    //     void createScene(std::string_view id, Args&&... args)
+    //     {
+    //         // static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
+    //         if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
+    //         createScene(id, std::make_unique<Type>(*this, std::forward<Args>(args)...));
+    //     }
+    // TODO: scene management interace?
+    template <typename Type = pg::game::Scene>
+    void createScene(std::string_view id)
+    {
+        // static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
+        if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
+        createScene(id, std::make_unique<Type>(*this));
+    }
+
+    Scene& getCurrentScene() { return getScene(currentSceneId); }
+
     Scene& getScene(std::string_view id);
-    void   switchScene(std::string_view id);
+    Scene& switchScene(std::string_view id);
+
+    template <typename Type = pg::game::Scene, typename... Args>
+    Scene& createAndSwitchScene(std::string_view id, Args&&... args)
+    {
+        // compile time switch for empty args
+        if constexpr (sizeof...(Args) == 0) { createScene<Type>(id); }
+        // else { createScene<Type>(id, std::forward<Args>(args)...); }
+        return switchScene(id);
+    }
 
     void loop();
+
+    void quit();
+
+private:
+    void frame(FrameStamp frameStamp);
+
+    void createScene(std::string_view id, std::unique_ptr<Scene>&& scene);
+
+    bool running{true};
+
+    std::unique_ptr<GamePimpl> pimpl;
 };
 } // namespace pg::game
