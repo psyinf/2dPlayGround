@@ -174,13 +174,13 @@ public:
         else if (active_menu == "about")
         {
             ImGui::SetCursorPos(ImVec2(300, 50));
-            ImGui::OpenPopup("About");
-            if (ImGui::BeginPopup("About", {}))
+            auto open = true;
+            if (ImGui::Begin("About", &open))
             {
                 ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
-                ImGui::EndPopup();
+                ImGui::End();
             }
-            else { active_menu = {}; }
+            if (!open) { active_menu = {}; }
         }
         ImGui::PopStyleVar(3);
         ImGui::PopStyleColor(5);
