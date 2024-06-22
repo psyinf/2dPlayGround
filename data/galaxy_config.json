@@ -1,0 +1,39 @@
+{
+    "background": {
+        "opacity": 0.10000000149011612
+    },
+    "factions": [
+        {
+            "color": [
+                0,
+                255,
+                0,
+                255
+            ],
+            "droneParams": {
+                "max_acceleration": 0.90000000149011612,
+                "max_range": 40.0,
+                "max_speed": 10.0,
+                "reliablity_factor" : "0.0000000001"
+            },
+            "name": "Terra",
+            "startParams": {
+                "num_start_drones": 100,
+                "start_cycle": 0
+            }
+        }
+    ],
+    "star": {
+        "default_color": [
+            144,
+            144,
+            192,
+            12
+        ]
+    },
+    "zoom": {
+        "factor": 0.10000000149011612,
+        "max": 100.0,
+        "min": 0.5
+    }
+}

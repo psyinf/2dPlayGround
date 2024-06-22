@@ -40,7 +40,7 @@ public:
 
     virtual void stop() {}
 
-    void frame(const FrameStamp& frameStamp);
+    void frame(FrameStamp& frameStamp);
 
     bool started() const { return started_; }
 
@@ -49,6 +49,7 @@ private:
     Systems     systems_;
     Transform2D globalTransform;
     bool        started_{false};
+    bool        firstFrame_{true};
 
     entt::registry registry;
 };
