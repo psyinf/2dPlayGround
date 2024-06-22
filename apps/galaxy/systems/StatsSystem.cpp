@@ -14,9 +14,21 @@ void galaxy::StatsSystem::setup()
 
 void galaxy::StatsSystem::handle(const pg::game::FrameStamp&)
 {
+    auto& fpsCounter = game.getApp().getFPSCounter();
     // count number of starsystems
     auto view = game.getRegistry().view<galaxy::StarSystemState>();
     stats.galaxyStats.numSystems = view.size();
+    stats.frameStats.lastFrameFPS = fpsCounter.getLastFrameFPS();
+    if (fpsCounter.getCurrentFrameCount() % 20 == 0)
+    {
+        auto fpsStats = fpsCounter.getAverageFPSAndReset();
+        stats.frameStats.fpsStats = fpsStats;
+    }
+    if (fpsCounter.getCurrentFrameCount() % 100 == 0)
+    {
+        auto fpsStats = stats.frameStats.fpsStats;
+        spdlog::info("FPS Avg/Min/Max: {:.2}/{:.2}/{:.2}", fpsStats.minFPS, fpsStats.maxFPS, fpsStats.averageFPS);
+    }
 }
 
 void galaxy::StatsSystem::onDroneDestroyed(events::DroneFailedEvent event)

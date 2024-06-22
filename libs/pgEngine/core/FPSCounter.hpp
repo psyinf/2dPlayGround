@@ -8,9 +8,9 @@ namespace pg {
 
 struct FPSStats
 {
-    double averageFPS;
-    double minFPS;
-    double maxFPS;
+    double averageFPS{};
+    double minFPS{};
+    double maxFPS{};
 };
 
 class FPSCounter
