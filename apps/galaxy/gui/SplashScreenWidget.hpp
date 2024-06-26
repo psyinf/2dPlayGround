@@ -180,7 +180,7 @@ public:
                 ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
                 ImGui::End();
             }
-            if (!open) { active_menu = {}; }
+            if (!about_open) { active_menu = {}; }
         }
         ImGui::PopStyleVar(3);
         ImGui::PopStyleColor(5);
