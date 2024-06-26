@@ -15,6 +15,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
     pgGame::pgGame
+    soundEngine::soundEngine
     fmt::fmt
     EnTT::EnTT
 )

@@ -6,9 +6,9 @@
 
 TEST_CASE("Add", "[VecTests]")
 {
-    pg::fVec2 lhs{10.0, -5.2};
-    pg::fVec2 rhs{-5.0, 2.0};
-    pg::fVec2 expected_res{5.0, -3.2};
+    pg::fVec2 lhs{10.0f, -5.2f};
+    pg::fVec2 rhs{-5.0f, 2.0f};
+    pg::fVec2 expected_res{5.0f, -3.2f};
     pg::fVec2 res = lhs + rhs;
     REQUIRE(res[0] == Catch::Approx(expected_res[0]));
     REQUIRE(res[1] == Catch::Approx(expected_res[1]));
@@ -16,9 +16,9 @@ TEST_CASE("Add", "[VecTests]")
 
 TEST_CASE("Sub", "[VecTests]")
 {
-    pg::fVec2 lhs{0.0, 5.2};
-    pg::fVec2 rhs{5.0, 2.0};
-    pg::fVec2 expected_res{-5.0, 3.2};
+    pg::fVec2 lhs{0.0f, 5.2f};
+    pg::fVec2 rhs{5.0f, 2.0f};
+    pg::fVec2 expected_res{-5.0f, 3.2f};
     pg::fVec2 res = lhs - rhs;
     REQUIRE(res[0] == Catch::Approx(expected_res[0]));
     REQUIRE(res[1] == Catch::Approx(expected_res[1]));
@@ -26,15 +26,15 @@ TEST_CASE("Sub", "[VecTests]")
 
 TEST_CASE("Dot", "[VecTests]")
 {
-    pg::fVec2 lhs{1.0, 5.2};
-    pg::fVec2 rhs{5.0, 2.0};
+    pg::fVec2 lhs{1.0f, 5.2f};
+    pg::fVec2 rhs{5.0f, 2.0f};
     auto      res = pg::dot(lhs, rhs);
     REQUIRE(res == Catch::Approx(5.0f + 10.4f));
 }
 
 TEST_CASE("LengthSquared", "[VecTests]")
 {
-    pg::fVec2 lhs{3.0, 4.0};
+    pg::fVec2 lhs{3.0f, 4.0f};
 
     auto res = pg::lengthSquared(lhs);
     REQUIRE(res == Catch::Approx(25.0f));
@@ -43,7 +43,7 @@ TEST_CASE("LengthSquared", "[VecTests]")
 
 TEST_CASE("Length", "[VecTests]")
 {
-    pg::fVec2 lhs{3.0, 4.0};
+    pg::fVec2 lhs{3.0f, 4.0f};
     auto      res = pg::length(lhs);
     REQUIRE(res == Catch::Approx(5.0f));
     REQUIRE(res == std::sqrt(pg::dot(lhs, lhs)));

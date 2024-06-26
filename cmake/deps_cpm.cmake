@@ -64,6 +64,22 @@ CPMAddPackage(
     GITHUB_REPOSITORY Neargye/magic_enum
     GIT_TAG v0.9.5
 )
+
+CPMAddPackage(
+	NAME soundEngine
+	GITHUB_REPOSITORY psyinf/soundEngine
+    GIT_TAG examples2
+)
+
+if (NOT ($ENV{GITHUB_ACTIONS}))
+CPMAddPackage(
+	NAME resources
+	GITHUB_REPOSITORY psyinf/resources-galaxy
+    GIT_TAG main
+)
+endif()
+
+
 #freetype
 #CPMADDPACKAGE(
 #    NAME freetype

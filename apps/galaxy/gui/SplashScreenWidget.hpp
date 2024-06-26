@@ -118,7 +118,7 @@ public:
         ImGui::SetWindowPos(ImVec2(0, 0));
         ImGui::SetWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, ImGui::GetIO().DisplaySize.y));
         // center vertically
-        ImGui::SetCursorPos(ImVec2(centering.x, (ImGui::GetIO().DisplaySize.y * 0.5) - (size_y * 0.5)));
+        ImGui::SetCursorPos(ImVec2(centering.x, (ImGui::GetIO().DisplaySize.y * 0.5f) - (size_y * 0.5f)));
         // background sprite
         ImGui::Image((void*)dot_texture.get()->get(), ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
         // TODO: style from config
@@ -174,8 +174,8 @@ public:
         else if (active_menu == "about")
         {
             ImGui::SetCursorPos(ImVec2(300, 50));
-            auto open = true;
-            if (ImGui::Begin("About", &open))
+            auto about_open = true;
+            if (ImGui::Begin("About", &about_open))
             {
                 ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
                 ImGui::End();

@@ -3,16 +3,42 @@
 #include <pgEngine/core/Gui.hpp>
 #include <memory>
 #include <gui/SplashScreenWidget.hpp>
+#include <SoundEngine.h>
+#include <BackgroundPlayer.h>
 
 namespace galaxy {
 
 class SplashScreen : public pg::game::Scene
 {
 public:
-    using pg::game::Scene::Scene;
+    SplashScreen(pg::game::Game& game)
+      : pg::game::Scene(game)
+      , soundEngine(std::make_unique<soundEngineX::SoundEngine>())
+      , backgroundPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
+    {
+        // TODO: fix paths
+        try
+        {
+            backgroundPlayer->load("data/music/dead-space-style-ambient-music-184793.mp3");
+        }
+        catch (const std::exception& e)
+        {
+            spdlog::error("Failed to load resources {}", e.what());
+        }
+    }
 
     void start() override
     {
+        try
+        {
+            // TODO: resources repo should be configurable regarding its target path
+            backgroundPlayer->play("data/music/dead-space-style-ambient-music-184793.mp3");
+        }
+        catch (const std::exception& e)
+        {
+            spdlog::error("Failed to play sound {}", e.what());
+        }
+
         auto& systems = getSystems();
         auto& game = getGame();
         systems.emplace_back(std::make_unique<galaxy::RenderSystem>(game));
@@ -37,6 +63,15 @@ public:
             {std::make_unique<galaxy::gui::SplashScreenWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
 
+    void stop() override
+    {
+        // TODO: stop is not call when switching scenes
+        backgroundPlayer == nullptr;
+        Scene::stop();
+    }
+
 private:
+    std::unique_ptr<soundEngineX::SoundEngine>      soundEngine;
+    std::unique_ptr<soundEngineX::BackgroundPlayer> backgroundPlayer;
 };
 } // namespace galaxy

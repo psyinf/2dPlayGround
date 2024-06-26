@@ -10,7 +10,7 @@
 #include <systems/Lasers.h>
 #include <systems/Player.h>
 #include <systems/RenderSystem.hpp>
-
+#include <SoundEngine.h>
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
@@ -34,12 +34,14 @@ try
     game.loop();
     return 0;
 }
+
 catch (std::exception& e)
 {
     fmt::print("Unhandled exception: {}\n", e.what());
     errorTrace::printErrorTrace();
     return -1;
 }
+
 catch (...)
 {
     fmt::print("Unhandled exception");

@@ -16,6 +16,7 @@ target_link_libraries(${PROJECT_NAME}
     fmt::fmt
     spdlog::spdlog
     BT::behaviortree_cpp
+    soundEngine::soundEngine
     ${ADDITION_LIBS}
 )
 target_include_directories(${PROJECT_NAME}
