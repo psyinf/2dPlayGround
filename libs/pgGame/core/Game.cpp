@@ -60,7 +60,7 @@ game::Game::Game()
     createAndSwitchScene("__default__");
 }
 
-void game::Game::frame(FrameStamp frameStamp)
+void game::Game::frame(FrameStamp& frameStamp)
 {
     // dispatcher update
     dispatcher.update();
@@ -103,10 +103,13 @@ void game::Game::loop()
 {
     sdlApp.getEventHandler().quit = [this](auto) { running = false; };
 
-    uint64_t frameNumber{};
+    FrameStamp frameStamp{0, 0, sdlApp.getFPSCounter().getLastFrameDuration()};
     while (running)
     {
-        frame({frameNumber++, sdlApp.getFPSCounter().getLastFrameDuration()});
+        frameStamp.frameNumber++;
+        frameStamp.lastFrameDuration = sdlApp.getFPSCounter().getLastFrameDuration();
+
+        frame(frameStamp);
         sdlApp.getFPSCounter().frame();
     }
 }

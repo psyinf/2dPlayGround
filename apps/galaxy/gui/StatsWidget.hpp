@@ -32,7 +32,11 @@ public:
 
         ImGui::SeparatorText("Galaxy");
         ImGui::Text("Systems: %d", stats.galaxyStats.numSystems);
-
+        ImGui::Separator();
+        ImGui::Text("FPS: %.2f", stats.frameStats.lastFrameFPS);
+        ImGui::Text("Average FPS: %.2f", stats.frameStats.fpsStats.averageFPS);
+        ImGui::Text("Min FPS: %.2f", stats.frameStats.fpsStats.minFPS);
+        ImGui::Text("Max FPS: %.2f", stats.frameStats.fpsStats.maxFPS);
         ImGui::End();
     }
 };
