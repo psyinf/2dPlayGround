@@ -3,8 +3,8 @@
 #include <pgEngine/core/Gui.hpp>
 #include <memory>
 #include <gui/SplashScreenWidget.hpp>
-#include <SoundEngine.h>
-#include <BackgroundPlayer.h>
+#include <sndX/SoundEngine.hpp>
+#include <sndX/BackgroundPlayer.hpp>
 
 namespace galaxy {
 
@@ -19,7 +19,7 @@ public:
         // TODO: fix paths
         try
         {
-            backgroundPlayer->load("data/music/dead-space-style-ambient-music-184793.mp3");
+            backgroundPlayer->load("../data/music/dead-space-style-ambient-music-184793.mp3");
         }
         catch (const std::exception& e)
         {
@@ -32,7 +32,7 @@ public:
         try
         {
             // TODO: resources repo should be configurable regarding its target path
-            backgroundPlayer->play("data/music/dead-space-style-ambient-music-184793.mp3");
+            backgroundPlayer->play("../data/music/dead-space-style-ambient-music-184793.mp3");
         }
         catch (const std::exception& e)
         {

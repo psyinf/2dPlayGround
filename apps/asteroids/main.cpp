@@ -10,7 +10,7 @@
 #include <systems/Lasers.h>
 #include <systems/Player.h>
 #include <systems/RenderSystem.hpp>
-#include <SoundEngine.h>
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
