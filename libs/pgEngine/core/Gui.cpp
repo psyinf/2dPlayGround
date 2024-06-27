@@ -368,8 +368,6 @@ void pg::Gui::end()
 
 void pg::Gui::render(std::function<void()> rendering)
 {
-    ImGuiIO& io = ImGui::GetIO();
-
     if (rendering) { rendering(); }
 }
 

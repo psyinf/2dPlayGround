@@ -66,7 +66,7 @@ public:
     void stop() override
     {
         // TODO: stop is not call when switching scenes
-        backgroundPlayer == nullptr;
+        backgroundPlayer = nullptr;
         Scene::stop();
     }
 
