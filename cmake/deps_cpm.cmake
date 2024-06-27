@@ -68,7 +68,7 @@ CPMAddPackage(
 CPMAddPackage(
 	NAME soundEngine
 	GITHUB_REPOSITORY psyinf/soundEngine
-    GIT_TAG examples2
+    GIT_TAG v0.0.1
 )
 
 if (NOT ($ENV{GITHUB_ACTIONS}))
@@ -78,14 +78,6 @@ CPMAddPackage(
     GIT_TAG main
 )
 endif()
-
-
-#freetype
-#CPMADDPACKAGE(
-#    NAME freetype
-#    GITHUB_REPOSITORY freetype/freetype
-#    GIT_TAG VER-2-11-0
-#)
 
 CPMAddPackage(
 	NAME nlohmann_json
@@ -156,7 +148,6 @@ CPMAddPackage(
     NAME imgui
     GITHUB_REPOSITORY ocornut/imgui
     GIT_TAG v1.90.8-docking
-    
 )
 #if (imgui_ADDED)
 add_library(imgui STATIC

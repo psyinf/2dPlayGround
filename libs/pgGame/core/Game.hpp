@@ -111,7 +111,7 @@ public:
     void quit();
 
 private:
-    void frame(FrameStamp frameStamp);
+    void frame(FrameStamp& frameStamp);
 
     void createScene(std::string_view id, std::unique_ptr<Scene>&& scene);
 
