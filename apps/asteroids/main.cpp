@@ -10,6 +10,7 @@
 #include <systems/Lasers.h>
 #include <systems/Player.h>
 #include <systems/RenderSystem.hpp>
+#include <systems/SoundSystem.hpp>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
@@ -25,6 +26,7 @@ try
     systems.emplace_back(std::make_unique<asteroids::Collisions>(game));
     systems.emplace_back(std::make_unique<asteroids::RenderSystem>(game));
     systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game));
+    systems.emplace_back(std::make_unique<asteroids::SoundSystem>(game));
     game.switchScene("start");
 
     // TODO: from external config

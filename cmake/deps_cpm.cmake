@@ -77,6 +77,11 @@ CPMAddPackage(
 	GITHUB_REPOSITORY psyinf/resources-galaxy
     GIT_TAG main
 )
+CPMAddPackage(
+	NAME resources-sound
+	GITHUB_REPOSITORY psyinf/resources-sound
+    GIT_TAG main
+)
 endif()
 
 CPMAddPackage(
