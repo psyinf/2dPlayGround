@@ -4,7 +4,7 @@
 
 namespace soundEngineX {
 class SoundEngine;
-class BackgroundPlayer;
+class BackgroundPlayerInterface;
 } // namespace soundEngineX
 
 namespace asteroids {
@@ -28,8 +28,8 @@ private:
     void onLaserFired(const events::LaserFired& event);
     void onCollision(const events::Collision& event);
 
-    std::unique_ptr<soundEngineX::SoundEngine>      _soundEngine;
-    std::unique_ptr<soundEngineX::BackgroundPlayer> _bgPlayer;
+    std::unique_ptr<soundEngineX::SoundEngine>               _soundEngine;
+    std::unique_ptr<soundEngineX::BackgroundPlayerInterface> _bgPlayer;
 };
 
 } // namespace asteroids

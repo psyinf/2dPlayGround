@@ -28,9 +28,12 @@ void asteroids::SoundSystem::onLaserFired(const events::LaserFired& event)
 
 void asteroids::SoundSystem::onCollision(const events::Collision& event)
 {
-    // TODO: play different sounds based on the type of collision
-    // TODO: variations of the same sound
-    // TODO: volume based on the size of the asteroid
+    // TODO: the soundsystem should not directly act on the collision itself but on the effect
+    //  e.g. the sound of the explosion of the asteroid, damage to the ship, etc.
+    //
+    //  TODO: play different sounds based on the type of collision
+    //  TODO: variations of the same sound
+    //  TODO: volume based on the size of the asteroid
     auto gain = pg::randomBetween(0.5f, 1.0f);
     auto pitch = pg::randomBetween(0.85f, 1.2f);
     _bgPlayer->play("../data/sound/asteroids/hit_comp.wav", {.pitch = pitch, .gain = gain});

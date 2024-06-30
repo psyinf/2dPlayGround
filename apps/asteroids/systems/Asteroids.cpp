@@ -37,6 +37,9 @@ struct AsteroidsRandomGen
     }
 };
 
+// TODO: use asteroid/asteroid collision to determine if they should split or deflect
+//  return an ordered pair of asteroid and weapon entity or nullopt if the collision is not between an asteroid and a
+//  weapon
 std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(
     pg::game::Game&                     game,
     const asteroids::events::Collision& collision)
@@ -46,9 +49,20 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(
     auto isLaserE1 = game.getRegistry().all_of<asteroids::Lasers::tag>(collision.c1);
     auto isLaserE2 = game.getRegistry().all_of<asteroids::Lasers::tag>(collision.c2);
     std::pair<entt::entity, entt::entity> retVal;
-
+    // TODO: we need a different strategy here.
+    //  1. we need to get rid of the pair-wise checking (e.g. asteroid vs laser + laser vs asteroid)
+    //  quick idea: this could be done by establishing an order over the entity types
+    //  2. the combinations should be
+    //  ast - ast -> deflection
+    //  ast - las -> split
+    //  ast - shp -> damage/deflection/depending on energy -> split
+    //  if neither are asteroids or lasers
     if (!isAsteroidE1 && !isAsteroidE2) { return std::nullopt; }
     if (!isLaserE1 && !isLaserE2) { return std::nullopt; }
+    // if both are asteroids
+    if (isAsteroidE1 && isAsteroidE2) { return std::nullopt; }
+    // if both are lasers
+    if (isLaserE1 && isLaserE2) { return std::nullopt; }
 
     if (isAsteroidE1) { retVal.first = collision.c1; }
     else { retVal.first = collision.c2; }

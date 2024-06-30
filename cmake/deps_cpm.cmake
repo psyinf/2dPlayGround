@@ -68,7 +68,7 @@ CPMAddPackage(
 CPMAddPackage(
 	NAME soundEngine
 	GITHUB_REPOSITORY psyinf/soundEngine
-    GIT_TAG fix_headers
+    GIT_TAG v0.0.2
 )
 
 if (NOT ($ENV{GITHUB_ACTIONS}))
