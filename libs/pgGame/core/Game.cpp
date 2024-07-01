@@ -141,6 +141,18 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
     try
     {
         auto scene = scenes.at(std::string(id)).get();
+        // stop current scene
+        if (!currentSceneId.empty())
+        {
+            auto& currentScene = scenes.at(currentSceneId);
+            currentScene->stop();
+        }
+        // inform scenes
+        for (const auto& system : scene->getSystems())
+        {
+            system->onSwitchScene(id);
+        }
+
         currentSceneId = id;
         return *scene;
     }

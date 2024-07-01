@@ -16,6 +16,8 @@ public:
     virtual void setup() = 0;
     virtual void handle(const FrameStamp& frameStamp) = 0;
 
+    virtual void onSwitchScene(std::string_view newScene) {}
+
 protected:
     Game& game;
 };

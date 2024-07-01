@@ -65,7 +65,8 @@ public:
 
     void stop() override
     {
-        // TODO: stop is not call when switching scenes
+        soundEngine->stopAll();
+        backgroundPlayer->forceCheckPending();
         backgroundPlayer = nullptr;
         Scene::stop();
     }
