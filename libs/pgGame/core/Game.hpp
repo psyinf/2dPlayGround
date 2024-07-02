@@ -83,13 +83,13 @@ public:
     //         if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
     //         createScene(id, std::make_unique<Type>(*this, std::forward<Args>(args)...));
     //     }
-    // TODO: scene management interace?
+    // TODO: scene management interface?
     template <typename Type = pg::game::Scene>
-    void createScene(std::string_view id)
+    void createScene(std::string_view id, pg::game::SceneConfig&& cfg = {})
     {
         // static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
         if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
-        createScene(id, std::make_unique<Type>(*this));
+        createSceneInternal(id, std::make_unique<Type>(*this, std::move(cfg)));
     }
 
     Scene& getCurrentScene() { return getScene(currentSceneId); }
@@ -97,12 +97,10 @@ public:
     Scene& getScene(std::string_view id);
     Scene& switchScene(std::string_view id);
 
-    template <typename Type = pg::game::Scene, typename... Args>
-    Scene& createAndSwitchScene(std::string_view id, Args&&... args)
+    template <typename Type = pg::game::Scene>
+    Scene& createAndSwitchScene(std::string_view id, SceneConfig&& cfg = {})
     {
-        // compile time switch for empty args
-        if constexpr (sizeof...(Args) == 0) { createScene<Type>(id); }
-        // else { createScene<Type>(id, std::forward<Args>(args)...); }
+        createScene<Type>(id, std::move(cfg));
         return switchScene(id);
     }
 
@@ -113,7 +111,7 @@ public:
 private:
     void frame(FrameStamp& frameStamp);
 
-    void createScene(std::string_view id, std::unique_ptr<Scene>&& scene);
+    void createSceneInternal(std::string_view id, std::unique_ptr<Scene>&& scene);
 
     bool running{true};
 

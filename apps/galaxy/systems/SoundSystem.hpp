@@ -19,7 +19,8 @@ public:
 
     void handle(const pg::game::FrameStamp& frameStamp) override;
 
-    void onSwitchScene(std::string_view newScene) override;
+    void enterScene(std::string_view newScene) override;
+    void exitScene(std::string_view oldScene) override;
 
 private:
     std::unique_ptr<soundEngineX::SoundEngine>      _soundEngine;

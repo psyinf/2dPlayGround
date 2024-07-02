@@ -27,25 +27,15 @@ public:
     static auto constexpr GlobalTransformName = "Scene.globalTransform";
     using Systems = std::vector<std::shared_ptr<SystemInterface>>;
 
-    Scene(Game& game);
+    Scene(Game& game, SceneConfig&& cfg);
+
+    void setup(std::string_view id);
 
     virtual ~Scene() { stop(); }
 
     const Systems& getSystems() const;
 
     Systems& getSystems();
-
-    template <typename T, typename... Args>
-    void registerSystemPrototype(const std::string& name)
-    {
-        if (SystemsFactory::getFactory().hasPrototypeName(name))
-        {
-            spdlog::warn("System prototype with name {} already registered", name);
-            return;
-        }
-        config.systems.push_back(name);
-        SystemsFactory::registerSystem<T, std::forward<Args>()...>(name);
-    }
 
     const Transform2D& getGlobalTransform() const { return globalTransform; }
 
@@ -69,7 +59,7 @@ private:
     Transform2D globalTransform;
     bool        started_{false};
     bool        firstFrame_{true};
-    SceneConfig config;
+    SceneConfig _config;
 
     entt::registry registry;
 };

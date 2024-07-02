@@ -16,7 +16,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
     pg::game::Game game;
-    game.createScene("start");
+    game.createScene("start", {});
     auto& scene = game.switchScene("start");
     auto& systems = scene.getSystems();
     systems.emplace_back(std::make_unique<asteroids::Lasers>(game));

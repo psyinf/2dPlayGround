@@ -11,8 +11,8 @@ namespace galaxy {
 class GalaxyScene : public pg::game::Scene
 {
 public:
-    GalaxyScene(pg::game::Game& game)
-      : pg::game::Scene(game)
+    GalaxyScene(pg::game::Game& game, pg::game::SceneConfig&& cfg)
+      : pg::game::Scene(game, std::move(cfg))
     {
         galaxy::config::Galaxy galaxy_config;
         pg::save("../data/galaxy_default_config.json", galaxy_config);

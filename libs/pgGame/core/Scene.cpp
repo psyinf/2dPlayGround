@@ -32,18 +32,21 @@ void pg::game::Scene::start()
         return;
     }
 
-    for (const auto& system : config.systems)
-    {
-        auto& systems = getSystems();
-        systems.emplace_back(pg::game::SystemsFactory::makeSystem(system, getGame()));
-    }
-
-
     firstFrame_ = true;
     std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
 }
 
-pg::game::Scene::Scene(Game& game)
+pg::game::Scene::Scene(Game& game, SceneConfig&& cfg)
   : game_(game)
+  , _config(std::move(cfg))
 {
+}
+
+void pg::game::Scene::setup([[maybe_unused]] std::string_view id)
+{
+    for (const auto& system : _config.systems)
+    {
+        auto& systems = getSystems();
+        systems.emplace_back(pg::game::SystemsFactory::makeSystem(system, getGame()));
+    }
 }

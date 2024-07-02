@@ -20,13 +20,13 @@ void asteroids::SoundSystem::setup() {}
 
 void asteroids::SoundSystem::handle(const pg::game::FrameStamp&) {}
 
-void asteroids::SoundSystem::onLaserFired(const events::LaserFired& event)
+void asteroids::SoundSystem::onLaserFired(const events::LaserFired&)
 {
     auto pitch = pg::randomBetween(0.95f, 1.15f);
     _bgPlayer->play("../data/sound/asteroids/laser_short.wav", {.pitch = pitch});
 }
 
-void asteroids::SoundSystem::onCollision(const events::Collision& event)
+void asteroids::SoundSystem::onCollision(const events::Collision&)
 {
     // TODO: the soundsystem should not directly act on the collision itself but on the effect
     //  e.g. the sound of the explosion of the asteroid, damage to the ship, etc.

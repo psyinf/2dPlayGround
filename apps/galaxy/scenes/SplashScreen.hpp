@@ -8,50 +8,20 @@
 
 namespace galaxy {
 
-
-
 class SplashScreen : public pg::game::Scene
 {
 public:
-    SplashScreen(pg::game::Game& game)
-      : pg::game::Scene(game)
-      , soundEngine(std::make_unique<soundEngineX::SoundEngine>())
-      , backgroundPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
-    {
-        //TODO: prototypes should be registered in the game and config should be possible to be set from the outside
-        registerSystemPrototype<galaxy::RenderSystem>("renderSystem");
-        // TODO: fix paths
-        try
-        {
-            backgroundPlayer->load("../data/music/dead-space-style-ambient-music-184793.mp3");
-        }
-        catch (const std::exception& e)
-        {
-            spdlog::error("Failed to load resources {}", e.what());
-        }
-    }
+    using pg::game::Scene::Scene;
 
     void start() override
     {
-        try
-        {
-            // TODO: resources repo should be configurable regarding its target path
-            backgroundPlayer->play("../data/music/dead-space-style-ambient-music-184793.mp3");
-        }
-        catch (const std::exception& e)
-        {
-            spdlog::error("Failed to play sound {}", e.what());
-        }
-
         setupOverlay();
-
         Scene::start();
     };
 
     void setupOverlay()
     {
         // update events
-
         pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
@@ -62,18 +32,5 @@ public:
             getRegistry(),
             {std::make_unique<galaxy::gui::SplashScreenWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
-
-    void stop() override
-    {
-        soundEngine->stopAll();
-        backgroundPlayer->forceCheckPending();
-        backgroundPlayer = nullptr;
-        Scene::stop();
-    }
-
-private:
-    std::unique_ptr<soundEngineX::SoundEngine>      soundEngine;
-    std::unique_ptr<soundEngineX::BackgroundPlayer> backgroundPlayer;
-
 };
 } // namespace galaxy

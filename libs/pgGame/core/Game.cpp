@@ -119,7 +119,7 @@ pg::game::Scene& game::Game::getScene(std::string_view id)
     return *scenes.at(std::string(id));
 }
 
-void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
+void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
 {
     // internal switch of scene for setup
     {
@@ -133,6 +133,7 @@ void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scen
         scenePtr->addSingleton<WindowDetails&>(windowDetails);
         scenePtr->addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName,
                                                     getCurrentScene().getGlobalTransform());
+        scenePtr->setup(id);
     }
 }
 
@@ -145,12 +146,17 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
         if (!currentSceneId.empty())
         {
             auto& currentScene = scenes.at(currentSceneId);
+            for (const auto& system : currentScene->getSystems())
+            {
+                system->exitScene(currentSceneId);
+            }
+
             currentScene->stop();
         }
-        // inform scenes
+
         for (const auto& system : scene->getSystems())
         {
-            system->onSwitchScene(id);
+            system->enterScene(id);
         }
 
         currentSceneId = id;
