@@ -9,9 +9,11 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
-    galaxy::GalacticCore gc;
-    gc.setup();
-    gc.run();
+    {
+        galaxy::GalacticCore gc;
+        gc.setup();
+        gc.run();
+    }
 
     return 0;
 }

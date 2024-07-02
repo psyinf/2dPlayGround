@@ -8,6 +8,8 @@
 
 namespace galaxy {
 
+
+
 class SplashScreen : public pg::game::Scene
 {
 public:
@@ -16,6 +18,8 @@ public:
       , soundEngine(std::make_unique<soundEngineX::SoundEngine>())
       , backgroundPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
     {
+        //TODO: prototypes should be registered in the game and config should be possible to be set from the outside
+        registerSystemPrototype<galaxy::RenderSystem>("renderSystem");
         // TODO: fix paths
         try
         {
@@ -38,10 +42,6 @@ public:
         {
             spdlog::error("Failed to play sound {}", e.what());
         }
-
-        auto& systems = getSystems();
-        auto& game = getGame();
-        systems.emplace_back(std::make_unique<galaxy::RenderSystem>(game));
 
         setupOverlay();
 
@@ -74,5 +74,6 @@ public:
 private:
     std::unique_ptr<soundEngineX::SoundEngine>      soundEngine;
     std::unique_ptr<soundEngineX::BackgroundPlayer> backgroundPlayer;
+
 };
 } // namespace galaxy

@@ -13,6 +13,8 @@ namespace pg {
 class SingletonInterface
 {
 public:
+    virtual ~SingletonInterface() = default;
+
     virtual entt::registry& getRegistry() = 0;
 
     /**

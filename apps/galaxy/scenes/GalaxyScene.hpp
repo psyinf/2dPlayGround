@@ -14,10 +14,10 @@ public:
     GalaxyScene(pg::game::Game& game)
       : pg::game::Scene(game)
     {
-        galaxy::config::Galaxy config;
-        pg::save("../data/galaxy_default_config.json", config);
+        galaxy::config::Galaxy galaxy_config;
+        pg::save("../data/galaxy_default_config.json", galaxy_config);
 
-        galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", config);
+        galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
     }
 
     void start() override

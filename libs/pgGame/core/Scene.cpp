@@ -1,6 +1,7 @@
 #include <core/Scene.hpp>
 #include <core/Game.hpp>
 #include <components/WindowDetails.hpp>
+#include <systems/SystemsRegistry.hpp>
 
 void pg::game::Scene::frame(FrameStamp& frameStamp)
 {
@@ -30,6 +31,14 @@ void pg::game::Scene::start()
         spdlog::warn("Scene already started");
         return;
     }
+
+    for (const auto& system : config.systems)
+    {
+        auto& systems = getSystems();
+        systems.emplace_back(pg::game::SystemsFactory::makeSystem(system, getGame()));
+    }
+
+
     firstFrame_ = true;
     std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
 }
