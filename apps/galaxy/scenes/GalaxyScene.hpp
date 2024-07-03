@@ -4,6 +4,12 @@
 #include <memory>
 
 #include <pgEngine/core/LoadSave.hpp>
+
+#include <gui/StatsWidget.hpp>
+#include <gui/SystemInfo.hpp>
+#include <gui/DashBoardWidget.hpp>
+#include <gui/LoadResourcesWidget.hpp>
+
 #include <serializer/ConfigSerializer.hpp>
 
 namespace galaxy {
@@ -19,6 +25,8 @@ public:
 
         galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
     }
+
+    virtual ~GalaxyScene() = default;
 
     void start() override
     {
@@ -115,6 +123,10 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(
+            getRegistry(),
+            {std::make_unique<galaxy::gui::LoadResourcesWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getRegistry(),

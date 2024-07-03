@@ -9,6 +9,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
     PUBLIC
         caching/GenericFactory.hpp
+        imgui/Spinner.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

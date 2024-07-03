@@ -22,10 +22,8 @@
 #include <Config.hpp>
 #include <cmath>
 #include <ranges>
-#include <gui/SystemInfo.hpp>
-#include <gui/DashBoardWidget.hpp>
+
 #include <systems/StatsSystem.hpp>
-#include <gui/StatsWidget.hpp>
 
 namespace galaxy {
 

@@ -3,8 +3,6 @@
 #include <pgEngine/core/Gui.hpp>
 #include <memory>
 #include <gui/SplashScreenWidget.hpp>
-#include <sndX/SoundEngine.hpp>
-#include <sndX/BackgroundPlayer.hpp>
 
 namespace galaxy {
 
@@ -12,6 +10,8 @@ class SplashScreen : public pg::game::Scene
 {
 public:
     using pg::game::Scene::Scene;
+
+    virtual ~SplashScreen() = default;
 
     void start() override
     {
