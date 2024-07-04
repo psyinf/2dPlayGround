@@ -126,10 +126,6 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getRegistry(),
-            {std::make_unique<galaxy::gui::LoadResourcesWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
-
-        pg::game::makeEntity<pg::game::GuiDrawable>(
-            getRegistry(),
             {std::make_unique<galaxy::gui::DashBoardWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),

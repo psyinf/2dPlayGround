@@ -32,9 +32,9 @@ public:
 
     void handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse)
     {
-        // TODO: callbacks?
         try
         {
+            // TODO: support for {next} etc.
             game.switchScene(sse.new_scene);
             auto& scene = game.getCurrentScene();
             if (!scene.started()) { scene.start(); }

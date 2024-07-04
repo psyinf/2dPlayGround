@@ -5,6 +5,8 @@
 #include <ranges>
 #include <foundation/imgui/Spinner.hpp>
 
+#include <pgGame/events/SceneManagementEvents.hpp>
+
 namespace galaxy::gui {
 
 class LoadResourcesWidget : public galaxy::gui::GameGuiWidget
@@ -37,8 +39,14 @@ public:
                                       ImGui::GetStyleColorVec4(ImGuiCol_WindowBg),
                                       10,
                                       3);
+        float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
+        ImGui::ProgressBar(totalProgress);
         ImGui::EndGroup();
         ImGui::End();
+        if (totalProgress >= 1.0f)
+        {
+            getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
+        }
     }
 };
 

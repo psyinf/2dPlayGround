@@ -1,6 +1,8 @@
 #include "Galaxy.hpp"
 #include <scenes/GalaxyScene.hpp>
 #include <scenes/SplashScreen.hpp>
+
+#include <scenes/PreLoadResources.hpp>
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
 
@@ -17,6 +19,7 @@ void galaxy::GalacticCore::setup()
 
     // scenes
     game->createScene<galaxy::SplashScreen>("splashScreen", {.systems = {"soundSystem", "renderSystem"}});
+    game->createScene<galaxy::PreLoadResources>("loadGalaxy", {.systems = {"soundSystem", "renderSystem"}});
     game->createScene<galaxy::GalaxyScene>("galaxy", {.systems = {"soundSystem"}});
 
     auto& scene = game->switchScene("splashScreen");

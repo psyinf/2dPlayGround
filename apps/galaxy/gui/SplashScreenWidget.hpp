@@ -142,7 +142,7 @@ public:
         // draw a line to the left of the buttons from 0,middle of the screen
         auto anchor = ImVec2(0, ImGui::GetWindowSize().y / 2);
         menuButton(anchor, "Start", [this]() {
-            getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
+            getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"loadGalaxy"});
         });
         auto options_anchor = ImVec2(ImGui::GetCursorPosX() + 200, ImGui::GetCursorPosY() + 50);
         // add size of button
