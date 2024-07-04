@@ -21,7 +21,13 @@ public:
         // add percentage of resources loaded as singleton
         addSingleton_as<float&>("resourceLoader.totalProgress", _percentTotalResourcesLoaded);
         addSingleton_as<float&>("resourceLoader.currentProgress", _percentCurrentResourceLoaded);
-        std::vector<std::string> files = {"../data/music/a-meditation-through-time-amp-space-11947.mp3"};
+        std::vector<std::string> files = {
+            "../data/music/a-meditation-through-time-amp-space-11947.mp3",
+            "../data/music/dead-space-style-ambient-music-184793.mp3",
+            "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"
+
+        };
+        //
         // start loading thread
         auto size = files.size();
         // start a watcher thread to update the progress
@@ -31,7 +37,7 @@ public:
                 std::unique_lock<std::mutex> lk(_mutex);
                 _cv.wait(lk);
 
-                _percentTotalResourcesLoaded = static_cast<float>(_numRead) / files.size();
+                _percentTotalResourcesLoaded = static_cast<float>(_numRead) / size;
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         }).detach();
@@ -48,6 +54,7 @@ public:
                 {
                     // log
                 }
+                _percentCurrentResourceLoaded = 1.0;
                 _numRead++;
                 std::unique_lock<std::mutex> lk(_mutex);
                 _cv.notify_one();

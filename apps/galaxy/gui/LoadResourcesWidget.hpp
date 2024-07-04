@@ -40,7 +40,12 @@ public:
                                       10,
                                       3);
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
+        float currentProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.currentProgress");
+
         ImGui::ProgressBar(totalProgress);
+        ImGui::Text("Loading... %.2f%%", totalProgress * 100.0f);
+        ImGui::ProgressBar(currentProgress);
+        ImGui::Text("Current... %.2f%%", currentProgress * 100.0f);
         ImGui::EndGroup();
         ImGui::End();
         if (totalProgress >= 1.0f)
