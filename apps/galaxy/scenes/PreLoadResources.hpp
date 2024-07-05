@@ -11,6 +11,8 @@ namespace galaxy {
 
 class PreLoadResources : public pg::game::Scene
 {
+    static constexpr bool coarse = false;
+
 public:
     using pg::game::Scene::Scene;
 
@@ -54,12 +56,16 @@ public:
                                       _percentCurrentResourceLoaded = progress.percent();
                                       _percentResourcesLoaded[file] = progress.percent();
                                   }});
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
             catch (const std::exception&)
             {
                 // log
+                spdlog::error("Failed to load resource: {}", file);
             }
-            _percentCurrentResourceLoaded = 1.0;
+            _percentResourcesLoaded[file] =
+                1.0f; // might have been in cache already, thus not triggering a progress callback
+            _percentCurrentResourceLoaded = 1.0f;
             _numRead++;
             std::unique_lock<std::mutex> lk(_mutex);
             _cv.notify_one();
@@ -68,16 +74,37 @@ public:
 
     void createWatchProgressThread(std::vector<std::string>::size_type size)
     {
-        std::jthread([&, this, size] {
-            while (_numRead < size)
-            {
-                std::unique_lock<std::mutex> lk(_mutex);
-                _cv.wait(lk);
+        if (coarse)
+        {
+            std::jthread([&, this, size] {
+                while (_numRead < size)
+                {
+                    std::unique_lock<std::mutex> lk(_mutex);
+                    _cv.wait(lk);
 
-                _percentTotalResourcesLoaded = static_cast<float>(_numRead) / size;
-                std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            }
-        }).detach();
+                    _percentTotalResourcesLoaded = static_cast<float>(_numRead) / size;
+                    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                }
+            }).detach();
+        }
+        else
+        {
+            std::jthread([&, this, size] {
+                while (_numRead < size)
+                {
+                    using namespace std::chrono_literals;
+                    std::unique_lock<std::mutex> lk(_mutex);
+                    _cv.wait_for(lk, 50ms);
+
+                    _percentTotalResourcesLoaded = 0.0;
+                    for (const auto& [key, value] : _percentResourcesLoaded)
+                    {
+                        _percentTotalResourcesLoaded += (value / static_cast<float>(size));
+                    }
+                    //_percentTotalResourcesLoaded /= size;
+                }
+            }).detach();
+        }
     }
 
     void setupOverlay()

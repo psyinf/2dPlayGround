@@ -32,7 +32,7 @@ public:
         // center text
         // limit vertical size to 2/3 of the window
         ImGui::SetNextWindowSizeConstraints(ImVec2(-1.f, -1.f),
-                                            ImVec2(ImGui::GetWindowWidth() * 0.66, ImGui::GetWindowHeight() * 0.8f));
+                                            ImVec2(ImGui::GetWindowWidth() * 0.66f, ImGui::GetWindowHeight() * 0.8f));
 
         ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize("Loading Resources...").x) * 0.5f);
         ImGui::Text("Loading Resources...");
@@ -44,20 +44,21 @@ public:
                                       10,
                                       3);
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
-        float currentProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.currentProgress");
-        auto& resourcesProgress =
-            getGame().getCurrentScene().getSingleton<std::map<std::string, float>&>("resourceLoader.resourcesProgress");
+        // float currentProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.currentProgress");
+        // auto& resourcesProgress =
+        //     getGame().getCurrentScene().getSingleton<std::map<std::string,
+        //     float>&>("resourceLoader.resourcesProgress");
 
         ImGui::ProgressBar(totalProgress);
         ImGui::Text("Loading... %.2f%%", totalProgress * 100.0f);
         // ImGui::ProgressBar(currentProgress);
-        ImGui::Text("Current... %.2f%%", currentProgress * 100.0f);
+        // ImGui::Text("Current... %.2f%%", currentProgress * 100.0f);
 
-        for (auto& [resource, progress] : resourcesProgress)
-        {
-            ImGui::ProgressBar(progress);
-            ImGui::Text("%s... %.2f%%", resource.c_str(), progress * 100.0f);
-        }
+        //         for (auto& [resource, progress] : resourcesProgress)
+        //         {
+        //             ImGui::ProgressBar(progress);
+        //             ImGui::Text("%s... %.2f%%", resource.c_str(), progress * 100.0f);
+        //         }
         // make the group fit the contents vertically
 
         ImGui::EndGroup();
