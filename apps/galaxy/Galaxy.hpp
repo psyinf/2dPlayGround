@@ -13,7 +13,6 @@
 #include <systems/DroneSystem.hpp>
 #include <systems/LifetimeSystem.hpp>
 #include <systems/BehaviorSystem.hpp>
-#include <systems/LambdaSystem.hpp>
 #include "components/StarSystem.hpp"
 #include "components/Faction.hpp"
 #include "pgGame/components/RenderState.hpp"
@@ -26,12 +25,6 @@
 #include <systems/StatsSystem.hpp>
 
 namespace galaxy {
-
-template <typename Func>
-auto makeLambdaSystem(pg::game::Game& game, Func&& f)
-{
-    return std::make_unique<LambdaSystem<Func>>(game, std::forward<Func>(f));
-}
 
 class GalacticCore
 

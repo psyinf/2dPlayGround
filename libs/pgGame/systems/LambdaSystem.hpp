@@ -1,7 +1,8 @@
 #pragma once
 #include <pgGame/systems/SystemInterface.hpp>
 
-namespace galaxy {
+namespace pg::game {
+
 template <typename Func>
 class LambdaSystem : public pg::game::SystemInterface
 {
@@ -19,4 +20,10 @@ public:
 private:
     Func lambda;
 };
-} // namespace galaxy
+
+template <typename Func>
+auto makeLambdaSystem(pg::game::Game& game, Func&& f)
+{
+    return std::make_unique<LambdaSystem<Func>>(game, std::forward<Func>(f));
+}
+} // namespace pg::game

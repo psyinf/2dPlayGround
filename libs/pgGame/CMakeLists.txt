@@ -20,7 +20,8 @@ target_sources(${PROJECT_NAME}
 		core/Scene.hpp
 		
 		systems/SystemInterface.hpp
-		
+		systems/SystemsRegistry.hpp
+		systems/LambdaSystem.hpp
 		components/WindowDetails.hpp
 )
 

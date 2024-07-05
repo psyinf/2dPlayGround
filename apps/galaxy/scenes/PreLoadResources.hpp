@@ -21,6 +21,8 @@ public:
         // add percentage of resources loaded as singleton
         addSingleton_as<float&>("resourceLoader.totalProgress", _percentTotalResourcesLoaded);
         addSingleton_as<float&>("resourceLoader.currentProgress", _percentCurrentResourceLoaded);
+        // TODO: from configuration
+        // TODO: resource-cache abstraction (e.g. sound::background1 -> filename)
         std::vector<std::string> files = {
             "../data/music/a-meditation-through-time-amp-space-11947.mp3",
             "../data/music/dead-space-style-ambient-music-184793.mp3",
