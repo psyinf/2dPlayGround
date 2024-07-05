@@ -101,7 +101,6 @@ private:
     mutable std::unordered_map<SDL_Keycode, KeyState> pressed; // pressed and repeated
     std::unordered_map<SDL_Keycode, DirectCallback>   directCallbacks;
     std::unordered_map<SDL_Keycode, CallbackData>     callbacks;
-    pg::iVec2                                         mousePosition{};
 
     MouseMovedCallback   mouseMovedCallback;
     MouseDraggedCallback mouseDraggedCallback;

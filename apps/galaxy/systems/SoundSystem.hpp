@@ -15,6 +15,7 @@ class SoundSystem : public pg::game::SystemInterface
 {
 public:
     SoundSystem(pg::game::Game& game);
+    virtual ~SoundSystem();
     void setup() override;
 
     void handle(const pg::game::FrameStamp& frameStamp) override;

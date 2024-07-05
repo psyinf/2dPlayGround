@@ -20,6 +20,7 @@ class SoundSystem : public pg::game::SystemInterface
 {
 public:
     SoundSystem(pg::game::Game& game);
+    virtual ~SoundSystem();
     void setup();
 
     void handle(const pg::game::FrameStamp& frameStamp);

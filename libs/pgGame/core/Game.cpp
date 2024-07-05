@@ -13,8 +13,9 @@ template <typename T>
 struct ScopedSwitchSceneId
 {
     ScopedSwitchSceneId(T& holder, T value)
-      : value_holder(holder)
-      , previous_value(holder)
+      : previous_value(holder)
+      , value_holder(holder)
+
     {
         value_holder = value;
     }

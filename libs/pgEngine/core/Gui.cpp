@@ -345,14 +345,6 @@ void pg::Gui::begin()
     ImGui_ImplSDL2_NewFrame();
 
     ImGui::NewFrame();
-    ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-
-    static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
-    // dockspace_flags &= ~ImGuiDockNodeFlags_PassthruCentralNode;
-
-    // ImGui::DockSpace(dockspace_id, ImVec2(10.0f, app.getWindowConfig().size[1]), dockspace_flags);
-    // bool t = true;
-    // ImGui::ShowDemoWindow(&t);
 }
 
 void pg::Gui::end()

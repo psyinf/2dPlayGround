@@ -7,6 +7,8 @@
 #include <sndX/SoundEngine.hpp>
 #include <pgEngine/math/Random.hpp>
 
+asteroids::SoundSystem::~SoundSystem() = default;
+
 asteroids::SoundSystem::SoundSystem(pg::game::Game& game)
   : SystemInterface(game)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())

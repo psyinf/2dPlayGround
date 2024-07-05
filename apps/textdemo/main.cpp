@@ -25,7 +25,7 @@ void setupImGui(sdl::Window& window, sdl::Renderer& renderer)
     ImGui_ImplSDLRenderer2_Init(renderer.get());
 }
 
-void imGuiFrame(sdl::Window& window, sdl::Renderer& renderer)
+void imGuiFrame([[maybe_unused]] sdl::Window& window, sdl::Renderer& renderer)
 {
     ImGuiIO& io = ImGui::GetIO();
     ImGui_ImplSDLRenderer2_NewFrame();

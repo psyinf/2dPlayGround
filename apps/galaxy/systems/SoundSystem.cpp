@@ -38,6 +38,8 @@ public:
     SoundEventMap                   _soundEventMap;
 };
 
+galaxy::SoundSystem::~SoundSystem() = default;
+
 galaxy::SoundSystem::SoundSystem(pg::game::Game& game)
   : SystemInterface(game)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
