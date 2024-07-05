@@ -21,18 +21,53 @@ public:
         // add percentage of resources loaded as singleton
         addSingleton_as<float&>("resourceLoader.totalProgress", _percentTotalResourcesLoaded);
         addSingleton_as<float&>("resourceLoader.currentProgress", _percentCurrentResourceLoaded);
+        addSingleton_as<std::map<std::string, float>&>("resourceLoader.resourcesProgress", _percentResourcesLoaded);
         // TODO: from configuration
         // TODO: resource-cache abstraction (e.g. sound::background1 -> filename)
         std::vector<std::string> files = {
             "../data/music/a-meditation-through-time-amp-space-11947.mp3",
             "../data/music/dead-space-style-ambient-music-184793.mp3",
-            "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"
+            "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
 
-        };
-        //
         // start loading thread
         auto size = files.size();
         // start a watcher thread to update the progress
+        createWatchProgressThread(size);
+
+        for (auto& file : files)
+        {
+            createLoaderThread(file);
+        }
+
+        setupOverlay();
+        // load resources for coming scene(s)
+
+        Scene::start();
+    };
+
+    void createLoaderThread(const std::string& file)
+    {
+        std::jthread([this, file] {
+            try
+            {
+                _cache.get(file, {file, [&](soundEngineX::loader::LoadProgressInfo progress) {
+                                      _percentCurrentResourceLoaded = progress.percent();
+                                      _percentResourcesLoaded[file] = progress.percent();
+                                  }});
+            }
+            catch (const std::exception&)
+            {
+                // log
+            }
+            _percentCurrentResourceLoaded = 1.0;
+            _numRead++;
+            std::unique_lock<std::mutex> lk(_mutex);
+            _cv.notify_one();
+        }).detach();
+    }
+
+    void createWatchProgressThread(std::vector<std::string>::size_type size)
+    {
         std::jthread([&, this, size] {
             while (_numRead < size)
             {
@@ -43,31 +78,7 @@ public:
                 std::this_thread::sleep_for(std::chrono::milliseconds(10));
             }
         }).detach();
-
-        for (auto& file : files)
-        {
-            std::jthread([&, this, file] {
-                // TODO callback per file
-                try
-                {
-                    _cache.get(file);
-                }
-                catch (const std::exception&)
-                {
-                    // log
-                }
-                _percentCurrentResourceLoaded = 1.0;
-                _numRead++;
-                std::unique_lock<std::mutex> lk(_mutex);
-                _cv.notify_one();
-            }).detach();
-        }
-
-        setupOverlay();
-        // load resources for coming scene(s)
-
-        Scene::start();
-    };
+    }
 
     void setupOverlay()
     {
@@ -87,6 +98,8 @@ private:
     float _percentTotalResourcesLoaded{};
 
     float _percentCurrentResourceLoaded{};
+
+    std::map<std::string, float> _percentResourcesLoaded{};
 
     std::atomic<uint32_t>     _numRead{};
     soundEngineX::BufferCache _cache;

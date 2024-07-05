@@ -53,7 +53,7 @@ void galaxy::SoundSystem::setup() {}
 
 void galaxy::SoundSystem::handle(const pg::game::FrameStamp&) {}
 
-void galaxy::SoundSystem::exitScene(std::string_view oldScene)
+void galaxy::SoundSystem::exitScene([[maybe_unused]] std::string_view oldScene)
 {
     _soundEngine->stopAll();
 }
