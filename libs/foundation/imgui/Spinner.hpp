@@ -44,9 +44,10 @@ bool BufferingBar(const char* label, float value, const ImVec2& size_arg, const 
     window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o1, bb.Min.y + r), r, bg_col);
     window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o2, bb.Min.y + r), r, bg_col);
     window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o3, bb.Min.y + r), r, bg_col);
+    return true;
 }
 
-bool Spinner(const char* label, float radius, int thickness, const ImU32& color)
+bool Spinner(const char* label, float radius, float thickness, const ImU32& color)
 {
     ImGuiWindow* window = GetCurrentWindow();
     if (window->SkipItems) return false;
@@ -66,21 +67,23 @@ bool Spinner(const char* label, float radius, int thickness, const ImU32& color)
     window->DrawList->PathClear();
 
     int num_segments = 30;
-    int start = abs(ImSin(g.Time * 1.8f) * (num_segments - 5));
+    int start = static_cast<int>(abs(ImSin(static_cast<float>(g.Time) * 1.8f) * (num_segments - 5)));
 
-    const float a_min = IM_PI * 2.0f * ((float)start) / (float)num_segments;
-    const float a_max = IM_PI * 2.0f * ((float)num_segments - 3) / (float)num_segments;
+    const float a_min = std::numbers::pi_v<float> * 2.0f * static_cast<float>(start / static_cast<float>(num_segments));
+    const float a_max =
+        std::numbers::pi_v<float> * 2.0f * (static_cast<float>(num_segments - 3) / static_cast<float>(num_segments));
 
     const ImVec2 centre = ImVec2(pos.x + radius, pos.y + radius + style.FramePadding.y);
 
     for (int i = 0; i < num_segments; i++)
     {
         const float a = a_min + ((float)i / (float)num_segments) * (a_max - a_min);
-        window->DrawList->PathLineTo(
-            ImVec2(centre.x + ImCos(a + g.Time * 8) * radius, centre.y + ImSin(a + g.Time * 8) * radius));
+        window->DrawList->PathLineTo(ImVec2(centre.x + std::cosf(a + static_cast<float>(g.Time * 8)) * radius,
+                                            centre.y + std::sinf(a + static_cast<float>(g.Time * 8)) * radius));
     }
 
     window->DrawList->PathStroke(color, false, thickness);
+    return true;
 }
 
 void LoadingIndicatorCircle(const char*   label,
@@ -102,8 +105,8 @@ void LoadingIndicatorCircle(const char*   label,
     const ImRect bb(pos, ImVec2(pos.x + indicator_radius * 2.0f, pos.y + indicator_radius * 2.0f));
     ItemSize(bb);
     if (!ItemAdd(bb, id)) { return; }
-    const float t = g.Time;
-    const auto  degree_offset = 2.0f * IM_PI / circle_count;
+    const float t = static_cast<float>(g.Time);
+    const auto  degree_offset = 2.0f * std::numbers::pi_v<float> / circle_count;
     for (int i = 0; i < circle_count; ++i)
     {
         const auto x = updated_indicator_radius * std::sin(degree_offset * i);
