@@ -4,8 +4,11 @@
 #include <string>
 #include <unordered_map>
 
-namespace pg {
+namespace pg::foundation {
 
+/**
+ * A generic resource cache that allows to pass factory function to create/load the specified resource
+ */
 class ResourceCache
 {
 public:
@@ -62,4 +65,4 @@ private:
     std::unordered_map<std::string, std::shared_ptr<Resource>> resources;
     Maker                                                      maker;
 };
-} // namespace pg
+} // namespace pg::foundation

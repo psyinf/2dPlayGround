@@ -3,7 +3,7 @@
 #include <imgui.h>
 #include <components/Stats.hpp>
 #include <ranges>
-#include <foundation/imgui/Spinner.hpp>
+#include <pgFoundation/imgui/Spinner.hpp>
 
 #include <pgGame/events/SceneManagementEvents.hpp>
 

@@ -1,4 +1,4 @@
-#include <pgGame/core/ResourceCache.hpp>
+#include <pgFoundation/caching/ResourceCache.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 struct ResourceA
@@ -13,7 +13,7 @@ struct ResourceB
 
 TEST_CASE("ResourceCache smoke tests", "[ResourceCache]")
 {
-    pg::ResourceCache cache{"xxx"};
+    pg::foundation::ResourceCache cache{"xxx"};
     SECTION("Insert/Retrieve ResourceA")
     {
         auto resA = cache.load<ResourceA>("a", [](const auto& p) { return ResourceA{p}; });
@@ -41,7 +41,7 @@ TEST_CASE("ResourceCache smoke tests", "[ResourceCache]")
 
 TEST_CASE("ResourceCache multiple", "[ResourceCache]")
 {
-    pg::ResourceCache cache{"uuu"};
+    pg::foundation::ResourceCache cache{"uuu"};
     SECTION("Insert/Retrieve A and B")
     {
         auto resB = cache.load<ResourceB>("b", [](const auto& p) { return ResourceB{p}; });

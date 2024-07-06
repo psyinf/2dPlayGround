@@ -7,7 +7,7 @@
 #include <string>
 #include <string_view>
 
-namespace foundation {
+namespace pg::foundation {
 
 template <class T, typename... Arguments>
 class GenericFactory
@@ -73,7 +73,7 @@ public:
 private:
     std::map<std::string, CtorFunc, std::less<>> registeredConstructors; ///< Mapping of key to constructors
 };
-} // namespace foundation
+} // namespace pg::foundation
 
 /**
 //example use

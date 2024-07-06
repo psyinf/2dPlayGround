@@ -5,7 +5,7 @@
 #include <pgEngine/core/Gui.hpp>
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
-#include <pgGame/core/ResourceCache.hpp>
+#include <pgFoundation/caching/ResourceCache.hpp>
 #include <pgGame/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
@@ -49,10 +49,10 @@ private:
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
-    pg::SDLApp               sdlApp{windowConfig};
-    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
-    pg::ResourceCache        resourceCache{"../data/"}; // TODO: from config
-    std::unique_ptr<pg::Gui> gui;
+    pg::SDLApp                sdlApp{windowConfig};
+    pg::KeyStateMap           keyStateMap{sdlApp.getEventHandler()};
+    foundation::ResourceCache resourceCache{"../data/"}; // TODO: from config
+    std::unique_ptr<pg::Gui>  gui;
 
     entt::dispatcher dispatcher;
 
@@ -73,7 +73,7 @@ public:
 
     pg::KeyStateMap& getKeyStateMap();
 
-    pg::ResourceCache& getResourceCache();
+    pg::foundation::ResourceCache& getResourceCache();
 
     /// Scene interfaces
     //     template <typename Type = pg::game::Scene, typename... Args>

@@ -95,7 +95,7 @@ pg::KeyStateMap& game::Game::getKeyStateMap()
     return keyStateMap;
 }
 
-pg::ResourceCache& game::Game::getResourceCache()
+pg::foundation::ResourceCache& game::Game::getResourceCache()
 {
     return resourceCache;
 }
@@ -127,9 +127,9 @@ void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::ga
         ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
         scenes.emplace(std::string{id}, std::move(scene));
         auto scenePtr = scenes.at(std::string(id)).get();
-        scenePtr->addSingleton<pg::TypedResourceCache<pg::Sprite>>(
+        scenePtr->addSingleton<pg::foundation::TypedResourceCache<pg::Sprite>>(
             "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-        scenePtr->addSingleton<pg::TypedResourceCache<sdl::Texture>>(
+        scenePtr->addSingleton<pg::foundation::TypedResourceCache<sdl::Texture>>(
             "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
         scenePtr->addSingleton<WindowDetails&>(windowDetails);
         scenePtr->addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName,

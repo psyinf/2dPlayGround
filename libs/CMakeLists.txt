@@ -1,3 +1,3 @@
 add_subdirectory(pgEngine)
 add_subdirectory(pgGame)
-add_subdirectory(foundation)
+add_subdirectory(pgFoundation)
