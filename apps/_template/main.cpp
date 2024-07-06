@@ -14,7 +14,8 @@ void textdemo_main()
     auto  text = pg::SpriteFactory::makeTextSprite(app.getRenderer(), font, "Hello, World!");
     auto  line = pg::Line{{0, 0}, {100, 100}};
     auto& renderer = app.getRenderer();
-    renderer.setDrawColor(0xff, 0x00, 0xff, 0xff);
+    renderer.setDrawColor(
+        static_cast<uint8_t>(0xff), static_cast<uint8_t>(0x00), static_cast<uint8_t>(0xff), static_cast<uint8_t>(0xff));
 
     auto render = [&](auto& app) {
         text.draw(app.getRenderer(), {.pos{100, 100}}, {});

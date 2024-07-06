@@ -29,7 +29,7 @@ public:
     }
 
     template <typename T, StringLiteral i>
-    void play(const T& event)
+    void play(const T& /*event*/)
     {
         _bgPlayer.play(_soundEventMap.at(i.value));
     }

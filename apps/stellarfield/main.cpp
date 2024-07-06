@@ -86,12 +86,12 @@ void textdemo_main()
         for (auto& particle : particles)
         {
             auto pos = particle.pos;
-            dot.draw(app.getRenderer(), {.pos{pos}, .scale{0.05, 0.05}}, rendererStates);
+            dot.draw(app.getRenderer(), {.pos{pos}, .scale{0.05f, 0.05f}}, rendererStates);
             // update
         }
 
         updateStars(
-            particles, 1.0 / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]}, particles[0].pos);
+            particles, 1.0f / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]}, particles[0].pos);
 
         if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
     };
@@ -100,7 +100,7 @@ void textdemo_main()
     app.loop(done, render);
 }
 
-int main(int argc, char** argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 {
     textdemo_main();
     return 0;

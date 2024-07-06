@@ -71,7 +71,7 @@ void textdemo_main()
         imGuiFrame(app.getWindow(), app.getRenderer());
 
         text.draw(app.getRenderer(),
-                  {.pos{100, 100}, .rotation_deg{rot += 0.1}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
+                  {.pos{100, 100}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
                   rendererStates);
 
         text.draw(app.getRenderer(), {.pos{512, 512}}, rendererStates2);
