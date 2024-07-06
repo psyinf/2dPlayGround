@@ -2,7 +2,7 @@
 
 #include <SDL_image.h>
 #include <font/Font.hpp>
-
+#include <pgFoundation/caching/ResourceLocator.hpp>
 #include "SDL_ttf.h"
 
 sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, std::string_view resource_name)
@@ -13,7 +13,8 @@ sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, std::string
 
 pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_view resource_name)
 {
-    sdl::Surface spriteSurface(IMG_Load(resource_name.data()));
+    const auto   path = _resourceLocator.locate(std::string{resource_name});
+    sdl::Surface spriteSurface(IMG_Load(path.string().c_str()));
     return Sprite(std::make_shared<sdl::Texture>(renderer.get(), spriteSurface.get()));
 }
 

@@ -49,10 +49,10 @@ private:
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
-    pg::SDLApp                sdlApp{windowConfig};
-    pg::KeyStateMap           keyStateMap{sdlApp.getEventHandler()};
-    foundation::ResourceCache resourceCache{"../data/"}; // TODO: from config
-    std::unique_ptr<pg::Gui>  gui;
+    pg::SDLApp                    sdlApp{windowConfig};
+    pg::KeyStateMap               keyStateMap{sdlApp.getEventHandler()};
+    pg::foundation::ResourceCache resourceCache; // TODO: from config
+    std::unique_ptr<pg::Gui>      gui;
 
     entt::dispatcher dispatcher;
 
