@@ -5,64 +5,68 @@
 #include <unordered_map>
 
 namespace pg::foundation {
+using URI = std::string;
 
 /**
- * A generic resource cache that allows to pass factory function to create/load the specified resource
+ * A generic resource cache that allows to pass factory function to create/load the specified resource.
+ * Resources are stored using std::any to allow for different types of resources to be stored in the same cache
+ * The context is passed to the maker function to allow for context-specific resource loading. E.g. this could be the
+ * base path for the resources
  */
 class ResourceCache
 {
 public:
-    ResourceCache(const std::string& basePath)
-      : basePath(basePath)
-    {
-    }
+    ResourceCache() = default;
 
     template <typename Resource>
-    std::shared_ptr<Resource> load(const std::string& path)
+    std::shared_ptr<Resource> load(const URI& uri)
     {
-        if (resources.find(path) == resources.end()) { resources[path] = std::make_shared<Resource>(path); }
-        return std::any_cast<std::shared_ptr<Resource>>(resources[path]);
+        if (!_resources.contains(uri)) { _resources[uri] = std::make_shared<Resource>(uri); }
+        return std::any_cast<std::shared_ptr<Resource>>(_resources[uri]);
     }
 
     template <typename Resource, typename Maker, typename... Args>
-    std::shared_ptr<Resource> load(const std::string& path, Maker&& maker, Args... args)
+    std::shared_ptr<Resource> load(const URI& uri, Maker&& maker, Args... args)
     {
-        if (resources.find(path) == resources.end())
+        if (!_resources.contains(uri))
         {
             // TODO: use std::filesystem
-            resources[path] = std::make_shared<Resource>(std::move(maker(basePath + "/" + path, args...)));
+            _resources[uri] = std::make_shared<Resource>(std::move(maker(uri, args...)));
         }
-        return std::any_cast<std::shared_ptr<Resource>>(resources[path]);
+        return std::any_cast<std::shared_ptr<Resource>>(_resources[uri]);
     }
 
 private:
-    std::unordered_map<std::string, std::any> resources;
-    std::string                               basePath;
+    std::unordered_map<URI, std::any> _resources;
 };
 
-template <typename Resource, typename Maker = std::function<Resource(const std::string&)>>
+/**
+ * A typed resource cache that allows to pass factory function to create/load the specified resource.
+ * It allows to store only a single type of resource in the cache
+ */
+template <typename Resource, typename Maker = std::function<Resource(const URI&)>>
 class TypedResourceCache
 {
+    using URI = std::string;
+
 public:
-    TypedResourceCache(const std::string& basePath, Maker&& maker)
-      : basePath(basePath)
-      , maker(maker)
+    TypedResourceCache(Maker&& maker)
+      : _maker(maker)
     {
     }
 
-    std::shared_ptr<Resource> load(const std::string& path)
+    std::shared_ptr<Resource> load(const URI& uri)
     {
-        if (resources.find(path) == resources.end())
+        if (!_resources.contains(uri))
         {
             // TODO: use std::filesystem
-            resources[path] = std::make_shared<Resource>(std::move(maker(basePath + "/" + path)));
+            _resources[uri] = std::make_shared<Resource>(std::move(_maker(uri)));
         }
-        return resources[path];
+        return _resources[uri];
     }
 
 private:
-    std::string                                                basePath;
-    std::unordered_map<std::string, std::shared_ptr<Resource>> resources;
-    Maker                                                      maker;
+    std::unordered_map<URI, std::shared_ptr<Resource>> _resources{};
+    Maker                                              _maker;
 };
 } // namespace pg::foundation

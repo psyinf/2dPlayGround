@@ -1,6 +1,8 @@
 #pragma once
 
-namespace foundation::paths {
+#include <filesystem>
+#include <vector>
+namespace pg::foundation::paths {
 
 namespace interal {
 
