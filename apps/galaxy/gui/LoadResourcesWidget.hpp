@@ -37,12 +37,12 @@ public:
         ImGui::SetCursorPosX((ImGui::GetWindowWidth() - ImGui::CalcTextSize("Loading Resources...").x) * 0.5f);
         ImGui::Text("Loading Resources...");
         ImGui::SetCursorPosX((ImGui::GetWindowWidth() - 40) * 0.5f);
-        ImGui::LoadingIndicatorCircle("##loading",
-                                      40,
-                                      ImGui::GetStyleColorVec4(ImGuiCol_Text),
-                                      ImGui::GetStyleColorVec4(ImGuiCol_WindowBg),
-                                      10,
-                                      3);
+        pg::foundation::imgui::LoadingIndicatorCircle("##loading",
+                                                      40,
+                                                      ImGui::GetStyleColorVec4(ImGuiCol_Text),
+                                                      ImGui::GetStyleColorVec4(ImGuiCol_WindowBg),
+                                                      10,
+                                                      3);
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
         // float currentProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.currentProgress");
         // auto& resourcesProgress =

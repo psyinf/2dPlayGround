@@ -2,11 +2,11 @@
 #include <imgui_internal.h>
 
 // from https : // github.com/ocornut/imgui/issues/1901
-namespace ImGui {
+namespace pg::foundation::imgui {
 
 bool BufferingBar(const char* label, float value, const ImVec2& size_arg, const ImU32& bg_col, const ImU32& fg_col)
 {
-    ImGuiWindow* window = GetCurrentWindow();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems) return false;
 
     ImGuiContext&     g = *GImGui;
@@ -18,8 +18,8 @@ bool BufferingBar(const char* label, float value, const ImVec2& size_arg, const 
     size.x -= style.FramePadding.x * 2;
 
     const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
-    ItemSize(bb, style.FramePadding.y);
-    if (!ItemAdd(bb, id)) return false;
+    ImGui::ItemSize(bb, style.FramePadding.y);
+    if (!ImGui::ItemAdd(bb, id)) return false;
 
     // Render
     const float circleStart = size.x * 0.7f;
@@ -49,7 +49,7 @@ bool BufferingBar(const char* label, float value, const ImVec2& size_arg, const 
 
 bool Spinner(const char* label, float radius, float thickness, const ImU32& color)
 {
-    ImGuiWindow* window = GetCurrentWindow();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems) return false;
 
     ImGuiContext&     g = *GImGui;
@@ -60,8 +60,8 @@ bool Spinner(const char* label, float radius, float thickness, const ImU32& colo
     ImVec2 size((radius) * 2, (radius + style.FramePadding.y) * 2);
 
     const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
-    ItemSize(bb, style.FramePadding.y);
-    if (!ItemAdd(bb, id)) return false;
+    ImGui::ItemSize(bb, style.FramePadding.y);
+    if (!ImGui::ItemAdd(bb, id)) return false;
 
     // Render
     window->DrawList->PathClear();
@@ -93,7 +93,7 @@ void LoadingIndicatorCircle(const char*   label,
                             const int     circle_count,
                             const float   speed)
 {
-    ImGuiWindow* window = GetCurrentWindow();
+    ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems) { return; }
 
     ImGuiContext& g = *GImGui;
@@ -103,8 +103,8 @@ void LoadingIndicatorCircle(const char*   label,
     const float  circle_radius = indicator_radius / 15.0f;
     const float  updated_indicator_radius = indicator_radius - 4.0f * circle_radius;
     const ImRect bb(pos, ImVec2(pos.x + indicator_radius * 2.0f, pos.y + indicator_radius * 2.0f));
-    ItemSize(bb);
-    if (!ItemAdd(bb, id)) { return; }
+    ImGui::ItemSize(bb);
+    if (!ImGui::ItemAdd(bb, id)) { return; }
     const float t = static_cast<float>(g.Time);
     const auto  degree_offset = 2.0f * std::numbers::pi_v<float> / circle_count;
     for (int i = 0; i < circle_count; ++i)
@@ -119,7 +119,7 @@ void LoadingIndicatorCircle(const char*   label,
         color.w = 1.0f;
         window->DrawList->AddCircleFilled(ImVec2(pos.x + indicator_radius + x, pos.y + indicator_radius - y),
                                           circle_radius + growth * circle_radius,
-                                          GetColorU32(color));
+                                          ImGui::GetColorU32(color));
     }
 }
-} // namespace ImGui
+} // namespace pg::foundation::imgui

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace foundation {
+namespace pg::foundation {
 class ResourceLocatorBase
 {
 public:
@@ -23,4 +23,4 @@ private:
     std::unordered_map<std::string, std::filesystem::path> _locations;
 };
 
-} // namespace foundation
+} // namespace pg::foundation
