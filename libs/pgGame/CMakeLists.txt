@@ -16,11 +16,11 @@ target_sources(${PROJECT_NAME}
 		core/FrameStamp.hpp
 		core/RegistryHelper.hpp
 		core/KeyStateMap.hpp
-		core/ResourceCache.hpp
 		core/Scene.hpp
 		
 		systems/SystemInterface.hpp
-		
+		systems/SystemsRegistry.hpp
+		systems/LambdaSystem.hpp
 		components/WindowDetails.hpp
 )
 

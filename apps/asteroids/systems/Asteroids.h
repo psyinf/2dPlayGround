@@ -2,7 +2,7 @@
 #include <array>
 #include <deque>
 #include <entt/entt.hpp>
-#include <events/Collison.h>
+#include <events/Collision.h>
 #include <pgGame/systems/SystemInterface.hpp>
 
 namespace asteroids {

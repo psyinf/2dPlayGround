@@ -7,8 +7,15 @@
 #include <ranges>
 #include <entt/entt.hpp>
 #include <pgGame/core/SingletonInterface.hpp>
+#include <pgGame/systems/SystemsRegistry.hpp>
 
 namespace pg::game {
+
+struct SceneConfig
+{
+    std::vector<std::string> systems;
+};
+
 /**
  * A scene is basically a level or a screen in a game and is represented by a collection of entities and systems.
  * Currently the entities are stored in a shared registry and the systems are stored in a vector.
@@ -20,9 +27,11 @@ public:
     static auto constexpr GlobalTransformName = "Scene.globalTransform";
     using Systems = std::vector<std::shared_ptr<SystemInterface>>;
 
-    Scene(Game& game);
+    Scene(Game& game, SceneConfig&& cfg);
 
-    virtual ~Scene() = default;
+    void setup(std::string_view id);
+
+    virtual ~Scene() { stop(); }
 
     const Systems& getSystems() const;
 
@@ -50,6 +59,7 @@ private:
     Transform2D globalTransform;
     bool        started_{false};
     bool        firstFrame_{true};
+    SceneConfig _config;
 
     entt::registry registry;
 };

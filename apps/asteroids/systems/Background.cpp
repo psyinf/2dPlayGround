@@ -20,8 +20,7 @@ void asteroids::Background::setup()
     // TODO add entities as references to the classes
     auto backgroundRect = pg::iVec2{windowDetails.windowRect.w, windowDetails.windowRect.h};
 
-    registry.emplace<pg::game::Drawable>(
-        background, std::make_unique<pg::ScrollingSprite>(std::move(backgroundImg), std::move(backgroundRect)));
+    registry.emplace<pg::game::Drawable>(background, std::make_unique<pg::ScrollingSprite>(std::move(backgroundImg)));
     registry.emplace<pg::Transform2D>(background);
     registry.emplace<asteroids::Dynamics>(background, asteroids::Dynamics{.velocity{0, 200}});
     registry.emplace<backgroundTag>(background);

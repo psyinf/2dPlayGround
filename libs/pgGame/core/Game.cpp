@@ -13,8 +13,9 @@ template <typename T>
 struct ScopedSwitchSceneId
 {
     ScopedSwitchSceneId(T& holder, T value)
-      : value_holder(holder)
-      , previous_value(holder)
+      : previous_value(holder)
+      , value_holder(holder)
+
     {
         value_holder = value;
     }
@@ -32,9 +33,9 @@ public:
 
     void handleSceneSwitchEvent(const pg::game::events::SwitchSceneEvent& sse)
     {
-        // TODO: callbacks?
         try
         {
+            // TODO: support for {next} etc.
             game.switchScene(sse.new_scene);
             auto& scene = game.getCurrentScene();
             if (!scene.started()) { scene.start(); }
@@ -94,7 +95,7 @@ pg::KeyStateMap& game::Game::getKeyStateMap()
     return keyStateMap;
 }
 
-pg::ResourceCache& game::Game::getResourceCache()
+pg::foundation::ResourceCache& game::Game::getResourceCache()
 {
     return resourceCache;
 }
@@ -119,20 +120,21 @@ pg::game::Scene& game::Game::getScene(std::string_view id)
     return *scenes.at(std::string(id));
 }
 
-void game::Game::createScene(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
+void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
 {
     // internal switch of scene for setup
     {
         ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
         scenes.emplace(std::string{id}, std::move(scene));
         auto scenePtr = scenes.at(std::string(id)).get();
-        scenePtr->addSingleton<pg::TypedResourceCache<pg::Sprite>>(
-            "../data", [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-        scenePtr->addSingleton<pg::TypedResourceCache<sdl::Texture>>(
-            "../data", [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
+        scenePtr->addSingleton<pg::foundation::TypedResourceCache<pg::Sprite>>(
+            [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
+        scenePtr->addSingleton<pg::foundation::TypedResourceCache<sdl::Texture>>(
+            [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
         scenePtr->addSingleton<WindowDetails&>(windowDetails);
         scenePtr->addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName,
                                                     getCurrentScene().getGlobalTransform());
+        scenePtr->setup(id);
     }
 }
 
@@ -141,6 +143,23 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
     try
     {
         auto scene = scenes.at(std::string(id)).get();
+        // stop current scene
+        if (!currentSceneId.empty())
+        {
+            auto& currentScene = scenes.at(currentSceneId);
+            for (const auto& system : currentScene->getSystems())
+            {
+                system->exitScene(currentSceneId);
+            }
+
+            currentScene->stop();
+        }
+
+        for (const auto& system : scene->getSystems())
+        {
+            system->enterScene(id);
+        }
+
         currentSceneId = id;
         return *scene;
     }

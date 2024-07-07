@@ -2,6 +2,7 @@
 #include <pgEngine/font/Font.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgEngine/primitives/FramedSprite.hpp>
+#include <pgFoundation/caching/ResourceLocator.hpp>
 #include <sdlpp.hpp>
 
 namespace pg {
@@ -28,6 +29,9 @@ public:
                                          uint16_t         width,
                                          uint16_t         height,
                                          std::string_view resource_name);
+
+private:
+    static inline pg::foundation::PathResourceLocator _resourceLocator{"../data"};
 };
 
 } // namespace pg

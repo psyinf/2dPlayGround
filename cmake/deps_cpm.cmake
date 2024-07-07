@@ -68,13 +68,18 @@ CPMAddPackage(
 CPMAddPackage(
 	NAME soundEngine
 	GITHUB_REPOSITORY psyinf/soundEngine
-    GIT_TAG v0.0.1
+    GIT_TAG registered_sources
 )
 
 if (NOT ($ENV{GITHUB_ACTIONS}))
 CPMAddPackage(
 	NAME resources
 	GITHUB_REPOSITORY psyinf/resources-galaxy
+    GIT_TAG main
+)
+CPMAddPackage(
+	NAME resources-sound
+	GITHUB_REPOSITORY psyinf/resources-sound
     GIT_TAG main
 )
 endif()

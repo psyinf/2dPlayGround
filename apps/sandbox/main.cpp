@@ -87,8 +87,8 @@ try
     int       frame = 0;
 
     auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
-    auto background = std::make_unique<pg::ScrollingSprite>(
-        pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"), pg::iVec2{1280, 720});
+    auto background =
+        std::make_unique<pg::ScrollingSprite>(pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"));
     auto animation = pg::SpriteFactory::makeFramedSprite(renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
     while (!done)
     {

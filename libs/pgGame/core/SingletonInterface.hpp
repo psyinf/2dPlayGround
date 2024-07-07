@@ -5,7 +5,7 @@
 #include <entt/entity/registry.hpp>
 #include <stdexcept>
 #include <string_view>
-#include <pgGame/core/ResourceCache.hpp>
+#include <pgFoundation/caching/ResourceCache.hpp>
 #include <spdlog/spdlog.h>
 
 namespace pg {
@@ -13,15 +13,17 @@ namespace pg {
 class SingletonInterface
 {
 public:
+    virtual ~SingletonInterface() = default;
+
     virtual entt::registry& getRegistry() = 0;
 
     /**
      * Get the resource cache for a specific type of resource.
      */
     template <typename Resource>
-    pg::TypedResourceCache<Resource>& getTypedResourceCache()
+    foundation::TypedResourceCache<Resource>& getTypedResourceCache()
     {
-        return getSingleton<pg::TypedResourceCache<Resource>>();
+        return getSingleton<foundation::TypedResourceCache<Resource>>();
     }
 
     // TODO: check const-ness

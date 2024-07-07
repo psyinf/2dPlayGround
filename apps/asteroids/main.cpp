@@ -10,12 +10,13 @@
 #include <systems/Lasers.h>
 #include <systems/Player.h>
 #include <systems/RenderSystem.hpp>
-#include <SoundEngine.h>
+#include <systems/SoundSystem.hpp>
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
     pg::game::Game game;
-    game.createScene("start");
+    game.createScene("start", {});
     auto& scene = game.switchScene("start");
     auto& systems = scene.getSystems();
     systems.emplace_back(std::make_unique<asteroids::Lasers>(game));
@@ -25,6 +26,7 @@ try
     systems.emplace_back(std::make_unique<asteroids::Collisions>(game));
     systems.emplace_back(std::make_unique<asteroids::RenderSystem>(game));
     systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game));
+    systems.emplace_back(std::make_unique<asteroids::SoundSystem>(game));
     game.switchScene("start");
 
     // TODO: from external config

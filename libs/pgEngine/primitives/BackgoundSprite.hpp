@@ -6,9 +6,8 @@ namespace pg {
 class ScrollingSprite : public Sprite
 {
 public:
-    ScrollingSprite(pg::Sprite&& sprite, iVec2&& backgroundSize)
+    ScrollingSprite(pg::Sprite&& sprite)
       : Sprite(std::move(sprite))
-      , backgroundSize(std::move(backgroundSize))
     {
     }
 
@@ -38,9 +37,6 @@ public:
         r.copyEx(getTexture().get(), &src_3_rect, &dst_3_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
         r.copyEx(getTexture().get(), &src_4_rect, &dst_4_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
     }
-
-private:
-    iVec2 backgroundSize;
 };
 
 } // namespace pg

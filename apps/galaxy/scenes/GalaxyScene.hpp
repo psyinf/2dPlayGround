@@ -4,6 +4,12 @@
 #include <memory>
 
 #include <pgEngine/core/LoadSave.hpp>
+
+#include <gui/StatsWidget.hpp>
+#include <gui/SystemInfo.hpp>
+#include <gui/DashBoardWidget.hpp>
+#include <gui/LoadResourcesWidget.hpp>
+
 #include <serializer/ConfigSerializer.hpp>
 
 namespace galaxy {
@@ -11,14 +17,16 @@ namespace galaxy {
 class GalaxyScene : public pg::game::Scene
 {
 public:
-    GalaxyScene(pg::game::Game& game)
-      : pg::game::Scene(game)
+    GalaxyScene(pg::game::Game& game, pg::game::SceneConfig&& cfg)
+      : pg::game::Scene(game, std::move(cfg))
     {
-        galaxy::config::Galaxy config;
-        pg::save("../data/galaxy_default_config.json", config);
+        galaxy::config::Galaxy galaxy_config;
+        pg::save("../data/galaxy_default_config.json", galaxy_config);
 
-        galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", config);
+        galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
     }
+
+    virtual ~GalaxyScene() = default;
 
     void start() override
     {
