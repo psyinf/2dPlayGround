@@ -18,21 +18,32 @@ class ResourceCache
 public:
     ResourceCache() = default;
 
+    bool has(const URI& uri) const { return _resources.contains(uri); }
+
     template <typename Resource>
-    std::shared_ptr<Resource> load(const URI& uri)
+    std::shared_ptr<Resource> get(const URI& uri)
     {
-        if (!_resources.contains(uri)) { _resources[uri] = std::make_shared<Resource>(uri); }
+        return std::any_cast<std::shared_ptr<Resource>>(_resources.at(uri));
+    }
+
+    template <typename Resource>
+    std::shared_ptr<Resource> retrieve(const URI& uri)
+    {
+        if (!has(uri)) { _resources[uri] = std::make_shared<Resource>(uri); }
         return std::any_cast<std::shared_ptr<Resource>>(_resources[uri]);
     }
 
     template <typename Resource, typename Maker, typename... Args>
-    std::shared_ptr<Resource> load(const URI& uri, Maker&& maker, Args... args)
+    std::shared_ptr<Resource> retrieve(const URI& uri, Maker&& maker, Args... args)
     {
-        if (!_resources.contains(uri))
-        {
-            // TODO: use std::filesystem
-            _resources[uri] = std::make_shared<Resource>(std::move(maker(uri, args...)));
-        }
+        if (!has(uri)) { _resources[uri] = std::make_shared<Resource>(std::move(maker(uri, args...))); }
+        return std::any_cast<std::shared_ptr<Resource>>(_resources[uri]);
+    }
+
+    template <typename Resource, typename Maker, typename... Args>
+    std::shared_ptr<Resource> retrieve(const URI& uri, Maker&& maker)
+    {
+        if (!has(uri)) { _resources[uri] = std::make_shared<Resource>(std::move(maker(uri))); }
         return std::any_cast<std::shared_ptr<Resource>>(_resources[uri]);
     }
 

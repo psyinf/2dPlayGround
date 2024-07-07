@@ -21,7 +21,7 @@ struct SpriteResource : public pg::Sprite
 
 void asteroids::Lasers::createShot(const events::LaserFired& event)
 {
-    auto sprite = game.getResourceCache().load<pg::Sprite>("../data/laserBlue01.png", [this](const auto& e) {
+    auto sprite = game.getResourceCache().retrieve<pg::Sprite>("../data/laserBlue01.png", [this](const auto& e) {
         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
     });
 
