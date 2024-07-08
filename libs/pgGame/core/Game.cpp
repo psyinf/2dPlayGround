@@ -95,9 +95,9 @@ pg::KeyStateMap& game::Game::getKeyStateMap()
     return keyStateMap;
 }
 
-pg::foundation::ResourceCache& game::Game::getResourceCache()
+game::Game::ResourceManager& game::Game::getResourceManager()
 {
-    return resourceCache;
+    return resourceManager;
 }
 
 void game::Game::loop()

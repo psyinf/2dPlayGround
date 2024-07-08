@@ -11,20 +11,25 @@ void asteroids::Lasers::setup()
     game.getDispatcher().sink<asteroids::events::LaserFired>().connect<&Lasers::handleEvent>(this);
 }
 
-struct SpriteResource : public pg::Sprite
+namespace pg::foundation {
+/*
+template <>
+pg::Sprite loadResource<pg::Sprite, sdl::Renderer&>(const std::string& path, sdl::Renderer& r)
 {
-    SpriteResource(sdl::Renderer& renderer, const std::string& path)
-      : pg::Sprite(pg::SpriteFactory::makeSprite(renderer, path))
-    {
-    }
-};
+    return pg::SpriteFactory::makeSprite(r, path);
+}*/
+} // namespace pg::foundation
 
 void asteroids::Lasers::createShot(const events::LaserFired& event)
 {
-    auto sprite = game.getResourceCache().retrieve<pg::Sprite>("../data/laserBlue01.png", [this](const auto& e) {
-        return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
-    });
-
+    //     auto sprite = game.getResourceManager().get().load<pg::Sprite>("../data/laserBlue01.png", [this](const auto&
+    //     e) {
+    //         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
+    //     });
+    auto& renderer = game.getApp().getRenderer();
+    // auto               sprite = game.getResourceManager().get().load<pg::Sprite>("../data/laserBlue01.png",
+    // renderer);
+    auto               sprite = std::make_shared<pg::Sprite>(nullptr);
     pg::game::Drawable d(sprite);
     // determine shoot position
     auto& shooterTransform = game.getRegistry().get<pg::Transform2D>(event.shooter);

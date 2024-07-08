@@ -5,7 +5,7 @@
 #include <pgEngine/core/Gui.hpp>
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
-#include <pgFoundation/caching/ResourceCache.hpp>
+#include <pgFoundation/caching/ResourceManager.hpp>
 #include <pgGame/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
@@ -43,16 +43,17 @@ class Game
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
+    using ResourceManager = foundation::ResourceManagerMonostate<foundation::IdentityResourceLocator>;
 
 private:
     pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "minimal demo"}; // TODO: from config
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
-    pg::SDLApp                    sdlApp{windowConfig};
-    pg::KeyStateMap               keyStateMap{sdlApp.getEventHandler()};
-    pg::foundation::ResourceCache resourceCache; // TODO: from config
-    std::unique_ptr<pg::Gui>      gui;
+    pg::SDLApp               sdlApp{windowConfig};
+    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
+    ResourceManager          resourceManager;
+    std::unique_ptr<pg::Gui> gui;
 
     entt::dispatcher dispatcher;
 
@@ -73,7 +74,7 @@ public:
 
     pg::KeyStateMap& getKeyStateMap();
 
-    pg::foundation::ResourceCache& getResourceCache();
+    ResourceManager& getResourceManager();
 
     /// Scene interfaces
     //     template <typename Type = pg::game::Scene, typename... Args>

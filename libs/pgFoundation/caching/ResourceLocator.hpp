@@ -9,6 +9,14 @@ public:
     bool contains(this auto&& self, const std::string& uri) { return self.has_impl(uri); }
 };
 
+class IdentityResourceLocator : public ResourceLocatorBase
+{
+public:
+    std::filesystem::path loc_impl(const std::string& uri) { return uri; }
+
+    bool has_impl([[maybe_unused]] const std::string& uri) { return true; }
+};
+
 class MapppedResourceLocator : public ResourceLocatorBase
 {
 public:
