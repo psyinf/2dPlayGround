@@ -5,24 +5,30 @@ class ResourceLocatorBase
 {
 public:
     std::filesystem::path locate(this auto&& self, const std::string& uri) { return self.loc_impl(uri); }
+
+    bool contains(this auto&& self, const std::string& uri) { return self.has_impl(uri); }
 };
 
 class MapppedResourceLocator : public ResourceLocatorBase
 {
 public:
-    void addLocation(this auto&& self, const std::string& uri, const std::filesystem::path& path)
+    using UriMap = std::unordered_map<std::string, std::string>;
+
+    MapppedResourceLocator(UriMap&& locations)
+      : _locations(std::move(locations))
     {
-        self.add_impl(uri, path);
     }
+
+    void addLocation(this auto&& self, const std::string& uri, const std::string& path) { self.add_impl(uri, path); }
 
     bool hasLocation(this auto&& self, const std::string& uri) { return self.has_impl(uri); }
 
-    std::filesystem::path loc_impl(const std::string& uri) { return _locations.at(uri); }
+    std::string loc_impl(const std::string& uri) { return _locations.at(uri); }
 
     bool has_impl(const std::string& uri) { return _locations.contains(uri); }
 
 private:
-    std::unordered_map<std::string, std::filesystem::path> _locations;
+    UriMap _locations;
 };
 
 // resource locator that constructs a path from the URI
