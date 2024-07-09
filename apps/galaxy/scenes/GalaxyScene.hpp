@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <pgEngine/core/LoadSave.hpp>
+#include <pgEngine/resources/SpriteResource.hpp>
 
 #include <gui/StatsWidget.hpp>
 #include <gui/SystemInfo.hpp>
@@ -143,7 +144,7 @@ private:
         std::normal_distribution<float> d(0.0f, 150.0f);
         std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
-        auto dot_sprite = getTypedResourceCache<pg::Sprite>().load("../data/circle_05.png");
+        auto dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
 
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 10000})
         {
@@ -164,7 +165,7 @@ private:
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
         // add some background
-        auto background_sprite = getTypedResourceCache<pg::Sprite>().load("../data/background/milky_way_blurred.png");
+        auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
         pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState>(
@@ -189,8 +190,8 @@ private:
 
     void setupSelectionMarker()
     {
-        auto         dot_texture = getTypedResourceCache<sdl::Texture>().load("../data/reticle.png");
-        auto         marker = std::make_shared<pg::Sprite>(dot_texture);
+        auto marker =
+            getGame().getResource<pg::Sprite, sdl::Renderer&>("../data/reticle.png", getGame().getApp().getRenderer());
         entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::MarkerTag>(
                 getRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {}, {});

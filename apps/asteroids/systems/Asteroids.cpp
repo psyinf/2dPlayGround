@@ -2,7 +2,7 @@
 
 #include "components/Entities.h"
 
-#include <pgEngine/factories/Factories.hpp>
+#include <pgEngine/resources/SpriteResource.hpp>
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/Transform.hpp>
 #include <pgEngine/math/VecUtils.hpp>
@@ -110,8 +110,8 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
     }
     }
 
-    auto sprite = game.getCurrentScene().getTypedResourceCache<pg::Sprite>().load(std::string(asteroidConf.resource));
-
+    auto sprite =
+        game.getResource<pg::Sprite, sdl::Renderer&>(std::string(asteroidConf.resource), game.getApp().getRenderer());
     auto entity = pg::game::makeEntity<pg::game::Drawable,
                                        pg::Transform2D,
                                        Dynamics,

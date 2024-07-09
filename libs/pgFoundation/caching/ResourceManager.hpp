@@ -8,13 +8,13 @@
 namespace pg::foundation {
 
 template <typename T>
-auto loadResource(const std::string& path) -> T
+inline auto loadResource(const std::string& path) -> T
 {
     static_assert(false, "No resource loader found for type T");
 }
 
 template <typename T, typename... Args>
-auto loadResource(const std::string& path, Args... args) -> T
+inline auto loadResource(const std::string& path, Args... args) -> T
 {
     static_assert(false, "No resource loader found for type T");
 }

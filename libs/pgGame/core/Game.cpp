@@ -95,10 +95,10 @@ pg::KeyStateMap& game::Game::getKeyStateMap()
     return keyStateMap;
 }
 
-game::Game::ResourceManager& game::Game::getResourceManager()
-{
-    return resourceManager;
-}
+// game::Game::ResourceManager& game::Game::getResourceManager()
+// {
+//     return resourceManager;
+// }
 
 void game::Game::loop()
 {
@@ -127,6 +127,7 @@ void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::ga
         ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
         scenes.emplace(std::string{id}, std::move(scene));
         auto scenePtr = scenes.at(std::string(id)).get();
+
         scenePtr->addSingleton<pg::foundation::TypedResourceCache<pg::Sprite>>(
             [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
         scenePtr->addSingleton<pg::foundation::TypedResourceCache<sdl::Texture>>(

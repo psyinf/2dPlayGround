@@ -6,6 +6,7 @@
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
 #include <pgFoundation/caching/ResourceManager.hpp>
+#include <pgEngine/resources/SpriteResource.hpp>
 #include <pgGame/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
@@ -74,7 +75,25 @@ public:
 
     pg::KeyStateMap& getKeyStateMap();
 
-    ResourceManager& getResourceManager();
+    // ResourceManager& getResourceManager();
+
+    template <typename Type, typename... Args>
+    std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
+    {
+        return resourceManager.get().load<Type, Args...>(uri, std::forward<Args>(args)...);
+    }
+
+    template <>
+    std::shared_ptr<pg::Sprite> getResource(const std::string& uri)
+    {
+        return resourceManager.get().load<pg::Sprite, sdl::Renderer&>(uri, getApp().getRenderer());
+    }
+
+    template <>
+    std::shared_ptr<sdl::Texture> getResource(const std::string& uri)
+    {
+        return resourceManager.get().load<sdl::Texture, sdl::Renderer&>(uri, getApp().getRenderer());
+    }
 
     /// Scene interfaces
     //     template <typename Type = pg::game::Scene, typename... Args>
