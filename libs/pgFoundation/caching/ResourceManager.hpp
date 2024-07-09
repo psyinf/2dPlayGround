@@ -14,7 +14,7 @@ auto loadResource(const std::string& path) -> T
 }
 
 template <typename T, typename... Args>
-auto loadResource(const std::string& path, Args&&... args) -> T
+auto loadResource(const std::string& path, Args... args) -> T
 {
     static_assert(false, "No resource loader found for type T");
 }
@@ -46,7 +46,7 @@ public:
         if (!_locator.contains(uri)) { throw std::runtime_error("Locator does not contain uri"); }
         auto path = (_locator.locate(uri)).string();
         return _cache.retrieve<T>(uri, [path, &args...]([[maybe_unused]] const std::string& _) {
-            return pg::foundation::loadResource<T, Args&&...>(path, std::forward<Args>(args)...);
+            return pg::foundation::loadResource<T, Args...>(path, std::forward<Args>(args)...);
         });
     }
 

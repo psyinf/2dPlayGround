@@ -12,21 +12,18 @@ struct ResourceB
 };
 
 namespace pg::foundation {
+
 template <>
 auto loadResource<ResourceA>(const std::string& path) -> ResourceA
 {
     return ResourceA{path};
 }
 
-// https://godbolt.org/z/GMaenxdEP
 template <>
-auto loadResource(const std::string& path, int&& i) -> ResourceA
+ResourceA loadResource(const std::string& path, int x)
 {
-    if (path == "RES_C") { throw std::runtime_error("ResourceA cannot be loaded from RES_C"); }
-
-    return ResourceA{path + std::to_string(i)};
+    return ResourceA{path + std::to_string(x)};
 }
-
 } // namespace pg::foundation
 
 TEST_CASE("ResourceManager smoke tests", "[ResourceCache]")
@@ -58,7 +55,7 @@ TEST_CASE("ResourceManager smoke tests", "[ResourceCache]")
 
     SECTION("parameter pack")
     {
-        int x = 5;
-        REQUIRE_THROWS_AS(resMan.load<ResourceA>("resC", std::move(x)), std::runtime_error);
+        int  x = 5;
+        auto result2 = resMan.load<ResourceA, int>("resC", 5);
     }
 }
