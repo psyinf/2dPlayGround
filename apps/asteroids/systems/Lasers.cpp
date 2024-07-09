@@ -12,24 +12,20 @@ void asteroids::Lasers::setup()
 }
 
 namespace pg::foundation {
-/*
+
+// TODO: move to a generic place
 template <>
 pg::Sprite loadResource<pg::Sprite, sdl::Renderer&>(const std::string& path, sdl::Renderer& r)
 {
     return pg::SpriteFactory::makeSprite(r, path);
-}*/
+}
 } // namespace pg::foundation
 
 void asteroids::Lasers::createShot(const events::LaserFired& event)
 {
-    //     auto sprite = game.getResourceManager().get().load<pg::Sprite>("../data/laserBlue01.png", [this](const auto&
-    //     e) {
-    //         return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
-    //     });
     auto& renderer = game.getApp().getRenderer();
-    // auto               sprite = game.getResourceManager().get().load<pg::Sprite>("../data/laserBlue01.png",
-    // renderer);
-    auto               sprite = std::make_shared<pg::Sprite>(nullptr);
+    auto sprite = game.getResourceManager().get().load<pg::Sprite, sdl::Renderer&>("../data/laserBlue01.png", renderer);
+
     pg::game::Drawable d(sprite);
     // determine shoot position
     auto& shooterTransform = game.getRegistry().get<pg::Transform2D>(event.shooter);
