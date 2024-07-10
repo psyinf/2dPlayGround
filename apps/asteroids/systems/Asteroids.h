@@ -55,6 +55,8 @@ public:
 
     void handleEvent(const events::Collision& collision) { collisions.push_back(collision); }
 
+    void createExplosion(pg::fVec2& position);
+
 private:
     std::deque<events::Collision> collisions;
 };

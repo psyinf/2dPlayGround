@@ -3,6 +3,8 @@
 #include "components/Entities.h"
 
 #include <pgEngine/resources/SpriteResource.hpp>
+
+#include <pgGame/events/GameEvents.hpp>
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/Transform.hpp>
 #include <pgEngine/math/VecUtils.hpp>
@@ -172,8 +174,31 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp&)
             }
         }
         // trigger explosion
-        // game.getDispatcher().trigger<events::Collision>( {entity_a, entity_b});
+        createExplosion(transform.pos);
         game.getRegistry().destroy(asteroid);
         game.getRegistry().destroy(laser);
     }
+}
+
+void asteroids::Asteroids::createExplosion(pg::fVec2& position)
+{
+    auto entity = pg::game::makeEntity<pg::Transform2D>(game.getRegistry(), pg::Transform2D{.pos{position}});
+
+    auto animation = std::make_shared<pg::FramedSprite>(pg::SpriteFactory::makeFramedSprite(
+        game.getApp().getRenderer(),
+        8,
+        4,
+        "../data/effects/explosion_1_8x4.png",
+        [this, entity, max_frames = 32](auto& frame_number) {
+            ++frame_number;
+            if (frame_number >= max_frames)
+            {
+                //
+                game.getDispatcher().enqueue<pg::game::events::DestroyEntityEvent>({entity});
+            }
+        }));
+    pg::game::addComponents<pg::game::Drawable>(game.getRegistry(), entity, pg::game::Drawable{animation});
+
+    // pg::game::Drawable,
+    // pg::game::Drawable{animation},
 }

@@ -48,6 +48,11 @@ public:
     }
 
     void handleQuitEvent(const pg::game::events::QuitEvent&) { game.quit(); }
+
+    void handleDestroyEntityEvent(const pg::game::events::DestroyEntityEvent& dee)
+    {
+        game.getRegistry().destroy(dee.entity);
+    }
 };
 
 game::Game::Game()
@@ -58,6 +63,8 @@ game::Game::Game()
     dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&Pimpl::handleSceneSwitchEvent>(
         dynamic_cast<Pimpl&>(*pimpl));
     dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*pimpl));
+    dispatcher.sink<pg::game::events::DestroyEntityEvent>().connect<&Pimpl::handleDestroyEntityEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
     createAndSwitchScene("__default__");
 }
 
@@ -94,11 +101,6 @@ pg::KeyStateMap& game::Game::getKeyStateMap()
 {
     return keyStateMap;
 }
-
-// game::Game::ResourceManager& game::Game::getResourceManager()
-// {
-//     return resourceManager;
-// }
 
 void game::Game::loop()
 {

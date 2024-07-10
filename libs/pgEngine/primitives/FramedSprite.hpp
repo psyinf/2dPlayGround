@@ -8,16 +8,16 @@ class FramedSprite : public pg::Sprite
 {
 public:
     using FrameCalculationFunction = std::function<void(int& current_frame)>;
+    constexpr static auto DefaultFrameCalculationFunction = [](int& current_frame) { ++current_frame; };
 
     // TODO: supply a function that determines the current frame as parameter. Default could be a function that uses a
     // realtime clock and a duration set for the animation
     // TODO: this works for framed sprites that have all their frames in a single row. For more complex animations, a
     // more complex solution is needed
-    FramedSprite(
-        std::shared_ptr<sdl::Texture> tex,
-        uint16_t                      width,
-        uint16_t                      height,
-        FrameCalculationFunction      frameFunction = [](int& current_frame) { ++current_frame; })
+    FramedSprite(std::shared_ptr<sdl::Texture> tex,
+                 uint16_t                      width,
+                 uint16_t                      height,
+                 FrameCalculationFunction      frameFunction)
       : Sprite(tex)
       , _frameFunction(frameFunction)
       , width(width)
@@ -31,9 +31,9 @@ public:
         _currentFrame %= width * height;
         const auto& dims = getDimensions();
         const auto& fdimensions = pg::vec_cast<float>(dims) * pg::fVec2{1.0f / width, 1.0f / height};
-        
-        auto&       tex = getTexture();
-        auto        calcPos = t.pos - (fdimensions * 0.5f * t.scale);
+
+        auto&     tex = getTexture();
+        auto      calcPos = t.pos - (fdimensions * 0.5f * t.scale);
         SDL_FRect dest_rect = {calcPos[0], calcPos[1], (dims[0] * t.scale[0] / width), (dims[1] * t.scale[1] / height)};
         int       x = _currentFrame % width;
         int       y = _currentFrame / width;
