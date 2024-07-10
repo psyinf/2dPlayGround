@@ -5,6 +5,7 @@
 #include <sndX/SoundEngine.hpp>
 #include <pgEngine/math/Random.hpp>
 #include <events/PickEvent.hpp>
+#include <events/UIEvents.hpp>
 
 template <size_t N>
 struct StringLiteral
@@ -45,10 +46,15 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
   , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
 {
-    static SoundDispatcher soundDispatcher(*_bgPlayer, {{"pick", "../data/sound/asteroids/laser_short.wav"}});
+    static SoundDispatcher soundDispatcher(
+        *_bgPlayer,
+        {{"pick", "../data/sound/asteroids/laser_short.wav"}, {"click", "../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}});
     game.getDispatcher()
         .sink<galaxy::events::PickEvent>()
         .connect<&SoundDispatcher::play<galaxy::events::PickEvent, "pick">>(&soundDispatcher);
+    game.getDispatcher()
+        .sink<galaxy::events::MenuButtonPressed>()
+        .connect<&SoundDispatcher::play<galaxy::events::MenuButtonPressed, "click">>(&soundDispatcher);
 }
 
 void galaxy::SoundSystem::setup() {}

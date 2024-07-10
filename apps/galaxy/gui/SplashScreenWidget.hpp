@@ -2,7 +2,10 @@
 #include <gui/GameGuiWidget.hpp>
 #include <pgGame/events/SceneManagementEvents.hpp>
 #include <pgGame/events/GameEvents.hpp>
+#include <events/UIEvents.hpp>
 #include <imgui.h>
+#include <sndX/BackgroundPlayer.hpp>
+static soundEngineX::BackgroundPlayer _bgPlayer;
 
 namespace galaxy::gui {
 class GuiPosStack
@@ -31,7 +34,10 @@ public:
 
     static constexpr auto lineColor = ImU32{IM_COL32(255, 0.7 * 255, 0 * 255, 128)};
 
-    void menuButton(const ImVec2& anchor, const std::string& name, std::function<void()> func = {})
+    void menuButton(const ImVec2&      anchor,
+                    const std::string& name,
+
+                    std::function<void()> func = {})
     {
         GuiPosStack stack;
         auto        current = ImGui::GetCursorPos();
@@ -44,6 +50,7 @@ public:
         // TODO: offsets as percentage of window size
 
         auto res = ImGui::Button(name.c_str(), ImVec2(200, 50));
+
         // restore cursor position
         ImGui::SetCursorPos(ImVec2(current.x, ImGui::GetCursorPosY()));
         ImGui::GetWindowDrawList()->AddLine(
@@ -58,7 +65,11 @@ public:
             lineColor,
             2.0f);
 
-        if (res && func) { func(); }
+        if (res)
+        {
+            getGame().getDispatcher().trigger<galaxy::events::MenuButtonPressed>({"mainScreen", name});
+            if (func) { func(); }
+        }
     }
 
     void fitToScreen(int& size_x, int& size_y)
