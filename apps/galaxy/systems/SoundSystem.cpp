@@ -32,7 +32,19 @@ public:
     template <typename T, StringLiteral i>
     void play(const T& /*event*/)
     {
-        _bgPlayer.play(_soundEventMap.at(i.value));
+        try
+        {
+            _bgPlayer.play(_soundEventMap.at(i.value));
+        }
+        catch (const std::out_of_range&)
+        {
+            spdlog::error("SoundDispatcher: No sound for event '{}'", i.value);
+        }
+        catch (const std::exception& e)
+        {
+            spdlog::error(
+                "SoundDispatcher: Error playing '{}'[{}] ({})", i.value, _soundEventMap.at(i.value), e.what());
+        }
     }
 
     soundEngineX::BackgroundPlayer& _bgPlayer;
@@ -46,9 +58,9 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
   , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
 {
-    static SoundDispatcher soundDispatcher(
-        *_bgPlayer,
-        {{"pick", "../data/sound/asteroids/laser_short.wav"}, {"click", "../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}});
+    static SoundDispatcher soundDispatcher(*_bgPlayer,
+                                           {{"pick", "../data/sound/asteroids/laser_short.wav"},
+                                            {"click", "../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}});
     game.getDispatcher()
         .sink<galaxy::events::PickEvent>()
         .connect<&SoundDispatcher::play<galaxy::events::PickEvent, "pick">>(&soundDispatcher);
