@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <pgGame/components/WindowDetails.hpp>
 #include <pgGame/core/SingletonInterface.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
 
 namespace pg::game {
 
@@ -47,7 +48,7 @@ public:
     using ResourceManager = foundation::ResourceManagerMonostate<foundation::IdentityResourceLocator>;
 
 private:
-    pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "minimal demo"}; // TODO: from config
+    pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "Ad astra!"}; // TODO: from config
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
@@ -81,18 +82,6 @@ public:
     std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
     {
         return resourceManager.get().load<Type, Args...>(uri, std::forward<Args>(args)...);
-    }
-
-    template <>
-    std::shared_ptr<pg::Sprite> getResource(const std::string& uri)
-    {
-        return resourceManager.get().load<pg::Sprite, sdl::Renderer&>(uri, getApp().getRenderer());
-    }
-
-    template <>
-    std::shared_ptr<sdl::Texture> getResource(const std::string& uri)
-    {
-        return resourceManager.get().load<sdl::Texture, sdl::Renderer&>(uri, getApp().getRenderer());
     }
 
     /// Scene interfaces
@@ -137,4 +126,18 @@ private:
 
     std::unique_ptr<GamePimpl> pimpl;
 };
+
+// specialization of resource loading, need to be outside the class (explicit specialization in non-namespace scope)
+
+template <>
+inline std::shared_ptr<pg::Sprite> Game::getResource(const std::string& uri)
+{
+    return resourceManager.get().load<pg::Sprite, sdl::Renderer&>(uri, getApp().getRenderer());
+}
+
+template <>
+inline std::shared_ptr<sdl::Texture> Game::getResource(const std::string& uri)
+{
+    return resourceManager.get().load<sdl::Texture, sdl::Renderer&>(uri, getApp().getRenderer());
+}
 } // namespace pg::game
