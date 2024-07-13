@@ -17,15 +17,6 @@ public:
 
     virtual entt::registry& getRegistry() = 0;
 
-    /**
-     * Get the resource cache for a specific type of resource.
-     */
-    template <typename Resource>
-    foundation::TypedResourceCache<Resource>& getTypedResourceCache()
-    {
-        return getSingleton<foundation::TypedResourceCache<Resource>>();
-    }
-
     // TODO: check const-ness
     template <typename Type>
     auto& getSingleton(std::string_view id)

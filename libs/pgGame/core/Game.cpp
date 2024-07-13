@@ -48,6 +48,11 @@ public:
     }
 
     void handleQuitEvent(const pg::game::events::QuitEvent&) { game.quit(); }
+
+    void handleDestroyEntityEvent(const pg::game::events::DestroyEntityEvent& dee)
+    {
+        game.getRegistry().destroy(dee.entity);
+    }
 };
 
 game::Game::Game()
@@ -58,6 +63,8 @@ game::Game::Game()
     dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&Pimpl::handleSceneSwitchEvent>(
         dynamic_cast<Pimpl&>(*pimpl));
     dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*pimpl));
+    dispatcher.sink<pg::game::events::DestroyEntityEvent>().connect<&Pimpl::handleDestroyEntityEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
     createAndSwitchScene("__default__");
 }
 
@@ -95,11 +102,6 @@ pg::KeyStateMap& game::Game::getKeyStateMap()
     return keyStateMap;
 }
 
-pg::foundation::ResourceCache& game::Game::getResourceCache()
-{
-    return resourceCache;
-}
-
 void game::Game::loop()
 {
     sdlApp.getEventHandler().quit = [this](auto) { running = false; };
@@ -127,6 +129,7 @@ void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::ga
         ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
         scenes.emplace(std::string{id}, std::move(scene));
         auto scenePtr = scenes.at(std::string(id)).get();
+
         scenePtr->addSingleton<pg::foundation::TypedResourceCache<pg::Sprite>>(
             [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
         scenePtr->addSingleton<pg::foundation::TypedResourceCache<sdl::Texture>>(

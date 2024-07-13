@@ -5,25 +5,17 @@
 #include <pgGame/core/RegistryHelper.hpp>
 #include <components/Entities.h>
 #include <pgGame/components/Drawable.hpp>
+#include <pgEngine/resources/SpriteResource.hpp>
 
 void asteroids::Lasers::setup()
 {
     game.getDispatcher().sink<asteroids::events::LaserFired>().connect<&Lasers::handleEvent>(this);
 }
 
-struct SpriteResource : public pg::Sprite
-{
-    SpriteResource(sdl::Renderer& renderer, const std::string& path)
-      : pg::Sprite(pg::SpriteFactory::makeSprite(renderer, path))
-    {
-    }
-};
-
 void asteroids::Lasers::createShot(const events::LaserFired& event)
 {
-    auto sprite = game.getResourceCache().load<pg::Sprite>("../data/laserBlue01.png", [this](const auto& e) {
-        return pg::SpriteFactory::makeSprite(game.getApp().getRenderer(), e);
-    });
+    auto& renderer = game.getApp().getRenderer();
+    auto  sprite = game.getResource<pg::Sprite, sdl::Renderer&>("../data/laserBlue01.png", renderer);
 
     pg::game::Drawable d(sprite);
     // determine shoot position

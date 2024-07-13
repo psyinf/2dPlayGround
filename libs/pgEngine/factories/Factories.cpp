@@ -24,11 +24,12 @@ pg::Sprite pg::SpriteFactory::makeTextSprite(sdl::Renderer& renderer, SDLFont& f
     return Sprite(std::make_shared<sdl::Texture>(renderer.get(), surface.get()));
 }
 
-pg::FramedSprite pg::SpriteFactory::makeFramedSprite(sdl::Renderer&   renderer,
-                                                     uint16_t         width,
-                                                     uint16_t         height,
-                                                     std::string_view resource_name)
+pg::FramedSprite pg::SpriteFactory::makeFramedSprite(sdl::Renderer&                         renderer,
+                                                     uint16_t                               width,
+                                                     uint16_t                               height,
+                                                     std::string_view                       resource_name,
+                                                     FramedSprite::FrameCalculationFunction frameFunction)
 {
     sdl::Surface surface(IMG_Load(resource_name.data()));
-    return FramedSprite(std::make_shared<sdl::Texture>(renderer.get(), surface.get()), width, height);
+    return FramedSprite(std::make_shared<sdl::Texture>(renderer.get(), surface.get()), width, height, frameFunction);
 }

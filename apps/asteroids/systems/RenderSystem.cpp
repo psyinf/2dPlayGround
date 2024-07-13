@@ -41,7 +41,7 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
 
         circle_points.push_back(pg::vec_cast<int>(p));
     }
-    renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), circle_points.size());
+    renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), static_cast<int>(circle_points.size()));
 }
 
 void asteroids::RenderSystem::handle(const pg::game::FrameStamp&)

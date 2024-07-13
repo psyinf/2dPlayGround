@@ -36,7 +36,7 @@ void createStars(std::vector<Particle>& particles, size_t count, const pg::fVec2
     }
 }
 
-void updateStars(std::vector<Particle>& particles, float frameTime, const SDL_Rect& bounds, const pg::fVec2& attractor)
+void updateStars(std::vector<Particle>& particles, float frameTime, const SDL_Rect& bounds)
 {
     for (auto& particle : particles)
     {
@@ -90,8 +90,7 @@ void textdemo_main()
             // update
         }
 
-        updateStars(
-            particles, 1.0f / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]}, particles[0].pos);
+        updateStars(particles, 1.0f / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]});
 
         if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
     };

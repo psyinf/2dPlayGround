@@ -25,10 +25,12 @@ public:
      * @param resource_name
      * @return
      */
-    static FramedSprite makeFramedSprite(sdl::Renderer&   renderer,
-                                         uint16_t         width,
-                                         uint16_t         height,
-                                         std::string_view resource_name);
+    static FramedSprite makeFramedSprite(
+        sdl::Renderer&                         renderer,
+        uint16_t                               width,
+        uint16_t                               height,
+        std::string_view                       resource_name,
+        FramedSprite::FrameCalculationFunction frameFunction = FramedSprite::DefaultFrameCalculationFunction);
 
 private:
     static inline pg::foundation::PathResourceLocator _resourceLocator{"../data"};

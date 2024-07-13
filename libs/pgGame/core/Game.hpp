@@ -5,7 +5,8 @@
 #include <pgEngine/core/Gui.hpp>
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
-#include <pgFoundation/caching/ResourceCache.hpp>
+#include <pgFoundation/caching/ResourceManager.hpp>
+#include <pgEngine/resources/SpriteResource.hpp>
 #include <pgGame/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
@@ -17,6 +18,7 @@
 #include <unordered_map>
 #include <pgGame/components/WindowDetails.hpp>
 #include <pgGame/core/SingletonInterface.hpp>
+#include <pgEngine/primitives/Sprite.hpp>
 
 namespace pg::game {
 
@@ -43,16 +45,17 @@ class Game
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
+    using ResourceManager = foundation::ResourceManagerMonostate<foundation::IdentityResourceLocator>;
 
 private:
-    pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "minimal demo"}; // TODO: from config
+    pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "Ad astra!"}; // TODO: from config
     // TODO vec4 from 2 vec2
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
-    pg::SDLApp                    sdlApp{windowConfig};
-    pg::KeyStateMap               keyStateMap{sdlApp.getEventHandler()};
-    pg::foundation::ResourceCache resourceCache; // TODO: from config
-    std::unique_ptr<pg::Gui>      gui;
+    pg::SDLApp               sdlApp{windowConfig};
+    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
+    ResourceManager          resourceManager;
+    std::unique_ptr<pg::Gui> gui;
 
     entt::dispatcher dispatcher;
 
@@ -73,7 +76,13 @@ public:
 
     pg::KeyStateMap& getKeyStateMap();
 
-    pg::foundation::ResourceCache& getResourceCache();
+    // ResourceManager& getResourceManager();
+
+    template <typename Type, typename... Args>
+    std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
+    {
+        return resourceManager.get().load<Type, Args...>(uri, std::forward<Args>(args)...);
+    }
 
     /// Scene interfaces
     //     template <typename Type = pg::game::Scene, typename... Args>
@@ -117,4 +126,18 @@ private:
 
     std::unique_ptr<GamePimpl> pimpl;
 };
+
+// specialization of resource loading, need to be outside the class (explicit specialization in non-namespace scope)
+
+template <>
+inline std::shared_ptr<pg::Sprite> Game::getResource(const std::string& uri)
+{
+    return resourceManager.get().load<pg::Sprite, sdl::Renderer&>(uri, getApp().getRenderer());
+}
+
+template <>
+inline std::shared_ptr<sdl::Texture> Game::getResource(const std::string& uri)
+{
+    return resourceManager.get().load<sdl::Texture, sdl::Renderer&>(uri, getApp().getRenderer());
+}
 } // namespace pg::game
