@@ -22,12 +22,12 @@ public:
 
     void setup();
 
-    void handle(const pg::game::FrameStamp& frameStamp);
+    void handle(const pg::FrameStamp& frameStamp);
 
     void handleDroneFailed(galaxy::events::DroneFailedEvent event);
 
 private:
-    void createFactions(const pg::game::FrameStamp& frameStamp);
+    void createFactions(const pg::FrameStamp& frameStamp);
 
     behavior::ContextPtr ctx{};
 };

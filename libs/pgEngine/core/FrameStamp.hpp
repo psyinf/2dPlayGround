@@ -1,7 +1,7 @@
 #pragma once
 #include <chrono>
 
-namespace pg::game {
+namespace pg {
 struct FrameStamp
 {
     std::uint64_t             frameNumber{0};
@@ -14,4 +14,4 @@ struct FrameStamp
         return f_secs.count();
     }
 };
-} // namespace pg::game
+} // namespace pg

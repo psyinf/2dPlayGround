@@ -47,7 +47,7 @@ void galaxy::DroneSystem::setup()
     factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");
 }
 
-void galaxy::DroneSystem::handle(const pg::game::FrameStamp& frameStamp)
+void galaxy::DroneSystem::handle(const pg::FrameStamp& frameStamp)
 {
     createFactions(frameStamp);
 }
@@ -69,7 +69,7 @@ void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent eve
     game.getRegistry().destroy(event.entity);
 }
 
-void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
+void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
 {
     static std::random_device rd;
     static std::mt19937       gen{rd()};

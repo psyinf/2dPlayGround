@@ -71,7 +71,7 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game)
 
 void galaxy::SoundSystem::setup() {}
 
-void galaxy::SoundSystem::handle(const pg::game::FrameStamp&) {}
+void galaxy::SoundSystem::handle(const pg::FrameStamp&) {}
 
 void galaxy::SoundSystem::exitScene([[maybe_unused]] std::string_view oldScene)
 {

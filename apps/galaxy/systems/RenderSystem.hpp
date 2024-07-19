@@ -22,8 +22,8 @@ public:
 
     void setup();
 
-    void handle(const pg::game::FrameStamp& frameStamp);
+    void handle(const pg::FrameStamp& frameStamp);
 
-    void drawOverlays(sdl::Renderer& renderer, pg::States& rendererStates);
+    void drawOverlays();
 };
 } // namespace galaxy

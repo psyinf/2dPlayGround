@@ -13,7 +13,7 @@ public:
 
     void setup();
 
-    void handle(const pg::game::FrameStamp& frameStamp);
+    void handle(const pg::FrameStamp& frameStamp);
 
 private:
     void handleCollision(entt::entity id1, entt::entity id2, float intrusion);

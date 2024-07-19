@@ -11,7 +11,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const pg::Transform2D& trans, const States&) override
+    void draw(pg::Renderer& r, const pg::Transform2D& trans, const States&) override
     {
         auto& dims = getDimensions();
 
@@ -32,10 +32,10 @@ public:
         SDL_Rect src_4_rect{0, 0, -pos[0], -pos[1]};
         SDL_Rect dst_4_rect{dims[0] + pos[0], dims[1] + pos[1], -pos[0], -pos[1]};
 
-        r.copyEx(getTexture().get(), &src_1_rect, &dst_1_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_2_rect, &dst_2_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_3_rect, &dst_3_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
-        r.copyEx(getTexture().get(), &src_4_rect, &dst_4_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
+        r.renderer.copyEx(getTexture().get(), &src_1_rect, &dst_1_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
+        r.renderer.copyEx(getTexture().get(), &src_2_rect, &dst_2_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
+        r.renderer.copyEx(getTexture().get(), &src_3_rect, &dst_3_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
+        r.renderer.copyEx(getTexture().get(), &src_4_rect, &dst_4_rect, trans.rotation_deg, nullptr, SDL_FLIP_NONE);
     }
 };
 
