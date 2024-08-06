@@ -11,6 +11,6 @@ public:
 
     void setup() override;
 
-    void handle(const pg::game::FrameStamp& frameStamp) override;
+    void handle(const pg::FrameStamp& frameStamp) override;
 };
 } // namespace galaxy

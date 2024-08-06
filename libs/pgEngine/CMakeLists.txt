@@ -40,7 +40,7 @@ target_sources(${PROJECT_NAME}
 		core/FPSCounter.hpp
 		
 
-		
+		core/FrameStamp.hpp
 		"core/ErrorTrace.hpp"
 
 

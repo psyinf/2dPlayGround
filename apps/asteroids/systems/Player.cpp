@@ -45,7 +45,7 @@ void asteroids::Player::setup()
     game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, trigger, true);
 }
 
-void asteroids::Player::handle(const pg::game::FrameStamp&)
+void asteroids::Player::handle(const pg::FrameStamp&)
 {
     auto view = game.getRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
     auto entity = view.front();

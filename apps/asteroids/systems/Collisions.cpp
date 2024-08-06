@@ -7,7 +7,7 @@
 
 void asteroids::Collisions::setup() {}
 
-void asteroids::Collisions::handle(const pg::game::FrameStamp&)
+void asteroids::Collisions::handle(const pg::FrameStamp&)
 {
     auto active_view = game.getRegistry().view<pg::Transform2D, pg::BoundingSphere, asteroids::ActiveCollider>();
     auto passive_view = game.getRegistry().view<pg::Transform2D, pg::BoundingSphere, asteroids::PassiveCollider>();

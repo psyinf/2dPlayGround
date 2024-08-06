@@ -5,7 +5,7 @@
 
 void asteroids::DynamicsSystem::setup() {}
 
-void asteroids::DynamicsSystem::handle(const pg::game::FrameStamp& frameStamp)
+void asteroids::DynamicsSystem::handle(const pg::FrameStamp& frameStamp)
 {
     auto view = game.getRegistry().view<pg::Transform2D, asteroids::Dynamics>();
     for (auto& entity : view)

@@ -7,7 +7,7 @@
 #include <pgGame/core/KeyStateMap.hpp>
 #include <pgFoundation/caching/ResourceManager.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
-#include <pgGame/core/FrameStamp.hpp>
+#include <pgEngine/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
 

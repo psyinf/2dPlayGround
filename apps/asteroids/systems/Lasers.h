@@ -15,7 +15,7 @@ public:
 
     void createShot(const events::LaserFired& event);
 
-    void handle(const pg::game::FrameStamp& frameStamp);
+    void handle(const pg::FrameStamp& frameStamp);
 
     void handleEvent(const events::LaserFired& laserFired);
 

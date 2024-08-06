@@ -27,9 +27,9 @@ private:
 };
 
 // TODO: draw to texture and scale
-static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, const pg::Transform2D& transform)
+static void renderSDL(pg::Renderer& r, const pg::BoundingSphere& bs, const pg::Transform2D& transform)
 {
-    ScopedColor            sc(renderer, {0xff, 0xff, 0xff, 0xff});
+    ScopedColor            sc(r.renderer, {0xff, 0xff, 0xff, 0xff});
     std::vector<pg::iVec2> circle_points;
     float                  radius = bs.radius * *std::ranges::max_element(transform.scale);
     for (int i = 0; i < 360; i++)
@@ -41,12 +41,12 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
 
         circle_points.push_back(pg::vec_cast<int>(p));
     }
-    renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), static_cast<int>(circle_points.size()));
+    r.renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), static_cast<int>(circle_points.size()));
 }
 
-void asteroids::RenderSystem::handle(const pg::game::FrameStamp&)
+void asteroids::RenderSystem::handle(const pg::FrameStamp& fs)
 {
-    auto& renderer = game.getApp().getRenderer();
+    pg::Renderer renderer{game.getApp().getRenderer(), fs};
     renderer.clear();
 
     for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)

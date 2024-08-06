@@ -43,13 +43,48 @@ static void setRendererDrawColor(sdl::Renderer& renderer, SDL_Color color)
     renderer.setDrawColor(color.r, color.g, color.b, color.a);
 }
 
+class DropAnimation : public pg::Sprite
+{
+public:
+    DropAnimation(std::shared_ptr<sdl::Texture> tex, float scale = 1.0f, float duration = 60)
+      : Sprite(tex)
+      , _maxFrame(duration)
+      , _scale(scale)
+    {
+    }
+
+    void draw(pg::Renderer& r, const pg::Transform2D& t, const pg::States& states) override
+
+    {
+        auto trans = t;
+        // IDEA scale non-linearly
+        trans.scale *= (_frame / static_cast<float>(_maxFrame) * _scale);
+        auto alpha_state =
+            pg::TextureAlphaState{static_cast<uint8_t>(255u - (_frame / static_cast<float>(_maxFrame)) * 255u)};
+        states.apply(r.renderer);
+        states.apply(r.renderer, getTexture());
+        alpha_state.apply(r.renderer, getTexture());
+        Sprite::draw(r, trans, {});
+        states.restore(r.renderer, getTexture());
+        states.restore(r.renderer);
+        _frame++;
+
+        if (_frame > _maxFrame) { _frame = 0; }
+    }
+
+private:
+    int    _frame = 0;
+    float  _scale = 1.0f;
+    size_t _maxFrame = 75;
+};
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
     pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
     pg::SDLApp               sdlApp{windowConfig};
     pg::KeyStateMap          keyStateMap(sdlApp.getEventHandler());
-    auto&                    renderer = sdlApp.getRenderer();
+    auto&                    sdl_renderer = sdlApp.getRenderer();
     auto                     done = false;
     sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         std::cout << "bye!";
@@ -86,31 +121,38 @@ try
     Circler   c({550, 550}, 100, 555);
     int       frame = 0;
 
-    auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
+    auto sprite = pg::SpriteFactory::makeSprite(sdl_renderer, "../data/playerShip1_blue.png");
     auto background =
-        std::make_unique<pg::ScrollingSprite>(pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"));
-    auto animation = pg::SpriteFactory::makeFramedSprite(renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
+        std::make_unique<pg::ScrollingSprite>(pg::SpriteFactory::makeSprite(sdl_renderer, "../data/grid_bg.png"));
+    auto animation = pg::SpriteFactory::makeFramedSprite(sdl_renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
+
+    auto blip = DropAnimation(
+        std::make_shared<sdl::Texture>(pg::SpriteFactory::makeTexture(sdl_renderer, "../data/gui/ring.tga")));
+
+    pg::FrameStamp frameStamp;
+    pg::Renderer   renderer{sdl_renderer, frameStamp};
     while (!done)
     {
         // handle all pending events
         while (sdlApp.getEventHandler().poll()) {}
         keyStateMap.evaluateCallbacks();
 
-        setRendererDrawColor(renderer, {0, 0, 0, 255});
+        setRendererDrawColor(renderer.renderer, {0, 0, 0, 255});
         renderer.clear();
         background->draw(renderer, bgTransform, {});
 
-        setRendererDrawColor(renderer, {255, 0, 255, 255});
+        setRendererDrawColor(renderer.renderer, {255, 0, 255, 255});
         l.draw(renderer, {}, {});
         l2.draw(renderer, {}, {});
 
-        setRendererDrawColor(renderer, {255, 0, 0, 255});
+        setRendererDrawColor(renderer.renderer, {255, 0, 0, 255});
 
         p1.draw(renderer, {}, {});
         p2.draw(renderer, {}, {});
         p3.draw(renderer, {}, {});
 
         sprite.draw(renderer, c.frame(++frame), {});
+        blip.draw(renderer, {pg::Transform2D{.pos{100, 100}}}, {});
         animation.draw(renderer, mouseClickTransform, {});
         renderer.present();
     }

@@ -39,7 +39,7 @@ public:
         marker_transform.pos = transform.pos;
     }
 
-    void handle(const pg::game::FrameStamp& frameStamp) override
+    void handle(const pg::FrameStamp& frameStamp) override
     {
         updateStarSystems(frameStamp);
         // move the stars on a circle at the distance from center
@@ -50,7 +50,7 @@ public:
         //
     }
 
-    void updateStarSystems(const pg::game::FrameStamp&)
+    void updateStarSystems(const pg::FrameStamp&)
     {
         // get config from singleton
         auto& galaxyConfig = game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
