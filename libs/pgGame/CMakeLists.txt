@@ -13,7 +13,6 @@ target_sources(${PROJECT_NAME}
 		core/Scene.cpp
 	PUBLIC
 		core/Game.hpp
-		core/FrameStamp.hpp
 		core/RegistryHelper.hpp
 		core/KeyStateMap.hpp
 		core/Scene.hpp

@@ -18,7 +18,7 @@ public:
     virtual ~SoundSystem();
     void setup() override;
 
-    void handle(const pg::game::FrameStamp& frameStamp) override;
+    void handle(const pg::FrameStamp& frameStamp) override;
 
     void enterScene(std::string_view newScene) override;
     void exitScene(std::string_view oldScene) override;

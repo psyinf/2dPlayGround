@@ -12,7 +12,7 @@ void galaxy::StatsSystem::setup()
     game.getDispatcher().sink<events::DroneCreatedEvent>().connect<&StatsSystem::onDroneCreated>(this);
 }
 
-void galaxy::StatsSystem::handle(const pg::game::FrameStamp&)
+void galaxy::StatsSystem::handle(const pg::FrameStamp&)
 {
     auto& fpsCounter = game.getApp().getFPSCounter();
     // count number of starsystems

@@ -25,7 +25,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states) override
+    void draw(pg::Renderer& r, const pg::Transform2D& t, const States& states) override
     {
         _frameFunction(_currentFrame);
         _currentFrame %= width * height;
@@ -39,14 +39,14 @@ public:
         int       y = _currentFrame / width;
         SDL_Rect  src_rect = {
             x * (int)fdimensions[0], y * (int)fdimensions[1], (dims[0] / width) + width, (dims[1] / height)};
-        states.apply(r);
-        states.apply(r, tex);
+        states.apply(r.renderer);
+        states.apply(r.renderer, tex);
 
-        SDL_RenderCopyExF(r.get(), tex.get(), &src_rect, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
+        SDL_RenderCopyExF(r.renderer.get(), tex.get(), &src_rect, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
         // r.copyExF(texture.get(), nullptr, &dest_rect, t.rotation_deg, nullptr, SDL_FLIP_NONE);
 
-        states.restore(r);
-        states.restore(r, tex);
+        states.restore(r.renderer);
+        states.restore(r.renderer, tex);
     }
 
 private:

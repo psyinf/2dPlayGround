@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include "FrameStamp.hpp"
+#include <pgEngine/core/FrameStamp.hpp>
 #include <components/WindowDetails.hpp>
 #include <systems/SystemInterface.hpp>
 #include <core/GameExceptions.hpp>

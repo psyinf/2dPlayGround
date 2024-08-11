@@ -79,14 +79,14 @@ void textdemo_main()
     std::vector<Particle> particles;
     auto                  windowSize = app.getWindowConfig().size;
     createStars(particles, 150, {0, 0}, pg::vec_cast<float>(windowSize));
-    // TODO: entt based rendering and update
 
-    auto render = [&](auto& app) {
+    pg::Renderer r{app.getRenderer(), {}};
+    auto         render = [&](auto& app) {
         auto& fpsCounter = app.getFPSCounter();
         for (auto& particle : particles)
         {
             auto pos = particle.pos;
-            dot.draw(app.getRenderer(), {.pos{pos}, .scale{0.05f, 0.05f}}, rendererStates);
+            dot.draw(r, {.pos{pos}, .scale{0.05f, 0.05f}}, rendererStates);
             // update
         }
 

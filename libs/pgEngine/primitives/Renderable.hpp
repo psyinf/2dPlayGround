@@ -2,6 +2,7 @@
 
 #include <pgEngine/math/Vec.hpp>
 #include <pgEngine/core/States.hpp>
+#include <pgEngine/core/FrameStamp.hpp>
 #include <pgEngine/math/Transform.hpp>
 #include <pgEngine/math/Box.hpp>
 
@@ -49,17 +50,31 @@ private:
     Color          color;
 };
 
+struct Renderer
+{
+    sdl::Renderer&        renderer;
+    const pg::FrameStamp& frameStamp;
+
+    void clear() { renderer.clear(); }
+
+    void present() { renderer.present(); };
+
+    void apply(pg::States& states) { states.apply(renderer); }
+
+    void restore(pg::States& states) { states.restore(renderer); }
+};
+
 class Renderable
 {
 public:
     virtual ~Renderable() = default;
-    virtual void draw(sdl::Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
+    virtual void draw(pg::Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
 };
 
 class Placeholder : public Renderable
 {
 public:
-    void draw(sdl::Renderer&, const Transform2D&, const States&) override
+    void draw(pg::Renderer&, const Transform2D&, const States&) override
     {
         // do nothing
     }
@@ -68,7 +83,7 @@ public:
 class Group : public Renderable
 {
 public:
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override
     {
         for (auto& p : primitives)
         {
@@ -87,7 +102,7 @@ class Line : public Renderable
 public:
     Line(iVec2&& start, iVec2&& end);
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
+    void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
 
 protected:
     iVec2 start;
@@ -100,7 +115,7 @@ public:
     Point(iVec2&& pos)
       : pos(pos){};
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
+    void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
 
 protected:
     iVec2 pos;
@@ -114,13 +129,13 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform2D&, const States&) override
+    void draw(pg::Renderer& r, const Transform2D&, const States&) override
     {
-        r.setDrawColor(white.r, white.g, white.b, white.a);
+        r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
         // for (const auto& p : points)
         {
-            r.drawLines(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
+            r.renderer.drawLines(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
         }
     }
 
@@ -137,7 +152,7 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States&) override
+    void draw(pg::Renderer& r, const Transform2D& transform, const States&) override
     {
         // transform the box
         auto b = box;
@@ -149,9 +164,9 @@ public:
         b.pos += (box.midpoint() * transform.scale);
         auto rect = (SDL_FRect{b.left(), b.top(), b.width(), b.height()});
         // r.setDrawColor(255, 255, 255, 255);
-        pg::ScopedColor sc{r, color};
+        pg::ScopedColor sc{r.renderer, color};
         // draw the polygon
-        SDL_RenderDrawRectF(r.get(), &rect);
+        SDL_RenderDrawRectF(r.renderer.get(), &rect);
     }
 
 private:
@@ -167,12 +182,12 @@ public:
     {
     }
 
-    void draw(sdl::Renderer& r, const Transform2D&, const States&) override
+    void draw(pg::Renderer& r, const Transform2D&, const States&) override
     {
-        r.setDrawColor(white.r, white.g, white.b, white.a);
+        r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
 
-        r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
+        r.renderer.drawPoints(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
     }
 
 private:
@@ -192,12 +207,13 @@ public:
 
     size_t getMaxElement() const { return maxElement; }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States&) override
+    void draw(pg::Renderer& r, const Transform2D& transform, const States&) override
     {
-        ScopedScale ss(r, transform.scale);
-        r.setDrawColor(white.r, white.g, white.b, white.a);
+        ScopedScale ss(r.renderer, transform.scale);
+        r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
 
-        r.drawPoints(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(std::min(maxElement, points.size())));
+        r.renderer.drawPoints(std::bit_cast<SDL_Point*>(points.data()),
+                              static_cast<int>(std::min(maxElement, points.size())));
     }
 
 private:
@@ -220,12 +236,13 @@ public:
 
     size_t size() const { return points.size(); }
 
-    void draw(sdl::Renderer& r, const Transform2D& transform, const States&) override
+    void draw(pg::Renderer& r, const Transform2D& transform, const States&) override
     {
-        ScopedScale ss(r, transform.scale);
-        r.setDrawColor(white.r, white.g, white.b, white.a);
+        ScopedScale ss(r.renderer, transform.scale);
+        r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
-        r.drawLines(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(std::min(maxElement, points.size())));
+        r.renderer.drawLines(std::bit_cast<SDL_Point*>(points.data()),
+                             static_cast<int>(std::min(maxElement, points.size())));
     }
 
 private:

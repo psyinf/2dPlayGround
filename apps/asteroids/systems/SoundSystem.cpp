@@ -20,7 +20,7 @@ asteroids::SoundSystem::SoundSystem(pg::game::Game& game)
 
 void asteroids::SoundSystem::setup() {}
 
-void asteroids::SoundSystem::handle(const pg::game::FrameStamp&) {}
+void asteroids::SoundSystem::handle(const pg::FrameStamp&) {}
 
 void asteroids::SoundSystem::onLaserFired(const events::LaserFired&)
 {
