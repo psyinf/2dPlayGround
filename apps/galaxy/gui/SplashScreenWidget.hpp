@@ -30,6 +30,12 @@ private:
 class SplashScreenWidget : public galaxy::gui::GameGuiWidget
 {
 public:
+    enum class CurrentMenu
+    {
+        NONE,
+        ABOUT,
+        OPTIONS,
+    };
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
     static constexpr auto lineColor = ImU32{IM_COL32(255, 0.7 * 255, 0 * 255, 128)};
@@ -109,6 +115,38 @@ public:
         return ImVec2((window_size.x - size_x) / 2, (window_size.y - size_y) / 2);
     }
 
+    void drawAbout(const ImVec2& anchor)
+    {
+        ImGui::SetCursorPos(ImVec2(300, 50));
+        auto about_open = true;
+        if (ImGui::Begin("About", &about_open))
+        {
+            ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
+            ImGui::End();
+        }
+        if (!about_open) { _activeMenu = CurrentMenu::NONE; }
+    }
+
+    void drawOptions(const ImVec2& anchor)
+    {
+        if (0)
+        {
+            ImGui::SetCursorPos(ImVec2(300, 50));
+            ImGui::BeginChild("Options", ImVec2(350, 400), true);
+
+            ImGui::EndChild();
+        }
+        ImGui::SetCursorPos(ImVec2(400, 50));
+        menuButton(anchor, "Game", [this]() { _activeMenu = CurrentMenu::ABOUT; });
+        menuButton(anchor, "Close ", [this]() { _activeMenu = {}; });
+    }
+
+    void toggleActiveMenu(CurrentMenu clickedOn)
+    {
+        if (_activeMenu == clickedOn) { _activeMenu = CurrentMenu::NONE; }
+        else { _activeMenu = clickedOn; }
+    }
+
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
         auto dot_texture = getGame().getResource<sdl::Texture>("../data/background/splash1.png");
@@ -153,50 +191,43 @@ public:
         menuButton(anchor, "Start", [this]() {
             getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"loadGalaxy"});
         });
+
         auto options_anchor = ImVec2(ImGui::GetCursorPosX() + 200, ImGui::GetCursorPosY() + 50);
         // add size of button
 
-        menuButton(anchor, "Options", [this]() { active_menu = "options"; });
+        menuButton(anchor, "Options", [this]() { toggleActiveMenu(CurrentMenu::OPTIONS); });
 
         menuButton(anchor, "Help");
 
         ImGui::Dummy(ImVec2(0.0f, 100));
 
-        menuButton(anchor, "About", [this]() { active_menu = "about"; });
+        menuButton(anchor, "About", [this]() { toggleActiveMenu(CurrentMenu::ABOUT); });
         menuButton(anchor, "Quit", [this]() { getGame().getDispatcher().enqueue<pg::game::events::QuitEvent>(); });
         ImGui::Dummy(ImVec2(0.0f, 0));
         ImGui::EndGroup();
-        if (active_menu == "options")
+
+        switch (_activeMenu)
         {
-            if (0)
-            {
-                ImGui::SetCursorPos(ImVec2(300, 50));
-                ImGui::BeginChild("Options", ImVec2(350, 400), true);
-
-                ImGui::EndChild();
-            }
-            ImGui::SetCursorPos(ImVec2(400, 50));
-
-            menuButton(options_anchor, "Close ", [this]() { active_menu = {}; });
+        case galaxy::gui::SplashScreenWidget::CurrentMenu::NONE:
+            break;
+        case galaxy::gui::SplashScreenWidget::CurrentMenu::ABOUT: {
+            drawAbout(options_anchor);
+            break;
+        }
+        case galaxy::gui::SplashScreenWidget::CurrentMenu::OPTIONS: {
+            drawOptions(options_anchor);
+            break;
+        }
+        default:
+            break;
         }
 
-        else if (active_menu == "about")
-        {
-            ImGui::SetCursorPos(ImVec2(300, 50));
-            auto about_open = true;
-            if (ImGui::Begin("About", &about_open))
-            {
-                ImGui::TextWrapped("Galaxy is a game about space exploration and colonization.");
-                ImGui::End();
-            }
-            if (!about_open) { active_menu = {}; }
-        }
         ImGui::PopStyleVar(3);
         ImGui::PopStyleColor(5);
         ImGui::End();
     }
 
-    std::string active_menu{};
+    CurrentMenu _activeMenu;
 };
 
 } // namespace galaxy::gui
