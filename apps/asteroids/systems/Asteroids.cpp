@@ -113,7 +113,7 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
     }
 
     auto sprite =
-        game.getResource<pg::Sprite, sdl::Renderer&>(std::string(asteroidConf.resource), game.getApp().getRenderer());
+        game.loadResource<pg::Sprite, sdl::Renderer&>(std::string(asteroidConf.resource), game.getApp().getRenderer());
     auto entity = pg::game::makeEntity<pg::game::Drawable,
                                        pg::Transform2D,
                                        Dynamics,

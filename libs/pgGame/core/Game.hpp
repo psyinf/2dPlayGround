@@ -79,9 +79,27 @@ public:
     // ResourceManager& getResourceManager();
 
     template <typename Type, typename... Args>
-    std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
+    std::shared_ptr<Type> loadResource(const std::string& uri, Args&&... args)
     {
         return resourceManager.get().load<Type, Args...>(uri, std::forward<Args>(args)...);
+    }
+
+    template <typename Type, typename... Args>
+    std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
+    {
+        return resourceManager.get().get<Type, Args...>(uri, std::forward<Args>(args)...);
+    }
+
+    template <typename Type>
+    void putResource(const std::string& uri, Type&& resource)
+    {
+        resourceManager.get().put<Type>(uri, std::forward<Type&&>(resource));
+    }
+
+    template <typename Type>
+    void putResource(const std::string& uri, std::shared_ptr<Type>& resource)
+    {
+        resourceManager.get().put<Type>(uri, resource);
     }
 
     /// Scene interfaces
@@ -130,13 +148,13 @@ private:
 // specialization of resource loading, need to be outside the class (explicit specialization in non-namespace scope)
 
 template <>
-inline std::shared_ptr<pg::Sprite> Game::getResource(const std::string& uri)
+inline std::shared_ptr<pg::Sprite> Game::loadResource(const std::string& uri)
 {
     return resourceManager.get().load<pg::Sprite, sdl::Renderer&>(uri, getApp().getRenderer());
 }
 
 template <>
-inline std::shared_ptr<sdl::Texture> Game::getResource(const std::string& uri)
+inline std::shared_ptr<sdl::Texture> Game::loadResource(const std::string& uri)
 {
     return resourceManager.get().load<sdl::Texture, sdl::Renderer&>(uri, getApp().getRenderer());
 }

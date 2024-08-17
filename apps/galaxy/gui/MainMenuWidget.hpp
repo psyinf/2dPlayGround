@@ -27,7 +27,7 @@ private:
     std::vector<ImVec2> stack;
 };
 
-class SplashScreenWidget : public galaxy::gui::GameGuiWidget
+class MainMenuWidget : public galaxy::gui::GameGuiWidget
 {
 public:
     enum class CurrentMenu
@@ -35,7 +35,9 @@ public:
         NONE,
         ABOUT,
         OPTIONS,
+        GAME,
     };
+
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
     static constexpr auto lineColor = ImU32{IM_COL32(255, 0.7 * 255, 0 * 255, 128)};
@@ -47,9 +49,8 @@ public:
     {
         GuiPosStack stack;
         auto        current = ImGui::GetCursorPos();
-        // std::cout << ImGui::GetCursorPosX() << std::endl;
-        auto off_size_x = 25;
-        auto off_size_y = 30;
+        auto        off_size_x = 25;
+        auto        off_size_y = 30;
 
         auto off_anchor = ImVec2(anchor.x + off_size_x, anchor.y);
         ImGui::GetWindowDrawList()->AddLine(anchor, off_anchor, lineColor, 2.0f);
@@ -76,6 +77,43 @@ public:
             getGame().getDispatcher().trigger<galaxy::events::MenuButtonPressed>({"mainScreen", name});
             if (func) { func(); }
         }
+    }
+
+    void configMenu(const ImVec2& anchor, galaxy::config::Galaxy& galaxy)
+    {
+        ImGui::SetCursorPos(ImVec2(300, 50));
+        ImGui::BeginChild("factions");
+        // tab for each faction
+        if (ImGui::BeginTabBar("Factions"))
+        {
+            for (auto& faction : galaxy.factions)
+            {
+                if (ImGui::BeginTabItem(faction.name.data()))
+                {
+                    float color[3] = {faction.color[0] / 255.0f, faction.color[1] / 255.0f, faction.color[2] / 255.0f};
+                    ImGui::Text(faction.name.c_str());
+                    if (ImGui::ColorEdit3("Color", color))
+                    {
+                        faction.color = {static_cast<uint8_t>(255 * color[0]),
+                                         static_cast<uint8_t>(255 * color[1]),
+                                         static_cast<uint8_t>(255 * color[2]),
+                                         faction.color[3]};
+                    }
+                    ImGui::EndTabItem();
+                }
+
+                //              // ImGui::ColorEdit4("Color", &faction.color);
+                //              ImGui::SliderFloat("Opacity", &galaxy.background.opacity, 0.0f, 1.0f);
+                //              ImGui::SliderFloat("Zoom Min", &galaxy.zoom.min, 0.0f, 1.0f);
+                //              ImGui::SliderFloat("Zoom Max", &galaxy.zoom.max, 1.0f, 100.0f);
+                //              ImGui::SliderFloat("Zoom Factor", &galaxy.zoom.factor, 0.0f, 1.0f);
+                //              ImGui::Checkbox("Draw Debug Items", &galaxy.debugging.draw_debug_items);
+                //              ImGui::Checkbox("Draw Quadtree", &galaxy.debugging.draw_quadtree);
+            }
+
+            ImGui::EndTabBar();
+        }
+        ImGui::EndChild();
     }
 
     void fitToScreen(int& size_x, int& size_y)
@@ -137,7 +175,7 @@ public:
             ImGui::EndChild();
         }
         ImGui::SetCursorPos(ImVec2(400, 50));
-        menuButton(anchor, "Game", [this]() { _activeMenu = CurrentMenu::ABOUT; });
+        menuButton(anchor, "Game", [this]() { _activeMenu = CurrentMenu::GAME; });
         menuButton(anchor, "Close ", [this]() { _activeMenu = {}; });
     }
 
@@ -149,8 +187,8 @@ public:
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
-        auto dot_texture = getGame().getResource<sdl::Texture>("../data/background/splash1.png");
-        auto button_texture = getGame().getResource<sdl::Texture>("../data/UI/frame.png");
+        auto dot_texture = getGame().loadResource<sdl::Texture>("../data/background/splash1.png");
+        auto button_texture = getGame().loadResource<sdl::Texture>("../data/UI/frame.png");
 
         int size_x, size_y;
         dot_texture->query(nullptr, nullptr, &size_x, &size_y);
@@ -208,14 +246,19 @@ public:
 
         switch (_activeMenu)
         {
-        case galaxy::gui::SplashScreenWidget::CurrentMenu::NONE:
+        case galaxy::gui::MainMenuWidget::CurrentMenu::NONE:
             break;
-        case galaxy::gui::SplashScreenWidget::CurrentMenu::ABOUT: {
+        case galaxy::gui::MainMenuWidget::CurrentMenu::ABOUT: {
             drawAbout(options_anchor);
             break;
         }
-        case galaxy::gui::SplashScreenWidget::CurrentMenu::OPTIONS: {
+        case galaxy::gui::MainMenuWidget::CurrentMenu::OPTIONS: {
             drawOptions(options_anchor);
+            break;
+        }
+        case galaxy::gui::MainMenuWidget::CurrentMenu::GAME: {
+            auto galaxy_config = getGame().getResource<galaxy::config::Galaxy>("galaxy.config");
+            configMenu(options_anchor, *galaxy_config.get());
             break;
         }
         default:

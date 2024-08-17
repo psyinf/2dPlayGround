@@ -50,6 +50,28 @@ public:
         });
     }
 
+    template <class T>
+    void put(const std::string& uri, T&& resource)
+    {
+        auto path = (_locator.locate(uri)).string();
+        _cache.put<T>(uri, std::forward<T&&>(resource));
+    }
+
+    template <class T>
+    void put(const std::string& uri, std::shared_ptr<T> resource)
+    {
+        auto path = (_locator.locate(uri)).string();
+        _cache.put<T>(uri, resource);
+    }
+
+    template <class T>
+    std::shared_ptr<T> get(const std::string& uri)
+    {
+        if (!_locator.contains(uri)) { throw std::runtime_error("Locator does not contain uri"); }
+        auto path = (_locator.locate(uri)).string();
+        return _cache.get<T>(path);
+    }
+
     Locator& getLocator() { return _locator; }
 
 private:

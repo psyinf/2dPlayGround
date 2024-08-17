@@ -24,7 +24,9 @@ public:
         galaxy::config::Galaxy galaxy_config;
         pg::save("../data/galaxy_default_config.json", galaxy_config);
 
-        galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
+        galaxyConfig = std::make_shared<config::Galaxy>(
+            pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config));
+        game.putResource("galaxy.config", galaxyConfig);
     }
 
     virtual ~GalaxyScene() = default;
@@ -47,9 +49,8 @@ public:
         setupSelectionMarker();
         setupGalaxy();
 
-        addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
-        addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
-
+        addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig->star.default_color);
+        addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", *galaxyConfig);
         Scene::start();
     }
 
@@ -93,7 +94,7 @@ private:
         });
 
         game.getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
-            auto zoom = galaxyConfig.zoom;
+            auto zoom = galaxyConfig->zoom;
             getGlobalTransform().scale *= static_cast<float>(std::pow(zoom.factor + 1.0f, pos[1]));
             getGlobalTransform().scale[0] = std::clamp(getGlobalTransform().scale[0], zoom.min, zoom.max);
             getGlobalTransform().scale[1] = std::clamp(getGlobalTransform().scale[1], zoom.min, zoom.max);
@@ -144,7 +145,7 @@ private:
         std::normal_distribution<float> d(0.0f, 150.0f);
         std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
-        auto dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
+        auto dot_sprite = getGame().loadResource<pg::Sprite>("../data/circle_05.png");
 
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 10000})
         {
@@ -165,9 +166,9 @@ private:
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
         // add some background
-        auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
+        auto background_sprite = getGame().loadResource<pg::Sprite>("../data/background/milky_way_blurred.png");
         auto states = pg::States{};
-        states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
+        states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig->background.opacity * 255)});
         pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState>(
             getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite}, {std::move(states)});
 
@@ -191,7 +192,7 @@ private:
     void setupSelectionMarker()
     {
         auto marker =
-            getGame().getResource<pg::Sprite, sdl::Renderer&>("../data/reticle.png", getGame().getApp().getRenderer());
+            getGame().loadResource<pg::Sprite, sdl::Renderer&>("../data/reticle.png", getGame().getApp().getRenderer());
         entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::MarkerTag>(
                 getRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {}, {});
@@ -200,7 +201,7 @@ private:
 
 private:
     std::unique_ptr<pg::Quadtree<entt::entity>> galaxyQuadtree;
-    config::Galaxy                              galaxyConfig;
+    std::shared_ptr<config::Galaxy>             galaxyConfig;
     bool                                        isDragging{};
 };
 

@@ -27,10 +27,9 @@ public:
     }
 
     template <typename Resource>
-    std::shared_ptr<Resource> retrieve(const URI& uri)
+    void put(const URI& uri, std::shared_ptr<Resource> resource)
     {
-        if (!has(uri)) { _resources[uri] = std::make_shared<Resource>(uri); }
-        return std::any_cast<std::shared_ptr<Resource>>(_resources[uri]);
+        _resources[uri] = resource;
     }
 
     template <typename Resource, typename Maker, typename... Args>

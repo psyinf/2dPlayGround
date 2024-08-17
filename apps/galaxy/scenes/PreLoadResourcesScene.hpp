@@ -2,21 +2,21 @@
 #include <pgGame/core/Scene.hpp>
 #include <pgEngine/core/Gui.hpp>
 #include <memory>
-#include <gui/SplashScreenWidget.hpp>
+#include <gui/MainMenuWidget.hpp>
 #include <sndX/BufferCache.hpp>
 
 #include <atomic>
 
 namespace galaxy {
 
-class PreLoadResources : public pg::game::Scene
+class PreLoadResourcesScene : public pg::game::Scene
 {
     static constexpr bool coarse = false;
 
 public:
     using pg::game::Scene::Scene;
 
-    virtual ~PreLoadResources() = default;
+    virtual ~PreLoadResourcesScene() = default;
 
     void start() override
     {
