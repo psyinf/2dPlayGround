@@ -81,34 +81,56 @@ public:
 
     void configMenu(const ImVec2& anchor, galaxy::config::Galaxy& galaxy)
     {
-        ImGui::SetCursorPos(ImVec2(300, 50));
+        // overlay
+        ImGui::SetCursorPos(ImVec2(0, 0));
         ImGui::BeginChild("factions");
         // tab for each faction
+        // TODO: margin for text
         if (ImGui::BeginTabBar("Factions"))
         {
             for (auto& faction : galaxy.factions)
             {
+                auto edited_faction = faction;
                 if (ImGui::BeginTabItem(faction.name.data()))
                 {
-                    float color[3] = {faction.color[0] / 255.0f, faction.color[1] / 255.0f, faction.color[2] / 255.0f};
+                    float color[3] = {edited_faction.color[0] / 255.0f,
+                                      edited_faction.color[1] / 255.0f,
+                                      edited_faction.color[2] / 255.0f};
                     ImGui::Text(faction.name.c_str());
+                    ImGui::Checkbox("Active", &edited_faction.active);
+
                     if (ImGui::ColorEdit3("Color", color))
                     {
-                        faction.color = {static_cast<uint8_t>(255 * color[0]),
-                                         static_cast<uint8_t>(255 * color[1]),
-                                         static_cast<uint8_t>(255 * color[2]),
-                                         faction.color[3]};
+                        edited_faction.color = {static_cast<uint8_t>(255 * color[0]),
+                                                static_cast<uint8_t>(255 * color[1]),
+                                                static_cast<uint8_t>(255 * color[2]),
+                                                faction.color[3]};
                     }
-                    ImGui::EndTabItem();
-                }
+                    ImGui::SeparatorText("Start Params");
+                    ImGui::InputScalar("Starting Cycle", ImGuiDataType_U64, &edited_faction.startParams.start_cycle);
+                    ImGui::InputScalar(
+                        "Number of Starting Drones", ImGuiDataType_U8, &edited_faction.startParams.num_start_drones);
+                    // horizontal line
+                    ImGui::SeparatorText("Drone Params");
+                    // drone params
+                    ImGui::InputScalar("Acceleration", ImGuiDataType_U8, &edited_faction.droneParams.max_acceleration);
+                    ImGui::InputScalar("Max Speed", ImGuiDataType_U8, &edited_faction.droneParams.max_speed);
+                    ImGui::InputScalar("Max Range", ImGuiDataType_U8, &edited_faction.droneParams.max_range);
+                    ImGui::InputScalar(
+                        "Expected Lifetime", ImGuiDataType_U32, &edited_faction.droneParams.expected_lifetime);
+                    ImGui::InputScalar(
+                        "Reliability Factor", ImGuiDataType_Float, &edited_faction.droneParams.reliability_factor);
 
-                //              // ImGui::ColorEdit4("Color", &faction.color);
-                //              ImGui::SliderFloat("Opacity", &galaxy.background.opacity, 0.0f, 1.0f);
-                //              ImGui::SliderFloat("Zoom Min", &galaxy.zoom.min, 0.0f, 1.0f);
-                //              ImGui::SliderFloat("Zoom Max", &galaxy.zoom.max, 1.0f, 100.0f);
-                //              ImGui::SliderFloat("Zoom Factor", &galaxy.zoom.factor, 0.0f, 1.0f);
-                //              ImGui::Checkbox("Draw Debug Items", &galaxy.debugging.draw_debug_items);
-                //              ImGui::Checkbox("Draw Quadtree", &galaxy.debugging.draw_quadtree);
+                    ImGui::EndTabItem();
+
+                    if (ImGui::Button("OK")) { faction = edited_faction; }
+                    ImGui::SameLine();
+                    if (ImGui::Button("Cancel"))
+                    {
+                        // reset factions
+                    }
+                }
+                // okay cancel
             }
 
             ImGui::EndTabBar();

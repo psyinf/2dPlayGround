@@ -79,6 +79,7 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
     for (const auto& faction : galaxy_config.factions)
     {
         if (faction.startParams.start_cycle != frameStamp.gameTick) { continue; }
+        if (!faction.active) { continue; }
 
         auto view =
             game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();

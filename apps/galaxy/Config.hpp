@@ -27,6 +27,7 @@ struct DroneParameters
 
 struct Faction
 {
+    bool               active{true};
     std::string        name;
     pg::Color          color{0, 0, 255, 255};
     StartingParameters startParams;
@@ -53,19 +54,17 @@ struct Debugging
 
 struct Galaxy
 {
-    Star                 star;
-    BackgoundParameters  background;
-    ZoomParameters       zoom;
-    Debugging            debugging;
-    std::vector<Faction> factions = {
+    using Factions = std::vector<Faction>;
+    Star                star;
+    BackgoundParameters background;
+    ZoomParameters      zoom;
+    Debugging           debugging;
+    Factions            factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
-        {.name{"Vogons"}, .color{255, 0, 0, 255}},
-        //{.name{"Grays"}, .color{255, 255, 0, 255}},
-        //{.name{"Vogons"}, .color{255, 0, 0, 255}},
-        //{.name{"Grays"}, .color{255, 255, 0, 255}},
-        //{.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .num_start_drones{}}}
-        //
-    };
+        {.active{false}, .name{"Vogons"}, .color{255, 0, 0, 255}},
+        {.name{"Grays"}, .color{255, 255, 0, 255}},
+        {.name{"Xami"}, .color{255, 0, 0, 255}},
+        {.name{"R'tol"}, .color{255, 255, 0, 255}},
+        {.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .num_start_drones{}}}};
 };
-
-}} // namespace galaxy::config
+}; } // namespace galaxy::config
