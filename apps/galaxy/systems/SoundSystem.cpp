@@ -3,6 +3,7 @@
 
 #include <sndX/BackgroundPlayer.hpp>
 #include <sndX/SoundEngine.hpp>
+#include <pgf/taskengine/TaskEngine.hpp>
 #include <pgEngine/math/Random.hpp>
 #include <events/PickEvent.hpp>
 #include <events/UIEvents.hpp>
