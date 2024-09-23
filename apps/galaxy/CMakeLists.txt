@@ -17,6 +17,7 @@ target_link_libraries(${PROJECT_NAME}
     spdlog::spdlog
     BT::behaviortree_cpp
     soundEngine::soundEngine
+    pgf::pgf
     ${ADDITION_LIBS}
 )
 target_include_directories(${PROJECT_NAME}

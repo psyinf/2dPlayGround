@@ -1,5 +1,13 @@
 include (cmake/setup_cpm.cmake)
 include (cmake/deps_cpm_sdl.cmake)
+
+CPMAddPackage(
+    NAME pfoundation
+
+    GITHUB_REPOSITORY psyinf/pfoundation
+    GIT_TAG main
+
+)
 CPMAddPackage(
     NAME sdlpp    
 
