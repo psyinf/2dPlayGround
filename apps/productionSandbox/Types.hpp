@@ -54,7 +54,9 @@ struct Product : public Asset
     {
     }
 
-    const std::vector<Requirement> _requirements;     // requirements to produce this product
-    const Fraction                 _fraction{1.0f};   // minimal fraction of the product that can be produced.
-    const float                    _complexity{1.0f}; // complexity of the product
+    uint8_t getNumFractionalParts() const { return 1 / _fraction; }
+
+    const std::vector<Requirement> _requirements; // requirements to produce one item this product
+    const Fraction _fraction{1.0f};   // minimal fraction of the product that can be produced.(parts of an item)
+    const float    _complexity{1.0f}; // complexity of the product
 };
