@@ -7,6 +7,7 @@
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
 #include "miniAnsi.hpp"
+#include "FractionalAmount.hpp"
 
 struct Factory2
 {
@@ -20,7 +21,7 @@ const Resource Ores{"Ores"};
 const Resource Rare_Ores{"Rare Ores"};
 const Resource Energy{"Energy"};
 
-Material metals{"Metals", 0.5f, Requirement{Ores, 1}, Requirement{Energy, 7}};
+Material metals{"Metals", 0.5f, Requirement{Ores, 1}, Requirement{Rare_Ores, 0.005}, Requirement{Energy, 7}};
 
 // possible production = net_line_capactity / complexity
 class ProductionLine
@@ -48,7 +49,7 @@ public:
         return (product._fraction * product._complexity) / _capacity;
     }
 
-    float itemsBuildablePerTick(const Product& product) const { return _capacity / product._complexity; }
+    auto itemsBuildablePerTick(const Product& product) const { return _capacity / product._complexity; }
 
     void process()
     {
@@ -66,13 +67,13 @@ public:
         auto&& [product, amount] = _current_item.value();
         // check if we can build another unit
         auto max_amount_from_resources = _input_storage.get_max_amount(product._requirements);
-        if (max_amount_from_resources == 0) { return; }
+        if (max_amount_from_resources == 0.0f) { return; }
         // how many can we build in a tick
         auto items_buildable = itemsBuildablePerTick(product);
         // how many fractions can we build in a tick
         auto max_fractions_buildable_from_capacity = items_buildable / product._fraction;
         // how many fractions can we build with the resources we have
-        auto fractions_buildable_from_resources = max_amount_from_resources * (1.0f / product._fraction);
+        auto fractions_buildable_from_resources = max_amount_from_resources * FAmount(1.0f / float(product._fraction));
         // build fractions fitting the capacity
         auto fractions_to_build = std::min(max_fractions_buildable_from_capacity, fractions_buildable_from_resources);
         auto items_to_build_this_tick = fractions_to_build * product._fraction;
@@ -94,44 +95,16 @@ public:
             _output_storage.put(product.name, product._fraction);
         }
 
-        if (amount == 0) { _current_item.reset(); }
+        if (amount == 0.0f) { _current_item.reset(); }
     }
 
-    void process_old()
-    {
-        if (!_current_item)
-        {
-            if (_queue.empty()) { return; }
-            _current_item.emplace(_queue.front());
-            _queue.pop_front();
-        }
-        // check the remaining amount of product to produce
-        auto&& [product, amount] = _current_item.value();
-        // check how many fractions of the product could be produced
-        auto max_stored = _input_storage.get_max_amount(product._requirements);
-        // round up to the fractional amount
-        auto max_produced = std::floor(max_stored / product._fraction);
-        // adapt to complexity and capacity
-        auto max_produced_by_line = std::min(max_produced, _capacity / product._complexity);
-        // minimum from remaining amount and max_produced_by_line
-        auto to_produce = std::min(amount, max_produced_by_line);
-        // commit resources
-        for (const auto& requirement : product._requirements)
-        {
-            _input_storage.take(requirement.name, requirement.amount * to_produce);
-        }
-        // remove produced fraction from the current product
-        amount -= to_produce;
-        // if the minimum fraction of the product was produced, put it in the output storage
-        if (to_produce >= product._fraction) { _output_storage.put(product.name, to_produce); }
-
-        if (amount == 0) { _current_item.reset(); }
-    }
+    // TODO: a type that represents fractions as powers of 2
+    // e.g 1.0, 1.25, 1.75, 0.125, 0.0625, 0.03125
 
 private:
-    float                        _capacity;
+    Amount                       _capacity;
     std::optional<ProductAmount> _current_item;
-    float                        _current_fraction = 0;
+    Amount                       _current_fraction = 0.0f;
     std::deque<ProductAmount>    _queue;
     Storage&                     _input_storage;
     Storage&                     _output_storage;
@@ -160,7 +133,11 @@ void printStorageOneLine(const Storage& storage)
 
 int main()
 {
-    // TODO: a storage
+    FAmount a{1.0f};
+    FAmount b;
+    b = 1.0f;
+    FAmount c = 3.0f;
+    // TODO: a storage00
     //   a class of objects that can make a product from resources
     //   TODO: a production line
     miniAnsi::setupConsole();
@@ -178,7 +155,7 @@ int main()
         res.get();
     }
 
-    ProductionLine line(raw_storage, finished_storage, 0.125);
+    ProductionLine line(raw_storage, finished_storage, 0.1);
     line.enqueue(metals, 2);
 
     while (true)

@@ -1,10 +1,11 @@
 #pragma once
 #include <string>
 #include <vector>
+#include "FractionalAmount.hpp"
 
 // entities representing resources
-using Amount = float;
-using Fraction = float;
+using Amount = FAmount;
+using Fraction = FAmount;
 using Name = std::string;
 
 // todo: traits that mark resources, intermediate products, and finished products etc
@@ -25,7 +26,7 @@ struct Asset
 
 struct Requirement
 {
-    Requirement(const Asset& asset, Amount amount = 1)
+    Requirement(const Asset& asset, Amount amount = {1.0})
       : name{asset.name}
       , amount{amount}
     {
@@ -54,9 +55,7 @@ struct Product : public Asset
     {
     }
 
-    uint8_t getNumFractionalParts() const { return 1 / _fraction; }
-
     const std::vector<Requirement> _requirements; // requirements to produce one item this product
     const Fraction _fraction{1.0f};   // minimal fraction of the product that can be produced.(parts of an item)
-    const float    _complexity{1.0f}; // complexity of the product
+    const Fraction _complexity{1.0f}; // complexity of the product
 };

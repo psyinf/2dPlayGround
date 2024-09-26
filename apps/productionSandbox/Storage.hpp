@@ -30,7 +30,7 @@ struct Storage
         Fraction max_amount = std::numeric_limits<Fraction>::max();
         for (const auto& requirement : requirements)
         {
-            if (!has(requirement.name)) { return 0; }
+            if (!has(requirement.name)) { return {0}; }
             max_amount = std::min(resources.at(requirement.name) / requirement.amount, max_amount);
         }
     }
