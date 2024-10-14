@@ -17,7 +17,6 @@
 #include <memory>
 #include <unordered_map>
 #include <pgGame/components/WindowDetails.hpp>
-#include <pgGame/core/SingletonInterface.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
 
 namespace pg::game {
@@ -58,6 +57,7 @@ private:
     std::unique_ptr<pg::Gui> gui;
 
     entt::dispatcher dispatcher;
+    entt::registry   _registry;
 
     Scenes scenes;
 
@@ -66,7 +66,9 @@ private:
 public:
     Game();
 
-    entt::registry& getRegistry();
+    entt::registry& getCurrentSceneRegistry();
+
+    entt::registry& getGlobalRegistry() { return _registry; }
 
     entt::dispatcher& getDispatcher();
 

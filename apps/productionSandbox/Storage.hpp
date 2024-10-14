@@ -33,6 +33,7 @@ struct Storage
             if (!has(requirement.name)) { return {0}; }
             max_amount = std::min(resources.at(requirement.name) / requirement.amount, max_amount);
         }
+        return max_amount;
     }
 
     void put(const Name& name, Amount amount) { resources[name] += amount; }

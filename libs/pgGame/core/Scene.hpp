@@ -20,8 +20,9 @@ struct SceneConfig
  * A scene is basically a level or a screen in a game and is represented by a collection of entities and systems.
  * Currently the entities are stored in a shared registry and the systems are stored in a vector.
  */
-class Scene : public SingletonInterface
+class Scene : public SingletonInterface<Scene>
 {
+    friend class SingletonInterface<Scene>;
     // TODO: we probably need to switch/store keystatemap, scene-transform, and modify some global singletons
 public:
     static auto constexpr GlobalTransformName = "Scene.globalTransform";
@@ -33,6 +34,8 @@ public:
 
     virtual ~Scene() { stop(); }
 
+    virtual void postFrame(FrameStamp& frameStamp){};
+
     const Systems& getSystems() const;
 
     Systems& getSystems();
@@ -41,7 +44,10 @@ public:
 
     Transform2D& getGlobalTransform() { return globalTransform; }
 
-    entt::registry& getRegistry() { return registry; }
+    // get the per scene-registry
+    entt::registry& getSceneRegistry();
+
+    entt::registry& getGlobalRegistry();
 
     pg::game::Game& getGame() { return game_; }
 
@@ -49,9 +55,12 @@ public:
 
     virtual void stop() {}
 
+    bool started() const { return started_; }
+
     void frame(FrameStamp& frameStamp);
 
-    bool started() const { return started_; }
+protected:
+    entt::registry& getRegistry() { return registry; }
 
 private:
     Game&       game_;

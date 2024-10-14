@@ -6,6 +6,7 @@
 #include <sndX/BufferCache.hpp>
 
 #include <atomic>
+#include <pgGame/core/FrameStamp.hpp>
 
 namespace galaxy {
 
@@ -49,6 +50,15 @@ public:
 
         Scene::start();
     };
+
+    void postFrame(pg::game::FrameStamp& frameStamp) override
+    {
+        float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
+        if (totalProgress >= 1.0f)
+        {
+            getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
+        }
+    }
 
     void createLoaderThread(const std::string& file)
     {
@@ -113,14 +123,13 @@ public:
     void setupOverlay()
     {
         // update events
-        pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
-
         pg::game::makeEntity<pg::game::GuiDrawable>(
-            getRegistry(),
+            getSceneRegistry(),
             {std::make_unique<galaxy::gui::LoadResourcesWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
 

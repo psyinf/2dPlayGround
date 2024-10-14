@@ -80,6 +80,8 @@ public:
 
     void registerMousePressedCallback(MousePressedCallback&& callback) { mousePressedCallback = callback; }
 
+    void registerMouseDoubleClickedCallback(MousePressedCallback&& callback) { mouseDoubleClickedCallback = callback; }
+
     void registerMouseWheelCallback(MouseWheelCallback&& callback) { mouseWheelCallback = callback; }
 
     void evaluateCallbacks() const;
@@ -106,6 +108,7 @@ private:
     MouseDraggedCallback mouseDraggedCallback;
     MouseDraggedCallback mouseRelativeDraggedCallback;
     MousePressedCallback mousePressedCallback;
+    MousePressedCallback mouseDoubleClickedCallback;
     MouseWheelCallback   mouseWheelCallback;
 };
 

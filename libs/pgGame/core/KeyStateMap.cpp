@@ -43,9 +43,14 @@ void pg::KeyStateMap::mouseMotion(const SDL_MouseMotionEvent& event)
 
 void pg::KeyStateMap::mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent)
 {
-    if (mousePressedCallback)
+    if (mousePressedCallback && buttonEvent.clicks == 1)
     {
         mousePressedCallback({buttonEvent.x, buttonEvent.y}, buttonEvent.button, buttonEvent.state == SDL_PRESSED);
+    }
+    else if (mouseDoubleClickedCallback && buttonEvent.clicks == 2)
+    {
+        mouseDoubleClickedCallback(
+            {buttonEvent.x, buttonEvent.y}, buttonEvent.button, buttonEvent.state == SDL_PRESSED);
     }
 }
 

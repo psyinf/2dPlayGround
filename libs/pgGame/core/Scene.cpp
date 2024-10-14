@@ -12,6 +12,7 @@ void pg::game::Scene::frame(FrameStamp& frameStamp)
     }
     std::ranges::for_each(systems_, [&frameStamp](auto& system) { system->handle(frameStamp); });
     frameStamp.gameTick++;
+    postFrame(frameStamp);
 }
 
 pg::game::Scene::Systems& pg::game::Scene::getSystems()
@@ -49,4 +50,14 @@ void pg::game::Scene::setup([[maybe_unused]] std::string_view id)
         auto& systems = getSystems();
         systems.emplace_back(pg::game::SystemsFactory::makeSystem(system, getGame()));
     }
+}
+
+entt::registry& pg::game::Scene::getSceneRegistry()
+{
+    return registry;
+}
+
+entt::registry& pg::game::Scene::getGlobalRegistry()
+{
+    return game_.getGlobalRegistry();
 }

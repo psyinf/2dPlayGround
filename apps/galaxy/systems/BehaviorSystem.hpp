@@ -17,14 +17,14 @@ public:
 
     void handle(const pg::FrameStamp&)
     {
-        auto view = game.getRegistry().view<galaxy::Behavior>();
+        auto view = game.getGlobalRegistry().view<galaxy::Behavior>();
         for (auto entity : view)
         {
             auto& behavior = view.get<galaxy::Behavior>(entity);
             auto  res = behavior.tree.tickExactlyOnce();
             if (res == BT::NodeStatus::SUCCESS || res == BT::NodeStatus::FAILURE)
             {
-                game.getRegistry().remove<galaxy::Behavior>(entity);
+                game.getGlobalRegistry().remove<galaxy::Behavior>(entity);
             }
         }
         // delay deletions after the update

@@ -34,12 +34,8 @@ find_package(SDL2 REQUIRED)
     set (SDL2_INCLUDE_DIR ${SDL2_SOURCE_DIR}/include)
 
 include_directories(${SDL2_INCLUDE_DIR})
-string(TIMESTAMP AFTER "%s")
-math(EXPR DELTASDL "${AFTER} - ${BEFORE}")
-MESSAGE(STATUS "SDL2 TIME: ${DELTASDL}s")
 
 #SDL_ttf
-string(TIMESTAMP BEFORE "%s")
 CPMAddPackage(GITHUB_REPOSITORY libsdl-org/SDL_ttf
         GIT_TAG release-2.20.1
         OPTIONS
@@ -50,12 +46,8 @@ CPMAddPackage(GITHUB_REPOSITORY libsdl-org/SDL_ttf
 ) # vendor is required for mingw builds
 find_package(SDL_ttf REQUIRED)
 include_directories(${SDL_ttf_SOURCE_DIR})
-string(TIMESTAMP AFTER "%s")
-math(EXPR DELTASDL_ttf "${AFTER} - ${BEFORE}")
-MESSAGE(STATUS "SDL_ttf TIME: ${DELTASDL_ttf}s")
 
 # SDL_image
-string(TIMESTAMP BEFORE "%s")
 CPMAddPackage(GITHUB_REPOSITORY libsdl-org/SDL_image
         GIT_TAG release-2.6.2
         OPTIONS
@@ -67,9 +59,6 @@ CPMAddPackage(GITHUB_REPOSITORY libsdl-org/SDL_image
 )
 find_package(SDL_image REQUIRED)
 include_directories(${SDL_image_SOURCE_DIR})
-string(TIMESTAMP AFTER "%s")
-math(EXPR DELTASDL_image "${AFTER} - ${BEFORE}")
-MESSAGE(STATUS "SDL_image TIME: ${DELTASDL_image}s")
 
 #
 ### SDL_mixer

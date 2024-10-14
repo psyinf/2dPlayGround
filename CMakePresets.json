@@ -37,7 +37,8 @@
       },
       "cacheVariables": {
         "ENABLE_CPPCHECK_DEFAULT": "FALSE",
-        "ENABLE_CLANG_TIDY_DEFAULT": "FALSE"
+        "ENABLE_CLANG_TIDY_DEFAULT": "FALSE",
+        "VCPKG_TARGET_TRIPLET": "x64-windows"
       }
     },
     {

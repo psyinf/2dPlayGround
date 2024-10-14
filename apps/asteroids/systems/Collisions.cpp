@@ -9,8 +9,9 @@ void asteroids::Collisions::setup() {}
 
 void asteroids::Collisions::handle(const pg::FrameStamp&)
 {
-    auto active_view = game.getRegistry().view<pg::Transform2D, pg::BoundingSphere, asteroids::ActiveCollider>();
-    auto passive_view = game.getRegistry().view<pg::Transform2D, pg::BoundingSphere, asteroids::PassiveCollider>();
+    auto active_view = game.getGlobalRegistry().view<pg::Transform2D, pg::BoundingSphere, asteroids::ActiveCollider>();
+    auto passive_view =
+        game.getGlobalRegistry().view<pg::Transform2D, pg::BoundingSphere, asteroids::PassiveCollider>();
 
     // actives vs passives
     for (auto& entity_a : active_view)

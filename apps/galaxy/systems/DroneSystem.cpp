@@ -56,17 +56,18 @@ void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent eve
 {
     // later: decide if the drone dies or becomes a drifter
     // for now send a signal to destroy the entity
-    auto& drone = game.getRegistry().get<galaxy::Drone>(event.entity);
+    auto& drone = game.getGlobalRegistry().get<galaxy::Drone>(event.entity);
     if (drone.targetId != entt::null)
     {
-        auto&& [starsystem, faction] = game.getRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
+        auto&& [starsystem, faction] =
+            game.getGlobalRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
         // TODO: unmark only if planned by our faction
         if (starsystem.colonizationStatus == galaxy::ColonizationStatus::Planned)
         {
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Unexplored;
         }
     }
-    game.getRegistry().destroy(event.entity);
+    game.getGlobalRegistry().destroy(event.entity);
 }
 
 void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
@@ -80,8 +81,8 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
     {
         if (faction.startParams.start_cycle != frameStamp.gameTick) { continue; }
 
-        auto view =
-            game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
+        auto view = game.getGlobalRegistry()
+                        .view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
         auto it = view.begin();
         auto size = static_cast<size_t>(std::distance(view.begin(), view.end()));
 
@@ -115,6 +116,6 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
         auto behavior_tree = ctx->setupTree("Seed", entity, blackboard);
 
         pg::game::addComponent<galaxy::Behavior>(
-            game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
+            game.getGlobalRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
     }
 }
