@@ -29,7 +29,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     // drones
     // non-debug, generic items
 
-    for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D, pg::game::RenderState>(
+    for (auto view = game.getGlobalRegistry().view<pg::game::Drawable, pg::Transform2D, pg::game::RenderState>(
              entt::exclude<pg::tags::DebugRenderingItemTag>);
          auto& entity : view)
     {
@@ -66,41 +66,5 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     //         }
     //     }
     rendererStates.restore(renderer);
-
-    drawOverlays(renderer, rendererStates);
-
-    renderer.present();
-}
-
-void galaxy::RenderSystem::drawOverlays(sdl::Renderer&, pg::States&)
-{
-    auto& gui = game.getGui();
-    game.getRegistry().sort<pg::game::GuiDrawable>(
-        [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
-    auto view = game.getRegistry().view<pg::game::GuiDrawable>();
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_ChildRounding, 10.0f);
-    // all roundings
-    ImGui::PushStyleVar(ImGuiStyleVar_TabRounding, 10.0f);
-    ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 2.0f);
-
-    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.9f);
-    ImGui::PushStyleColor(ImGuiCol_Border, {0, 0.1f, 0.2f, 0.4f});
-    ImGui::PushStyleColor(ImGuiCol_BorderShadow, {0.6f, 0.4f, 0, 1});
-
-    ImGui::PushStyleColor(ImGuiCol_Button, {0, 0.1f, 0.2f, 1});
-    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, {0, 0.2f, 0.3f, 1});
-    ImGui::PushStyleColor(ImGuiCol_WindowBg, {0, 0.1f, 0.2f, 0.4f});
-
-    // button text color orange
-    ImGui::PushStyleColor(ImGuiCol_Text, {1.0f, 0.7f, 0.0f, 1});
-    for (const auto& entity : view)
-    {
-        auto& drawable = view.get<pg::game::GuiDrawable>(entity);
-        drawable.prim->draw(gui);
-    }
-    ImGui::PopStyleVar(7);
-    ImGui::PopStyleColor(6);
+    // TODO: if there is no GUI this needs to call     renderer.present();
 }

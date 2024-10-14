@@ -12,7 +12,7 @@ public:
     BT::NodeStatus onStart() override
     {
         auto& quadtree = game().getCurrentScene().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
-        auto  view = game().getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
+        auto  view = game().getGlobalRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Faction>();
         auto&& [drone, transform, faction] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Faction>(entity());
 
         auto r =
@@ -20,7 +20,7 @@ public:
             std::views::filter([&transform](auto result) { return !pg::equal(result.box.midpoint(), transform.pos); }) |
             // remove stars that are already visited
             std::views::filter([this](auto result) {
-                auto& starsystem = game().getRegistry().get<galaxy::StarSystemState>(result.data.front());
+                auto& starsystem = game().getGlobalRegistry().get<galaxy::StarSystemState>(result.data.front());
                 return starsystem.colonizationStatus == galaxy::ColonizationStatus::Unexplored;
             });
         // to vector
@@ -33,7 +33,7 @@ public:
 
             drone.targetId = res[index].data.front();
             auto&& [starsystem, sys_faction] =
-                game().getRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
+                game().getGlobalRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
             sys_faction = faction;
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Planned;
             return BT::NodeStatus::SUCCESS;

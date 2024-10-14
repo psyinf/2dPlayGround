@@ -40,7 +40,7 @@ public:
 
         auto& quadtree = game.getCurrentScene().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
         auto& marker = game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker");
-        auto& transform = game.getRegistry().get<pg::Transform2D>(marker);
+        auto& transform = game.getGlobalRegistry().get<pg::Transform2D>(marker);
         auto  scaled_range = pg::fVec2{5, 5} * (1.0f / pick.scale);
 
         // create currently picked

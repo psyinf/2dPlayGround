@@ -15,6 +15,7 @@ target_link_libraries(${PROJECT_NAME}
     pgGame::pgGame
     fmt::fmt
     spdlog::spdlog
+    magic_enum::magic_enum
     BT::behaviortree_cpp
     soundEngine::soundEngine
     pgf::pgf

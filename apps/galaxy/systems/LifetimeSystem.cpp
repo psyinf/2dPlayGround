@@ -16,9 +16,9 @@ bool lifeTimeExceeded(const galaxy::Lifetime& lifetime)
     return (pg::randomBetween(0.0f, 1.0f) < l);
 }
 
-void galaxy::LifetimeSystem::handle(const pg::game::FrameStamp& )
+void galaxy::LifetimeSystem::handle(const pg::game::FrameStamp&)
 {
-    auto view = game.getRegistry().view<galaxy::Lifetime>();
+    auto view = game.getGlobalRegistry().view<galaxy::Lifetime>();
     for (auto& entity : view)
     {
         auto& lifetime = view.get<galaxy::Lifetime>(entity);

@@ -46,10 +46,10 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(
     pg::game::Game&                     game,
     const asteroids::events::Collision& collision)
 {
-    auto isAsteroidE1 = game.getRegistry().all_of<asteroids::Asteroids::tag>(collision.c1);
-    auto isAsteroidE2 = game.getRegistry().all_of<asteroids::Asteroids::tag>(collision.c2);
-    auto isLaserE1 = game.getRegistry().all_of<asteroids::Lasers::tag>(collision.c1);
-    auto isLaserE2 = game.getRegistry().all_of<asteroids::Lasers::tag>(collision.c2);
+    auto isAsteroidE1 = game.getGlobalRegistry().all_of<asteroids::Asteroids::tag>(collision.c1);
+    auto isAsteroidE2 = game.getGlobalRegistry().all_of<asteroids::Asteroids::tag>(collision.c2);
+    auto isLaserE1 = game.getGlobalRegistry().all_of<asteroids::Lasers::tag>(collision.c1);
+    auto isLaserE2 = game.getGlobalRegistry().all_of<asteroids::Lasers::tag>(collision.c2);
     std::pair<entt::entity, entt::entity> retVal;
     // TODO: we need a different strategy here.
     //  1. we need to get rid of the pair-wise checking (e.g. asteroid vs laser + laser vs asteroid)
@@ -92,6 +92,7 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
         std::uint16_t damage;
     } asteroidConf;
 
+    float rotationVelocity = 12.0f;
     switch (size)
     {
     case Size::Large: {
@@ -121,16 +122,16 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
                                        HitPoints,
                                        Damage,
                                        Size>                           //
-        (game.getRegistry(),                                           //
+        (game.getGlobalRegistry(),                                     //
          pg::game::Drawable{sprite},                                   //
          pg::Transform2D{.pos{position}},                              //
-         {.velocity{velocity}},                                        //
+         {.velocity{velocity}, .angularVelocity{rotationVelocity}},    //
          {pg::BoundingSphere::fromRectangle(sprite->getDimensions())}, //
          {asteroidConf.hitPoints},                                     //
          {asteroidConf.damage},                                        //
          {std::move(size)}                                             //
         );
-    pg::game::addComponents<PassiveCollider, tag>(game.getRegistry(), entity);
+    pg::game::addComponents<PassiveCollider, tag>(game.getGlobalRegistry(), entity);
 }
 
 void asteroids::Asteroids::handle(const pg::game::FrameStamp&)
@@ -141,7 +142,7 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp&)
     std::uniform_int_distribution   pos(-200, 1024);
 
     // TODO: flag entities that should re-appear after entering a screen border and handle them in a separate system
-    auto view = game.getRegistry().view<tag, pg::Transform2D, asteroids::Dynamics>();
+    auto view = game.getGlobalRegistry().view<tag, pg::Transform2D, asteroids::Dynamics>();
     for (auto& entity : view)
     {
         auto&& [transform, dynamics] = view.get<pg::Transform2D, asteroids::Dynamics>(entity);
@@ -162,7 +163,7 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp&)
 
         // TODO: make based on damage vs hitpoints
         auto&& [transform, dynamics, size] =
-            game.getRegistry().get<pg::Transform2D, asteroids::Dynamics, Size>(asteroid);
+            game.getGlobalRegistry().get<pg::Transform2D, asteroids::Dynamics, Size>(asteroid);
 
         auto newSize = getNextSmallest(size);
         if (newSize.has_value())
@@ -175,14 +176,14 @@ void asteroids::Asteroids::handle(const pg::game::FrameStamp&)
         }
         // trigger explosion
         createExplosion(transform.pos);
-        game.getRegistry().destroy(asteroid);
-        game.getRegistry().destroy(laser);
+        game.getGlobalRegistry().destroy(asteroid);
+        game.getGlobalRegistry().destroy(laser);
     }
 }
 
 void asteroids::Asteroids::createExplosion(pg::fVec2& position)
 {
-    auto entity = pg::game::makeEntity<pg::Transform2D>(game.getRegistry(), pg::Transform2D{.pos{position}});
+    auto entity = pg::game::makeEntity<pg::Transform2D>(game.getGlobalRegistry(), pg::Transform2D{.pos{position}});
 
     auto animation = std::make_shared<pg::FramedSprite>(pg::SpriteFactory::makeFramedSprite(
         game.getApp().getRenderer(),
@@ -197,7 +198,7 @@ void asteroids::Asteroids::createExplosion(pg::fVec2& position)
                 game.getDispatcher().enqueue<pg::game::events::DestroyEntityEvent>({entity});
             }
         }));
-    pg::game::addComponents<pg::game::Drawable>(game.getRegistry(), entity, pg::game::Drawable{animation});
+    pg::game::addComponents<pg::game::Drawable>(game.getGlobalRegistry(), entity, pg::game::Drawable{animation});
 
     // pg::game::Drawable,
     // pg::game::Drawable{animation},

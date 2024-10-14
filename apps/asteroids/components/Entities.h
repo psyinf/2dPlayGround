@@ -15,6 +15,7 @@ using PassiveCollider = entt::tag<"PassiveCollider"_hs>;
 struct Dynamics
 {
     pg::fVec2 velocity{};
+    float     angularVelocity{};
     pg::fVec2 dampening{1.0f, 1.0f};
 };
 

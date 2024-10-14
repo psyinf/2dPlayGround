@@ -1,4 +1,5 @@
 #pragma once
+#include <pgEngine/primitives/GuiRenderable.hpp>
 
 namespace galaxy::gui {
 class GameGuiWidget : public pg::game::GuiRenderable

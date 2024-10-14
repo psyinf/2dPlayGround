@@ -51,7 +51,7 @@ public:
 
     void handleDestroyEntityEvent(const pg::game::events::DestroyEntityEvent& dee)
     {
-        game.getRegistry().destroy(dee.entity);
+        game.getGlobalRegistry().destroy(dee.entity);
     }
 };
 
@@ -82,9 +82,10 @@ void game::Game::frame(FrameStamp& frameStamp)
     scenes.at(currentSceneId)->frame(frameStamp);
 }
 
-entt::registry& game::Game::getRegistry()
+entt::registry& game::Game::getCurrentSceneRegistry()
 {
-    return getScene(currentSceneId).getRegistry();
+    if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
+    return getScene(currentSceneId).getSceneRegistry();
 }
 
 entt::dispatcher& game::Game::getDispatcher()

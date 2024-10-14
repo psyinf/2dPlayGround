@@ -19,22 +19,23 @@ using entt::literals::operator""_hs;
 
 class Game;
 
-class UpdateSystem : public pg::game::SystemInterface
+class UpdateStarsSystem : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
 
     void setup() override
     {
-        game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateSystem::handleDroneCreated>(this);
+        game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateStarsSystem::handleDroneCreated>(
+            this);
     };
 
     void handleDroneCreated(galaxy::events::DroneCreatedEvent& event)
     {
         // TODO: use an animation
 
-        auto& transform = game.getRegistry().get<pg::Transform2D>(event.entity);
-        auto& marker_transform = game.getRegistry().get<pg::Transform2D>(
+        auto& transform = game.getGlobalRegistry().get<pg::Transform2D>(event.entity);
+        auto& marker_transform = game.getGlobalRegistry().get<pg::Transform2D>(
             game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker"));
         marker_transform.pos = transform.pos;
     }
@@ -55,7 +56,7 @@ public:
         // get config from singleton
         auto& galaxyConfig = game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
-        auto& registry = game.getRegistry();
+        auto& registry = game.getGlobalRegistry();
         auto  view = registry.view<pg::game::Drawable,
                                   pg::Transform2D,
                                   galaxy::StarSystemState,

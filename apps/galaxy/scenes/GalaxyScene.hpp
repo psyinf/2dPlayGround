@@ -13,6 +13,20 @@
 
 #include <serializer/ConfigSerializer.hpp>
 
+#include <systems/GuiRenderSystem.hpp>
+#include <pgEngine/math/Quadtree.hpp>
+#include <pgEngine/math/VecUtils.hpp>
+#include <systems/UpdateStarsSystem.hpp>
+#include <systems/PickingSystem.hpp>
+#include <systems/DroneSystem.hpp>
+#include <systems/LifetimeSystem.hpp>
+#include <systems/BehaviorSystem.hpp>
+#include <systems/StatsSystem.hpp>
+#include <components/Tags.hpp>
+
+#include <pgGame/core/RegistryHelper.hpp>
+#include <components/Tags.hpp>
+
 namespace galaxy {
 
 class GalaxyScene : public pg::game::Scene
@@ -33,9 +47,8 @@ public:
     {
         auto& systems = getSystems();
         auto& game = getGame();
-        systems.emplace_back(std::make_unique<galaxy::RenderSystem>(game));
 
-        systems.emplace_back(std::make_unique<galaxy::UpdateSystem>(game));
+        systems.emplace_back(std::make_unique<galaxy::UpdateStarsSystem>(game));
         systems.emplace_back(std::make_unique<galaxy::PickingSystem>(game));
         systems.emplace_back(std::make_unique<galaxy::DroneSystem>(game));
         systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(game));
@@ -58,6 +71,7 @@ public:
 private:
     void setupKeyHandler()
     {
+        // TODO: keystate map per scene
         auto& game = getGame();
         addSingleton_as<pg::KeyStateMap&>("galaxy.keyStateMap", game.getKeyStateMap());
 
@@ -92,6 +106,13 @@ private:
             };
         });
 
+        game.getKeyStateMap().registerMouseDoubleClickedCallback([this](auto pos, auto button, bool pressed) {
+            if (pressed && button == SDL_BUTTON_LEFT)
+            {
+                getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"system"});
+            }
+        });
+
         game.getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
             auto zoom = galaxyConfig.zoom;
             getGlobalTransform().scale *= static_cast<float>(std::pow(zoom.factor + 1.0f, pos[1]));
@@ -119,20 +140,20 @@ private:
 
     void setupOverlay()
     {
-        pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
-            getRegistry(),
+            getSceneRegistry(),
             {std::make_unique<galaxy::gui::DashBoardWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::SystemInfoWidget>(getGame())});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::StatsWidget>(getGame())});
     }
 
@@ -155,7 +176,7 @@ private:
                                                galaxy::StarSystemState,
                                                galaxy::Faction,
                                                pg::game::RenderState> //
-                (getRegistry(),
+                (getGlobalRegistry(),
                  {.pos{new_pos}, .scale{new_size}, .scaleSpace{pg::TransformScaleSpace::Local}},
                  pg::game::Drawable{dot_sprite},
                  galaxy::StarSystemState{},
@@ -169,7 +190,10 @@ private:
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
         pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState>(
-            getRegistry(), {.pos{0, 0}, .scale{0.5, 0.5}}, pg::game::Drawable{background_sprite}, {std::move(states)});
+            getSceneRegistry(),
+            {.pos{0, 0}, .scale{0.5, 0.5}},
+            pg::game::Drawable{background_sprite},
+            {std::move(states)});
 
         addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
     }
@@ -184,7 +208,7 @@ private:
             auto box_prim = std::make_shared<pg::BoxPrimitive>(box, pg::Color{100, 0, 0, 50});
 
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::tags::MarkerTag>(
-                getRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
+                getSceneRegistry(), {.pos{}, .scale{1, 1}}, pg::game::Drawable{box_prim}, {});
         }
     }
 
@@ -194,7 +218,7 @@ private:
             getGame().getResource<pg::Sprite, sdl::Renderer&>("../data/reticle.png", getGame().getApp().getRenderer());
         entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::MarkerTag>(
-                getRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {}, {});
+                getSceneRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {}, {});
         addSingleton_as<entt::entity>("galaxy.debug.marker", markers);
     }
 

@@ -16,7 +16,7 @@ void galaxy::StatsSystem::handle(const pg::game::FrameStamp&)
 {
     auto& fpsCounter = game.getApp().getFPSCounter();
     // count number of starsystems
-    auto view = game.getRegistry().view<galaxy::StarSystemState>();
+    auto view = game.getGlobalRegistry().view<galaxy::StarSystemState>();
     stats.galaxyStats.numSystems = view.size();
     stats.frameStats.lastFrameFPS = fpsCounter.getLastFrameFPS();
     if (fpsCounter.getCurrentFrameCount() % 20 == 0)
@@ -33,14 +33,14 @@ void galaxy::StatsSystem::handle(const pg::game::FrameStamp&)
 
 void galaxy::StatsSystem::onDroneDestroyed(events::DroneFailedEvent event)
 {
-    auto  faction = game.getRegistry().get<galaxy::Faction>(event.entity);
+    auto  faction = game.getGlobalRegistry().get<galaxy::Faction>(event.entity);
     auto& factionStatsValues = stats.factionStats[faction.name];
     factionStatsValues.numDronesFailed++;
 }
 
 void galaxy::StatsSystem::onDroneCreated(events::DroneCreatedEvent event)
 {
-    auto  faction = game.getRegistry().get<galaxy::Faction>(event.entity);
+    auto  faction = game.getGlobalRegistry().get<galaxy::Faction>(event.entity);
     auto& factionStatsValues = stats.factionStats[faction.name];
     factionStatsValues.numDronesCreated++;
 }
