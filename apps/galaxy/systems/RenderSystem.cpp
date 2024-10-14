@@ -29,7 +29,7 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     // drones
     // non-debug, generic items
 
-    for (auto view = game.getGlobalRegistry().view<pg::game::Drawable, pg::Transform2D, pg::game::RenderState>(
+    for (auto view = getView<pg::game::Drawable, pg::game::RenderState, pg::Transform2D>(
              entt::exclude<pg::tags::DebugRenderingItemTag>);
          auto& entity : view)
     {
@@ -45,6 +45,8 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
         drawable.prim->draw(renderer, new_transform, rendererStates);
         rendererStates.pop_states(renderState.states);
     }
+    // local
+
     // TODO: global config for debug items
 
     // debug items, TODO: check why this not drawn reliably over other items
