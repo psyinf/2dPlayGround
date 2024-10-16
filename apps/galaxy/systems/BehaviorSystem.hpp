@@ -17,18 +17,18 @@ public:
 
     void handle(const pg::game::FrameStamp&)
     {
-        auto view = game.getGlobalRegistry().view<galaxy::Behavior>();
+        auto view = _game.getGlobalRegistry().view<galaxy::Behavior>();
         for (auto entity : view)
         {
             auto& behavior = view.get<galaxy::Behavior>(entity);
             auto  res = behavior.tree.tickExactlyOnce();
             if (res == BT::NodeStatus::SUCCESS || res == BT::NodeStatus::FAILURE)
             {
-                game.getGlobalRegistry().remove<galaxy::Behavior>(entity);
+                _game.getGlobalRegistry().remove<galaxy::Behavior>(entity);
             }
         }
         // delay deletions after the update
-        game.getDispatcher().update();
+        _game.getDispatcher().update();
     };
 };
 } // namespace galaxy

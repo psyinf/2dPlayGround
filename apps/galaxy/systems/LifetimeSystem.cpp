@@ -18,12 +18,12 @@ bool lifeTimeExceeded(const galaxy::Lifetime& lifetime)
 
 void galaxy::LifetimeSystem::handle(const pg::game::FrameStamp&)
 {
-    auto view = game.getGlobalRegistry().view<galaxy::Lifetime>();
+    auto view = _game.getGlobalRegistry().view<galaxy::Lifetime>();
     for (auto& entity : view)
     {
         auto& lifetime = view.get<galaxy::Lifetime>(entity);
         // TODO later: take pause into account
         lifetime.time_alive += 1;
-        if (lifeTimeExceeded(lifetime)) { game.getDispatcher().trigger<galaxy::events::DroneFailedEvent>({entity}); }
+        if (lifeTimeExceeded(lifetime)) { _game.getDispatcher().trigger<galaxy::events::DroneFailedEvent>({entity}); }
     }
 }

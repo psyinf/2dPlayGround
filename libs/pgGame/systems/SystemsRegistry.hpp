@@ -6,16 +6,20 @@ class Game;
 
 class SystemsFactory
 {
-    using Factory = foundation::GenericFactory<pg::game::SystemInterface, pg::game::Game&>;
+    using Factory = foundation::GenericFactory<pg::game::SystemInterface, pg::game::Game&, const std::string&>;
 
 public:
     template <typename T, typename... Args>
     static void registerSystem(std::string name)
     {
-        factory.registerPrototype(name, foundation::GenericFactory<T, pg::game::Game&, Args...>::proto());
+        factory.registerPrototype(name,
+                                  foundation::GenericFactory<T, pg::game::Game&, const std::string&, Args...>::proto());
     }
 
-    static auto makeSystem(std::string_view key, pg::game::Game& game) { return factory.make(key, game); }
+    static auto makeSystem(std::string_view key, pg::game::Game& game)
+    {
+        return factory.make(key, game, std::string{key});
+    }
 
     static auto& getFactory() { return factory; }
 

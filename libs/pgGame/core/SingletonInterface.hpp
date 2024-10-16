@@ -4,6 +4,7 @@
 #include <entt/entity/fwd.hpp>
 #include <entt/entity/registry.hpp>
 #include <stdexcept>
+#include <type_traits>
 #include <string_view>
 #include <pgFoundation/caching/ResourceCache.hpp>
 #include <spdlog/spdlog.h>
@@ -16,11 +17,17 @@ class SingletonInterface
 public:
     virtual ~SingletonInterface() = default;
 
+    template <typename Type>
+    bool hasSingleton(std::string_view id)
+    {
+        return registry().ctx().contains<Type>(entt::hashed_string{id.data()});
+    }
+
     // TODO: check const-ness
     template <typename Type>
     auto& getSingleton(std::string_view id)
     {
-        if (!registry().ctx().contains<Type>(entt::hashed_string{id.data()}))
+        if (!hasSingleton<Type>(id))
         {
             spdlog::error("Singleton '{}' not found", id);
             throw std::runtime_error(fmt::format("Singleton '{}' not found", id));
@@ -29,9 +36,12 @@ public:
     }
 
     template <typename Type>
-    auto getSingleton_or(std::string_view id, Type default_fallback)
+    auto getSingleton_or(std::string_view id, Type&& default_fallback)
     {
-        if (!registry().ctx().contains<Type>(entt::hashed_string{id.data()})) { return default_fallback; }
+        // as long as we cannot prevent this code to have a reference to a temporary in the default_fallback, we need to
+        // reject references
+        static_assert(!std::is_reference_v<Type>, "default_fallback must not be a reference");
+        if (!hasSingleton<Type>(id)) { return default_fallback; }
 
         return registry().ctx().get<Type>(entt::hashed_string{id.data()});
     }
@@ -40,10 +50,7 @@ public:
     template <typename Type>
     auto& getOrCreateSingleton(std::string_view id)
     {
-        if (!registry().ctx().contains<Type>(entt::hashed_string{id.data()}))
-        {
-            return registry().ctx().emplace_as<Type>(entt::hashed_string{id.data()});
-        }
+        if (!hasSingleton<Type>(id)) { return registry().ctx().emplace_as<Type>(entt::hashed_string{id.data()}); }
 
         return registry().ctx().get<Type>(entt::hashed_string{id.data()});
     }
@@ -57,7 +64,11 @@ public:
     template <typename Type>
     auto& getSingleton(const entt::id_type id = entt::type_id<Type>().hash())
     {
-        // TODO: find and throw if not found
+        if (!registry().ctx().contains<Type>(id))
+        {
+            spdlog::error("Singleton '{}' not found", id);
+            throw std::runtime_error(fmt::format("Singleton '{}' not found", id));
+        }
         return registry().ctx().get<Type>(id);
     }
 

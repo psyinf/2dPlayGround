@@ -19,14 +19,14 @@ try
     game.createScene("start", {});
     auto& scene = game.switchScene("start");
     auto& systems = scene.getSystems();
-    systems.emplace_back(std::make_unique<asteroids::Lasers>(game));
-    systems.emplace_back(std::make_unique<asteroids::Player>(game));
-    systems.emplace_back(std::make_unique<asteroids::Asteroids>(game));
-    systems.emplace_back(std::make_unique<asteroids::Background>(game));
-    systems.emplace_back(std::make_unique<asteroids::Collisions>(game));
-    systems.emplace_back(std::make_unique<asteroids::RenderSystem>(game));
-    systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game));
-    systems.emplace_back(std::make_unique<asteroids::SoundSystem>(game));
+    systems.emplace_back(std::make_unique<asteroids::Lasers>(game, "lasers"));
+    systems.emplace_back(std::make_unique<asteroids::Player>(game, "player"));
+    systems.emplace_back(std::make_unique<asteroids::Asteroids>(game, "asteroids"));
+    systems.emplace_back(std::make_unique<asteroids::Background>(game, "background"));
+    systems.emplace_back(std::make_unique<asteroids::Collisions>(game, "collisions"));
+    systems.emplace_back(std::make_unique<asteroids::RenderSystem>(game, "renderSystem"));
+    systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game, "dynamicsSystem"));
+    systems.emplace_back(std::make_unique<asteroids::SoundSystem>(game, "soundSystem"));
     game.switchScene("start");
 
     // TODO: from external config
