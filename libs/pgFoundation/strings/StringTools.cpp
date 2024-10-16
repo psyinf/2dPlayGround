@@ -41,3 +41,8 @@ std::vector<std::string_view> pg::foundation::strings::tokenize(std::string_view
 
     return output;
 }
+
+std::string_view pg::foundation::strings::toLower(std::string_view str)
+{
+    return std::view::transform(str, [](unsigned char c) { return std::tolower(c); });
+}

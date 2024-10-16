@@ -39,8 +39,10 @@ public:
     Game& game;
 };
 
-class Game
+class Game : public SingletonInterface<Game>
 {
+    friend class SingletonInterface<Game>;
+
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
@@ -123,6 +125,8 @@ private:
     void frame(FrameStamp& frameStamp);
 
     void createSceneInternal(std::string_view id, std::unique_ptr<Scene>&& scene);
+
+    entt::registry& getRegistry() { return _registry; }
 
     bool running{true};
 

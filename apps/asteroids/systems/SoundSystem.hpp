@@ -19,7 +19,7 @@ struct Collision;
 class SoundSystem : public pg::game::SystemInterface
 {
 public:
-    SoundSystem(pg::game::Game& game);
+    SoundSystem(pg::game::Game& game, const std::string& name);
     virtual ~SoundSystem();
     void setup();
 

@@ -26,7 +26,7 @@ public:
 
     void setup() override
     {
-        game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateStarsSystem::handleDroneCreated>(
+        _game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateStarsSystem::handleDroneCreated>(
             this);
     };
 
@@ -34,9 +34,9 @@ public:
     {
         // TODO: use an animation
 
-        auto& transform = game.getGlobalRegistry().get<pg::Transform2D>(event.entity);
-        auto& marker_transform = game.getGlobalRegistry().get<pg::Transform2D>(
-            game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker"));
+        auto& transform = _game.getGlobalRegistry().get<pg::Transform2D>(event.entity);
+        auto& marker_transform = _game.getGlobalRegistry().get<pg::Transform2D>(
+            _game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker"));
         marker_transform.pos = transform.pos;
     }
 
@@ -54,9 +54,9 @@ public:
     void updateStarSystems(const pg::FrameStamp&)
     {
         // get config from singleton
-        auto& galaxyConfig = game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
+        auto& galaxyConfig = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
-        auto& registry = game.getGlobalRegistry();
+        auto& registry = _game.getGlobalRegistry();
         auto  view = registry.view<pg::game::Drawable,
                                   pg::Transform2D,
                                   galaxy::StarSystemState,

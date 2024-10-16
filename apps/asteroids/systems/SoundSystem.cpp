@@ -9,8 +9,8 @@
 
 asteroids::SoundSystem::~SoundSystem() = default;
 
-asteroids::SoundSystem::SoundSystem(pg::game::Game& game)
-  : SystemInterface(game)
+asteroids::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
+  : SystemInterface(_game, name)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
   , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
 {

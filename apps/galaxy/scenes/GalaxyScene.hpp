@@ -26,8 +26,10 @@
 
 #include <pgGame/core/RegistryHelper.hpp>
 #include <components/Tags.hpp>
+#include <entt/entt.hpp>
 
 namespace galaxy {
+using entt::literals::operator""_hs;
 
 class GalaxyScene : public pg::game::Scene
 {
@@ -48,12 +50,12 @@ public:
         auto& systems = getSystems();
         auto& game = getGame();
 
-        systems.emplace_back(std::make_unique<galaxy::UpdateStarsSystem>(game));
-        systems.emplace_back(std::make_unique<galaxy::PickingSystem>(game));
-        systems.emplace_back(std::make_unique<galaxy::DroneSystem>(game));
-        systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(game));
-        systems.emplace_back(std::make_unique<galaxy::BehaviorSystem>(game));
-        systems.emplace_back(std::make_unique<galaxy::StatsSystem>(game));
+        systems.emplace_back(std::make_unique<galaxy::UpdateStarsSystem>(game, "updateStarsSystem"));
+        systems.emplace_back(std::make_unique<galaxy::PickingSystem>(game, "pickingSystem"));
+        systems.emplace_back(std::make_unique<galaxy::DroneSystem>(game, "droneSystem"));
+        systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(game, "lifeTimeSystem"));
+        systems.emplace_back(std::make_unique<galaxy::BehaviorSystem>(game, "behaviorSystem"));
+        systems.emplace_back(std::make_unique<galaxy::StatsSystem>(game, "statsSystem"));
 
         setupKeyHandler();
         setupOverlay();
@@ -175,12 +177,15 @@ private:
                                                pg::game::Drawable,
                                                galaxy::StarSystemState,
                                                galaxy::Faction,
-                                               pg::game::RenderState> //
+                                               pg::game::RenderState,
+                                               pg::tags::GalaxyRenderTag>
+                //
                 (getGlobalRegistry(),
                  {.pos{new_pos}, .scale{new_size}, .scaleSpace{pg::TransformScaleSpace::Local}},
                  pg::game::Drawable{dot_sprite},
                  galaxy::StarSystemState{},
                  galaxy::Faction{"None"},
+                 {},
                  {});
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);

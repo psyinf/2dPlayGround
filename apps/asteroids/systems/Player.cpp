@@ -13,24 +13,24 @@
 
 void asteroids::Player::setup()
 {
-    auto& registry = game.getGlobalRegistry();
-    auto& keyStateMap = game.getKeyStateMap();
+    auto& registry = _game.getGlobalRegistry();
+    auto& keyStateMap = _game.getKeyStateMap();
 
-    auto sprite = game.getResource<pg::Sprite>("playerShip1_blue.png");
-    auto windowDetails = game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
+    auto sprite = _game.getResource<pg::Sprite>("playerShip1_blue.png");
+    auto windowDetails = _game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
     auto player = pg::game::makeEntity<pg::BoundingSphere, pg::game::Drawable, pg::Transform2D, asteroids::Dynamics>(
-        game.getGlobalRegistry(),
+        _game.getGlobalRegistry(),
         {.radius = pg::BoundingSphere::fromRectangle(sprite->getDimensions())},                               //
         {sprite},                                                                                             //
         {.pos{windowDetails.windowRect.w * 0.5f, windowDetails.windowRect.h * 0.75f}, .scale = {0.5f, 0.5f}}, //
         {.dampening{0.95f, 0.95f}});
 
-    pg::game::addComponents<playerTag, asteroids::ActiveCollider>(game.getGlobalRegistry(), player);
+    pg::game::addComponents<playerTag, asteroids::ActiveCollider>(_game.getGlobalRegistry(), player);
 
-    game.getCurrentScene().addSingleton_as<const entt::entity>("Player", player);
-    game.getCurrentScene().addSingleton_as<pg::iVec2>("Player.sprite.size", sprite->getDimensions());
+    _game.getCurrentScene().addSingleton_as<const entt::entity>("Player", player);
+    _game.getCurrentScene().addSingleton_as<pg::iVec2>("Player.sprite.size", sprite->getDimensions());
 
-    auto view = game.getGlobalRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
+    auto view = _game.getGlobalRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
     auto entity = view.front();
 
     auto&      dynamics = registry.get<asteroids::Dynamics>(entity);
@@ -41,22 +41,22 @@ void asteroids::Player::setup()
     keyStateMap.registerKeyCallback(SDLK_DOWN, [&dynamics, speed](auto) { dynamics.velocity[1] += speed; });
     keyStateMap.registerKeyCallback(SDLK_d, [this](auto) {
         // set renderconfig debug
-        auto& renderConfig = game.getCurrentScene().getSingleton<RenderConfig>();
+        auto& renderConfig = _game.getCurrentScene().getSingleton<RenderConfig>();
         renderConfig.renderBroadPhaseCollisionShapes = !renderConfig.renderBroadPhaseCollisionShapes;
     });
 
     auto event = asteroids::events::LaserFired{.offset{}, .shooter = player};
-    auto trigger = [event, this](auto) { game.getDispatcher().trigger(event); };
-    game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, trigger, true);
+    auto trigger = [event, this](auto) { _game.getDispatcher().trigger(event); };
+    _game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, trigger, true);
 }
 
 void asteroids::Player::handle(const pg::FrameStamp&)
 {
-    auto view = game.getGlobalRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
+    auto view = _game.getGlobalRegistry().view<playerTag, pg::Transform2D, asteroids::Dynamics>();
     auto entity = view.front();
     auto&& [transform, dynamics] = view.get<pg::Transform2D, asteroids::Dynamics>(entity);
 
-    const auto windowDetails = game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
+    const auto windowDetails = _game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
     transform.pos[0] =
         static_cast<float>(std::clamp(static_cast<int>(transform.pos[0]), 0, windowDetails.windowRect.w));
     transform.pos[1] =

@@ -11,9 +11,10 @@ class GuiRenderSystem : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
-
     void setup();
 
     void handle(const pg::game::FrameStamp& frameStamp);
+
+private:
 };
 } // namespace galaxy

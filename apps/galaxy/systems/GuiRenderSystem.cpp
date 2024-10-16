@@ -7,12 +7,13 @@ void galaxy::GuiRenderSystem::setup() {}
 
 void galaxy::GuiRenderSystem::handle(const pg::game::FrameStamp& frameStamp)
 {
-    auto& renderer = game.getApp().getRenderer();
-    auto& gui = game.getGui();
+    auto& renderer = _game.getApp().getRenderer();
+    if (getConfig().isSet("standalone")) { renderer.clear(); }
+    auto& gui = _game.getGui();
 
-    game.getCurrentSceneRegistry().sort<pg::game::GuiDrawable>(
+    _game.getCurrentSceneRegistry().sort<pg::game::GuiDrawable>(
         [](const auto& lhs, const auto& rhs) { return lhs.order < rhs.order; }); // sort by Z-axis
-    auto view = game.getCurrentSceneRegistry().view<pg::game::GuiDrawable>();
+    auto view = _game.getCurrentSceneRegistry().view<pg::game::GuiDrawable>();
     ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 2.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 10.0f);
