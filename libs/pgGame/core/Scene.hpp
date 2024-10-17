@@ -8,6 +8,7 @@
 #include <entt/entt.hpp>
 #include <pgGame/core/SingletonInterface.hpp>
 #include <pgGame/systems/SystemsRegistry.hpp>
+#include <pgGame/core/KeyStateMap.hpp>
 
 namespace pg::game {
 
@@ -51,6 +52,8 @@ public:
 
     pg::game::Game& getGame() { return game_; }
 
+    KeyStateMap& getKeyStateMap() { return *_keyStateMap; }
+
     virtual void start();
 
     virtual void stop() {}
@@ -63,12 +66,14 @@ protected:
     entt::registry& getRegistry() { return registry; }
 
 private:
-    Game&       game_;
-    Systems     systems_;
-    Transform2D globalTransform;
-    bool        started_{false};
-    bool        firstFrame_{true};
-    SceneConfig _config;
+    Game&                        game_;
+    Systems                      systems_;
+    Transform2D                  globalTransform;
+    bool                         started_{false};
+    bool                         firstFrame_{true};
+    std::shared_ptr<KeyStateMap> _keyStateMap;
+    SceneConfig                  _config;
+    std::string                  _id;
 
     entt::registry registry;
 };

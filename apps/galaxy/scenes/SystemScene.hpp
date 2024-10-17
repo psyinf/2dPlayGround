@@ -58,11 +58,10 @@ private:
 
     void setupKeyHandler()
     {
-        // TODO: keystate map per scene
         auto& game = getGame();
-        addSingleton_as<pg::KeyStateMap&>("galaxy.keyStateMap", game.getKeyStateMap());
+        addSingleton_as<pg::KeyStateMap&>("galaxy.keyStateMap", getKeyStateMap());
 
-        game.getKeyStateMap().registerMouseRelativeDraggedCallback([this](auto pos, auto state) {
+        getKeyStateMap().registerMouseRelativeDraggedCallback([this](auto pos, auto state) {
             if (state & SDL_BUTTON_LMASK)
             {
                 const auto absolute_drag_distance = pg::vec_cast<float>(pos);
@@ -72,7 +71,7 @@ private:
             }
         });
 
-        game.getKeyStateMap().registerMousePressedCallback([this](auto pos, auto button, bool pressed) {
+        getKeyStateMap().registerMousePressedCallback([this](auto pos, auto button, bool pressed) {
             if (isDragging && !pressed)
             {
                 isDragging = false;
@@ -93,22 +92,22 @@ private:
             };
         });
 
-        game.getKeyStateMap().registerMouseDoubleClickedCallback([this](auto pos, auto button, bool pressed) {
-            if (pressed && button == SDL_BUTTON_LEFT)
+        getKeyStateMap().registerMouseDoubleClickedCallback([this](auto pos, auto button, bool pressed) {
+            if (!pressed && button == SDL_BUTTON_LEFT)
             {
                 getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"system"});
             }
         });
 
-        game.getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
+        getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
             auto zoom = galaxyConfig.zoom;
             getGlobalTransform().scale *= static_cast<float>(std::pow(zoom.factor + 1.0f, pos[1]));
             getGlobalTransform().scale[0] = std::clamp(getGlobalTransform().scale[0], zoom.min, zoom.max);
             getGlobalTransform().scale[1] = std::clamp(getGlobalTransform().scale[1], zoom.min, zoom.max);
         });
 
-        game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
-        //         game.getKeyStateMap().registerKeyCallback(
+        getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
+        //         getKeyStateMap().registerKeyCallback(
         //             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
         // TODO: in Game class
         game.getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
@@ -121,7 +120,7 @@ private:
         };
 
         // TODO: ESC/ESC
-        game.getKeyStateMap().registerKeyCallback(SDLK_ESCAPE, [this](auto) { getGlobalTransform() = {}; });
+        getKeyStateMap().registerKeyCallback(SDLK_ESCAPE, [this](auto) { getGlobalTransform() = {}; });
         //
     }
 
