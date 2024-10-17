@@ -15,6 +15,7 @@
 
 #include <serializer/ConfigSerializer.hpp>
 #include <systems/GuiRenderSystem.hpp>
+#include <renderables/Orbit.hpp>
 
 namespace galaxy {
 
@@ -34,13 +35,96 @@ public:
         auto& game = getGame();
 
         setupOverlay();
-
+        setupStarSystem();
+        setupKeyHandler();
         Scene::start();
     }
 
     void stop() override { Scene::stop(); }
 
 private:
+    void setupStarSystem()
+    {
+        // add drawable
+        auto entity =
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::SystemRenderTag>
+            //
+            (getGlobalRegistry(),
+             {.pos{10, 110}, .scaleSpace{pg::TransformScaleSpace::World}},
+             pg::game::Drawable{std::make_unique<galaxy::Orbit>(100.0f, 1000, pg::Color{1, 1, 1, 1})},
+             {},
+             {});
+    }
+
+    void setupKeyHandler()
+    {
+        // TODO: keystate map per scene
+        auto& game = getGame();
+        addSingleton_as<pg::KeyStateMap&>("galaxy.keyStateMap", game.getKeyStateMap());
+
+        game.getKeyStateMap().registerMouseRelativeDraggedCallback([this](auto pos, auto state) {
+            if (state & SDL_BUTTON_LMASK)
+            {
+                const auto absolute_drag_distance = pg::vec_cast<float>(pos);
+                if (pg::lengthSquared(absolute_drag_distance) < 4.0f) { return; };
+                getGlobalTransform().pos += absolute_drag_distance * (1.0f / getGlobalTransform().scale);
+                isDragging = true;
+            }
+        });
+
+        game.getKeyStateMap().registerMousePressedCallback([this](auto pos, auto button, bool pressed) {
+            if (isDragging && !pressed)
+            {
+                isDragging = false;
+                return;
+            }
+            if (button == SDL_BUTTON_LEFT && !pressed)
+            {
+                // fire a pick event. TODO: distinguish between drag and click
+                auto world_pos = pg::vec_cast<float>(pos);
+                auto windowRect = getSingleton<pg::game::WindowDetails>().windowRect;
+                auto globalTransform = getGlobalTransform();
+                world_pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
+                world_pos = (world_pos) * (1.0f / globalTransform.scale);
+                world_pos -= globalTransform.pos;
+                auto event = galaxy::events::PickEvent{
+                    .screen_position{pos}, .world_position{world_pos}, .scale{globalTransform.scale}};
+                getGame().getDispatcher().trigger(event);
+            };
+        });
+
+        game.getKeyStateMap().registerMouseDoubleClickedCallback([this](auto pos, auto button, bool pressed) {
+            if (pressed && button == SDL_BUTTON_LEFT)
+            {
+                getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"system"});
+            }
+        });
+
+        game.getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
+            auto zoom = galaxyConfig.zoom;
+            getGlobalTransform().scale *= static_cast<float>(std::pow(zoom.factor + 1.0f, pos[1]));
+            getGlobalTransform().scale[0] = std::clamp(getGlobalTransform().scale[0], zoom.min, zoom.max);
+            getGlobalTransform().scale[1] = std::clamp(getGlobalTransform().scale[1], zoom.min, zoom.max);
+        });
+
+        game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
+        //         game.getKeyStateMap().registerKeyCallback(
+        //             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
+        // TODO: in Game class
+        game.getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
+            if (e.event == SDL_WINDOWEVENT_RESIZED)
+            {
+                auto& windowDetails = getSingleton<pg::game::WindowDetails>();
+                windowDetails.windowRect.w = e.data1;
+                windowDetails.windowRect.h = e.data2;
+            }
+        };
+
+        // TODO: ESC/ESC
+        game.getKeyStateMap().registerKeyCallback(SDLK_ESCAPE, [this](auto) { getGlobalTransform() = {}; });
+        //
+    }
+
     void setupOverlay()
     {
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),

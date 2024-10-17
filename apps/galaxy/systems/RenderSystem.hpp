@@ -50,12 +50,16 @@ public:
 
             rendererStates.push_states(renderState.states);
             auto new_transform = transform;
-            new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
-            new_transform.pos = (globalTransform.pos + transform.pos) * globalTransform.scale;
-            new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
-            if (transform.scaleSpace == pg::TransformScaleSpace::World)
+            if (transform.scaleSpace == pg::TransformScaleSpace::Local)
+            {
+                new_transform.pos -= pg::dimsFromRect<float>(windowRect) * 0.5f;
+                new_transform.pos = (globalTransform.pos + transform.pos) * globalTransform.scale;
+                new_transform.pos += pg::dimsFromRect<float>(windowRect) * 0.5f;
+            }
+            else if (transform.scaleSpace == pg::TransformScaleSpace::World)
             {
                 new_transform.scale *= globalTransform.scale;
+                new_transform.pos = globalTransform.pos + transform.pos;
             }
             drawable.prim->draw(renderer, new_transform, rendererStates);
             rendererStates.pop_states(renderState.states);
