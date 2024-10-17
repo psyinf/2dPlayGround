@@ -1,6 +1,7 @@
 #pragma once
 #include <pgGame/core/FrameStamp.hpp>
 #include <unordered_map>
+#include <pgGame/core/InputEventDispatcher.hpp>
 
 namespace pg::game {
 class Game;
@@ -47,8 +48,9 @@ public:
     const Config& getConfig() const;
 
 protected:
-    Game&       _game;
-    std::string _currentScene;
-    std::string _name;
+    std::shared_ptr<pg::InputEventHandlerInterface> _inputHandler;
+    Game&                                           _game;
+    std::string                                     _currentScene;
+    std::string                                     _name;
 };
 } // namespace pg::game

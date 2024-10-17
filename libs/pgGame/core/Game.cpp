@@ -57,6 +57,7 @@ public:
 
 game::Game::Game()
   : pimpl(std::make_unique<Pimpl>(*this))
+  , _inputEventDispatcher(sdlApp.getEventHandler(), {})
 {
     gui = std::make_unique<pg::Gui>(getApp());
     // register event handlers
@@ -77,7 +78,8 @@ void game::Game::frame(FrameStamp& frameStamp)
     // poll all events
     while (sdlApp.getEventHandler().poll()) {};
     // evaluate all callbacks bound to events
-    keyStateMap.evaluateCallbacks();
+    _inputEventDispatcher.evaluateCallbacks();
+
     // update the scene
     scenes.at(currentSceneId)->frame(frameStamp);
 }
@@ -96,11 +98,6 @@ entt::dispatcher& game::Game::getDispatcher()
 pg::SDLApp& game::Game::getApp()
 {
     return sdlApp;
-}
-
-pg::KeyStateMap& game::Game::getKeyStateMap()
-{
-    return keyStateMap;
 }
 
 void game::Game::loop()
@@ -146,7 +143,9 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
 {
     try
     {
-        auto scene = scenes.at(std::string(id)).get();
+        if (currentSceneId == id) { return getScene(id); }
+        std::string idStr{id};
+        auto        scene = scenes.at(idStr).get();
         // stop current scene
         if (!currentSceneId.empty())
         {
@@ -157,13 +156,14 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
             }
 
             currentScene->stop();
+            _inputEventDispatcher.setHandlerActive(currentSceneId, false);
         }
 
         for (const auto& system : scene->getSystems())
         {
             system->enterScene(id);
         }
-
+        _inputEventDispatcher.setHandlerActive(idStr, true);
         currentSceneId = id;
         return *scene;
     }

@@ -46,11 +46,14 @@ static void setRendererDrawColor(sdl::Renderer& renderer, SDL_Color color)
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
-    pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
-    pg::SDLApp               sdlApp{windowConfig};
-    pg::KeyStateMap          keyStateMap(sdlApp.getEventHandler());
-    auto&                    renderer = sdlApp.getRenderer();
-    auto                     done = false;
+    pg::config::WindowConfig         windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
+    pg::SDLApp                       sdlApp{windowConfig};
+    std::shared_ptr<pg::KeyStateMap> keyStateMap = std::make_shared<pg::KeyStateMap>();
+    pg::InputEventDispatcher         inputEventDispatcher(sdlApp.getEventHandler(), {{"main", keyStateMap}});
+    inputEventDispatcher.setHandlerActive("main", true);
+
+    auto& renderer = sdlApp.getRenderer();
+    auto  done = false;
     sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         std::cout << "bye!";
         done = true;
@@ -59,22 +62,22 @@ try
     pg::Transform2D mouseClickTransform{};
     // some callback that is executed directly when the key is pressed
     // this basically happens at the rate of key-repeat
-    keyStateMap.registerDirectCallback(
+    keyStateMap->registerDirectCallback(
         SDLK_x, {pg::KeyStateMap::CallbackTrigger::BOTH, {[](auto pressed) {
                      std::cout << "x "
                                << (pressed == pg::KeyStateMap::CallbackTrigger::PRESSED ? "pressed" : "released")
                                << "\n";
                  }}});
     // register callbacks to be executed when desired, e.g. once per frame, independent from the key-repeat
-    keyStateMap.registerKeyCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
-    keyStateMap.registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
-    keyStateMap.registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
-    keyStateMap.registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
-    keyStateMap.registerMousePressedCallback(
+    keyStateMap->registerKeyCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
+    keyStateMap->registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
+    keyStateMap->registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
+    keyStateMap->registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
+    keyStateMap->registerMousePressedCallback(
         [&mouseClickTransform](auto pos, [[maybe_unused]] auto state, [[maybe_unused]] bool updown) {
             mouseClickTransform.pos = pg::vec_cast<float>(pos);
         });
-    keyStateMap.registerMouseDraggedCallback([&mouseClickTransform](auto pos, [[maybe_unused]] auto state) {
+    keyStateMap->registerMouseDraggedCallback([&mouseClickTransform](auto pos, [[maybe_unused]] auto state) {
         mouseClickTransform.pos = pg::vec_cast<float>(pos);
     });
     pg::Line l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
@@ -94,7 +97,7 @@ try
     {
         // handle all pending events
         while (sdlApp.getEventHandler().poll()) {}
-        keyStateMap.evaluateCallbacks();
+        keyStateMap->evaluateCallbacks();
 
         setRendererDrawColor(renderer, {0, 0, 0, 255});
         renderer.clear();

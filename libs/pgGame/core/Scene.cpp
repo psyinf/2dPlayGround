@@ -32,19 +32,21 @@ void pg::game::Scene::start()
         spdlog::warn("Scene already started");
         return;
     }
-
     firstFrame_ = true;
+    started_ = true;
     std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
 }
 
 pg::game::Scene::Scene(Game& game, SceneConfig&& cfg)
   : game_(game)
   , _config(std::move(cfg))
+  , _keyStateMap(std::make_unique<KeyStateMap>())
 {
 }
 
 void pg::game::Scene::setup([[maybe_unused]] std::string_view id)
 {
+    game_.getInputEventDispatcher().registerHandler(std::string{id}, _keyStateMap);
     for (const auto& system : _config.systems)
     {
         auto& systems = getSystems();

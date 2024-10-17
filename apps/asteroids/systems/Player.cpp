@@ -14,11 +14,11 @@
 void asteroids::Player::setup()
 {
     auto& registry = _game.getGlobalRegistry();
-    auto& keyStateMap = _game.getKeyStateMap();
 
-    auto sprite = _game.getResource<pg::Sprite>("playerShip1_blue.png");
-    auto windowDetails = _game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
-    auto player = pg::game::makeEntity<pg::BoundingSphere, pg::game::Drawable, pg::Transform2D, asteroids::Dynamics>(
+    auto& keyStateMap = _game.getCurrentScene().getKeyStateMap();
+    auto  sprite = _game.getResource<pg::Sprite>("playerShip1_blue.png");
+    auto  windowDetails = _game.getCurrentScene().getSingleton<pg::game::WindowDetails>();
+    auto  player = pg::game::makeEntity<pg::BoundingSphere, pg::game::Drawable, pg::Transform2D, asteroids::Dynamics>(
         _game.getGlobalRegistry(),
         {.radius = pg::BoundingSphere::fromRectangle(sprite->getDimensions())},                               //
         {sprite},                                                                                             //
@@ -47,7 +47,7 @@ void asteroids::Player::setup()
 
     auto event = asteroids::events::LaserFired{.offset{}, .shooter = player};
     auto trigger = [event, this](auto) { _game.getDispatcher().trigger(event); };
-    _game.getKeyStateMap().registerKeyCallback(SDLK_SPACE, trigger, true);
+    keyStateMap.registerKeyCallback(SDLK_SPACE, trigger, true);
 }
 
 void asteroids::Player::handle(const pg::game::FrameStamp&)

@@ -54,7 +54,7 @@ private:
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
     pg::SDLApp               sdlApp{windowConfig};
-    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
+    pg::InputEventDispatcher _inputEventDispatcher;
     ResourceManager          resourceManager;
     std::unique_ptr<pg::Gui> gui;
 
@@ -78,7 +78,7 @@ public:
 
     pg::Gui& getGui();
 
-    pg::KeyStateMap& getKeyStateMap();
+    pg::InputEventDispatcher& getInputEventDispatcher() { return _inputEventDispatcher; }
 
     // ResourceManager& getResourceManager();
 
