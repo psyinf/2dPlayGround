@@ -9,6 +9,7 @@
 #include "miniAnsi.hpp"
 #include "FractionalAmount.hpp"
 
+#include <magic_enum.hpp>
 struct Factory2
 {
 };
@@ -21,12 +22,20 @@ const Resource Ores{"Ores"};
 const Resource Rare_Ores{"Rare Ores"};
 const Resource Energy{"Energy"};
 
-Material metals{"Metals", 0.5f, Requirement{Ores, 1}, Requirement{Rare_Ores, 0.005}, Requirement{Energy, 7}};
+Material metals{"Metals", 0.5f, Requirement{Ores, 1.f}, Requirement{Rare_Ores, 0.005f}, Requirement{Energy, 7.f}};
 
 // possible production = net_line_capactity / complexity
 class ProductionLine
 {
 public:
+    enum class State
+    {
+        EMPTY,                 //< currently no items in queue
+        WAITING_FOR_RESOURCES, //< currently produced item waits for resources
+        FINISHED,              //< item production finished
+        RUNNING,               //< currently producing
+    };
+
     ProductionLine(Storage& input_storage, Storage& output_storage, float capacity = 1.0)
       : _input_storage{input_storage}
       , _output_storage{output_storage}
@@ -51,15 +60,11 @@ public:
 
     auto itemsBuildablePerTick(const Product& product) const { return _capacity / product._complexity; }
 
-    void process()
+    State process()
     {
         if (!_current_item)
         {
-            if (_queue.empty())
-            {
-                spdlog::info("Queue is empty");
-                return;
-            }
+            if (_queue.empty()) { return State::EMPTY; }
             _current_fraction = 0;
             _current_item.emplace(_queue.front());
             _queue.pop_front();
@@ -67,7 +72,8 @@ public:
         auto&& [product, amount] = _current_item.value();
         // check if we can build another unit
         auto max_amount_from_resources = _input_storage.get_max_amount(product._requirements);
-        if (max_amount_from_resources == 0.0f) { return; }
+        if (max_amount_from_resources == 0.0f) { return State::WAITING_FOR_RESOURCES; }
+
         // how many can we build in a tick
         auto items_buildable = itemsBuildablePerTick(product);
         // how many fractions can we build in a tick
@@ -95,7 +101,12 @@ public:
             _output_storage.put(product.name, product._fraction);
         }
 
-        if (amount == 0.0f) { _current_item.reset(); }
+        if (amount == 0.0f)
+        {
+            _current_item.reset();
+            return State::FINISHED;
+        }
+        return State::RUNNING;
     }
 
     // TODO: a type that represents fractions as powers of 2
@@ -106,6 +117,7 @@ private:
     std::optional<ProductAmount> _current_item;
     Amount                       _current_fraction = 0.0f;
     std::deque<ProductAmount>    _queue;
+    State                        _state{State::EMPTY};
     Storage&                     _input_storage;
     Storage&                     _output_storage;
 };
@@ -133,13 +145,6 @@ void printStorageOneLine(const Storage& storage)
 
 int main()
 {
-    FAmount a{1.0f};
-    FAmount b;
-    b = 1.0f;
-    FAmount c = 3.0f;
-    // TODO: a storage00
-    //   a class of objects that can make a product from resources
-    //   TODO: a production line
     miniAnsi::setupConsole();
     Storage raw_storage;
     raw_storage.resources[Ores.name] = 2;
@@ -148,12 +153,6 @@ int main()
     Storage finished_storage;
 
     printStorageOneLine(raw_storage);
-    if (0)
-    {
-        Factory factory;
-        auto    res = factory.make(raw_storage, finished_storage, metals);
-        res.get();
-    }
 
     ProductionLine line(raw_storage, finished_storage, 0.1);
     line.enqueue(metals, 2);
@@ -162,7 +161,7 @@ int main()
     {
         miniAnsi::clearScreen();
         miniAnsi::moveCursor(0, 0);
-        line.process();
+        std::cout << magic_enum::string( line.process()) << std::endl;
         printStorageOneLine(raw_storage);
         printStorageOneLine(finished_storage);
 
