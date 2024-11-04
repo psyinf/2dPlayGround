@@ -33,7 +33,7 @@ void galaxy::GalacticCore::setup()
     game->addSingleton_as<pg::game::SystemInterface::Config>("guiSystem.loadGalaxy.config",
                                                              pg::game::SystemInterface::Config{{"standalone", "true"}});
     game->addSingleton_as<pg::game::SystemInterface::Config>(
-        "guiSystem.system.config", pg::game::SystemInterface::Config{{"standalone", "true"}});
+        "guiSystem.system.config", pg::game::SystemInterface::Config{{"standalone", "false"}});
     auto& scene = game->switchScene("galaxy");
     scene.start();
 }

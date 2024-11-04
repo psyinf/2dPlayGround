@@ -56,6 +56,7 @@ private:
              {});
     }
 
+    // TODO: default 3d key handler/camera
     void setupKeyHandler()
     {
         auto& game = getGame();
