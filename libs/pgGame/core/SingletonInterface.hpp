@@ -6,7 +6,7 @@
 #include <stdexcept>
 #include <type_traits>
 #include <string_view>
-#include <pgFoundation/caching/ResourceCache.hpp>
+#include <pgf/caching/ResourceCache.hpp>
 #include <spdlog/spdlog.h>
 
 namespace pg {

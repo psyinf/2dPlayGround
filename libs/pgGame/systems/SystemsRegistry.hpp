@@ -1,5 +1,5 @@
 #pragma once
-#include <pgFoundation/caching/GenericFactory.hpp>
+#include <pgf/caching/GenericFactory.hpp>
 
 namespace pg::game {
 class Game;

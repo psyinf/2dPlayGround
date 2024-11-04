@@ -1,7 +1,5 @@
 project(pgEngine)
 find_package(SDL2 REQUIRED)
-#find_package(SDL2_image REQUIRED)
-#find_package(SDL2_ttf REQUIRED)
 find_package(soundEngine REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC)
@@ -54,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
 	SDL2_image::SDL2_image-static
 	nlohmann_json::nlohmann_json
     imgui
+	pgf::pgf
 	PRIVATE
 	SDL2_ttf::SDL2_ttf-static
 	soundEngine::soundEngine

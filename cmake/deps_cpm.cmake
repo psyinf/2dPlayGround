@@ -1,13 +1,7 @@
 include (cmake/setup_cpm.cmake)
 include (cmake/deps_cpm_sdl.cmake)
+include (cmake/deps_cpm_pg.cmake)
 
-CPMAddPackage(
-    NAME pfoundation
-
-    GITHUB_REPOSITORY psyinf/pfoundation
-    GIT_TAG main
-
-)
 CPMAddPackage(
     NAME sdlpp    
 
@@ -73,11 +67,7 @@ CPMAddPackage(
     GIT_TAG v0.9.5
 )
 
-CPMAddPackage(
-	NAME soundEngine
-	GITHUB_REPOSITORY psyinf/soundEngine
-    GIT_TAG registered_sources
-)
+
 
 if (NOT ($ENV{GITHUB_ACTIONS}))
 CPMAddPackage(

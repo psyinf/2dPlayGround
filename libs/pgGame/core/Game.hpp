@@ -5,7 +5,7 @@
 #include <pgEngine/core/Gui.hpp>
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
-#include <pgFoundation/caching/ResourceManager.hpp>
+#include <pgf/caching/ResourceManager.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
 #include <pgEngine/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>

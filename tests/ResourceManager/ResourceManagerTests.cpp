@@ -1,4 +1,4 @@
-#include <pgFoundation/caching/ResourceManager.hpp>
+#include <pgf/caching/ResourceManager.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 struct ResourceA

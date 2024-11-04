@@ -2,7 +2,7 @@
 
 #include <SDL_image.h>
 #include <font/Font.hpp>
-#include <pgFoundation/caching/ResourceLocator.hpp>
+#include <pgf/caching/ResourceLocator.hpp>
 #include "SDL_ttf.h"
 
 sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, std::string_view resource_name)

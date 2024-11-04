@@ -1,5 +1,5 @@
 #pragma once
-#include <pgFoundation/caching/ResourceManager.hpp>
+#include <pgf/caching/ResourceManager.hpp>
 #include <pgEngine/factories/Factories.hpp>
 
 namespace pg::foundation {
