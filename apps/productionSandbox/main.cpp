@@ -14,27 +14,8 @@
 #include "Storage.hpp"
 #include "ProductionLine.hpp"
 
-
 using Resource = Asset;
 using Material = Product;
-
-// example set of resources
-const Resource Ores{"Ores"};
-const Resource Rare_Ores{"Rare Ores"};
-const Resource Energy{"Energy"};
-
-Material metals{"Metals", 0.5f, Requirement{Ores, 1}, Requirement{Rare_Ores, 0.005}, Requirement{Energy, 7}};
-
-// possible production = net_line_capactity / complexity
-// template <>
-// struct fmt::formatter<complex>
-// {
-//     template <typename ParseContext>
-//     constexpr auto parse(ParseContext& ctx);
-//
-//     template <typename FormatContext>
-//     auto format(complex const& number, FormatContext& ctx);
-// };
 
 void printStorageOneLine(const Storage& storage)
 {
@@ -47,16 +28,50 @@ void printStorageOneLine(const Storage& storage)
     fmt::println("{:^{}} ", fmt::join(std::views::values(storage.resources), "|"), longest_key_size);
 }
 
-int main()
+void printProductionLineState(const ProductionLine& productionLine)
 {
-    FAmount a{1.0f};
-    FAmount b;
-    b = 1.0f;
-    FAmount c = 3.0f;
-    // TODO: a storage00
-    //   a class of objects that can make a product from resources
-    //   TODO: a production line
-    pg::foundation::console::setupConsole();
+    auto [product, amount] = productionLine.currentProduct().value_or(ProductionLine::ProductAmount{"N/A", 0.0f});
+    fmt::println("Current Product: {} ({})", product.name, productionLine.currentFraction());
+}
+
+void test1()
+{
+    const auto Hydrogen = Resource{"Hydrogen"};
+    const auto Oxygen = Resource{"Oxygen"};
+    const auto Water = Product{"Water", Requirement{Hydrogen, 2}, Requirement{Oxygen, 1}};
+
+    Storage raw_storage;
+    raw_storage.resources[Hydrogen.name] = 20;
+    raw_storage.resources[Oxygen.name] = 10;
+
+    Storage finished_storage;
+
+    ProductionLine line(raw_storage, finished_storage, 0.1f);
+
+    line.enqueue(Water, 10);
+    auto state = ProductionLine::State::RUNNING;
+    while (state == ProductionLine::State::RUNNING || state == ProductionLine::State::FINISHED)
+    {
+        state = line.process();
+        pg::foundation::console::clearScreen();
+        pg::foundation::console::moveCursor(0, 0);
+        printProductionLineState(line);
+        printStorageOneLine(raw_storage);
+        printStorageOneLine(finished_storage);
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
+void test2()
+{
+    // example set of resources
+    const Resource Ores{"Ores"};
+    const Resource Rare_Ores{"Rare Ores"};
+    const Resource Energy{"Energy"};
+
+    Material metals{"Metals", 0.5f, Requirement{Ores, 1}, Requirement{Rare_Ores, 0.005f}, Requirement{Energy, 7}};
+
     Storage raw_storage;
     raw_storage.resources[Ores.name] = 2;
     raw_storage.resources[Rare_Ores.name] = 5;
@@ -64,6 +79,7 @@ int main()
     Storage finished_storage;
 
     printStorageOneLine(raw_storage);
+    printStorageOneLine(finished_storage);
     if (0)
     {
         Factory factory;
@@ -71,17 +87,23 @@ int main()
         res.get();
     }
 
-    ProductionLine line(raw_storage, finished_storage, 0.1);
+    ProductionLine line(raw_storage, finished_storage, 0.1f);
     line.enqueue(metals, 2);
 
     while (true)
     {
         pg::foundation::console::clearScreen();
         pg::foundation::console::moveCursor(0, 0);
-        std::cout << magic_enum::enum_name( line.process()) << std::endl;
+        std::cout << magic_enum::enum_name(line.process()) << std::endl;
         printStorageOneLine(raw_storage);
         printStorageOneLine(finished_storage);
 
         std::this_thread::sleep_for(std::chrono::seconds(1));
     }
+}
+
+int main()
+{
+    pg::foundation::console::setupConsole();
+    test1();
 }

@@ -43,7 +43,7 @@ struct Product : public Asset
     Product(const Name& name, Args... args)
       : Asset{name}
       , _requirements{args...}
-      , _fraction{1.0f}
+      , _fraction{{1.0f}}
     {
     }
 

@@ -6,6 +6,8 @@
 #include <spdlog/spdlog.h>
 #include <deque>
 
+static constexpr bool splitQueue = true;
+
 /**
  * @brief A production line creates products from resources
  * It has an input storage and an output storage and a production capacity that determines the amount of complexity that
@@ -16,7 +18,7 @@ class ProductionLine
 public:
     enum class State
     {
-        EMPTY_QUEUE,                 //< currently no items in queue
+        EMPTY_QUEUE,           //< currently no items in queue
         WAITING_FOR_RESOURCES, //< currently produced item waits for resources
         FINISHED,              //< item production finished
         RUNNING,               //< currently producing
@@ -37,7 +39,22 @@ public:
         return std::ceil(value * fractional_parts) / fractional_parts;
     }
 
-    void enqueue(const Product& product, Amount amount) { _queue.emplace_back(product, amount); }
+    void enqueue(const Product& product, Amount amount)
+    {
+        if (!splitQueue)
+        {
+            _queue.emplace_back(product, amount);
+            return;
+        }
+        else
+        {
+            int fractions = amount / product._fraction;
+            for (int i = 0; i < fractions; ++i)
+            {
+                _queue.emplace_back(product, product._fraction);
+            }
+        }
+    }
 
     float cyclesPerFraction(const Product& product) const
     {
@@ -45,6 +62,21 @@ public:
     }
 
     auto itemsBuildablePerTick(const Product& product) const { return _capacity / product._complexity; }
+
+    size_t queueSize() const { return _queue.size(); }
+
+    bool isEmpty() const { return _queue.empty(); }
+
+    Fraction currentFraction() const { return _current_fraction; }
+
+    // will return the current product being produced. If the product is finished, it will return an empty optional as
+    // the product is already in the output storage
+    auto currentProduct() const { return _current_item; }
+
+    Fraction maxAmountFromResources(const Product& product) const
+    {
+        return _input_storage.get_max_amount(product._requirements);
+    }
 
     State process()
     {
@@ -82,8 +114,7 @@ public:
         // if we have produced a fraction of the product, put it in the output storage
         if (_current_fraction >= product._fraction)
         {
-            _current_fraction = 0;
-
+            _current_fraction = 0.0;
             _output_storage.put(product.name, product._fraction);
         }
 
