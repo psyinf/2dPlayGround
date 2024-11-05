@@ -31,6 +31,9 @@ struct Storage
         for (const auto& requirement : requirements)
         {
             if (!has(requirement.name)) { return {0}; }
+            auto amount_in_storage = resources.at(requirement.name);
+            auto fractions = amount_in_storage / requirement.amount;
+
             max_amount = std::min(resources.at(requirement.name) / requirement.amount, max_amount);
         }
         return max_amount;

@@ -6,10 +6,13 @@
 #include <fmt/core.h>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
+
+#include <magic_enum.hpp>
 #include <pgf/console/miniAnsi.hpp>
 #include "FractionalAmount.hpp"
 #include "Storage.hpp"
 #include "ProductionLine.hpp"
+
 
 struct Factory2
 {
@@ -78,7 +81,7 @@ int main()
     {
         pg::foundation::console::clearScreen();
         pg::foundation::console::moveCursor(0, 0);
-        line.process();
+        std::cout << magic_enum::enum_name( line.process()) << std::endl;
         printStorageOneLine(raw_storage);
         printStorageOneLine(finished_storage);
 

@@ -14,6 +14,14 @@
 class ProductionLine
 {
 public:
+    enum class State
+    {
+        EMPTY_QUEUE,                 //< currently no items in queue
+        WAITING_FOR_RESOURCES, //< currently produced item waits for resources
+        FINISHED,              //< item production finished
+        RUNNING,               //< currently producing
+    };
+
     ProductionLine(Storage& input_storage, Storage& output_storage, float capacity = 1.0)
       : _input_storage{input_storage}
       , _output_storage{output_storage}
@@ -38,15 +46,11 @@ public:
 
     auto itemsBuildablePerTick(const Product& product) const { return _capacity / product._complexity; }
 
-    void process()
+    State process()
     {
         if (!_current_item)
         {
-            if (_queue.empty())
-            {
-                spdlog::info("Queue is empty");
-                return;
-            }
+            if (_queue.empty()) { return State::EMPTY_QUEUE; }
             _current_fraction = 0;
             _current_item.emplace(_queue.front());
             _queue.pop_front();
@@ -54,7 +58,8 @@ public:
         auto&& [product, amount] = _current_item.value();
         // check if we can build another unit
         auto max_amount_from_resources = _input_storage.get_max_amount(product._requirements);
-        if (max_amount_from_resources == 0.0f) { return; }
+        if (max_amount_from_resources == 0.0f) { return State::WAITING_FOR_RESOURCES; }
+
         // how many can we build in a tick
         auto items_buildable = itemsBuildablePerTick(product);
         // how many fractions can we build in a tick
@@ -82,7 +87,12 @@ public:
             _output_storage.put(product.name, product._fraction);
         }
 
-        if (amount == 0.0f) { _current_item.reset(); }
+        if (amount == 0.0f)
+        {
+            _current_item.reset();
+            return State::FINISHED;
+        }
+        return State::RUNNING;
     }
 
     // TODO: a type that represents fractions as powers of 2
@@ -93,6 +103,7 @@ private:
     std::optional<ProductAmount> _current_item;
     Amount                       _current_fraction = 0.0f;
     std::deque<ProductAmount>    _queue;
+    State                        _state{State::EMPTY_QUEUE};
     Storage&                     _input_storage;
     Storage&                     _output_storage;
 };
