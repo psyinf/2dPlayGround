@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 #include "FractionalAmount.hpp"
-
+using FAmount = FractionalAmount<std::uint8_t, 4>;
 // entities representing resources
 using Amount = FAmount;
 using Fraction = FAmount;

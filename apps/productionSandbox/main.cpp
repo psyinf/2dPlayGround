@@ -10,13 +10,10 @@
 #include <magic_enum.hpp>
 #include <pgf/console/miniAnsi.hpp>
 #include "FractionalAmount.hpp"
+#include "FractionalAmoundFormatter.hpp"
 #include "Storage.hpp"
 #include "ProductionLine.hpp"
 
-
-struct Factory2
-{
-};
 
 using Resource = Asset;
 using Material = Product;

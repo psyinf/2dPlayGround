@@ -1,6 +1,5 @@
 #pragma once
 #include <cstdint>
-#include <fmt/format.h>
 
 /**
  * A type that represents a fractional amount with a fixed number of digits. This obviously has some limitations if the
@@ -104,13 +103,7 @@ private:
     std::uint32_t _value{};
 };
 
-using FAmount = FractionalAmount<std::uint8_t, 4>;
 
-template <>
-struct fmt::formatter<FAmount> : formatter<float>
-{
-    auto format(FAmount const& c, format_context& ctx) const { return formatter<float>::format(c, ctx); }
-};
 
 namespace std {
 template <typename DigitsType, DigitsType NumDigits>
@@ -122,6 +115,5 @@ public:
         return FractionalAmount<DigitsType, NumDigits>(std::numeric_limits<DigitsType>::max());
     }
 
-    // One can implement other methods if needed
 };
 } // namespace std
