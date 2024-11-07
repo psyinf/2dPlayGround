@@ -158,13 +158,13 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
             currentScene->stop();
             _inputEventDispatcher.setHandlerActive(currentSceneId, false);
         }
-
+        currentSceneId = id;
         for (const auto& system : scene->getSystems())
         {
             system->enterScene(id);
         }
         _inputEventDispatcher.setHandlerActive(idStr, true);
-        currentSceneId = id;
+        
         return *scene;
     }
 

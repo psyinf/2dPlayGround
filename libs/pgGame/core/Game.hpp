@@ -42,7 +42,10 @@ public:
 class Game : public SingletonInterface<Game>
 {
     friend class SingletonInterface<Game>;
-
+    Game(Game&&) = delete;
+    Game(const Game&) = delete;
+    Game& operator=(Game&&) = delete;
+    
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
