@@ -15,7 +15,7 @@ struct Factory
 
     // plan how to produce a product, by taking resources from input_storage and putting the product in output_storage
 
-    Order plan(Storage& input_storage, Storage& output_storage, const Product& product, Amount amount)
+    Order plan(Storage& input_storage, Storage& output_storage, const Product& product)
     {
         // list of operations to reduce the amount of resources in storage
         TaskList operations;
@@ -46,13 +46,10 @@ struct Factory
         });
     }
 
-    std::future<bool> make(Storage&       input_storage,
-                           Storage&       output_storage,
-                           const Product& product,
-                           const Amount   amount = {1.0})
+    std::future<bool> make(Storage& input_storage, Storage& output_storage, const Product& product)
 
     {
-        auto operations = plan(input_storage, output_storage, product, amount);
+        auto operations = plan(input_storage, output_storage, product);
 
         if (!operations) { return std::future<bool>(); }
 
