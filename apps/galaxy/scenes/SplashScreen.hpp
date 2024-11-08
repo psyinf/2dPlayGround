@@ -4,6 +4,7 @@
 #include <memory>
 #include <gui/SplashScreenWidget.hpp>
 #include <components/SoundScape.hpp>
+
 namespace galaxy {
 
 class SplashScreen : public pg::game::Scene
@@ -15,10 +16,6 @@ public:
 
     void start() override
     {
-        //TODO: from config
-        SceneSoundScape soundScape;
-        soundScape.background_music = "../data/music/a-meditation-through-time-amp-space-11947.mp3";
-        addSingleton_as<SceneSoundScape>("scene.soundScape", soundScape);
         setupOverlay();
         Scene::start();
     };

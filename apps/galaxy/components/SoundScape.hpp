@@ -4,8 +4,33 @@
 namespace galaxy {
 struct SceneSoundScape
 {
-    // TODO: generic resource
-    std::string background_music;
+    std::vector<std::string> background_music_list;
+    size_t                   background_music_next_index{0};
+    bool                     background_music_loop{true};
+    bool                     is_playing{false};
+
+    std::string next()
+    {
+        if (background_music_list.empty() || background_music_next_index == std::numeric_limits<size_t>::max())
+        {
+            background_music_next_index = std::numeric_limits<size_t>::max();
+            return "";
+        }
+        auto res = background_music_list.at(background_music_next_index);
+        background_music_next_index++;
+        if (background_music_next_index >= background_music_list.size())
+        {
+            if (background_music_loop) { background_music_next_index = 0; }
+            else { background_music_next_index = std::numeric_limits<size_t>::max(); }
+        }
+
+        return res;
+    }
+
+    bool hasNext() const
+    {
+        return !background_music_list.empty() && background_music_next_index != std::numeric_limits<size_t>::max();
+    }
 };
 
 struct SoundConfig
