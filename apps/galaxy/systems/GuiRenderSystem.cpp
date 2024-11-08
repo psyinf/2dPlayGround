@@ -3,7 +3,7 @@
 #include <pgGame/core/Game.hpp>
 #include <pgGame/components/Drawable.hpp>
 
-void galaxy::GuiRenderSystem::setup() {}
+void galaxy::GuiRenderSystem::setup(std::string_view scene_id) {}
 
 void galaxy::GuiRenderSystem::handle(const pg::game::FrameStamp& frameStamp)
 {

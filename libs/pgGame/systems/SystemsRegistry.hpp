@@ -23,6 +23,8 @@ public:
 
     static auto& getFactory() { return factory; }
 
+    auto getRegisteredSystems() const { return factory.getKeys(); }
+
 private:
     static inline Factory factory;
 };

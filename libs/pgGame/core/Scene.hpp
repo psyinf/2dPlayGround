@@ -10,11 +10,13 @@
 #include <pgGame/systems/SystemsRegistry.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
 
+#include <pgGame/config/GenericConfig.hpp>
+
 namespace pg::game {
 
 struct SceneConfig
 {
-    std::vector<std::string> systems;
+    std::vector<std::string> systems; //< systems associated with this scene
 };
 
 /**

@@ -5,7 +5,7 @@
 #include <components/StarSystem.hpp>
 #include <iostream>
 
-void galaxy::StatsSystem::setup()
+void galaxy::StatsSystem::setup(std::string_view scene_id)
 {
     _game.getCurrentScene().addSingleton_as<const Stats&>("galaxy.stats", stats);
     _game.getDispatcher().sink<events::DroneFailedEvent>().connect<&StatsSystem::onDroneDestroyed>(this);

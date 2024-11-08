@@ -18,7 +18,7 @@ asteroids::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& nam
     game.getDispatcher().sink<events::Collision>().connect<&SoundSystem::onCollision>(this);
 }
 
-void asteroids::SoundSystem::setup() {}
+void asteroids::SoundSystem::setup(std::string_view scene_id) {}
 
 void asteroids::SoundSystem::handle(const pg::FrameStamp&) {}
 

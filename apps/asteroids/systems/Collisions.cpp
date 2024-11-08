@@ -5,7 +5,7 @@
 #include <events/Collision.h>
 #include <iostream>
 
-void asteroids::Collisions::setup() {}
+void asteroids::Collisions::setup(std::string_view scene_id) {}
 
 void asteroids::Collisions::handle(const pg::FrameStamp&)
 {

@@ -34,7 +34,7 @@ void pg::game::Scene::start()
     }
     firstFrame_ = true;
     started_ = true;
-    std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
+    // std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
 }
 
 pg::game::Scene::Scene(Game& game, SceneConfig&& cfg)
@@ -51,6 +51,11 @@ void pg::game::Scene::setup([[maybe_unused]] std::string_view id)
     {
         auto& systems = getSystems();
         systems.emplace_back(pg::game::SystemsFactory::makeSystem(system, getGame()));
+    }
+    // setup systems setting them up with the scene context they are used in
+    for (auto& system : getSystems())
+    {
+        system->setup(id);
     }
 }
 

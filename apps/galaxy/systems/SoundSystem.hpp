@@ -16,7 +16,7 @@ class SoundSystem : public pg::game::SystemInterface
 public:
     SoundSystem(pg::game::Game& game, const std::string& name);
     virtual ~SoundSystem();
-    void setup() override;
+    void setup(std::string_view scene_id) override;
 
     void handle(const pg::FrameStamp& frameStamp) override;
 

@@ -24,7 +24,7 @@ class UpdateStarsSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup() override
+    void setup(std::string_view scene_id) override
     {
         _game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateStarsSystem::handleDroneCreated>(
             this);

@@ -34,8 +34,8 @@ using entt::literals::operator""_hs;
 class GalaxyScene : public pg::game::Scene
 {
 public:
-    GalaxyScene(pg::game::Game& game, pg::game::SceneConfig&& cfg)
-      : pg::game::Scene(game, std::move(cfg))
+    GalaxyScene(pg::game::Game& game, pg::game::SceneConfig&& scene_cfg)
+      : pg::game::Scene(game, std::move(scene_cfg))
     {
         galaxy::config::Galaxy galaxy_config;
         pg::save("../data/galaxy_default_config.json", galaxy_config);
@@ -47,16 +47,6 @@ public:
 
     void start() override
     {
-        auto& systems = getSystems();
-        auto& game = getGame();
-
-        systems.emplace_back(std::make_unique<galaxy::UpdateStarsSystem>(game, "updateStarsSystem"));
-        systems.emplace_back(std::make_unique<galaxy::PickingSystem>(game, "pickingSystem"));
-        systems.emplace_back(std::make_unique<galaxy::DroneSystem>(game, "droneSystem"));
-        systems.emplace_back(std::make_unique<galaxy::LifetimeSystem>(game, "lifeTimeSystem"));
-        systems.emplace_back(std::make_unique<galaxy::BehaviorSystem>(game, "behaviorSystem"));
-        systems.emplace_back(std::make_unique<galaxy::StatsSystem>(game, "statsSystem"));
-
         setupKeyHandler();
         setupOverlay();
         setupSelectionMarker();

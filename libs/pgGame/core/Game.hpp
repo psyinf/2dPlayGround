@@ -45,7 +45,7 @@ class Game : public SingletonInterface<Game>
     Game(Game&&) = delete;
     Game(const Game&) = delete;
     Game& operator=(Game&&) = delete;
-    
+
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
@@ -67,6 +67,8 @@ private:
     Scenes scenes;
 
     std::string currentSceneId{"__default__"};
+
+    ConfigItem _config;
 
 public:
     Game();
@@ -123,6 +125,8 @@ public:
     void loop();
 
     void quit();
+
+    const ConfigItem& getConfigItem();
 
 private:
     void frame(FrameStamp& frameStamp);

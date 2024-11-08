@@ -7,7 +7,7 @@
 #include <numbers>
 #include <cmath>
 
-void asteroids::RenderSystem::setup() {}
+void asteroids::RenderSystem::setup(std::string_view scene_id) {}
 
 class ScopedColor
 {

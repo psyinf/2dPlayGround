@@ -12,27 +12,37 @@
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
 
+#include <pgGame/systems/SystemsRegistry.hpp>
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
-    pg::game::Game game;
-    game.createScene("start", {});
-    auto& scene = game.switchScene("start");
-    auto& systems = scene.getSystems();
-    systems.emplace_back(std::make_unique<asteroids::Lasers>(game, "lasers"));
-    systems.emplace_back(std::make_unique<asteroids::Player>(game, "player"));
-    systems.emplace_back(std::make_unique<asteroids::Asteroids>(game, "asteroids"));
-    systems.emplace_back(std::make_unique<asteroids::Background>(game, "background"));
-    systems.emplace_back(std::make_unique<asteroids::Collisions>(game, "collisions"));
-    systems.emplace_back(std::make_unique<asteroids::RenderSystem>(game, "renderSystem"));
-    systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game, "dynamicsSystem"));
-    systems.emplace_back(std::make_unique<asteroids::SoundSystem>(game, "soundSystem"));
+    pg::game::ConfigItem cfg;
+    pg::game::Game       game;
+
+    pg::game::SystemsFactory::registerSystem<asteroids::Lasers>("lasers");
+    pg::game::SystemsFactory::registerSystem<asteroids::Player>("player");
+    pg::game::SystemsFactory::registerSystem<asteroids::Asteroids>("asteroids");
+    pg::game::SystemsFactory::registerSystem<asteroids::Background>("background");
+    pg::game::SystemsFactory::registerSystem<asteroids::Collisions>("collisions");
+    pg::game::SystemsFactory::registerSystem<asteroids::RenderSystem>("renderSystem");
+    pg::game::SystemsFactory::registerSystem<asteroids::DynamicsSystem>("dynamicsSystem");
+    pg::game::SystemsFactory::registerSystem<asteroids::SoundSystem>("soundSystem");
+    game.createScene("start",
+                     {.systems{"lasers",
+                               "player",
+                               "asteroids",
+                               "background",
+                               "collisions",
+                               "renderSystem",
+                               "dynamicsSystem",
+                               "soundSystem"}});
     game.switchScene("start");
 
     // TODO: from external config
     game.getCurrentScene().addSingleton<asteroids::RenderConfig>(
         asteroids::RenderConfig{.renderBroadPhaseCollisionShapes = true});
-    scene.start();
+
     game.loop();
     return 0;
 }

@@ -13,7 +13,7 @@ public:
     }
 
     virtual ~SystemInterface() = default;
-    virtual void setup() = 0;
+    virtual void setup(std::string_view scene_id) = 0;
     virtual void handle(const FrameStamp& frameStamp) = 0;
 
     virtual void enterScene([[maybe_unused]] std::string_view newScene) {}

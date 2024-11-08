@@ -31,9 +31,6 @@ public:
 
     void start() override
     {
-        auto& systems = getSystems();
-        auto& game = getGame();
-
         setupOverlay();
         setupStarSystem();
         setupKeyHandler();

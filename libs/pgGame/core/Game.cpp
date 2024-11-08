@@ -164,7 +164,7 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
             system->enterScene(id);
         }
         _inputEventDispatcher.setHandlerActive(idStr, true);
-        
+
         return *scene;
     }
 
@@ -183,4 +183,9 @@ pg::Gui& game::Game::getGui()
 void game::Game::quit()
 {
     running = false;
+}
+
+const pg::game::ConfigItem& game::Game::getConfigItem()
+{
+    return _config;
 }
