@@ -6,6 +6,7 @@ namespace soundEngineX {
 class SoundEngine;
 class BackgroundPlayer;
 } // namespace soundEngineX
+class Dispatcher;
 
 namespace galaxy {
 
@@ -26,6 +27,7 @@ public:
 private:
     std::unique_ptr<soundEngineX::SoundEngine>      _soundEngine;
     std::unique_ptr<soundEngineX::BackgroundPlayer> _bgPlayer;
+    std::unique_ptr<Dispatcher>                     _dispatcher;
 };
 
 } // namespace galaxy

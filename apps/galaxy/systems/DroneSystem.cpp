@@ -41,7 +41,7 @@ void galaxy::DroneSystem::setup(std::string_view scene_id)
         // downcast to access the entity
         auto entity = node.config().blackboard->get<entt::entity>("entity");
         spdlog::debug("Drone {} failed", entt::to_integral(entity));
-        _game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({entity});
+        _game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({.entity = entity});
         return BT::NodeStatus::SUCCESS;
     });
     factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");

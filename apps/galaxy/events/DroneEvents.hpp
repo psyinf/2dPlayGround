@@ -2,16 +2,17 @@
 
 #include <entt/entt.hpp>
 #include <pgEngine/math/Transform.hpp>
+#include <pgFoundation/NamedTypeRegistrar.hpp>
 
 namespace galaxy::events {
 
-struct DroneCreatedEvent
+struct DroneCreatedEvent : pgf::TypeRegistrar<DroneCreatedEvent, "DroneCreatedEvent">
 {
     entt::entity    entity;
     pg::Transform2D transform;
 };
 
-struct DroneFailedEvent
+struct DroneFailedEvent : pgf::TypeRegistrar<DroneFailedEvent, "DroneFailedEvent">
 {
     entt::entity entity;
 };

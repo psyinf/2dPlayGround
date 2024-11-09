@@ -67,7 +67,8 @@ public:
 
         if (res)
         {
-            getGame().getDispatcher().trigger<galaxy::events::MenuButtonPressed>({"mainScreen", name});
+            getGame().getDispatcher().trigger<galaxy::events::MenuButtonPressed>(
+                {.menuName = "mainScreen", .buttonName = name});
             if (func) { func(); }
         }
     }

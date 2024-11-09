@@ -19,6 +19,7 @@
 #include <pgGame/components/WindowDetails.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgGame/config/GenericConfig.hpp>
+#include <pgFoundation/NamedTypeRegistry.hpp>
 
 namespace pg::game {
 
@@ -71,6 +72,8 @@ private:
 
     GenericConfig _config;
 
+    pgf::NamedTypeRegistry _eventNameRegistry;
+
 public:
     Game();
 
@@ -79,6 +82,8 @@ public:
     entt::registry& getGlobalRegistry() { return _registry; }
 
     entt::dispatcher& getDispatcher();
+
+    pgf::NamedTypeRegistry& getEventNameRegistry() { return _eventNameRegistry; }
 
     pg::SDLApp& getApp();
 
