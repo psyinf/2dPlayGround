@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <pgGame/components/WindowDetails.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
+#include <pgGame/config/GenericConfig.hpp>
 
 namespace pg::game {
 
@@ -68,7 +69,7 @@ private:
 
     std::string currentSceneId{"__default__"};
 
-    ConfigItem _config;
+    GenericConfig _config;
 
 public:
     Game();
@@ -126,7 +127,9 @@ public:
 
     void quit();
 
-    const ConfigItem& getConfigItem();
+    const auto& getConfig() const { return _config; }
+
+    auto& getConfig() { return _config; }
 
 private:
     void frame(FrameStamp& frameStamp);

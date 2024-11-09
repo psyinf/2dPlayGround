@@ -184,8 +184,3 @@ void game::Game::quit()
 {
     running = false;
 }
-
-const pg::game::ConfigItem& game::Game::getConfigItem()
-{
-    return _config;
-}

@@ -2,6 +2,7 @@
 #include <string>
 
 namespace galaxy {
+
 struct SceneSoundScape
 {
     std::vector<std::string> background_music_list;

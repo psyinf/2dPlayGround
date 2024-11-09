@@ -10,8 +10,6 @@
 #include <pgGame/systems/SystemsRegistry.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
 
-#include <pgGame/config/GenericConfig.hpp>
-
 namespace pg::game {
 
 struct SceneConfig

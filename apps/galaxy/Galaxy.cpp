@@ -7,6 +7,7 @@
 #include <systems/SoundSystem.hpp>
 #include <systems/GuiRenderSystem.hpp>
 #include <scenes/SystemScene.hpp>
+#include <configs/SceneConfig.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -15,6 +16,11 @@ galaxy::GalacticCore::GalacticCore()
 
 void galaxy::GalacticCore::setup()
 {
+    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScapeConfig>(
+        "splashScreen", "soundScape", {{"../data/music/dead-space-style-ambient-music-184793.mp3"}});
+
+    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScapeConfig>(
+        "galaxy", "soundScape", {{"../data/music/a-meditation-through-time-amp-space-11947.mp3"}});
     // systems
     pg::game::SystemsFactory::registerSystem<galaxy::SoundSystem>("soundSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::RenderSystem>("renderSystem");
@@ -51,6 +57,7 @@ void galaxy::GalacticCore::setup()
                                                              pg::game::SystemInterface::Config{{"standalone", "true"}});
     game->addSingleton_as<pg::game::SystemInterface::Config>(
         "guiSystem.system.config", pg::game::SystemInterface::Config{{"standalone", "false"}});
+
     auto& scene = game->switchScene("splashScreen");
     scene.start();
 }
