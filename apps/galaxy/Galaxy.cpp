@@ -7,7 +7,6 @@
 #include <systems/SoundSystem.hpp>
 #include <systems/GuiRenderSystem.hpp>
 #include <scenes/SystemScene.hpp>
-#include <configs/SceneConfig.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -16,11 +15,23 @@ galaxy::GalacticCore::GalacticCore()
 
 void galaxy::GalacticCore::setup()
 {
-    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScapeConfig>(
-        "splashScreen", "soundScape", {{"../data/music/dead-space-style-ambient-music-184793.mp3"}});
+    static const auto event_sound_cfg = std::unordered_map<std::string, EventSound>{
+        {"PickEvent", {"../data/sound/asteroids/laser_short.wav"}},
+        {"MenuButtonPressed", {"../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}}};
 
-    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScapeConfig>(
-        "galaxy", "soundScape", {{"../data/music/a-meditation-through-time-amp-space-11947.mp3"}});
+    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
+        "splashScreen",
+        "soundScape",
+        {.background_music{"../data/music/dead-space-style-ambient-music-184793.mp3"},
+         .event_sounds = {event_sound_cfg}});
+
+    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
+        "galaxy",
+        "soundScape",
+        {.background_music{"../data/music/a-meditation-through-time-amp-space-11947.mp3"},
+         .event_sounds = {event_sound_cfg}
+
+        });
     // systems
     pg::game::SystemsFactory::registerSystem<galaxy::SoundSystem>("soundSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::RenderSystem>("renderSystem");

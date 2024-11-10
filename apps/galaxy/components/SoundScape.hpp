@@ -3,35 +3,43 @@
 
 namespace galaxy {
 
-struct SceneSoundScape
+struct BackgroundMusic
 {
-    std::vector<std::string> background_music_list;
-    size_t                   background_music_next_index{0};
-    bool                     background_music_loop{true};
+    std::vector<std::string> music_list;
+    size_t                   next_index{0};
+    bool                     loop{true};
     bool                     is_playing{false};
 
     std::string next()
     {
-        if (background_music_list.empty() || background_music_next_index == std::numeric_limits<size_t>::max())
+        if (music_list.empty() || next_index == std::numeric_limits<size_t>::max())
         {
-            background_music_next_index = std::numeric_limits<size_t>::max();
+            next_index = std::numeric_limits<size_t>::max();
             return "";
         }
-        auto res = background_music_list.at(background_music_next_index);
-        background_music_next_index++;
-        if (background_music_next_index >= background_music_list.size())
+        auto res = music_list.at(next_index);
+        next_index++;
+        if (next_index >= music_list.size())
         {
-            if (background_music_loop) { background_music_next_index = 0; }
-            else { background_music_next_index = std::numeric_limits<size_t>::max(); }
+            if (loop) { next_index = 0; }
+            else { next_index = std::numeric_limits<size_t>::max(); }
         }
 
         return res;
     }
 
-    bool hasNext() const
-    {
-        return !background_music_list.empty() && background_music_next_index != std::numeric_limits<size_t>::max();
-    }
+    bool hasNext() const { return !music_list.empty() && next_index != std::numeric_limits<size_t>::max(); }
+};
+
+struct EventSound
+{
+    std::string sound_file;
+};
+
+struct SceneSoundScape
+{
+    BackgroundMusic                             background_music{};
+    std::unordered_map<std::string, EventSound> event_sounds;
 };
 
 struct SoundConfig
