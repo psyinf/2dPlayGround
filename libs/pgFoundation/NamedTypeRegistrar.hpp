@@ -16,7 +16,7 @@ struct StringLiteral
 };
 
 template <typename T>
-void registerEvent(const std::string name)
+constexpr void registerEvent(const std::string name)
 {
     pgf::NamedTypeRegistry::registerType<T>(std::string{name});
 }
@@ -24,7 +24,6 @@ void registerEvent(const std::string name)
 template <typename T, StringLiteral name>
 struct TypeRegistrar
 {
-    TypeRegistrar() { registerEvent<T>(name); }
+    constexpr TypeRegistrar() { registerEvent<T>(name); }
 };
-
 } // namespace pgf

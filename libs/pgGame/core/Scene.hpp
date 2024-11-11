@@ -50,6 +50,8 @@ public:
 
     entt::registry& getGlobalRegistry();
 
+    auto& getDispatcher() { return _dispatcher; }
+
     pg::game::Game& getGame() { return game_; }
 
     KeyStateMap& getKeyStateMap() { return *_keyStateMap; }
@@ -75,7 +77,8 @@ private:
     SceneConfig                  _config;
     std::string                  _id;
 
-    entt::registry registry;
+    entt::registry   registry;
+    entt::dispatcher _dispatcher;
 };
 
 } // namespace pg::game

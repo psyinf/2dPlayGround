@@ -81,7 +81,9 @@ public:
 
     entt::registry& getGlobalRegistry() { return _registry; }
 
-    entt::dispatcher& getDispatcher();
+    entt::dispatcher& getGlobalDispatcher();
+
+    entt::dispatcher& getDispatcher() { return getCurrentScene().getDispatcher(); }
 
     pgf::NamedTypeRegistry& getEventNameRegistry() { return _eventNameRegistry; }
 

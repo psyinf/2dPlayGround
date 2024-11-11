@@ -99,7 +99,7 @@ private:
 
         getKeyStateMap().registerKeyCallback(
             SDLK_ESCAPE,
-            [this](auto) { getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"galaxy"}); },
+            [this](auto) { getGame().getGlobalDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"galaxy"}); },
             true);
 
         // TODO: in Game class

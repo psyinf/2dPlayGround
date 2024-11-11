@@ -55,7 +55,7 @@ catch (std::exception& e)
 
 catch (...)
 {
-    fmt::print("Unhandled exception");
+    fmt::print("Unhandled exception\n");
     errorTrace::printErrorTrace();
     return -1;
 }

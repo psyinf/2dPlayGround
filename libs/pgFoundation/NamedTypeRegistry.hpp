@@ -15,7 +15,7 @@ public:
     }
 
     template <typename T>
-    const std::string& getTypeName()
+    const std::string& getTypeName() const
     {
         return _registry[typeid(T)];
     }

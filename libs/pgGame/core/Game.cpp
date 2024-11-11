@@ -90,7 +90,7 @@ entt::registry& game::Game::getCurrentSceneRegistry()
     return getScene(currentSceneId).getSceneRegistry();
 }
 
-entt::dispatcher& game::Game::getDispatcher()
+entt::dispatcher& game::Game::getGlobalDispatcher()
 {
     return dispatcher;
 }

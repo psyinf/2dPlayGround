@@ -101,7 +101,7 @@ private:
         getKeyStateMap().registerMouseDoubleClickedCallback([this](auto pos, auto button, bool pressed) {
             if (!pressed && button == SDL_BUTTON_LEFT)
             {
-                getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"system"});
+                getGame().getGlobalDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"system"});
             }
         });
 

@@ -56,7 +56,7 @@ public:
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
         if (totalProgress >= 1.0f)
         {
-            getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
+            getGame().getGlobalDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
         }
     }
 
