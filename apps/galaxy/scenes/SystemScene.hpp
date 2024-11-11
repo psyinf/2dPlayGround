@@ -57,7 +57,7 @@ private:
     void setupKeyHandler()
     {
         auto& game = getGame();
-        addSingleton_as<pg::KeyStateMap&>("galaxy.keyStateMap", getKeyStateMap());
+        addSingleton_as<pg::KeyStateMap&>("system.keyStateMap", getKeyStateMap());
 
         getKeyStateMap().registerMouseRelativeDraggedCallback([this](auto pos, auto state) {
             if (state & SDL_BUTTON_LMASK)
@@ -90,13 +90,6 @@ private:
             };
         });
 
-        getKeyStateMap().registerMouseDoubleClickedCallback([this](auto pos, auto button, bool pressed) {
-            if (!pressed && button == SDL_BUTTON_LEFT)
-            {
-                getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"system"});
-            }
-        });
-
         getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
             auto zoom = galaxyConfig.zoom;
             getGlobalTransform().scale *= static_cast<float>(std::pow(zoom.factor + 1.0f, pos[1]));
@@ -104,9 +97,11 @@ private:
             getGlobalTransform().scale[1] = std::clamp(getGlobalTransform().scale[1], zoom.min, zoom.max);
         });
 
-        getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
-        //         getKeyStateMap().registerKeyCallback(
-        //             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
+        getKeyStateMap().registerKeyCallback(
+            SDLK_ESCAPE,
+            [this](auto) { getGame().getDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"galaxy"}); },
+            true);
+
         // TODO: in Game class
         game.getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
             if (e.event == SDL_WINDOWEVENT_RESIZED)
@@ -118,7 +113,6 @@ private:
         };
 
         // TODO: ESC/ESC
-        getKeyStateMap().registerKeyCallback(SDLK_ESCAPE, [this](auto) { getGlobalTransform() = {}; });
         //
     }
 

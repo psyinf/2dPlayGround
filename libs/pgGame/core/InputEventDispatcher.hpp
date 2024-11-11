@@ -49,7 +49,7 @@ public:
 
     void evaluateCallbacks() const override
     {
-        for (auto& handler : eventHandlers | std::views::values)
+        for (auto& handler : getFilteredHandlers() | std::views::values)
         {
             handler->evaluateCallbacks();
         }

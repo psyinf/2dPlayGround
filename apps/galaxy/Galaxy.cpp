@@ -15,6 +15,8 @@ galaxy::GalacticCore::GalacticCore()
 
 void galaxy::GalacticCore::setup()
 {
+    // TODO: from file
+
     static const auto event_sound_cfg = std::unordered_map<std::string, EventSound>{
         {"PickEvent", {"../data/sound/asteroids/laser_short.wav"}},
         {"MenuButtonPressed", {"../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}}};
