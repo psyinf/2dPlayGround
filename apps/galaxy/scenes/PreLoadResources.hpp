@@ -40,7 +40,7 @@ public:
         // TODO: resource-cache abstraction (e.g. sound::background1 -> filename)
         std::vector<std::string> resources = {"sound::background1", "sound::background2", "sound::background3"};
         // use resource cache to load resources
-
+        // TODO: collect from config
         std::vector<std::string> files = {
             "../data/music/a-meditation-through-time-amp-space-11947.mp3",
             "../data/music/dead-space-style-ambient-music-184793.mp3",
@@ -112,7 +112,6 @@ public:
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
                 auto x = _threads_running->arrive();
-                std::cout << 'x';
             }).detach();
         }
         else
@@ -132,7 +131,6 @@ public:
                     //_percentTotalResourcesLoaded /= size;
                 }
                 auto x = _threads_running->arrive();
-                std::cout << 'x';
             }).detach();
         }
     }
