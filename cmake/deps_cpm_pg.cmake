@@ -8,6 +8,6 @@ CPMAddPackage(
 
 CPMAddPackage(
 	NAME soundEngine
-	GITHUB_REPOSITORY psyinf/soundEngine
-    GIT_TAG registered_sources
+	GITHUB_REPOSITORY psyinf/soundEngine 
+    GIT_TAG order_fix
 )

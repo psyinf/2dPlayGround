@@ -6,6 +6,7 @@
 #include <sndX/BufferCache.hpp>
 
 #include <atomic>
+#include <barrier>
 #include <pgGame/core/FrameStamp.hpp>
 
 namespace galaxy {
@@ -17,7 +18,17 @@ class PreLoadResources : public pg::game::Scene
 public:
     using pg::game::Scene::Scene;
 
-    virtual ~PreLoadResources() = default;
+    virtual ~PreLoadResources()
+    {
+        // wait for threads to finish
+
+        if (_threads_running)
+        {
+            spdlog::info("Waiting for loading threads to finish");
+            _threads_running->arrive_and_wait();
+            spdlog::info("Loading threads finished");
+        }
+    }
 
     void start() override
     {
@@ -37,6 +48,7 @@ public:
 
         // start loading thread
         auto size = files.size();
+        _threads_running = std::make_unique<std::barrier<>>(size + 2);
         // start a watcher thread to update the progress
         createWatchProgressThread(size);
 
@@ -82,6 +94,7 @@ public:
             _numRead++;
             std::unique_lock<std::mutex> lk(_mutex);
             _cv.notify_one();
+            std::ignore = _threads_running->arrive();
         }).detach();
     }
 
@@ -98,6 +111,8 @@ public:
                     _percentTotalResourcesLoaded = static_cast<float>(_numRead) / size;
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
+                auto x = _threads_running->arrive();
+                std::cout << 'x';
             }).detach();
         }
         else
@@ -116,6 +131,8 @@ public:
                     }
                     //_percentTotalResourcesLoaded /= size;
                 }
+                auto x = _threads_running->arrive();
+                std::cout << 'x';
             }).detach();
         }
     }
@@ -144,7 +161,8 @@ private:
     soundEngineX::BufferCache _cache;
     // mutex and condition variable to signal when a resource is loaded
 
-    std::mutex              _mutex;
-    std::condition_variable _cv;
+    std::mutex                      _mutex;
+    std::condition_variable         _cv;
+    std::unique_ptr<std::barrier<>> _threads_running;
 };
 } // namespace galaxy
