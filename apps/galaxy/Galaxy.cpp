@@ -13,6 +13,12 @@ galaxy::GalacticCore::GalacticCore()
 {
 }
 
+struct Resource
+{
+    std::string name;
+    std::string path;
+};
+
 void galaxy::GalacticCore::setup()
 {
     // TODO: from file
@@ -20,6 +26,10 @@ void galaxy::GalacticCore::setup()
     static const auto event_sound_cfg = std::unordered_map<std::string, EventSound>{
         {"PickEvent", {"../data/sound/asteroids/laser_short.wav"}},
         {"MenuButtonPressed", {"../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}}};
+    // TODO: structure of files/resources to be loaded
+    //  the structure must be annotated to allow for dispatching to specific loader
+    //   e.g. sounds, markov-chains, etc
+    //  we also need some loader abstraction/way to report progress -> LoaderProgressInterface
 
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
         "splashScreen",

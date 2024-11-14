@@ -10,8 +10,13 @@
 #include <pgGame/core/FrameStamp.hpp>
 
 #include <resources/SoundResource.hpp>
+#include <pgEngine/generators/MarkovNameGen.hpp>
 
 namespace galaxy {
+
+using Loader = std::function<void()>;
+
+using Loaders = std::map<std::string, Loader>;
 
 class PreLoadResources : public pg::game::Scene
 {
@@ -39,26 +44,59 @@ public:
         addSingleton_as<float&>("resourceLoader.currentProgress", _percentCurrentResourceLoaded);
         addSingleton_as<std::map<std::string, float>&>("resourceLoader.resourcesProgress", _percentResourcesLoaded);
         // TODO: from configuration
-        // TODO: resource-cache abstraction (e.g. sound::background1 -> filename)
-        std::vector<std::string> resources = {"sound::background1", "sound::background2", "sound::background3"};
+
         // use resource cache to load resources
         // TODO: collect from config
-        std::vector<std::string> files = {
+        std::vector<std::string> sound_files = {
             "../data/music/a-meditation-through-time-amp-space-11947.mp3",
             "../data/music/dead-space-style-ambient-music-184793.mp3",
             "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
 
         // start loading thread
-        auto size = files.size();
-        _threads_running = std::make_unique<std::barrier<>>(size + 2);
-        // start a watcher thread to update the progress
-        createWatchProgressThread(size);
+        auto size = sound_files.size();
 
-        for (auto& file : files)
+        for (auto& file : sound_files)
         {
-            createLoaderThread(file);
+            auto loader = [this, file]() {
+                getGame().getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&, float&>(
+                    file, _percentCurrentResourceLoaded, _percentResourcesLoaded[file]);
+            };
+            _loaders[file] = std::move(loader);
         }
+        auto loader = [this]() {
+            std::ifstream fileStreamIn("../data/stars.txt", std::ios_base::binary);
+            std::ifstream fileStreamIn2("../data/boys.txt", std::ios_base::binary);
 
+            pg::generators::MarkovFrequencyMap<4> fmg;
+            while (!fileStreamIn.eof())
+            {
+                std::string word;
+                fileStreamIn >> word;
+                fmg.add(word);
+            }
+            _percentResourcesLoaded["stars.txt"] = 1.0f;
+            _percentCurrentResourceLoaded = 0.5;
+
+            while (!fileStreamIn2.eof())
+            {
+                std::string word;
+                fileStreamIn2 >> word;
+                fmg.add(word);
+            }
+            _percentResourcesLoaded["boys.txt"] = 1.0f;
+            _percentCurrentResourceLoaded = 1.0f;
+            getGame().addSingleton_as<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap", fmg);
+        };
+
+        _loaders["markov"] = std::move(loader);
+
+        _threads_running = std::make_unique<std::barrier<>>(_loaders.size() + 2);
+        for (auto& [file, loader] : _loaders)
+        {
+            createLoaderThread(std::move(loader), file);
+        }
+        // start a watcher thread to update the progress
+        createWatchProgressThread(_loaders.size());
         setupOverlay();
         // load resources for coming scene(s)
 
@@ -74,19 +112,19 @@ public:
         }
     }
 
-    void createLoaderThread(const std::string& file)
+    void createLoaderThread(Loader&& loader, const std::string& resource)
     {
-        std::jthread([this, file] {
+        std::jthread([this, loader = std::move(loader), resource] {
             try
             {
-                getGame().getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&, float&>(
-                    file, _percentCurrentResourceLoaded, _percentResourcesLoaded[file]);
+                loader();
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
             catch (const std::exception&)
             {
-                spdlog::error("Failed to load resource: {}", file);
+                spdlog::error("Failed to load resource: {}", resource);
             }
-            _percentResourcesLoaded[file] =
+            _percentResourcesLoaded[resource] =
                 1.0f; // might have been in cache already, thus not triggering a progress callback
             _percentCurrentResourceLoaded = 1.0f;
             _numRead++;
@@ -154,10 +192,12 @@ private:
     std::map<std::string, float> _percentResourcesLoaded{};
 
     std::atomic<uint32_t> _numRead{};
+    Loaders               _loaders;
     // mutex and condition variable to signal when a resource is loaded
 
     std::mutex                      _mutex;
     std::condition_variable         _cv;
     std::unique_ptr<std::barrier<>> _threads_running;
+    std::atomic_uint32_t            _numThreads{};
 };
 } // namespace galaxy

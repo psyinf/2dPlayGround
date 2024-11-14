@@ -13,12 +13,12 @@ const pg::game::SystemInterface::Config& pg::game::SystemInterface::getConfig() 
 
 void pg::game::SystemInterface::exitScene([[maybe_unused]] std::string_view newScene)
 {
-    //_currentScene = "";
+    _currentScene = "";
 }
 
 void pg::game::SystemInterface::enterScene([[maybe_unused]] std::string_view newScene)
 {
-    //_currentScene = newScene;
+    _currentScene = newScene;
 }
 
 pg::game::SystemInterface::SystemInterface(Game& game, const std::string& name)
