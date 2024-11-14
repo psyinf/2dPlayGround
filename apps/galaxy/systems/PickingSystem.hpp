@@ -51,8 +51,7 @@ public:
             transform.pos = results.at(0).box.midpoint();
             transform.scale = {0.025f, 0.025f};
 
-            _game.getCurrentScene().getOrCreateSingleton<PickedEntity>("picked.entity").entity =
-                results.at(0).data.at(0);
+            _game.getOrCreateSingleton<PickedEntity>("picked.entity").entity = results.at(0).data.at(0);
 
             auto event = galaxy::events::PickResult{.world_position{transform.pos}, .entity{results.at(0).data[0]}};
             _game.getDispatcher().trigger(event);

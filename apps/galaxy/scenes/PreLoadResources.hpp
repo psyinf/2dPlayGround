@@ -9,6 +9,8 @@
 #include <barrier>
 #include <pgGame/core/FrameStamp.hpp>
 
+#include <resources/SoundResource.hpp>
+
 namespace galaxy {
 
 class PreLoadResources : public pg::game::Scene
@@ -77,15 +79,11 @@ public:
         std::jthread([this, file] {
             try
             {
-                _cache.get(file, {file, [&](soundEngineX::loader::LoadProgressInfo progress) {
-                                      _percentCurrentResourceLoaded = progress.percent();
-                                      _percentResourcesLoaded[file] = progress.percent();
-                                  }});
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                getGame().getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&, float&>(
+                    file, _percentCurrentResourceLoaded, _percentResourcesLoaded[file]);
             }
             catch (const std::exception&)
             {
-                // log
                 spdlog::error("Failed to load resource: {}", file);
             }
             _percentResourcesLoaded[file] =
@@ -155,8 +153,7 @@ private:
 
     std::map<std::string, float> _percentResourcesLoaded{};
 
-    std::atomic<uint32_t>     _numRead{};
-    soundEngineX::BufferCache _cache;
+    std::atomic<uint32_t> _numRead{};
     // mutex and condition variable to signal when a resource is loaded
 
     std::mutex                      _mutex;

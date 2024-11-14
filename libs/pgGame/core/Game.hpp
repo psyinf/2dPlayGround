@@ -93,13 +93,13 @@ public:
 
     pg::InputEventDispatcher& getInputEventDispatcher() { return _inputEventDispatcher; }
 
-    // ResourceManager& getResourceManager();
-
     template <typename Type, typename... Args>
     std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
     {
         return resourceManager.get().load<Type, Args...>(uri, std::forward<Args>(args)...);
     }
+
+    auto& getResourceManager() { return resourceManager; }
 
     /// Scene interfaces
     //     template <typename Type = pg::game::Scene, typename... Args>
