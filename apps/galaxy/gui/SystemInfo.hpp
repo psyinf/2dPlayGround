@@ -4,6 +4,7 @@
 #include <components/PickedEntity.hpp>
 #include <components/Faction.hpp>
 #include <magic_enum.hpp>
+#include <pgEngine/generators/MarkovNameGen.hpp>
 
 namespace galaxy::gui {
 
@@ -26,11 +27,19 @@ public:
         // Add menu bar items here
         ImGui::EndMainMenuBar();
 
+        // TODO: via system that reacts to the signal
+        if (system.name.empty())
+        {
+            const auto& mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
+            system.name = pg::generators::markov::generate<4>(3, 8, mfm);
+        }
+
         ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("System Info");
         ImGui::Text(pos_str.data());
         ImGui::Text(system_state_str.data());
         ImGui::Text(faction_str.data());
+        ImGui::Text(system.name.data());
 
         ImGui::End();
     }

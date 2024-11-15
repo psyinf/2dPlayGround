@@ -12,5 +12,6 @@ enum class ColonizationStatus
 struct StarSystemState
 {
     ColonizationStatus colonizationStatus{ColonizationStatus::Unexplored};
+    std::string        name;
 };
 } // namespace galaxy
