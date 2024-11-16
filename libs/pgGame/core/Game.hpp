@@ -76,6 +76,7 @@ private:
 
 public:
     Game();
+    entt::registry& getSceneRegistry(std::string_view id);
 
     entt::registry& getCurrentSceneRegistry();
 

@@ -184,3 +184,8 @@ void game::Game::quit()
 {
     running = false;
 }
+
+entt::registry& game::Game::getSceneRegistry(std::string_view id)
+{
+    return getScene(id).getSceneRegistry();
+}
