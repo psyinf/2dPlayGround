@@ -49,14 +49,16 @@ private:
                 selected_entity);
 
         // add drawable
-        auto entity =
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::SystemRenderTag>
-            //
-            (getGlobalRegistry(),
-             {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
-             pg::game::Drawable{std::make_unique<galaxy::OrbitRenderable>(100.0f, 1000, pg::Color{1, 1, 1, 1})},
-             {},
-             {});
+        //         auto entity =
+        //             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState,
+        //             pg::tags::SystemRenderTag>
+        //             //
+        //             (getGlobalRegistry(),
+        //              {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
+        //              pg::game::Drawable{std::make_unique<galaxy::OrbitRenderable>(100.0f, 1000, pg::Color{1, 1, 1,
+        //              1})},
+        //              {},
+        //              {});
     }
 
     // TODO: default 3d key handler/camera

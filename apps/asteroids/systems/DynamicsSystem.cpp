@@ -3,7 +3,7 @@
 #include "components/Entities.h"
 #include <pgGame/core/Game.hpp>
 
-void asteroids::DynamicsSystem::setup(std::string_view scene_id) {}
+void asteroids::DynamicsSystem::setup(std::string_view /*scene_id*/) {}
 
 void asteroids::DynamicsSystem::handle(const pg::FrameStamp& frameStamp)
 {

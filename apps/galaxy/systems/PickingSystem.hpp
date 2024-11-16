@@ -27,7 +27,7 @@ class PickingSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup(std::string_view scene_id) override
+    void setup(std::string_view /*scene_id*/) override
     {
         _game.getDispatcher().sink<galaxy::events::PickEvent>().connect<&galaxy::PickingSystem::processPick>(*this);
         // TODO: build a quadtree for picking

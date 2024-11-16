@@ -8,12 +8,12 @@ class OrbitRenderable : public pg::Renderable
 {
 public:
     OrbitRenderable(float radius, int segments, pg::Color color)
-      : color(color)
+      : _color(color)
     {
         _points.reserve(segments + 1);
         for (int i = 0; i < segments; ++i)
         {
-            float angle = 2.0f * M_PI * i / segments;
+            float angle = 2.0f * std::numbers::pi_v<float> * i / segments;
             float x = radius * cos(angle);
             float y = radius * sin(angle);
             _points.push_back({x, y});
@@ -44,7 +44,7 @@ public:
 
 private:
     std::vector<pg::fVec2> _points;
-    pg::Color              color;
+    pg::Color              _color;
 };
 
 } // namespace galaxy

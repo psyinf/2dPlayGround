@@ -24,7 +24,7 @@ class UpdateStarsSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup(std::string_view scene_id) override
+    void setup(std::string_view /*scene_id*/) override
     {
         _game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateStarsSystem::handleDroneCreated>(
             this);
@@ -54,7 +54,7 @@ public:
     void updateStarSystems(const pg::FrameStamp&)
     {
         // get config from singleton
-        auto& galaxyConfig = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
+        // auto& galaxyConfig = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
         auto& registry = _game.getGlobalRegistry();
         auto  view = registry.view<pg::game::Drawable,

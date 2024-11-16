@@ -17,7 +17,7 @@ struct GenericConfig
         {
             return std::any_cast<const T&>(config.at(scene + "::" + key));
         }
-        catch (const std::out_of_range& e)
+        catch (const std::out_of_range& /*e*/)
         {
             spdlog::warn("GenericConfig: Missing scene config '{}'", scene + "::" + key);
             static T t;

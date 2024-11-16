@@ -53,7 +53,6 @@ public:
             "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
 
         // start loading thread
-        auto size = sound_files.size();
 
         for (auto& file : sound_files)
         {
@@ -103,7 +102,7 @@ public:
         Scene::start();
     };
 
-    void postFrame(pg::game::FrameStamp& frameStamp) override
+    void postFrame(pg::game::FrameStamp& /*frameStamp*/) override
     {
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
         if (totalProgress >= 1.0f)
