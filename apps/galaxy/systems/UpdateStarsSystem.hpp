@@ -69,6 +69,10 @@ public:
                                                                                      galaxy::StarSystemState,
                                                                                      pg::game::RenderState,
                                                                                      galaxy::Faction>(entity);
+
+            // TODO: this needs to be controlable
+            // e.g. the colonized view colors are dependent on the own factions knowledge
+            //  and the view mode of the map
             state.states = std::move(pg::States{});
             switch (starSystemState.colonizationStatus)
             {
@@ -80,7 +84,8 @@ public:
                 state.states.push(pg::TextureColorState{pg::scale(faction.entityColor, 0.2f)});
                 break;
             default:
-                state.states.push(pg::TextureColorState{galaxyConfig.star.default_color});
+                state.states.push(
+                    pg::TextureColorState{StarColors[magic_enum::enum_index(starSystemState.spectralType).value()]});
                 break;
             }
         }

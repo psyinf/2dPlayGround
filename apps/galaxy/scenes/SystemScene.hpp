@@ -42,13 +42,19 @@ public:
 private:
     void setupStarSystem()
     {
+        auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
+        if (selected_entity == entt::null) { return; }
+        auto&& [system, transform, faction] =
+            getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
+                selected_entity);
+
         // add drawable
         auto entity =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::SystemRenderTag>
             //
             (getGlobalRegistry(),
-             {.pos{10, 110}, .scaleSpace{pg::TransformScaleSpace::World}},
-             pg::game::Drawable{std::make_unique<galaxy::Orbit>(100.0f, 1000, pg::Color{1, 1, 1, 1})},
+             {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
+             pg::game::Drawable{std::make_unique<galaxy::OrbitRenderable>(100.0f, 1000, pg::Color{1, 1, 1, 1})},
              {},
              {});
     }

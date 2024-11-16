@@ -20,26 +20,31 @@ public:
         auto&& [system, transform, faction] =
             getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
                 selected_entity);
-        auto pos_str = fmt::format("Pos: {},{}", transform.pos[0], transform.pos[1]);
-        auto system_state_str = fmt::format("State: {}", magic_enum::enum_name(system.colonizationStatus));
-        auto faction_str = fmt::format("Faction: {}", faction.name);
-        ImGui::BeginMainMenuBar();
-        // Add menu bar items here
-        ImGui::EndMainMenuBar();
 
-        // TODO: via system that reacts to the signal
+        // set up system name if not yet created
         if (system.name.empty())
         {
             const auto& mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
             system.name = pg::generators::markov::generate<4>(3, 8, mfm);
         }
 
+        auto pos_str = fmt::format("Pos: {},{}", transform.pos[0], transform.pos[1]);
+        auto system_state_str = fmt::format("State: {}", magic_enum::enum_name(system.colonizationStatus));
+        auto faction_str = fmt::format("Faction: {}", faction.name);
+        auto system_name = fmt::format("Name: {}", system.name);
+        auto spectral_type = fmt::format("Class: {}", magic_enum::enum_name(system.spectralType));
+        ImGui::BeginMainMenuBar();
+        // Add menu bar items here
+        ImGui::EndMainMenuBar();
+
         ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("System Info");
+        ImGui::Text(system_name.data());
         ImGui::Text(pos_str.data());
         ImGui::Text(system_state_str.data());
         ImGui::Text(faction_str.data());
-        ImGui::Text(system.name.data());
+
+        ImGui::Text(spectral_type.data());
 
         ImGui::End();
     }

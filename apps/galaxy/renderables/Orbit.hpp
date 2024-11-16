@@ -4,10 +4,10 @@
 
 namespace galaxy {
 
-class Orbit : public pg::Renderable
+class OrbitRenderable : public pg::Renderable
 {
 public:
-    Orbit(float radius, int segments, pg::Color color)
+    OrbitRenderable(float radius, int segments, pg::Color color)
       : color(color)
     {
         _points.reserve(segments + 1);

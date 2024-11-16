@@ -31,6 +31,25 @@
 namespace galaxy {
 using entt::literals::operator""_hs;
 
+float applyGamma(double brightness, float gamma)
+{
+    return std::powf(brightness, 1.0f / gamma);
+}
+
+// Function to convert a vector of brightness values by a gamma correction value
+std::vector<float> convertBrightnessByGamma(const std::vector<float>& brightness, float gamma)
+{
+    std::vector<float> correctedBrightness;
+    correctedBrightness.reserve(brightness.size()); // To optimize memory allocation
+
+    for (float value : brightness)
+    {
+        correctedBrightness.push_back(applyGamma(value, gamma));
+    }
+
+    return correctedBrightness;
+}
+
 class GalaxyScene : public pg::game::Scene
 {
 public:
@@ -101,6 +120,10 @@ private:
         getKeyStateMap().registerMouseDoubleClickedCallback([this](auto pos, auto button, bool pressed) {
             if (!pressed && button == SDL_BUTTON_LEFT)
             {
+                auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
+                if (selected_entity == entt::null) { return; }
+                // TODO: entering the system should be possible for systems explored/occupied by current faction
+
                 getGame().getGlobalDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"system"});
             }
         });
@@ -154,15 +177,27 @@ private:
         galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::random_device              rd;
         std::mt19937                    gen(rd());
-        std::normal_distribution<float> d(0.0f, 150.0f);
+        std::normal_distribution<float> d(0.0f, 200.0f);
         std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
+
+        std::vector<double> star_class_probabilities = {0.00003, 0.001, 0.007, 0.03, 0.08, 0.12, 0.75};
+        // Lower and upper bounds of relative sizes for each spectral type
+        std::vector<double> lowerRelativeSizes = {1.0, 0.7, 0.5, 0.3, 0.1, 0.05, 0.02};
+        std::vector<double> upperRelativeSizes = {1.0, 0.9, 0.7, 0.5, 0.3, 0.1, 0.05};
+        std::vector<float>  perceivedBrightness = {1.0f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f, 0.05f};
+        std::vector<float>  gammaCorrectedBrightness = convertBrightnessByGamma(perceivedBrightness, 2.6f);
+
+        // Random number generator setup
+        std::discrete_distribution<> star_class_dist(star_class_probabilities.begin(), star_class_probabilities.end());
 
         auto dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
 
-        for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 10000})
+        for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 15000})
         {
             auto new_pos = pg::fVec2{d(gen), d(gen)};
-            auto new_size = star_size_dist(gen) * pg::fVec2{1.0f, 1.0f};
+            auto index = star_class_dist(gen);
+            auto spectral_type = magic_enum::enum_value<SpectralType>(index);
+            auto new_size = gammaCorrectedBrightness[index] * pg::fVec2{1.0f, 1.0f} * 0.025f;
             auto entity = pg::game::makeEntity<pg::Transform2D,
                                                pg::game::Drawable,
                                                galaxy::StarSystemState,
@@ -173,7 +208,7 @@ private:
                 (getGlobalRegistry(),
                  {.pos{new_pos}, .scale{new_size}, .scaleSpace{pg::TransformScaleSpace::Local}},
                  pg::game::Drawable{dot_sprite},
-                 galaxy::StarSystemState{},
+                 galaxy::StarSystemState{.spectralType{spectral_type}},
                  galaxy::Faction{"None"},
                  {},
                  {});
@@ -184,11 +219,12 @@ private:
         auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
-        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState>(
-            getSceneRegistry(),
-            {.pos{0, 0}, .scale{0.5, 0.5}},
+        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
+            getGlobalRegistry(),
+            {.pos{0, 0}, .scale{0.5, 0.5}, .scaleSpace{pg::TransformScaleSpace::World}},
             pg::game::Drawable{background_sprite},
-            {std::move(states)});
+            {},
+            {});
 
         addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
     }
