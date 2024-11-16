@@ -91,9 +91,9 @@ public:
         _loaders["markov"] = std::move(loader);
 
         _threads_running = std::make_unique<std::barrier<>>(_loaders.size() + 2);
-        for (auto& [file, loader] : _loaders)
+        for (auto& [file, load_function] : _loaders)
         {
-            createLoaderThread(std::move(loader), file);
+            createLoaderThread(std::move(load_function), file);
         }
         // start a watcher thread to update the progress
         createWatchProgressThread(_loaders.size());

@@ -43,8 +43,6 @@ public:
         auto& transform = _game.getGlobalRegistry().get<pg::Transform2D>(marker);
         auto  scaled_range = pg::fVec2{5, 5} * (1.0f / pick.scale);
 
-        // create currently picked
-
         auto results = quadtree.rangeQuery(pg::fBox{pick.world_position - scaled_range, 2.0f * scaled_range});
         if (!results.empty())
         {
