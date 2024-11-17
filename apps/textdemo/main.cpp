@@ -66,20 +66,20 @@ void textdemo_main()
     rendererStates2.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates2.push(pg::TextureAlphaState{128});
     rendererStates3.push(pg::TextureColorState{pg::Color{255, 0, 255, 255}});
-
-    auto render = [&](auto& app) {
+    pg::Renderer r{app.getRenderer(), {}};
+    auto         render = [&](auto& app) {
         imGuiFrame(app.getWindow(), app.getRenderer());
 
-        text.draw(app.getRenderer(),
-                  {.pos{100, 100}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
+        text.draw(r,
+                          {.pos{100, 100}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
                   rendererStates);
 
-        text.draw(app.getRenderer(), {.pos{512, 512}}, rendererStates2);
+        text.draw(r, {.pos{512, 512}}, rendererStates2);
 
-        text.draw(app.getRenderer(),
-                  {.pos{200, 200}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
+        text.draw(r,
+                          {.pos{200, 200}, .rotation_deg{rot += 0.1f}, .scale{static_cast<float>(std::sin(rot * 0.1f)), 0.5f}},
                   rendererStates3);
-        text.draw(app.getRenderer(), {.pos{512, 200}}, {});
+        text.draw(r, {.pos{512, 200}}, {});
     };
 
     auto done = false;

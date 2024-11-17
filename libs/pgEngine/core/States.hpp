@@ -15,8 +15,9 @@ public:
 
     States(States&&) = default;
 
-    // move operator
     States& operator=(States&&) = default;
+
+    States(const States&) = default;
 
     States(std::vector<RendererStatePointer>&& rendererState, std::vector<TextureStatePointer>&& textureState)
       : rendererStates{std::move(rendererState)}
@@ -100,4 +101,5 @@ private:
     std::vector<RendererStatePointer> rendererStates;
     std::vector<TextureStatePointer>  textureStates;
 };
+
 } // namespace pg

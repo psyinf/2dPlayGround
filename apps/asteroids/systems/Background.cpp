@@ -4,7 +4,7 @@
 #include "components/Entities.h"
 #include <pgGame/components/Drawable.hpp>
 
-void asteroids::Background::handle(const pg::game::FrameStamp&)
+void asteroids::Background::handle(const pg::FrameStamp&)
 {
     // TODO: base scrolling speed on the player's velocity
     auto& registry = game.getRegistry();

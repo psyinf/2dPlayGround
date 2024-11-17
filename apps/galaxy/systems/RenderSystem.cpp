@@ -14,14 +14,14 @@ void galaxy::RenderSystem::setup() {}
 /// TODO: drawables should carry their respective states. This is a temporary solution which determines the state by the
 /// type of entities
 
-void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
+void galaxy::RenderSystem::handle(const pg::FrameStamp& fs)
 {
-    auto& renderer = game.getApp().getRenderer();
+    auto renderer = pg::Renderer{game.getApp().getRenderer(), fs};
     renderer.clear();
     auto rendererStates = pg::States{};
     // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
     rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
-    rendererStates.apply(renderer);
+    renderer.apply(rendererStates);
     auto windowRect = game.getCurrentScene().getSingleton<pg::game::WindowDetails>().windowRect;
 
     auto globalTransform = game.getCurrentScene().getSingleton<pg::Transform2D>(pg::game::Scene::GlobalTransformName);
@@ -65,14 +65,14 @@ void galaxy::RenderSystem::handle(const pg::game::FrameStamp&)
     //             drawable.prim->draw(renderer, new_transform, rendererStates);
     //         }
     //     }
-    rendererStates.restore(renderer);
+    renderer.restore(rendererStates);
 
-    drawOverlays(renderer, rendererStates);
+    drawOverlays();
 
     renderer.present();
 }
 
-void galaxy::RenderSystem::drawOverlays(sdl::Renderer&, pg::States&)
+void galaxy::RenderSystem::drawOverlays()
 {
     auto& gui = game.getGui();
     game.getRegistry().sort<pg::game::GuiDrawable>(

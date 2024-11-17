@@ -51,7 +51,7 @@ public:
      */
     void createAsteroid(const pg::fVec2& position, const pg::fVec2& velocity, Size size);
 
-    void handle(const pg::game::FrameStamp& frameStamp);
+    void handle(const pg::FrameStamp& frameStamp);
 
     void handleEvent(const events::Collision& collision) { collisions.push_back(collision); }
 

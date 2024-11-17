@@ -9,7 +9,7 @@ struct Sprite : public pg::Renderable
 {
     Sprite(std::shared_ptr<sdl::Texture> tex);
 
-    void draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states) override;
+    void draw(pg::Renderer& r, const pg::Transform2D& t, const States& states) override;
 
     const pg::iVec2& getDimensions() const { return dimensions; }
 
@@ -31,7 +31,7 @@ struct Sprites : public pg::Sprite
     {
     }
 
-    void draw(sdl::Renderer& r, const pg::Transform2D& t, const States& states) override;
+    void draw(pg::Renderer& r, const pg::Transform2D& t, const States& states) override;
 
     InstanceTransforms& getTransforms() { return instanceTransforms; }
 

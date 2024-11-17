@@ -23,7 +23,7 @@ public:
     virtual ~SoundSystem();
     void setup();
 
-    void handle(const pg::game::FrameStamp& frameStamp);
+    void handle(const pg::FrameStamp& frameStamp);
 
 private:
     void onLaserFired(const events::LaserFired& event);

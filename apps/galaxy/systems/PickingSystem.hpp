@@ -33,7 +33,7 @@ public:
         // TODO: build a quadtree for picking
     };
 
-    void handle(const pg::game::FrameStamp&) override
+    void handle(const pg::FrameStamp&) override
     {
         if (lastPicks.empty()) { return; }
         const auto pick = lastPicks.back();

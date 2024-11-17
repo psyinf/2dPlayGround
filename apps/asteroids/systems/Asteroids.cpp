@@ -133,7 +133,7 @@ void asteroids::Asteroids::createAsteroid(const pg::fVec2& position, const pg::f
     pg::game::addComponents<PassiveCollider, tag>(game.getRegistry(), entity);
 }
 
-void asteroids::Asteroids::handle(const pg::game::FrameStamp&)
+void asteroids::Asteroids::handle(const pg::FrameStamp&)
 {
     std::random_device              rd;
     std::normal_distribution<float> dist(1, 2);

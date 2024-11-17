@@ -1,5 +1,5 @@
 #pragma once
-#include <pgGame/core/FrameStamp.hpp>
+#include <pgEngine/core/FrameStamp.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
 #include <entt/entt.hpp>
 
@@ -17,6 +17,6 @@ public:
 
     void setup();
 
-    void handle(const pg::game::FrameStamp& frameStamp);
+    void handle(const pg::FrameStamp& frameStamp);
 };
 } // namespace asteroids

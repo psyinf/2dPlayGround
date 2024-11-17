@@ -327,10 +327,6 @@ pg::Gui::Gui(SDLApp& app)
 
     bindEventProcessing();
 
-    // ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
-    // Setup Dear ImGui style
-    // TODO:config
-
     ImGui::StyleColorsDark();
     ImGui::GetIO().Fonts->AddFontFromFileTTF("../data/fonts/CONSOLA.ttf", 16);
     SetupImGuiStyle();
