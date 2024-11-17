@@ -67,7 +67,7 @@ public:
             std::ifstream fileStreamIn2("../data/boys.txt", std::ios_base::binary);
 
             pg::generators::MarkovFrequencyMap<4> fmg;
-            while (!fileStreamIn.eof())
+            while (!fileStreamIn.eof() && fileStreamIn)
             {
                 std::string word;
                 fileStreamIn >> word;
@@ -76,11 +76,17 @@ public:
             _percentResourcesLoaded["stars.txt"] = 1.0f;
             _percentCurrentResourceLoaded = 0.5;
 
-            while (!fileStreamIn2.eof())
+            while (!fileStreamIn2.eof() && fileStreamIn2)
             {
                 std::string word;
                 fileStreamIn2 >> word;
                 fmg.add(word);
+            }
+            if (fmg.size() == 0)
+            {
+                fmg.add("empty");
+                // log
+                spdlog::error("No words loaded from file");
             }
             _percentResourcesLoaded["boys.txt"] = 1.0f;
             _percentCurrentResourceLoaded = 1.0f;
