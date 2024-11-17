@@ -3,9 +3,9 @@
 #include <pgGame/core/Game.hpp>
 #include <pgGame/components/Drawable.hpp>
 
-void galaxy::GuiRenderSystem::setup(std::string_view scene_id) {}
+void galaxy::GuiRenderSystem::setup(std::string_view /*scene_id*/) {}
 
-void galaxy::GuiRenderSystem::handle(const pg::game::FrameStamp& frameStamp)
+void galaxy::GuiRenderSystem::handle(const pg::game::FrameStamp& /*frameStamp*/)
 {
     auto& renderer = _game.getApp().getRenderer();
     if (getConfig().isSet("standalone")) { renderer.clear(); }

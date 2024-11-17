@@ -7,7 +7,7 @@
 #include <pgGame/components/Drawable.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
 
-void asteroids::Lasers::setup(std::string_view scene_id)
+void asteroids::Lasers::setup(std::string_view /*scene_id*/)
 {
     _game.getDispatcher().sink<asteroids::events::LaserFired>().connect<&Lasers::handleEvent>(this);
 }

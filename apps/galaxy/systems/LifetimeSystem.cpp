@@ -5,7 +5,7 @@
 #include <pgGame/core/Game.hpp>
 #include <events/DroneEvents.hpp>
 
-void galaxy::LifetimeSystem::setup(std::string_view scene_id) {}
+void galaxy::LifetimeSystem::setup(std::string_view /*scene_id*/) {}
 
 bool lifeTimeExceeded(const galaxy::Lifetime& lifetime)
 {

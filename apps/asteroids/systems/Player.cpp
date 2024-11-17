@@ -11,7 +11,7 @@
 #include <fmt/format.h>
 #include <events/LaserFired.h>
 
-void asteroids::Player::setup(std::string_view scene_id)
+void asteroids::Player::setup(std::string_view /*scene_id*/)
 {
     auto& registry = _game.getGlobalRegistry();
 

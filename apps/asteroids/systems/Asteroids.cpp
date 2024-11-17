@@ -73,7 +73,7 @@ std::optional<std::pair<entt::entity, entt::entity>> getAsteroidWeaponPair(
     return retVal;
 }
 
-void asteroids::Asteroids::setup(std::string_view scene_id)
+void asteroids::Asteroids::setup(std::string_view /*scene_id*/)
 {
     for ([[maybe_unused]] auto _ : std::views::iota(0, 4))
     {
