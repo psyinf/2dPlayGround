@@ -16,10 +16,11 @@ class SystemsFactory
 
 public:
     template <typename T, typename... Args>
-    static void registerSystem(std::string name)
+    static void registerSystem(const std::string& name, Args&&... args)
     {
         _factory.registerPrototype(
-            name, foundation::GenericFactory<T, pg::game::Game&, const std::string&, Args...>::proto());
+            name,
+            foundation::GenericFactory<T, pg::game::Game&, const std::string&>::proto(std::forward<Args>(args)...));
     }
 
     static auto makeSystem(std::string_view key, pg::game::Game& game) -> std::shared_ptr<pg::game::SystemInterface>
