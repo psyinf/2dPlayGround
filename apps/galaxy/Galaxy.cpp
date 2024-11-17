@@ -46,12 +46,11 @@ void galaxy::GalacticCore::setup()
         });
     // systems
     pg::game::SystemsFactory::registerSystem<galaxy::SoundSystem>("soundSystem");
-    pg::game::SystemsFactory::registerSystem<galaxy::RenderSystem>("renderSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::GuiRenderSystem>("guiSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::GalaxyRenderTag>>(
-        "galaxyRenderSystem");
+        "galaxyRenderSystem", false);
     pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag>>(
-        "systemRenderSystem");
+        "systemRenderSystem", true);
 
     pg::game::SystemsFactory::registerSystem<galaxy::UpdateStarsSystem>("updateStarsSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::PickingSystem>("pickingSystem");
