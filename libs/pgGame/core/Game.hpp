@@ -5,7 +5,7 @@
 #include <pgEngine/core/Gui.hpp>
 #include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/KeyStateMap.hpp>
-#include <pgFoundation/caching/ResourceManager.hpp>
+#include <pgf/caching/ResourceManager.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
 #include <pgGame/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>
@@ -17,8 +17,9 @@
 #include <memory>
 #include <unordered_map>
 #include <pgGame/components/WindowDetails.hpp>
-#include <pgGame/core/SingletonInterface.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
+#include <pgGame/config/GenericConfig.hpp>
+#include <pgFoundation/NamedTypeRegistry.hpp>
 
 namespace pg::game {
 
@@ -40,8 +41,13 @@ public:
     Game& game;
 };
 
-class Game
+class Game : public SingletonInterface<Game>
 {
+    friend class SingletonInterface<Game>;
+    Game(Game&&) = delete;
+    Game(const Game&) = delete;
+    Game& operator=(Game&&) = delete;
+
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
@@ -53,36 +59,48 @@ private:
     WindowDetails windowDetails{
         {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
     pg::SDLApp               sdlApp{windowConfig};
-    pg::KeyStateMap          keyStateMap{sdlApp.getEventHandler()};
+    pg::InputEventDispatcher _inputEventDispatcher;
     ResourceManager          resourceManager;
     std::unique_ptr<pg::Gui> gui;
 
     entt::dispatcher dispatcher;
+    entt::registry   _registry;
 
     Scenes scenes;
 
     std::string currentSceneId{"__default__"};
 
+    GenericConfig _config;
+
+    pgf::NamedTypeRegistry _eventNameRegistry;
+
 public:
     Game();
+    entt::registry& getSceneRegistry(std::string_view id);
 
-    entt::registry& getRegistry();
+    entt::registry& getCurrentSceneRegistry();
 
-    entt::dispatcher& getDispatcher();
+    entt::registry& getGlobalRegistry() { return _registry; }
+
+    entt::dispatcher& getGlobalDispatcher();
+
+    entt::dispatcher& getDispatcher() { return getCurrentScene().getDispatcher(); }
+
+    pgf::NamedTypeRegistry& getEventNameRegistry() { return _eventNameRegistry; }
 
     pg::SDLApp& getApp();
 
     pg::Gui& getGui();
 
-    pg::KeyStateMap& getKeyStateMap();
-
-    // ResourceManager& getResourceManager();
+    pg::InputEventDispatcher& getInputEventDispatcher() { return _inputEventDispatcher; }
 
     template <typename Type, typename... Args>
     std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
     {
         return resourceManager.get().load<Type, Args...>(uri, std::forward<Args>(args)...);
     }
+
+    auto& getResourceManager() { return resourceManager; }
 
     /// Scene interfaces
     //     template <typename Type = pg::game::Scene, typename... Args>
@@ -117,10 +135,16 @@ public:
 
     void quit();
 
+    const auto& getConfig() const { return _config; }
+
+    auto& getConfig() { return _config; }
+
 private:
     void frame(FrameStamp& frameStamp);
 
     void createSceneInternal(std::string_view id, std::unique_ptr<Scene>&& scene);
+
+    entt::registry& getRegistry() { return _registry; }
 
     bool running{true};
 

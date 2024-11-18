@@ -1,97 +1,109 @@
+#include "Types.hpp"
+#include "Factory.hpp"
+#include <deque>
+#include <optional>
+#include <ranges>
+#include <fmt/core.h>
+#include <fmt/format.h>
+#include <spdlog/spdlog.h>
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <future>
-// entities representing resources
-using Amount = uint32_t;
-using Name = std::string;
-
-// todo: traits that mark resources, intermediate products, and finished products etc
-
-// Asset is a resource such as a raw material, a finished product, or energy
-struct Asset
-{
-    // TODO: use a monostate to enforce that the name is unique
-    // TODO: disallow empty names
-    Asset(const Name& name)
-      : name{name}
-    {
-    }
-
-    virtual ~Asset() = default;
-    const Name name;
-};
-
-struct Requirement
-{
-    Requirement(const Asset& asset, Amount amount = 1)
-      : name{asset.name}
-      , amount{amount}
-    {
-    }
-
-    Name   name;
-    Amount amount;
-};
-
-struct Product : public Asset
-{
-    template <typename... Args>
-    Product(const Name& name, Args... args)
-      : Asset{name}
-      , requirements{args...}
-    {
-    }
-
-    template <typename... Args>
-    void addRequirements(Args... args)
-    {
-        requirements.push_back(args...);
-    }
-
-    void addRequirement(Asset asset, Amount amount) { requirements.push_back({asset.name, amount}); }
-
-    std::vector<Requirement> requirements;
-};
-
-struct Storage
-{
-    std::unordered_map<Name, Amount> resources;
-};
-
-struct Factory
-{
-    Factory(const Product& product)
-      : product{product}
-    {
-    }
-
-    // TODO: future?
-    template <typename Produced>
-    std::future<Produced> make(Storage& storage)
-    {
-        Produced p;
-        // check and remove resources from storage
-        // TODO: take time to produce into account
-
-        return p;
-    }
-};
+#include <magic_enum.hpp>
+#include <pgf/console/miniAnsi.hpp>
+#include "FractionalAmount.hpp"
+#include "FractionalAmoundFormatter.hpp"
+#include "Storage.hpp"
+#include "ProductionLine.hpp"
 
 using Resource = Asset;
 using Material = Product;
 
-// example set of resources
-const Resource Ores{"Ores"};
-const Resource Rare_Ores{"Rare Ores"};
-const Resource Energy{"Energy"};
+void printStorageOneLine(const Storage& storage)
+{
+    // get longest key
 
-Material metals{"Metals", Requirement{ores, 1}};
+    auto longest_key_size =
+        storage.resources.empty() ? 3 : (*std::ranges::max_element(std::views::keys(storage.resources))).size() + 2;
+    fmt::println("{:^{}} ", fmt::join(std::views::keys(storage.resources), "|"), longest_key_size);
+    fmt::println("{:->{}}", "", storage.resources.size() * (longest_key_size + 1));
+    fmt::println("{:^{}} ", fmt::join(std::views::values(storage.resources), "|"), longest_key_size);
+}
+
+void printProductionLineState(const ProductionLine& productionLine)
+{
+    auto [product, amount] = productionLine.currentProduct().value_or(ProductionLine::ProductAmount{"N/A", 0.0f});
+    fmt::println("Current Product: {} ({})", product.name, productionLine.currentFraction());
+}
+
+void test1()
+{
+    const auto Hydrogen = Resource{"Hydrogen"};
+    const auto Oxygen = Resource{"Oxygen"};
+    const auto Water = Product{"Water", Requirement{Hydrogen, 2}, Requirement{Oxygen, 1}};
+
+    Storage raw_storage;
+    raw_storage.resources[Hydrogen.name] = 20;
+    raw_storage.resources[Oxygen.name] = 10;
+
+    Storage finished_storage;
+
+    ProductionLine line(raw_storage, finished_storage, 0.1f);
+
+    line.enqueue(Water, 10);
+    auto state = ProductionLine::State::RUNNING;
+    while (state == ProductionLine::State::RUNNING || state == ProductionLine::State::FINISHED)
+    {
+        state = line.process();
+        pg::foundation::console::clearScreen();
+        pg::foundation::console::moveCursor(0, 0);
+        printProductionLineState(line);
+        printStorageOneLine(raw_storage);
+        printStorageOneLine(finished_storage);
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
+
+void test2()
+{
+    // example set of resources
+    const Resource Ores{"Ores"};
+    const Resource Rare_Ores{"Rare Ores"};
+    const Resource Energy{"Energy"};
+
+    Material metals{"Metals", 0.5f, Requirement{Ores, 1}, Requirement{Rare_Ores, 0.005f}, Requirement{Energy, 7}};
+
+    Storage raw_storage;
+    raw_storage.resources[Ores.name] = 2;
+    raw_storage.resources[Rare_Ores.name] = 5;
+    raw_storage.resources[Energy.name] = 100;
+    Storage finished_storage;
+
+    printStorageOneLine(raw_storage);
+    printStorageOneLine(finished_storage);
+    if (0)
+    {
+        Factory factory;
+        auto    res = factory.make(raw_storage, finished_storage, metals);
+        res.get();
+    }
+
+    ProductionLine line(raw_storage, finished_storage, 0.1f);
+    line.enqueue(metals, 2);
+
+    while (true)
+    {
+        pg::foundation::console::clearScreen();
+        pg::foundation::console::moveCursor(0, 0);
+        std::cout << magic_enum::enum_name(line.process()) << std::endl;
+        printStorageOneLine(raw_storage);
+        printStorageOneLine(finished_storage);
+
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+}
 
 int main()
 {
-    // TODO: a storage
-    //   a class of objects that can make a product from resources
-    //   TODO: a production line
+    pg::foundation::console::setupConsole();
+    test1();
 }

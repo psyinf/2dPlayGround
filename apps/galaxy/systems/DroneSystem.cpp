@@ -24,10 +24,10 @@
 
 #include <behaviors/EntityQueueLoop.hpp>
 
-void galaxy::DroneSystem::setup()
+void galaxy::DroneSystem::setup(std::string_view scene_id)
 {
-    ctx = std::make_shared<behavior::Context>(&game, std::make_unique<BT::BehaviorTreeFactory>());
-    game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
+    ctx = std::make_shared<behavior::Context>(&_game, std::make_unique<BT::BehaviorTreeFactory>());
+    _game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(
         *this);
     auto& factory = ctx->factory();
     factory.registerSimpleCondition("CheckForDamage", [&](BT::TreeNode&) { return BT::NodeStatus::SUCCESS; });
@@ -41,7 +41,7 @@ void galaxy::DroneSystem::setup()
         // downcast to access the entity
         auto entity = node.config().blackboard->get<entt::entity>("entity");
         spdlog::debug("Drone {} failed", entt::to_integral(entity));
-        game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({entity});
+        _game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({.entity = entity});
         return BT::NodeStatus::SUCCESS;
     });
     factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");
@@ -56,17 +56,18 @@ void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent eve
 {
     // later: decide if the drone dies or becomes a drifter
     // for now send a signal to destroy the entity
-    auto& drone = game.getRegistry().get<galaxy::Drone>(event.entity);
+    auto& drone = _game.getGlobalRegistry().get<galaxy::Drone>(event.entity);
     if (drone.targetId != entt::null)
     {
-        auto&& [starsystem, faction] = game.getRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
+        auto&& [starsystem, faction] =
+            _game.getGlobalRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
         // TODO: unmark only if planned by our faction
         if (starsystem.colonizationStatus == galaxy::ColonizationStatus::Planned)
         {
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Unexplored;
         }
     }
-    game.getRegistry().destroy(event.entity);
+    _game.getGlobalRegistry().destroy(event.entity);
 }
 
 void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
@@ -74,14 +75,14 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
     static std::random_device rd;
     static std::mt19937       gen{rd()};
     // setup for all factions
-    auto galaxy_config = game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
+    auto galaxy_config = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
     for (const auto& faction : galaxy_config.factions)
     {
         if (faction.startParams.start_cycle != frameStamp.gameTick) { continue; }
 
-        auto view =
-            game.getRegistry().view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
+        auto view = _game.getGlobalRegistry()
+                        .view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
         auto it = view.begin();
         auto size = static_cast<size_t>(std::distance(view.begin(), view.end()));
 
@@ -115,6 +116,6 @@ void galaxy::DroneSystem::createFactions(const pg::game::FrameStamp& frameStamp)
         auto behavior_tree = ctx->setupTree("Seed", entity, blackboard);
 
         pg::game::addComponent<galaxy::Behavior>(
-            game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
+            _game.getGlobalRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
     }
 }

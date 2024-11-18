@@ -51,12 +51,13 @@ public:
 
     void handleDestroyEntityEvent(const pg::game::events::DestroyEntityEvent& dee)
     {
-        game.getRegistry().destroy(dee.entity);
+        game.getGlobalRegistry().destroy(dee.entity);
     }
 };
 
 game::Game::Game()
   : pimpl(std::make_unique<Pimpl>(*this))
+  , _inputEventDispatcher(sdlApp.getEventHandler(), {})
 {
     gui = std::make_unique<pg::Gui>(getApp());
     // register event handlers
@@ -77,17 +78,19 @@ void game::Game::frame(FrameStamp& frameStamp)
     // poll all events
     while (sdlApp.getEventHandler().poll()) {};
     // evaluate all callbacks bound to events
-    keyStateMap.evaluateCallbacks();
+    _inputEventDispatcher.evaluateCallbacks();
+
     // update the scene
     scenes.at(currentSceneId)->frame(frameStamp);
 }
 
-entt::registry& game::Game::getRegistry()
+entt::registry& game::Game::getCurrentSceneRegistry()
 {
-    return getScene(currentSceneId).getRegistry();
+    if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
+    return getScene(currentSceneId).getSceneRegistry();
 }
 
-entt::dispatcher& game::Game::getDispatcher()
+entt::dispatcher& game::Game::getGlobalDispatcher()
 {
     return dispatcher;
 }
@@ -95,11 +98,6 @@ entt::dispatcher& game::Game::getDispatcher()
 pg::SDLApp& game::Game::getApp()
 {
     return sdlApp;
-}
-
-pg::KeyStateMap& game::Game::getKeyStateMap()
-{
-    return keyStateMap;
 }
 
 void game::Game::loop()
@@ -145,7 +143,9 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
 {
     try
     {
-        auto scene = scenes.at(std::string(id)).get();
+        if (currentSceneId == id) { return getScene(id); }
+        std::string idStr{id};
+        auto        scene = scenes.at(idStr).get();
         // stop current scene
         if (!currentSceneId.empty())
         {
@@ -156,14 +156,15 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
             }
 
             currentScene->stop();
+            _inputEventDispatcher.setHandlerActive(currentSceneId, false);
         }
-
+        currentSceneId = id;
         for (const auto& system : scene->getSystems())
         {
             system->enterScene(id);
         }
+        _inputEventDispatcher.setHandlerActive(idStr, true);
 
-        currentSceneId = id;
         return *scene;
     }
 
@@ -182,4 +183,9 @@ pg::Gui& game::Game::getGui()
 void game::Game::quit()
 {
     running = false;
+}
+
+entt::registry& game::Game::getSceneRegistry(std::string_view id)
+{
+    return getScene(id).getSceneRegistry();
 }

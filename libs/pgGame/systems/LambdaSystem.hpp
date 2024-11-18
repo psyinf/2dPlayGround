@@ -13,7 +13,7 @@ public:
     {
     }
 
-    void setup() override {}
+    void setup(std::string_view scene_id) override {}
 
     void handle(const pg::game::FrameStamp& frameStamp) override { lambda(); }
 

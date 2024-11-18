@@ -19,23 +19,24 @@ using entt::literals::operator""_hs;
 
 class Game;
 
-class UpdateSystem : public pg::game::SystemInterface
+class UpdateStarsSystem : public pg::game::SystemInterface
 {
 public:
     using SystemInterface::SystemInterface;
 
-    void setup() override
+    void setup(std::string_view /*scene_id*/) override
     {
-        game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateSystem::handleDroneCreated>(this);
+        _game.getDispatcher().sink<galaxy::events::DroneCreatedEvent>().connect<&UpdateStarsSystem::handleDroneCreated>(
+            this);
     };
 
     void handleDroneCreated(galaxy::events::DroneCreatedEvent& event)
     {
         // TODO: use an animation
 
-        auto& transform = game.getRegistry().get<pg::Transform2D>(event.entity);
-        auto& marker_transform = game.getRegistry().get<pg::Transform2D>(
-            game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker"));
+        auto& transform = _game.getGlobalRegistry().get<pg::Transform2D>(event.entity);
+        auto& marker_transform = _game.getGlobalRegistry().get<pg::Transform2D>(
+            _game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker"));
         marker_transform.pos = transform.pos;
     }
 
@@ -53,9 +54,9 @@ public:
     void updateStarSystems(const pg::game::FrameStamp&)
     {
         // get config from singleton
-        auto& galaxyConfig = game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
+        // auto& galaxyConfig = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
-        auto& registry = game.getRegistry();
+        auto& registry = _game.getGlobalRegistry();
         auto  view = registry.view<pg::game::Drawable,
                                   pg::Transform2D,
                                   galaxy::StarSystemState,
@@ -68,6 +69,10 @@ public:
                                                                                      galaxy::StarSystemState,
                                                                                      pg::game::RenderState,
                                                                                      galaxy::Faction>(entity);
+
+            // TODO: this needs to be controlable
+            // e.g. the colonized view colors are dependent on the own factions knowledge
+            //  and the view mode of the map
             state.states = std::move(pg::States{});
             switch (starSystemState.colonizationStatus)
             {
@@ -79,7 +84,8 @@ public:
                 state.states.push(pg::TextureColorState{pg::scale(faction.entityColor, 0.2f)});
                 break;
             default:
-                state.states.push(pg::TextureColorState{galaxyConfig.star.default_color});
+                state.states.push(
+                    pg::TextureColorState{StarColors[magic_enum::enum_index(starSystemState.spectralType).value()]});
                 break;
             }
         }

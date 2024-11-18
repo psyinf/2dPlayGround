@@ -20,7 +20,7 @@ class DroneSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup();
+    void setup(std::string_view scene_id);
 
     void handle(const pg::game::FrameStamp& frameStamp);
 

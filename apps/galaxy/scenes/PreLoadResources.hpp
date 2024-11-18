@@ -6,8 +6,17 @@
 #include <sndX/BufferCache.hpp>
 
 #include <atomic>
+#include <barrier>
+#include <pgGame/core/FrameStamp.hpp>
+
+#include <resources/SoundResource.hpp>
+#include <pgEngine/generators/MarkovNameGen.hpp>
 
 namespace galaxy {
+
+using Loader = std::function<void()>;
+
+using Loaders = std::map<std::string, Loader>;
 
 class PreLoadResources : public pg::game::Scene
 {
@@ -16,7 +25,17 @@ class PreLoadResources : public pg::game::Scene
 public:
     using pg::game::Scene::Scene;
 
-    virtual ~PreLoadResources() = default;
+    virtual ~PreLoadResources()
+    {
+        // wait for threads to finish
+
+        if (_threads_running)
+        {
+            spdlog::info("Waiting for loading threads to finish");
+            _threads_running->arrive_and_wait();
+            spdlog::info("Loading threads finished");
+        }
+    }
 
     void start() override
     {
@@ -25,53 +44,98 @@ public:
         addSingleton_as<float&>("resourceLoader.currentProgress", _percentCurrentResourceLoaded);
         addSingleton_as<std::map<std::string, float>&>("resourceLoader.resourcesProgress", _percentResourcesLoaded);
         // TODO: from configuration
-        // TODO: resource-cache abstraction (e.g. sound::background1 -> filename)
-        std::vector<std::string> resources = {"sound::background1", "sound::background2", "sound::background3"};
-        // use resource cache to load resources
 
-        std::vector<std::string> files = {
+        // use resource cache to load resources
+        // TODO: collect from config
+        std::vector<std::string> sound_files = {
             "../data/music/a-meditation-through-time-amp-space-11947.mp3",
             "../data/music/dead-space-style-ambient-music-184793.mp3",
             "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
 
         // start loading thread
-        auto size = files.size();
-        // start a watcher thread to update the progress
-        createWatchProgressThread(size);
 
-        for (auto& file : files)
+        for (auto& file : sound_files)
         {
-            createLoaderThread(file);
+            auto loader = [this, file]() {
+                getGame().getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&, float&>(
+                    file, _percentCurrentResourceLoaded, _percentResourcesLoaded[file]);
+            };
+            _loaders[file] = std::move(loader);
         }
+        auto loader = [this]() {
+            std::ifstream fileStreamIn("../data/stars.txt", std::ios_base::binary);
+            std::ifstream fileStreamIn2("../data/boys.txt", std::ios_base::binary);
 
+            pg::generators::MarkovFrequencyMap<4> fmg;
+            while (!fileStreamIn.eof() && fileStreamIn)
+            {
+                std::string word;
+                fileStreamIn >> word;
+                fmg.add(word);
+            }
+            _percentResourcesLoaded["stars.txt"] = 1.0f;
+            _percentCurrentResourceLoaded = 0.5;
+
+            while (!fileStreamIn2.eof() && fileStreamIn2)
+            {
+                std::string word;
+                fileStreamIn2 >> word;
+                fmg.add(word);
+            }
+            if (fmg.size() == 0)
+            {
+                fmg.add("empty");
+                // log
+                spdlog::error("No words loaded from file");
+            }
+            _percentResourcesLoaded["boys.txt"] = 1.0f;
+            _percentCurrentResourceLoaded = 1.0f;
+            getGame().addSingleton_as<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap", fmg);
+        };
+
+        _loaders["markov"] = std::move(loader);
+
+        _threads_running = std::make_unique<std::barrier<>>(_loaders.size() + 2);
+        for (auto& [file, load_function] : _loaders)
+        {
+            createLoaderThread(std::move(load_function), file);
+        }
+        // start a watcher thread to update the progress
+        createWatchProgressThread(_loaders.size());
         setupOverlay();
         // load resources for coming scene(s)
 
         Scene::start();
     };
 
-    void createLoaderThread(const std::string& file)
+    void postFrame(pg::game::FrameStamp& /*frameStamp*/) override
     {
-        std::jthread([this, file] {
+        float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
+        if (totalProgress >= 1.0f)
+        {
+            getGame().getGlobalDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
+        }
+    }
+
+    void createLoaderThread(Loader&& loader, const std::string& resource)
+    {
+        std::jthread([this, loader = std::move(loader), resource] {
             try
             {
-                _cache.get(file, {file, [&](soundEngineX::loader::LoadProgressInfo progress) {
-                                      _percentCurrentResourceLoaded = progress.percent();
-                                      _percentResourcesLoaded[file] = progress.percent();
-                                  }});
+                loader();
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
             catch (const std::exception&)
             {
-                // log
-                spdlog::error("Failed to load resource: {}", file);
+                spdlog::error("Failed to load resource: {}", resource);
             }
-            _percentResourcesLoaded[file] =
+            _percentResourcesLoaded[resource] =
                 1.0f; // might have been in cache already, thus not triggering a progress callback
             _percentCurrentResourceLoaded = 1.0f;
             _numRead++;
             std::unique_lock<std::mutex> lk(_mutex);
             _cv.notify_one();
+            std::ignore = _threads_running->arrive();
         }).detach();
     }
 
@@ -88,6 +152,7 @@ public:
                     _percentTotalResourcesLoaded = static_cast<float>(_numRead) / size;
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
+                auto x = _threads_running->arrive();
             }).detach();
         }
         else
@@ -106,6 +171,7 @@ public:
                     }
                     //_percentTotalResourcesLoaded /= size;
                 }
+                auto x = _threads_running->arrive();
             }).detach();
         }
     }
@@ -113,14 +179,13 @@ public:
     void setupOverlay()
     {
         // update events
-        pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
-
         pg::game::makeEntity<pg::game::GuiDrawable>(
-            getRegistry(),
+            getSceneRegistry(),
             {std::make_unique<galaxy::gui::LoadResourcesWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
 
@@ -131,11 +196,13 @@ private:
 
     std::map<std::string, float> _percentResourcesLoaded{};
 
-    std::atomic<uint32_t>     _numRead{};
-    soundEngineX::BufferCache _cache;
+    std::atomic<uint32_t> _numRead{};
+    Loaders               _loaders;
     // mutex and condition variable to signal when a resource is loaded
 
-    std::mutex              _mutex;
-    std::condition_variable _cv;
+    std::mutex                      _mutex;
+    std::condition_variable         _cv;
+    std::unique_ptr<std::barrier<>> _threads_running;
+    std::atomic_uint32_t            _numThreads{};
 };
 } // namespace galaxy

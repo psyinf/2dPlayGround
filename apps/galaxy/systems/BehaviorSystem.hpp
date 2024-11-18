@@ -13,22 +13,22 @@ class BehaviorSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup() {}
+    void setup(std::string_view /*scene_id*/) {}
 
     void handle(const pg::game::FrameStamp&)
     {
-        auto view = game.getRegistry().view<galaxy::Behavior>();
+        auto view = _game.getGlobalRegistry().view<galaxy::Behavior>();
         for (auto entity : view)
         {
             auto& behavior = view.get<galaxy::Behavior>(entity);
             auto  res = behavior.tree.tickExactlyOnce();
             if (res == BT::NodeStatus::SUCCESS || res == BT::NodeStatus::FAILURE)
             {
-                game.getRegistry().remove<galaxy::Behavior>(entity);
+                _game.getGlobalRegistry().remove<galaxy::Behavior>(entity);
             }
         }
         // delay deletions after the update
-        game.getDispatcher().update();
+        _game.getDispatcher().update();
     };
 };
 } // namespace galaxy

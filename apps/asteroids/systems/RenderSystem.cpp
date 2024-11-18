@@ -7,7 +7,7 @@
 #include <numbers>
 #include <cmath>
 
-void asteroids::RenderSystem::setup() {}
+void asteroids::RenderSystem::setup(std::string_view /*scene_id*/) {}
 
 class ScopedColor
 {
@@ -46,20 +46,20 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
 
 void asteroids::RenderSystem::handle(const pg::game::FrameStamp&)
 {
-    auto& renderer = game.getApp().getRenderer();
+    auto& renderer = _game.getApp().getRenderer();
     renderer.clear();
 
-    for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
+    for (auto view = _game.getGlobalRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
     {
         auto&& [drawable, transform] = view.get<pg::game::Drawable, pg::Transform2D>(entity);
         drawable.prim->draw(renderer, transform, {});
     }
 
-    auto renderConfig = game.getCurrentScene().getSingleton<RenderConfig>();
+    auto renderConfig = _game.getCurrentScene().getSingleton<RenderConfig>();
 
     if (renderConfig.renderBroadPhaseCollisionShapes)
     {
-        for (auto  boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform2D>();
+        for (auto  boundsView = _game.getGlobalRegistry().view<pg::BoundingSphere, pg::Transform2D>();
              auto& entity : boundsView)
         {
             auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform2D>(entity);

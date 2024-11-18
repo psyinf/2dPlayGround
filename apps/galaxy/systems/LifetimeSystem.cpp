@@ -5,7 +5,7 @@
 #include <pgGame/core/Game.hpp>
 #include <events/DroneEvents.hpp>
 
-void galaxy::LifetimeSystem::setup() {}
+void galaxy::LifetimeSystem::setup(std::string_view /*scene_id*/) {}
 
 bool lifeTimeExceeded(const galaxy::Lifetime& lifetime)
 {
@@ -16,14 +16,17 @@ bool lifeTimeExceeded(const galaxy::Lifetime& lifetime)
     return (pg::randomBetween(0.0f, 1.0f) < l);
 }
 
-void galaxy::LifetimeSystem::handle(const pg::game::FrameStamp& )
+void galaxy::LifetimeSystem::handle(const pg::game::FrameStamp&)
 {
-    auto view = game.getRegistry().view<galaxy::Lifetime>();
+    auto view = _game.getGlobalRegistry().view<galaxy::Lifetime>();
     for (auto& entity : view)
     {
         auto& lifetime = view.get<galaxy::Lifetime>(entity);
         // TODO later: take pause into account
         lifetime.time_alive += 1;
-        if (lifeTimeExceeded(lifetime)) { game.getDispatcher().trigger<galaxy::events::DroneFailedEvent>({entity}); }
+        if (lifeTimeExceeded(lifetime))
+        {
+            _game.getDispatcher().trigger<galaxy::events::DroneFailedEvent>({.entity = entity});
+        }
     }
 }

@@ -9,8 +9,8 @@
 
 asteroids::SoundSystem::~SoundSystem() = default;
 
-asteroids::SoundSystem::SoundSystem(pg::game::Game& game)
-  : SystemInterface(game)
+asteroids::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
+  : SystemInterface(_game, name)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
   , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
 {
@@ -18,7 +18,7 @@ asteroids::SoundSystem::SoundSystem(pg::game::Game& game)
     game.getDispatcher().sink<events::Collision>().connect<&SoundSystem::onCollision>(this);
 }
 
-void asteroids::SoundSystem::setup() {}
+void asteroids::SoundSystem::setup(std::string_view /*scene_id*/) {}
 
 void asteroids::SoundSystem::handle(const pg::game::FrameStamp&) {}
 

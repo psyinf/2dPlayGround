@@ -11,7 +11,7 @@ class Lasers : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
     using tag = entt::tag<"LASERS"_hs>;
-    void setup();
+    void setup(std::string_view scene_id);
 
     void createShot(const events::LaserFired& event);
 
