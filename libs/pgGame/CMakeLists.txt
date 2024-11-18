@@ -27,7 +27,7 @@ target_sources(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
 		EnTT::EnTT
-	    spdlog::spdlog
+	        spdlog::spdlog
 		pgf::pgf
 	PRIVATE
 	    pgEngine::pgEngine

@@ -58,10 +58,10 @@ public:
 
         auto& registry = _game.getGlobalRegistry();
         auto  view = registry.view<pg::game::Drawable,
-                                  pg::Transform2D,
-                                  galaxy::StarSystemState,
-                                  pg::game::RenderState,
-                                  galaxy::Faction>();
+                                   pg::Transform2D,
+                                   galaxy::StarSystemState,
+                                   pg::game::RenderState,
+                                   galaxy::Faction>();
         for (auto& entity : view)
         {
             auto&& [drawable, transform, starSystemState, state, faction] = view.get<pg::game::Drawable,
