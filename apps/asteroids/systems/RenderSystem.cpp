@@ -7,7 +7,7 @@
 #include <numbers>
 #include <cmath>
 
-void asteroids::RenderSystem::setup() {}
+void asteroids::RenderSystem::setup(std::string_view /*scene_id*/) {}
 
 class ScopedColor
 {
@@ -49,7 +49,7 @@ void asteroids::RenderSystem::handle(const pg::FrameStamp& fs)
     pg::Renderer renderer{game.getApp().getRenderer(), fs};
     renderer.clear();
 
-    for (auto view = game.getRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
+    for (auto view = game.getGlobalRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
     {
         auto&& [drawable, transform] = view.get<pg::game::Drawable, pg::Transform2D>(entity);
         drawable.prim->draw(renderer, transform, {});
@@ -59,7 +59,7 @@ void asteroids::RenderSystem::handle(const pg::FrameStamp& fs)
 
     if (renderConfig.renderBroadPhaseCollisionShapes)
     {
-        for (auto  boundsView = game.getRegistry().view<pg::BoundingSphere, pg::Transform2D>();
+        for (auto  boundsView = game.getGlobalRegistry().view<pg::BoundingSphere, pg::Transform2D>();
              auto& entity : boundsView)
         {
             auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform2D>(entity);

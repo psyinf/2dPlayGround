@@ -8,20 +8,22 @@
 #include <entt/entt.hpp>
 #include <pgGame/core/SingletonInterface.hpp>
 #include <pgGame/systems/SystemsRegistry.hpp>
+#include <pgGame/core/KeyStateMap.hpp>
 
 namespace pg::game {
 
 struct SceneConfig
 {
-    std::vector<std::string> systems;
+    std::vector<std::string> systems; //< systems associated with this scene
 };
 
 /**
  * A scene is basically a level or a screen in a game and is represented by a collection of entities and systems.
  * Currently the entities are stored in a shared registry and the systems are stored in a vector.
  */
-class Scene : public SingletonInterface
+class Scene : public SingletonInterface<Scene>
 {
+    friend class SingletonInterface<Scene>;
     // TODO: we probably need to switch/store keystatemap, scene-transform, and modify some global singletons
 public:
     static auto constexpr GlobalTransformName = "Scene.globalTransform";
@@ -33,6 +35,8 @@ public:
 
     virtual ~Scene() { stop(); }
 
+    virtual void postFrame(FrameStamp&){};
+
     const Systems& getSystems() const;
 
     Systems& getSystems();
@@ -41,27 +45,40 @@ public:
 
     Transform2D& getGlobalTransform() { return globalTransform; }
 
-    entt::registry& getRegistry() { return registry; }
+    // get the per scene-registry
+    entt::registry& getSceneRegistry();
+
+    entt::registry& getGlobalRegistry();
+
+    auto& getDispatcher() { return _dispatcher; }
 
     pg::game::Game& getGame() { return game_; }
+
+    KeyStateMap& getKeyStateMap() { return *_keyStateMap; }
 
     virtual void start();
 
     virtual void stop() {}
 
-    void frame(FrameStamp& frameStamp);
-
     bool started() const { return started_; }
 
-private:
-    Game&       game_;
-    Systems     systems_;
-    Transform2D globalTransform;
-    bool        started_{false};
-    bool        firstFrame_{true};
-    SceneConfig _config;
+    void frame(FrameStamp& frameStamp);
 
-    entt::registry registry;
+protected:
+    entt::registry& getRegistry() { return registry; }
+
+private:
+    Game&                        game_;
+    Systems                      systems_;
+    Transform2D                  globalTransform;
+    bool                         started_{false};
+    bool                         firstFrame_{true};
+    std::shared_ptr<KeyStateMap> _keyStateMap;
+    SceneConfig                  _config;
+    std::string                  _id;
+
+    entt::registry   registry;
+    entt::dispatcher _dispatcher;
 };
 
 } // namespace pg::game

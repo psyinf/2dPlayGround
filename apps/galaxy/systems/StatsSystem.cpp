@@ -5,18 +5,18 @@
 #include <components/StarSystem.hpp>
 #include <iostream>
 
-void galaxy::StatsSystem::setup()
+void galaxy::StatsSystem::setup(std::string_view /*scene_id*/)
 {
-    game.getCurrentScene().addSingleton_as<const Stats&>("galaxy.stats", stats);
-    game.getDispatcher().sink<events::DroneFailedEvent>().connect<&StatsSystem::onDroneDestroyed>(this);
-    game.getDispatcher().sink<events::DroneCreatedEvent>().connect<&StatsSystem::onDroneCreated>(this);
+    _game.getCurrentScene().addSingleton_as<const Stats&>("galaxy.stats", stats);
+    _game.getDispatcher().sink<events::DroneFailedEvent>().connect<&StatsSystem::onDroneDestroyed>(this);
+    _game.getDispatcher().sink<events::DroneCreatedEvent>().connect<&StatsSystem::onDroneCreated>(this);
 }
 
 void galaxy::StatsSystem::handle(const pg::FrameStamp&)
 {
-    auto& fpsCounter = game.getApp().getFPSCounter();
+    auto& fpsCounter = _game.getApp().getFPSCounter();
     // count number of starsystems
-    auto view = game.getRegistry().view<galaxy::StarSystemState>();
+    auto view = _game.getGlobalRegistry().view<galaxy::StarSystemState>();
     stats.galaxyStats.numSystems = view.size();
     stats.frameStats.lastFrameFPS = fpsCounter.getLastFrameFPS();
     if (fpsCounter.getCurrentFrameCount() % 20 == 0)
@@ -33,14 +33,14 @@ void galaxy::StatsSystem::handle(const pg::FrameStamp&)
 
 void galaxy::StatsSystem::onDroneDestroyed(events::DroneFailedEvent event)
 {
-    auto  faction = game.getRegistry().get<galaxy::Faction>(event.entity);
+    auto  faction = _game.getGlobalRegistry().get<galaxy::Faction>(event.entity);
     auto& factionStatsValues = stats.factionStats[faction.name];
     factionStatsValues.numDronesFailed++;
 }
 
 void galaxy::StatsSystem::onDroneCreated(events::DroneCreatedEvent event)
 {
-    auto  faction = game.getRegistry().get<galaxy::Faction>(event.entity);
+    auto  faction = _game.getGlobalRegistry().get<galaxy::Faction>(event.entity);
     auto& factionStatsValues = stats.factionStats[faction.name];
     factionStatsValues.numDronesCreated++;
 }

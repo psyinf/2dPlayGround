@@ -8,10 +8,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 target_sources(${PROJECT_NAME}
     PRIVATE
     PUBLIC
-        caching/GenericFactory.hpp
-        caching/ResourceCache.hpp
         imgui/Spinner.hpp
-        paths/DirectoryHelper.hpp
 
 )
 

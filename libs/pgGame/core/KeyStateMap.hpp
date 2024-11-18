@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <functional>
 #include <sdlpp.hpp>
+#include <pgGame/core/InputEventDispatcher.hpp>
 #include <pgEngine/math/Vec.hpp>
 
 namespace pg {
@@ -17,12 +18,12 @@ enum class MouseButton : uint8_t
     X2,
 };
 
-class KeyStateMap
+class KeyStateMap : public InputEventHandlerInterface
 {
 public:
     using MouseButtonsState = uint8_t;
 
-    KeyStateMap(sdl::EventHandler& eventHandler);
+    KeyStateMap() = default;
 
     enum class CallbackTrigger
     {
@@ -44,13 +45,13 @@ public:
     using MouseWheelCallback = std::function<void(pg::iVec2)>;
 
 public:
-    void keyEvent(const SDL_KeyboardEvent& keyCode);
+    bool keyEvent(const SDL_KeyboardEvent& keyCode) noexcept override;
 
-    void mouseMotion(const SDL_MouseMotionEvent& event);
+    bool mouseMotion(const SDL_MouseMotionEvent& event) noexcept override;
 
-    void mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent);
+    bool mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent) noexcept override;
 
-    void mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent);
+    bool mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent) noexcept override;
 
     /**
      * Register a callback that will be issued immediately when the key is pressed or released
@@ -80,9 +81,13 @@ public:
 
     void registerMousePressedCallback(MousePressedCallback&& callback) { mousePressedCallback = callback; }
 
+    void registerMouseDoubleClickedCallback(MousePressedCallback&& callback) { mouseDoubleClickedCallback = callback; }
+
     void registerMouseWheelCallback(MouseWheelCallback&& callback) { mouseWheelCallback = callback; }
 
-    void evaluateCallbacks() const;
+    void evaluateCallbacks() const override;
+
+    void reset();
 
 private:
     struct CallbackData
@@ -106,6 +111,7 @@ private:
     MouseDraggedCallback mouseDraggedCallback;
     MouseDraggedCallback mouseRelativeDraggedCallback;
     MousePressedCallback mousePressedCallback;
+    MousePressedCallback mouseDoubleClickedCallback;
     MouseWheelCallback   mouseWheelCallback;
 };
 

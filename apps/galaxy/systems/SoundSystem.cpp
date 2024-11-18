@@ -3,6 +3,7 @@
 
 #include <sndX/BackgroundPlayer.hpp>
 #include <sndX/SoundEngine.hpp>
+#include <pgf/taskengine/TaskEngine.hpp>
 #include <pgEngine/math/Random.hpp>
 #include <events/PickEvent.hpp>
 #include <events/UIEvents.hpp>
@@ -53,8 +54,8 @@ public:
 
 galaxy::SoundSystem::~SoundSystem() = default;
 
-galaxy::SoundSystem::SoundSystem(pg::game::Game& game)
-  : SystemInterface(game)
+galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
+  : SystemInterface(_game, name)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
   , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
 {

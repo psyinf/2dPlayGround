@@ -10,17 +10,7 @@ bool operator&(const KeyStateMap::CallbackTrigger& mask, const KeyStateMap::Call
 }
 } // namespace pg
 
-pg::KeyStateMap::KeyStateMap(sdl::EventHandler& eventHandler)
-{
-    eventHandler.keyDown = [this](const SDL_KeyboardEvent& keyboardEvent) { keyEvent(keyboardEvent); };
-    eventHandler.keyUp = [this](const SDL_KeyboardEvent& keyboardEvent) { keyEvent(keyboardEvent); };
-    eventHandler.mouseMotion = [this](const SDL_MouseMotionEvent& mouseMotionEvent) { mouseMotion(mouseMotionEvent); };
-    eventHandler.mouseButtonDown = [this](const SDL_MouseButtonEvent& buttonEvent) { mouseButtonEvent(buttonEvent); };
-    eventHandler.mouseButtonUp = [this](const SDL_MouseButtonEvent& buttonEvent) { mouseButtonEvent(buttonEvent); };
-    eventHandler.mouseWheel = [this](const SDL_MouseWheelEvent& wheelEvent) { mouseWheelEvent(wheelEvent); };
-}
-
-void pg::KeyStateMap::keyEvent(const SDL_KeyboardEvent& event)
+bool pg::KeyStateMap::keyEvent(const SDL_KeyboardEvent& event) noexcept
 {
     pressed[event.keysym.sym] = {.pressed{event.state == SDL_PRESSED}, .repeated{event.repeat != 0}};
 
@@ -28,10 +18,12 @@ void pg::KeyStateMap::keyEvent(const SDL_KeyboardEvent& event)
     {
         if (hit->second.trigger & CallbackTrigger::PRESSED) { hit->second.callback(CallbackTrigger::PRESSED); }
         else if (hit->second.trigger & CallbackTrigger::RELEASED) { hit->second.callback(CallbackTrigger::RELEASED); }
+        return true;
     }
+    return false;
 }
 
-void pg::KeyStateMap::mouseMotion(const SDL_MouseMotionEvent& event)
+bool pg::KeyStateMap::mouseMotion(const SDL_MouseMotionEvent& event) noexcept
 {
     if (mouseMovedCallback) { mouseMovedCallback({event.x, event.y}); }
     if (event.state != 0 && mouseDraggedCallback) { mouseDraggedCallback({event.x, event.y}, event.state); }
@@ -39,19 +31,33 @@ void pg::KeyStateMap::mouseMotion(const SDL_MouseMotionEvent& event)
     {
         mouseRelativeDraggedCallback({event.xrel, event.yrel}, event.state);
     }
+    return true;
 }
 
-void pg::KeyStateMap::mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent)
+bool pg::KeyStateMap::mouseButtonEvent(const SDL_MouseButtonEvent& buttonEvent) noexcept
 {
-    if (mousePressedCallback)
+    if (mousePressedCallback && buttonEvent.clicks == 1)
     {
         mousePressedCallback({buttonEvent.x, buttonEvent.y}, buttonEvent.button, buttonEvent.state == SDL_PRESSED);
+        return true;
     }
+    else if (mouseDoubleClickedCallback && buttonEvent.clicks == 2)
+    {
+        mouseDoubleClickedCallback(
+            {buttonEvent.x, buttonEvent.y}, buttonEvent.button, buttonEvent.state == SDL_PRESSED);
+        return true;
+    }
+    return false;
 }
 
-void pg::KeyStateMap::mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent)
+bool pg::KeyStateMap::mouseWheelEvent(const SDL_MouseWheelEvent& wheelEvent) noexcept
 {
-    if (mouseWheelCallback) { mouseWheelCallback({wheelEvent.x, wheelEvent.y}); }
+    if (mouseWheelCallback)
+    {
+        mouseWheelCallback({wheelEvent.x, wheelEvent.y});
+        return true;
+    }
+    return false;
 }
 
 void pg::KeyStateMap::registerDirectCallback(SDL_Keycode code, DirectCallback&& callback)
@@ -85,4 +91,11 @@ void pg::KeyStateMap::evaluateCallbacks() const
             if (keyState.pressed) { callback_data.callback(key); }
         }
     }
+}
+
+void pg::KeyStateMap::reset()
+{
+    pressed.clear();
+    directCallbacks.clear();
+    callbacks.clear();
 }

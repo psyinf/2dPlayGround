@@ -12,6 +12,7 @@ void pg::game::Scene::frame(FrameStamp& frameStamp)
     }
     std::ranges::for_each(systems_, [&frameStamp](auto& system) { system->handle(frameStamp); });
     frameStamp.gameTick++;
+    postFrame(frameStamp);
 }
 
 pg::game::Scene::Systems& pg::game::Scene::getSystems()
@@ -31,22 +32,39 @@ void pg::game::Scene::start()
         spdlog::warn("Scene already started");
         return;
     }
-
     firstFrame_ = true;
-    std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
+    started_ = true;
+    // std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
 }
 
 pg::game::Scene::Scene(Game& game, SceneConfig&& cfg)
   : game_(game)
   , _config(std::move(cfg))
+  , _keyStateMap(std::make_unique<KeyStateMap>())
 {
 }
 
 void pg::game::Scene::setup([[maybe_unused]] std::string_view id)
 {
+    game_.getInputEventDispatcher().registerHandler(std::string{id}, _keyStateMap);
     for (const auto& system : _config.systems)
     {
         auto& systems = getSystems();
         systems.emplace_back(pg::game::SystemsFactory::makeSystem(system, getGame()));
     }
+    // setup systems setting them up with the scene context they are used in
+    for (auto& system : getSystems())
+    {
+        system->setup(id);
+    }
+}
+
+entt::registry& pg::game::Scene::getSceneRegistry()
+{
+    return registry;
+}
+
+entt::registry& pg::game::Scene::getGlobalRegistry()
+{
+    return game_.getGlobalRegistry();
 }

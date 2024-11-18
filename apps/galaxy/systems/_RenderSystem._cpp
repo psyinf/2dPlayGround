@@ -9,7 +9,7 @@
 #include <components/Faction.hpp>
 #include <pgGame/components/RenderState.hpp>
 
-void galaxy::RenderSystem::setup() {}
+void galaxy::RenderSystem::setup(std::string_view scene_id) {}
 
 /// TODO: drawables should carry their respective states. This is a temporary solution which determines the state by the
 /// type of entities

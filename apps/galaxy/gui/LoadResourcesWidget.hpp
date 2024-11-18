@@ -63,10 +63,6 @@ public:
 
         ImGui::EndGroup();
         ImGui::End();
-        if (totalProgress >= 1.0f)
-        {
-            getGame().getDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
-        }
     }
 };
 

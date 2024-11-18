@@ -27,9 +27,9 @@ class PickingSystem : public pg::game::SystemInterface
 public:
     using SystemInterface::SystemInterface;
 
-    void setup() override
+    void setup(std::string_view /*scene_id*/) override
     {
-        game.getDispatcher().sink<galaxy::events::PickEvent>().connect<&galaxy::PickingSystem::processPick>(*this);
+        _game.getDispatcher().sink<galaxy::events::PickEvent>().connect<&galaxy::PickingSystem::processPick>(*this);
         // TODO: build a quadtree for picking
     };
 
@@ -38,12 +38,10 @@ public:
         if (lastPicks.empty()) { return; }
         const auto pick = lastPicks.back();
 
-        auto& quadtree = game.getCurrentScene().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
-        auto& marker = game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker");
-        auto& transform = game.getRegistry().get<pg::Transform2D>(marker);
+        auto& quadtree = _game.getCurrentScene().getSingleton<const pg::Quadtree<entt::entity>&>("galaxy.quadtree");
+        auto& marker = _game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker");
+        auto& transform = _game.getGlobalRegistry().get<pg::Transform2D>(marker);
         auto  scaled_range = pg::fVec2{5, 5} * (1.0f / pick.scale);
-
-        // create currently picked
 
         auto results = quadtree.rangeQuery(pg::fBox{pick.world_position - scaled_range, 2.0f * scaled_range});
         if (!results.empty())
@@ -51,11 +49,10 @@ public:
             transform.pos = results.at(0).box.midpoint();
             transform.scale = {0.025f, 0.025f};
 
-            game.getCurrentScene().getOrCreateSingleton<PickedEntity>("picked.entity").entity =
-                results.at(0).data.at(0);
+            _game.getOrCreateSingleton<PickedEntity>("picked.entity").entity = results.at(0).data.at(0);
 
             auto event = galaxy::events::PickResult{.world_position{transform.pos}, .entity{results.at(0).data[0]}};
-            game.getDispatcher().trigger(event);
+            _game.getDispatcher().trigger(event);
         }
         else { transform.scale = {0, 0}; }
 
