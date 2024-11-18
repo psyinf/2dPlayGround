@@ -52,9 +52,7 @@ public:
       , _scale(scale)
     {
     }
-
     void draw(pg::Renderer& r, const pg::Transform2D& t, const pg::States& states) override
-
     {
         auto trans = t;
         // IDEA scale non-linearly
@@ -68,24 +66,24 @@ public:
         states.restore(r.renderer, getTexture());
         states.restore(r.renderer);
         _frame++;
-
         if (_frame > _maxFrame) { _frame = 0; }
     }
-
 private:
     int    _frame = 0;
     float  _scale = 1.0f;
     size_t _maxFrame = 75;
 };
-
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
-    pg::config::WindowConfig windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
-    pg::SDLApp               sdlApp{windowConfig};
-    pg::KeyStateMap          keyStateMap(sdlApp.getEventHandler());
-    auto&                    sdl_renderer = sdlApp.getRenderer();
-    auto                     done = false;
+    pg::config::WindowConfig         windowConfig{0, {0, 0}, {1024, 768}, "minimal demo"};
+    pg::SDLApp                       sdlApp{windowConfig};
+    std::shared_ptr<pg::KeyStateMap> keyStateMap = std::make_shared<pg::KeyStateMap>();
+    pg::InputEventDispatcher         inputEventDispatcher(sdlApp.getEventHandler(), {{"main", keyStateMap}});
+    inputEventDispatcher.setHandlerActive("main", true);
+
+    auto& renderer = sdlApp.getRenderer();
+    auto  done = false;
     sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         std::cout << "bye!";
         done = true;
@@ -94,22 +92,22 @@ try
     pg::Transform2D mouseClickTransform{};
     // some callback that is executed directly when the key is pressed
     // this basically happens at the rate of key-repeat
-    keyStateMap.registerDirectCallback(
+    keyStateMap->registerDirectCallback(
         SDLK_x, {pg::KeyStateMap::CallbackTrigger::BOTH, {[](auto pressed) {
                      std::cout << "x "
                                << (pressed == pg::KeyStateMap::CallbackTrigger::PRESSED ? "pressed" : "released")
                                << "\n";
                  }}});
     // register callbacks to be executed when desired, e.g. once per frame, independent from the key-repeat
-    keyStateMap.registerKeyCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
-    keyStateMap.registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
-    keyStateMap.registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
-    keyStateMap.registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
-    keyStateMap.registerMousePressedCallback(
+    keyStateMap->registerKeyCallback(SDLK_a, [&bgTransform](auto) { bgTransform.pos[0] -= 10; });
+    keyStateMap->registerKeyCallback(SDLK_d, [&bgTransform](auto) { bgTransform.pos[0] += 10; });
+    keyStateMap->registerKeyCallback(SDLK_w, [&bgTransform](auto) { bgTransform.pos[1] -= 10; });
+    keyStateMap->registerKeyCallback(SDLK_s, [&bgTransform](auto) { bgTransform.pos[1] += 10; });
+    keyStateMap->registerMousePressedCallback(
         [&mouseClickTransform](auto pos, [[maybe_unused]] auto state, [[maybe_unused]] bool updown) {
             mouseClickTransform.pos = pg::vec_cast<float>(pos);
         });
-    keyStateMap.registerMouseDraggedCallback([&mouseClickTransform](auto pos, [[maybe_unused]] auto state) {
+    keyStateMap->registerMouseDraggedCallback([&mouseClickTransform](auto pos, [[maybe_unused]] auto state) {
         mouseClickTransform.pos = pg::vec_cast<float>(pos);
     });
     pg::Line l{pg::iVec2{0, 0}, pg::iVec2{1280, 720}};
@@ -121,10 +119,10 @@ try
     Circler   c({550, 550}, 100, 555);
     int       frame = 0;
 
-    auto sprite = pg::SpriteFactory::makeSprite(sdl_renderer, "../data/playerShip1_blue.png");
+    auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
     auto background =
-        std::make_unique<pg::ScrollingSprite>(pg::SpriteFactory::makeSprite(sdl_renderer, "../data/grid_bg.png"));
-    auto animation = pg::SpriteFactory::makeFramedSprite(sdl_renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
+        std::make_unique<pg::ScrollingSprite>(pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"));
+    auto animation = pg::SpriteFactory::makeFramedSprite(renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
 
     auto blip = DropAnimation(
         std::make_shared<sdl::Texture>(pg::SpriteFactory::makeTexture(sdl_renderer, "../data/gui/ring.tga")));
@@ -135,17 +133,17 @@ try
     {
         // handle all pending events
         while (sdlApp.getEventHandler().poll()) {}
-        keyStateMap.evaluateCallbacks();
+        keyStateMap->evaluateCallbacks();
 
-        setRendererDrawColor(renderer.renderer, {0, 0, 0, 255});
+        setRendererDrawColor(renderer, {0, 0, 0, 255});
         renderer.clear();
         background->draw(renderer, bgTransform, {});
 
-        setRendererDrawColor(renderer.renderer, {255, 0, 255, 255});
+        setRendererDrawColor(renderer, {255, 0, 255, 255});
         l.draw(renderer, {}, {});
         l2.draw(renderer, {}, {});
 
-        setRendererDrawColor(renderer.renderer, {255, 0, 0, 255});
+        setRendererDrawColor(renderer, {255, 0, 0, 255});
 
         p1.draw(renderer, {}, {});
         p2.draw(renderer, {}, {});

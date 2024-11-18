@@ -11,6 +11,8 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
     pgGame::pgGame
+    pgf::pgf
+    magic_enum::magic_enum
 )
 
 enable_coverage(${PROJECT_NAME})

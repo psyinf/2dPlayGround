@@ -12,27 +12,36 @@
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
 
+#include <pgGame/systems/SystemsRegistry.hpp>
+
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
     pg::game::Game game;
-    game.createScene("start", {});
-    auto& scene = game.switchScene("start");
-    auto& systems = scene.getSystems();
-    systems.emplace_back(std::make_unique<asteroids::Lasers>(game));
-    systems.emplace_back(std::make_unique<asteroids::Player>(game));
-    systems.emplace_back(std::make_unique<asteroids::Asteroids>(game));
-    systems.emplace_back(std::make_unique<asteroids::Background>(game));
-    systems.emplace_back(std::make_unique<asteroids::Collisions>(game));
-    systems.emplace_back(std::make_unique<asteroids::RenderSystem>(game));
-    systems.emplace_back(std::make_unique<asteroids::DynamicsSystem>(game));
-    systems.emplace_back(std::make_unique<asteroids::SoundSystem>(game));
+
+    pg::game::SystemsFactory::registerSystem<asteroids::Lasers>("lasers");
+    pg::game::SystemsFactory::registerSystem<asteroids::Player>("player");
+    pg::game::SystemsFactory::registerSystem<asteroids::Asteroids>("asteroids");
+    pg::game::SystemsFactory::registerSystem<asteroids::Background>("background");
+    pg::game::SystemsFactory::registerSystem<asteroids::Collisions>("collisions");
+    pg::game::SystemsFactory::registerSystem<asteroids::RenderSystem>("renderSystem");
+    pg::game::SystemsFactory::registerSystem<asteroids::DynamicsSystem>("dynamicsSystem");
+    pg::game::SystemsFactory::registerSystem<asteroids::SoundSystem>("soundSystem");
+    game.createScene("start",
+                     {.systems{"lasers",
+                               "player",
+                               "asteroids",
+                               "background",
+                               "collisions",
+                               "renderSystem",
+                               "dynamicsSystem",
+                               "soundSystem"}});
     game.switchScene("start");
 
     // TODO: from external config
     game.getCurrentScene().addSingleton<asteroids::RenderConfig>(
         asteroids::RenderConfig{.renderBroadPhaseCollisionShapes = true});
-    scene.start();
+
     game.loop();
     return 0;
 }
@@ -46,7 +55,7 @@ catch (std::exception& e)
 
 catch (...)
 {
-    fmt::print("Unhandled exception");
+    fmt::print("Unhandled exception\n");
     errorTrace::printErrorTrace();
     return -1;
 }

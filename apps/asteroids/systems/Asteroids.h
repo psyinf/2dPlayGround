@@ -40,7 +40,7 @@ public:
 
     using tag = entt::tag<"Asteroids"_hs>;
 
-    void setup();
+    void setup(std::string_view scene_id);
     /**
      * @brief Creates an asteroid entity in the game.
      *

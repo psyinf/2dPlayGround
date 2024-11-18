@@ -13,7 +13,7 @@ public:
 
     using backgroundTag = entt::tag<"BACKGROUND"_hs>;
 
-    void setup();
+    void setup(std::string_view scene_id);
 
     void handle(const pg::FrameStamp& frameStamp);
 };

@@ -11,6 +11,7 @@ target_sources(${PROJECT_NAME}
 		core/Game.cpp
 		core/KeyStateMap.cpp
 		core/Scene.cpp
+		systems/SystemInterface.cpp
 	PUBLIC
 		core/Game.hpp
 		core/RegistryHelper.hpp
@@ -27,6 +28,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
 		EnTT::EnTT
 	    spdlog::spdlog
+		pgf::pgf
 	PRIVATE
 	    pgEngine::pgEngine
 		fmt::fmt
