@@ -21,10 +21,10 @@ public:
         _points.push_back(_points[0]);
     }
 
-    void draw(sdl::Renderer& r, const pg::Transform2D& transform, const pg::States& rendererStates) override
+    void draw(pg::Renderer& r, const pg::Transform2D& transform, const pg::States& rendererStates) override
     {
         // draw a circle for now
-        pg::ScopedColor color(r, {255, 255, 255, 255});
+        pg::ScopedColor color(r.renderer, {255, 255, 255, 255});
         // pg::ScopedScale scale(r, t.scale);
         //  for now from lines
         std::vector<SDL_Point> local_points;
@@ -37,9 +37,9 @@ public:
             local_points.push_back({static_cast<int>(point[0]), static_cast<int>(point[1])});
         }
 
-        rendererStates.apply(r);
-        r.drawLines(std::bit_cast<SDL_Point*>(local_points.data()), static_cast<int>(local_points.size()));
-        rendererStates.restore(r);
+        rendererStates.apply(r.renderer);
+        r.renderer.drawLines(std::bit_cast<SDL_Point*>(local_points.data()), static_cast<int>(local_points.size()));
+        rendererStates.restore(r.renderer);
     }
 
 private:

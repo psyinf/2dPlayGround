@@ -44,9 +44,9 @@ static void renderSDL(sdl::Renderer& renderer, const pg::BoundingSphere& bs, con
     renderer.drawLines(std::bit_cast<SDL_Point*>(circle_points.data()), static_cast<int>(circle_points.size()));
 }
 
-void asteroids::RenderSystem::handle(const pg::game::FrameStamp&)
+void asteroids::RenderSystem::handle(const pg::FrameStamp& frameStamp)
 {
-    auto& renderer = _game.getApp().getRenderer();
+    auto renderer = pg::Renderer{_game.getApp().getRenderer(), frameStamp};
     renderer.clear();
 
     for (auto view = _game.getGlobalRegistry().view<pg::game::Drawable, pg::Transform2D>(); auto& entity : view)
@@ -63,7 +63,7 @@ void asteroids::RenderSystem::handle(const pg::game::FrameStamp&)
              auto& entity : boundsView)
         {
             auto&& [bound, transform] = boundsView.get<pg::BoundingSphere, pg::Transform2D>(entity);
-            renderSDL(renderer, bound, transform);
+            renderSDL(renderer.renderer, bound, transform);
         }
     }
     renderer.present();

@@ -39,14 +39,14 @@ public:
         return new_transform;
     }
 
-    void handle(const pg::FrameStamp& /*frameStamp*/)
+    void handle(const pg::FrameStamp& frameStamp)
     {
-        auto& renderer = _game.getApp().getRenderer();
+        auto renderer = pg::Renderer{_game.getApp().getRenderer(), frameStamp};
         renderer.clear();
         auto rendererStates = pg::States{};
         // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
         rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
-        rendererStates.apply(renderer);
+        rendererStates.apply(renderer.renderer);
         auto windowRect = _game.getCurrentScene().getSingleton<pg::game::WindowDetails>().windowRect;
 
         auto globalTransform =
@@ -89,7 +89,7 @@ public:
         //             drawable.prim->draw(renderer, new_transform, rendererStates);
         //         }
         //     }
-        rendererStates.restore(renderer);
+        rendererStates.restore(renderer.renderer);
     }
 
     template <typename... Args, typename... Excludes>

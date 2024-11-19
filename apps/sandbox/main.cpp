@@ -52,6 +52,7 @@ public:
       , _scale(scale)
     {
     }
+
     void draw(pg::Renderer& r, const pg::Transform2D& t, const pg::States& states) override
     {
         auto trans = t;
@@ -68,6 +69,7 @@ public:
         _frame++;
         if (_frame > _maxFrame) { _frame = 0; }
     }
+
 private:
     int    _frame = 0;
     float  _scale = 1.0f;
@@ -82,7 +84,7 @@ try
     pg::InputEventDispatcher         inputEventDispatcher(sdlApp.getEventHandler(), {{"main", keyStateMap}});
     inputEventDispatcher.setHandlerActive("main", true);
 
-    auto& renderer = sdlApp.getRenderer();
+    auto& sdl_renderer = sdlApp.getRenderer();
     auto  done = false;
     sdlApp.getEventHandler().quit = [&done](const SDL_QuitEvent&) {
         std::cout << "bye!";
@@ -119,10 +121,10 @@ try
     Circler   c({550, 550}, 100, 555);
     int       frame = 0;
 
-    auto sprite = pg::SpriteFactory::makeSprite(renderer, "../data/playerShip1_blue.png");
+    auto sprite = pg::SpriteFactory::makeSprite(sdl_renderer, "../data/playerShip1_blue.png");
     auto background =
-        std::make_unique<pg::ScrollingSprite>(pg::SpriteFactory::makeSprite(renderer, "../data/grid_bg.png"));
-    auto animation = pg::SpriteFactory::makeFramedSprite(renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
+        std::make_unique<pg::ScrollingSprite>(pg::SpriteFactory::makeSprite(sdl_renderer, "../data/grid_bg.png"));
+    auto animation = pg::SpriteFactory::makeFramedSprite(sdl_renderer, 8, 4, "../data/effects/explosion_1_8x4.png");
 
     auto blip = DropAnimation(
         std::make_shared<sdl::Texture>(pg::SpriteFactory::makeTexture(sdl_renderer, "../data/gui/ring.tga")));
@@ -135,15 +137,15 @@ try
         while (sdlApp.getEventHandler().poll()) {}
         keyStateMap->evaluateCallbacks();
 
-        setRendererDrawColor(renderer, {0, 0, 0, 255});
+        setRendererDrawColor(renderer.renderer, {0, 0, 0, 255});
         renderer.clear();
         background->draw(renderer, bgTransform, {});
 
-        setRendererDrawColor(renderer, {255, 0, 255, 255});
+        setRendererDrawColor(renderer.renderer, {255, 0, 255, 255});
         l.draw(renderer, {}, {});
         l2.draw(renderer, {}, {});
 
-        setRendererDrawColor(renderer, {255, 0, 0, 255});
+        setRendererDrawColor(renderer.renderer, {255, 0, 0, 255});
 
         p1.draw(renderer, {}, {});
         p2.draw(renderer, {}, {});

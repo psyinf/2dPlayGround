@@ -7,7 +7,7 @@
 
 #include <atomic>
 #include <barrier>
-#include <pgGame/core/FrameStamp.hpp>
+#include <pgEngine/core/FrameStamp.hpp>
 
 #include <resources/SoundResource.hpp>
 #include <pgEngine/generators/MarkovNameGen.hpp>
@@ -108,7 +108,7 @@ public:
         Scene::start();
     };
 
-    void postFrame(pg::game::FrameStamp& /*frameStamp*/) override
+    void postFrame(pg::FrameStamp& /*frameStamp*/) override
     {
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
         if (totalProgress >= 1.0f)
