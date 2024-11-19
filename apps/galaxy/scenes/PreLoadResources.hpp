@@ -152,7 +152,7 @@ public:
                     _percentTotalResourcesLoaded = static_cast<float>(_numRead) / size;
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
-                auto x = _threads_running->arrive();
+                std::ignore = _threads_running->arrive();
             }).detach();
         }
         else
@@ -162,16 +162,17 @@ public:
                 {
                     using namespace std::chrono_literals;
                     std::unique_lock<std::mutex> lk(_mutex);
-                    _cv.wait_for(lk, 50ms);
+                    _cv.wait_for(lk, 10ms);
 
-                    _percentTotalResourcesLoaded = 0.0;
+                    auto percentTotalResourcesLoaded = 0.0;
                     for (const auto& [key, value] : _percentResourcesLoaded)
                     {
-                        _percentTotalResourcesLoaded += (value / static_cast<float>(size));
+                        percentTotalResourcesLoaded += (value);
                     }
-                    //_percentTotalResourcesLoaded /= size;
+                    _percentTotalResourcesLoaded = percentTotalResourcesLoaded / _percentResourcesLoaded.size();
                 }
-                auto x = _threads_running->arrive();
+                _percentTotalResourcesLoaded = 1.0f;
+                std::ignore = _threads_running->arrive();
             }).detach();
         }
     }
