@@ -41,7 +41,6 @@ public:
     {
         // add percentage of resources loaded as singleton
         addSingleton_as<float&>("resourceLoader.totalProgress", _percentTotalResourcesLoaded);
-        addSingleton_as<float&>("resourceLoader.currentProgress", _percentCurrentResourceLoaded);
         addSingleton_as<std::map<std::string, float>&>("resourceLoader.resourcesProgress", _percentResourcesLoaded);
         // TODO: from configuration
 
@@ -57,29 +56,36 @@ public:
         for (auto& file : sound_files)
         {
             auto loader = [this, file]() {
-                getGame().getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&, float&>(
-                    file, _percentCurrentResourceLoaded, _percentResourcesLoaded[file]);
+                getGame().getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&>(
+                    file, _percentResourcesLoaded[file]);
             };
             _loaders[file] = std::move(loader);
         }
         auto loader = [this]() {
-            std::ifstream fileStreamIn("../data/stars.txt", std::ios_base::binary);
-            std::ifstream fileStreamIn2("../data/boys.txt", std::ios_base::binary);
-
+            std::ifstream fileStreamIn("../data/text/corpi/stars.txt", std::ios_base::binary);
+            std::ifstream fileStreamIn2("../data/text/corpi/boys.txt", std::ios_base::binary);
+            auto          file1_size = std::filesystem::file_size("../data/text/corpi/stars.txt");
+            auto          file2_size = std::filesystem::file_size("../data/text/corpi/boys.txt");
+            auto          total_size = file1_size + file2_size;
+            auto          resource = "markov";
             pg::generators::MarkovFrequencyMap<4> fmg;
+
             while (!fileStreamIn.eof() && fileStreamIn)
             {
                 std::string word;
                 fileStreamIn >> word;
+                // current file position
+                auto pos = fileStreamIn.tellg();
+                _percentResourcesLoaded[resource] = static_cast<float>(pos) / total_size;
                 fmg.add(word);
             }
-            _percentResourcesLoaded["stars.txt"] = 1.0f;
-            _percentCurrentResourceLoaded = 0.5;
 
             while (!fileStreamIn2.eof() && fileStreamIn2)
             {
                 std::string word;
                 fileStreamIn2 >> word;
+                auto pos = fileStreamIn2.tellg();
+                _percentResourcesLoaded[resource] = static_cast<float>(pos) / total_size;
                 fmg.add(word);
             }
             if (fmg.size() == 0)
@@ -88,8 +94,6 @@ public:
                 // log
                 spdlog::error("No words loaded from file");
             }
-            _percentResourcesLoaded["boys.txt"] = 1.0f;
-            _percentCurrentResourceLoaded = 1.0f;
             getGame().addSingleton_as<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap", fmg);
         };
 
@@ -131,7 +135,6 @@ public:
             }
             _percentResourcesLoaded[resource] =
                 1.0f; // might have been in cache already, thus not triggering a progress callback
-            _percentCurrentResourceLoaded = 1.0f;
             _numRead++;
             std::unique_lock<std::mutex> lk(_mutex);
             _cv.notify_one();
@@ -192,8 +195,6 @@ public:
 
 private:
     float _percentTotalResourcesLoaded{};
-
-    float _percentCurrentResourceLoaded{};
 
     std::map<std::string, float> _percentResourcesLoaded{};
 
