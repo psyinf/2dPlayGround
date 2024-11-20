@@ -164,7 +164,7 @@ public:
                     std::unique_lock<std::mutex> lk(_mutex);
                     _cv.wait_for(lk, 10ms);
 
-                    auto percentTotalResourcesLoaded = 0.0;
+                    auto percentTotalResourcesLoaded = 0.0f;
                     for (const auto& [key, value] : _percentResourcesLoaded)
                     {
                         percentTotalResourcesLoaded += (value);
