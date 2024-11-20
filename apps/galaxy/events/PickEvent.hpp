@@ -1,9 +1,10 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
+#include <pgfoundation/NamedTypeRegistrar.hpp>
 
 namespace galaxy { namespace events {
 
-struct PickEvent
+struct PickEvent : pgf::TypeRegistrar<PickEvent, "PickEvent">
 {
     pg::iVec2 screen_position;
     pg::fVec2 world_position;
@@ -12,7 +13,7 @@ struct PickEvent
     // MouseButton button;
 };
 
-struct PickResult
+struct PickResult : pgf::TypeRegistrar<PickResult, "PickResult">
 {
     pg::fVec2    world_position;
     entt::entity entity;

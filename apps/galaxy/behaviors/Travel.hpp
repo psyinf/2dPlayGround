@@ -17,7 +17,7 @@ public:
     // You must override the virtual function tick()
     BT::NodeStatus onRunning() override
     {
-        auto view = game().getRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>();
+        auto view = game().getGlobalRegistry().view<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>();
         auto&& [drone, transform, dynamic] = view.get<galaxy::Drone, pg::Transform2D, galaxy::Dynamic>(entity());
         if (drone.targetId == entt::null)
         { //
@@ -36,7 +36,7 @@ public:
             drone.waitCycles = 100;
             // TODO: event
             // mark the star as visited
-            auto& starsystem = game().getRegistry().get<galaxy::StarSystemState>(drone.targetId);
+            auto& starsystem = game().getGlobalRegistry().get<galaxy::StarSystemState>(drone.targetId);
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Explored;
             return BT::NodeStatus::SUCCESS;
         }

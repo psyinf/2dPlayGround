@@ -24,7 +24,7 @@ public:
     {
         auto& game = this->game();
         auto  maker_entity = entity();
-        auto  view = game.getRegistry().view<pg::Transform2D, galaxy::Faction>();
+        auto  view = game.getGlobalRegistry().view<pg::Transform2D, galaxy::Faction>();
 
         auto&& [transform, faction] = view.get<pg::Transform2D, galaxy::Faction>(maker_entity);
 
@@ -43,7 +43,7 @@ public:
                                  galaxy::Faction,
                                  galaxy::Lifetime,
                                  pg::game::RenderState>(
-                game.getRegistry(),
+                game.getGlobalRegistry(),
                 {.pos{transform.pos}, .scale{0.00125f, 0.00125f}},
                 pg::game::Drawable{dot_sprite},
                 {galaxy::Drone::fromConfig(drone_params)},
@@ -66,9 +66,9 @@ public:
         auto behavior_tree = ctx()->setupTree("Drone", entity, blackboard);
 
         pg::game::addComponent<galaxy::Behavior>(
-            game.getRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
+            game.getGlobalRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
 
-        game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({entity, transform.pos});
+        game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({.entity = entity, .transform = transform.pos});
         return BT::NodeStatus::SUCCESS;
     }
 

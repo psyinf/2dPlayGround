@@ -3,99 +3,115 @@
 
 #include <sndX/BackgroundPlayer.hpp>
 #include <sndX/SoundEngine.hpp>
+#include <sndX/Listener.hpp>
+#include <pgf/taskengine/TaskEngine.hpp>
 #include <pgEngine/math/Random.hpp>
 #include <events/PickEvent.hpp>
 #include <events/UIEvents.hpp>
+#include <components/SoundScape.hpp>
 
-template <size_t N>
-struct StringLiteral
+#include <pgFoundation/NamedTypeRegistry.hpp>
+
+class Dispatcher
 {
-    constexpr StringLiteral(const char (&str)[N]) { std::copy_n(str, N, value); }
-
-    char value[N];
-};
-
-/*TODO : that's only compile time string literals.In order to have configurable sounds per event at runtime we need to
- * have a map of event anyways*/
-
-class SoundDispatcher
-{
-    using SoundEventMap = std::unordered_map<std::string, std::string>;
+    using SoundEventMap = std::unordered_map<std::string, galaxy::EventSound>;
 
 public:
-    SoundDispatcher(soundEngineX::BackgroundPlayer& bgPlayer, SoundEventMap&& soundEventMap)
+    Dispatcher(soundEngineX::BackgroundPlayer& bgPlayer)
       : _bgPlayer(bgPlayer)
-      , _soundEventMap{soundEventMap}
     {
     }
 
-    template <typename T, StringLiteral i>
-    void play(const T& /*event*/)
+    void setSoundEventMap(const SoundEventMap& soundEventMap) { _soundEventMap = soundEventMap; }
+
+    auto getSoundEventMap() -> SoundEventMap& { return _soundEventMap; }
+
+    template <typename T>
+    void dispatch(const T& /*event*/)
     {
+        // do something with event
+        const auto& name = _registry.getTypeName<T>();
+        spdlog::info("Dispatching event {} with name {}", typeid(T).name(), name);
+
         try
         {
-            _bgPlayer.play(_soundEventMap.at(i.value));
+            auto& sound = _soundEventMap.at(name);
+            _bgPlayer.play(sound.sound_file);
         }
         catch (const std::out_of_range&)
         {
-            spdlog::error("SoundDispatcher: No sound for event '{}'", i.value);
+            spdlog::error("Dispatcher: No sound for event '{}'", name);
         }
         catch (const std::exception& e)
         {
             spdlog::error(
-                "SoundDispatcher: Error playing '{}'[{}] ({})", i.value, _soundEventMap.at(i.value), e.what());
+                "Dispatcher: Error playing '{}'[{}] ({})", name, _soundEventMap.at(name).sound_file, e.what());
         }
     }
 
+    template <typename T>
+    bool hasSoundEvent() const
+    {
+        static T    t{}; // force instantiation of T, to get the type name
+        const auto& name = _registry.getTypeName<T>();
+        return _soundEventMap.contains(name);
+    }
+
+private:
+    pgf::NamedTypeRegistry          _registry;
     soundEngineX::BackgroundPlayer& _bgPlayer;
     SoundEventMap                   _soundEventMap;
 };
 
 galaxy::SoundSystem::~SoundSystem() = default;
 
-galaxy::SoundSystem::SoundSystem(pg::game::Game& game)
-  : SystemInterface(game)
+galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
+  : SystemInterface(game, name)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
   , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
+  , _dispatcher(std::make_unique<Dispatcher>(*_bgPlayer))
+
 {
-    static SoundDispatcher soundDispatcher(*_bgPlayer,
-                                           {{"pick", "../data/sound/asteroids/laser_short.wav"},
-                                            {"click", "../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}});
-    game.getDispatcher()
-        .sink<galaxy::events::PickEvent>()
-        .connect<&SoundDispatcher::play<galaxy::events::PickEvent, "pick">>(&soundDispatcher);
-    game.getDispatcher()
-        .sink<galaxy::events::MenuButtonPressed>()
-        .connect<&SoundDispatcher::play<galaxy::events::MenuButtonPressed, "click">>(&soundDispatcher);
 }
 
-void galaxy::SoundSystem::setup() {}
-
-void galaxy::SoundSystem::handle(const pg::FrameStamp&) {}
-
-void galaxy::SoundSystem::exitScene([[maybe_unused]] std::string_view oldScene)
+void galaxy::SoundSystem::setup(std::string_view scene_id)
 {
+    auto& soundScapeConfig = _game.getConfig().getPerSceneConfig<SceneSoundScape>(std::string{scene_id}, "soundScape");
+    _game.getCurrentScene().addSingleton_as<SceneSoundScape>("scene.soundScape", soundScapeConfig);
+    // add sound events to dispatcher
+    _dispatcher->setSoundEventMap(soundScapeConfig.event_sounds);
+
+    if (_dispatcher->hasSoundEvent<galaxy::events::PickEvent>())
+    {
+        _game.getDispatcher()
+            .sink<galaxy::events::PickEvent>()
+            .connect<&Dispatcher::dispatch<galaxy::events::PickEvent>>(_dispatcher);
+    }
+    if (_dispatcher->hasSoundEvent<galaxy::events::MenuButtonPressed>())
+    {
+        _game.getDispatcher()
+            .sink<galaxy::events::MenuButtonPressed>()
+            .connect<&Dispatcher::dispatch<galaxy::events::MenuButtonPressed>>(_dispatcher);
+    }
+}
+
+void galaxy::SoundSystem::handle(const pg::FrameStamp&)
+{
+    auto& soundScape = _game.getCurrentScene().getSingleton<SceneSoundScape>("scene.soundScape");
+
+    if (!soundScape.background_music.is_playing && soundScape.background_music.hasNext())
+    {
+        _bgPlayer->play(soundScape.background_music.next(), {.loop = false}, [&soundScape]() {
+            soundScape.background_music.is_playing = false;
+        });
+        soundScape.background_music.is_playing = true;
+    }
+}
+
+void galaxy::SoundSystem::exitScene([[maybe_unused]] std::string_view oldScene) {}
+
+void galaxy::SoundSystem::enterScene(std::string_view /*newScene*/)
+{
+    // TODO: config should decide if we stop all sounds or not
     _soundEngine->stopAll();
-}
-
-void galaxy::SoundSystem::enterScene(std::string_view newScene)
-{
-    // TODO: resources repo should be configurable regarding its target path
-    // TODO: scene soundscape
-    try
-    {
-        _soundEngine->stopAll();
-        if (newScene == "splashScreen")
-        {
-            _bgPlayer->play("../data/music/dead-space-style-ambient-music-184793.mp3", {.loop = true});
-        }
-        else if (newScene == "galaxy")
-        {
-            _bgPlayer->play("../data/music/a-meditation-through-time-amp-space-11947.mp3", {.loop = true});
-        }
-    }
-    catch (const std::exception& e)
-    {
-        spdlog::error("Failed to play sound {}", e.what());
-    }
 }

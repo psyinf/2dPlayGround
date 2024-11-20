@@ -3,6 +3,7 @@
 #include <pgEngine/core/Gui.hpp>
 #include <memory>
 #include <gui/SplashScreenWidget.hpp>
+#include <components/SoundScape.hpp>
 
 namespace galaxy {
 
@@ -22,14 +23,14 @@ public:
     void setupOverlay()
     {
         // update events
-        pg::game::makeEntity<pg::game::GuiDrawable>(getGame().getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiBegin>(), pg::game::DRAWABLE_FIRST});
 
-        pg::game::makeEntity<pg::game::GuiDrawable>(getRegistry(),
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<pg::game::GuiEnd>(), pg::game::DRAWABLE_LAST});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
-            getRegistry(),
+            getSceneRegistry(),
             {std::make_unique<galaxy::gui::SplashScreenWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
 };
