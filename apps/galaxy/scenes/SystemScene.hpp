@@ -16,8 +16,15 @@
 #include <serializer/ConfigSerializer.hpp>
 #include <systems/GuiRenderSystem.hpp>
 #include <renderables/Orbit.hpp>
+#include <entt/core/hashed_string.hpp>
+#include <components/Tags.hpp>
 
 namespace galaxy {
+
+template <uint32_t Name>
+struct SystemIdTag
+{
+};
 
 class SystemScene : public pg::game::Scene
 {
@@ -38,23 +45,52 @@ public:
             setupKeyHandler();
             Scene::start();
         }
+        setupSystemsEntities();
+    }
+
+    void setupSystemsEntities()
+    {
         auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
         if (selected_entity == entt::null) { return; }
         auto&& [system, transform, faction] =
             getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
                 selected_entity);
-        auto entity =
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::SystemRenderTag>
-            //
-            (getSceneRegistry(),
-             {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
-             pg::game::Drawable{std::make_unique<galaxy::OrbitRenderable>(
-                 pg::randomBetween(100.0f, 200.0f), 1000, pg::Color{1, 1, 1, 1})},
-             {},
-             {});
+        // add tag based on system name, to find it later
+
+        auto&& storage = getSceneRegistry().storage<void>(entt::hashed_string::value(system.name.c_str()));
+
+        if (storage.size() > 0)
+        {
+            _selectedEntity = storage.at(0);
+            getSceneRegistry().emplace<pg::tags::SelectedItemTag>(_selectedEntity);
+            return;
+        }
+        else
+        {
+            auto entity = pg::game::makeEntity<pg::Transform2D,
+                                               pg::game::Drawable,
+                                               pg::game::RenderState,
+                                               pg::tags::SystemRenderTag,
+                                               pg::tags::SelectedItemTag>
+                //
+                (getSceneRegistry(),
+                 {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
+                 pg::game::Drawable{std::make_unique<galaxy::OrbitRenderable>(
+                     pg::randomBetween(100.0f, 200.0f), 1000, pg::Color{1, 1, 1, 1})},
+                 {},
+                 {},
+                 {});
+            storage.emplace(entity);
+            _selectedEntity = entity;
+        }
     }
 
-    void stop() override { Scene::stop(); }
+    void stop() override
+    {
+        getSceneRegistry().remove<pg::tags::SelectedItemTag>(_selectedEntity);
+
+        Scene::stop();
+    }
 
 private:
     void setupStarSystem()
@@ -146,6 +182,7 @@ private:
     std::unique_ptr<pg::Quadtree<entt::entity>> galaxyQuadtree;
     config::Galaxy                              galaxyConfig;
     bool                                        isDragging{};
+    entt::entity                                _selectedEntity{};
 };
 
 } // namespace galaxy

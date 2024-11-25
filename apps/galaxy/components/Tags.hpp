@@ -7,4 +7,5 @@ using MarkerTag = entt::tag<"Marker"_hs>;
 using DebugRenderingItemTag = entt::tag<"RenderDebug"_hs>;
 using GalaxyRenderTag = entt::tag<"GalaxyRenderTag"_hs>;
 using SystemRenderTag = entt::tag<"SystemRenderTag"_hs>;
+using SelectedItemTag = entt::tag<"SelectedItem"_hs>;
 } // namespace pg::tags
