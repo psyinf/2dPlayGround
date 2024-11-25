@@ -39,6 +39,7 @@ public:
 
     void start() override
     {
+        if (started()) { return; }
         // add percentage of resources loaded as singleton
         addSingleton_as<float&>("resourceLoader.totalProgress", _percentTotalResourcesLoaded);
         addSingleton_as<std::map<std::string, float>&>("resourceLoader.resourcesProgress", _percentResourcesLoaded);

@@ -38,7 +38,7 @@ public:
             // TODO: support for {next} etc.
             game.switchScene(sse.new_scene);
             auto& scene = game.getCurrentScene();
-            if (!scene.started()) { scene.start(); }
+            scene.start();
         }
         catch (pg::game::ResourceNotFoundException&)
         {

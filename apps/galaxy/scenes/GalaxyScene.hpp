@@ -66,15 +66,18 @@ public:
 
     void start() override
     {
-        setupKeyHandler();
-        setupOverlay();
-        setupSelectionMarker();
-        setupGalaxy();
+        if (!started())
+        {
+            setupKeyHandler();
+            setupOverlay();
+            setupSelectionMarker();
+            setupGalaxy();
 
-        addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
-        addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
+            addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
+            addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
 
-        Scene::start();
+            Scene::start();
+        }
     }
 
     void stop() override { Scene::stop(); }
