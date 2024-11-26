@@ -61,12 +61,46 @@ public:
 
         if (storage.size() > 0)
         {
-            _selectedEntity = storage.at(0);
-            getSceneRegistry().emplace<pg::tags::SelectedItemTag>(_selectedEntity);
+            _selectedEntities = {storage.begin(), storage.end()};
+            for (auto entity : _selectedEntities)
+            {
+                getSceneRegistry().emplace<pg::tags::SelectedItemTag>(entity);
+            }
             return;
         }
         else
         {
+            auto orbitalParams = pgOrbit::OrbitalParameters<float>{
+                .eccentricity = 0.70,
+                .semimajor_axis = 100.0,
+                .incliniation = 0.0,
+                .longAN = 1.0,
+                .longPA = 0.0,
+                .meanLongitude = 0.0,
+            };
+            auto dot_sprite = getGame().getResource<pg::Sprite>("sprites/star.png");
+            // size from star class
+
+            auto index = spectralTypeToIndex(system.spectralType);
+            auto rendererStates = pg::States{};
+            auto color = StarColors.at(index);
+            rendererStates.push(pg::TextureColorState{color});
+            // sprite for central star
+            auto sprite_entity = pg::game::makeEntity<pg::Transform2D,
+                                                      pg::game::Drawable,
+                                                      pg::game::RenderState,
+                                                      pg::tags::SystemRenderTag,
+                                                      pg::tags::SelectedItemTag>
+
+                (getSceneRegistry(),
+                 {.pos{0, 0},
+                  .scale{StarLowerRelativeSizes.at(index) * pg::fVec2{0.1f, 0.1f}},
+                  .scaleSpace{pg::TransformScaleSpace::World}},
+                 pg::game::Drawable{dot_sprite},
+                 {rendererStates},
+                 {},
+                 {});
+
             auto entity = pg::game::makeEntity<pg::Transform2D,
                                                pg::game::Drawable,
                                                pg::game::RenderState,
@@ -75,19 +109,23 @@ public:
                 //
                 (getSceneRegistry(),
                  {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
-                 pg::game::Drawable{std::make_unique<galaxy::OrbitRenderable>(
-                     pg::randomBetween(100.0f, 200.0f), 1000, pg::Color{1, 1, 1, 1})},
+                 pg::game::Drawable{
+                     std::make_unique<galaxy::OrbitRenderable>(orbitalParams, 1000, pg::Color{1, 1, 1, 1})},
                  {},
                  {},
                  {});
             storage.emplace(entity);
-            _selectedEntity = entity;
+            storage.emplace(sprite_entity);
+            _selectedEntities = {entity, sprite_entity};
         }
     }
 
     void stop() override
     {
-        getSceneRegistry().remove<pg::tags::SelectedItemTag>(_selectedEntity);
+        for (auto entity : _selectedEntities)
+        {
+            getSceneRegistry().remove<pg::tags::SelectedItemTag>(entity);
+        }
 
         Scene::stop();
     }
@@ -182,7 +220,7 @@ private:
     std::unique_ptr<pg::Quadtree<entt::entity>> galaxyQuadtree;
     config::Galaxy                              galaxyConfig;
     bool                                        isDragging{};
-    entt::entity                                _selectedEntity{};
+    std::vector<entt::entity>                   _selectedEntities{};
 };
 
 } // namespace galaxy

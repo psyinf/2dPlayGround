@@ -187,10 +187,9 @@ private:
 
         std::vector<double> star_class_probabilities = {0.00003, 0.001, 0.007, 0.03, 0.08, 0.12, 0.75};
         // Lower and upper bounds of relative sizes for each spectral type
-        std::vector<double> lowerRelativeSizes = {1.0, 0.7, 0.5, 0.3, 0.1, 0.05, 0.02};
-        std::vector<double> upperRelativeSizes = {1.0, 0.9, 0.7, 0.5, 0.3, 0.1, 0.05};
-        std::vector<float>  perceivedBrightness = {1.0f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f, 0.05f};
-        std::vector<float>  gammaCorrectedBrightness = convertBrightnessByGamma(perceivedBrightness, 2.6f);
+
+        std::vector<float> perceivedBrightness = {1.0f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f, 0.05f};
+        std::vector<float> gammaCorrectedBrightness = convertBrightnessByGamma(perceivedBrightness, 2.6f);
 
         // Random number generator setup
         std::discrete_distribution<> star_class_dist(star_class_probabilities.begin(), star_class_probabilities.end());
@@ -199,9 +198,14 @@ private:
 
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 15000})
         {
+            // color state
+            auto rendererStates = pg::States{};
+            auto color = pg::Color{255, 0, 0, 255};
+            rendererStates.push(pg::TextureColorState{color});
             auto new_pos = pg::fVec2{d(gen), d(gen)};
             auto index = star_class_dist(gen);
             auto spectral_type = magic_enum::enum_value<SpectralType>(index);
+
             auto new_size = gammaCorrectedBrightness[index] * pg::fVec2{1.0f, 1.0f} * 0.025f;
             auto entity = pg::game::makeEntity<pg::Transform2D,
                                                pg::game::Drawable,
@@ -215,7 +219,7 @@ private:
                  pg::game::Drawable{dot_sprite},
                  galaxy::StarSystemState{.spectralType{spectral_type}},
                  galaxy::Faction{"None"},
-                 {},
+                 {std::move(rendererStates)},
                  {});
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
