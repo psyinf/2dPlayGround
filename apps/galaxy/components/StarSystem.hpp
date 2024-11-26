@@ -3,6 +3,8 @@
 #include <array>
 #include <pgEngine/math/Vec.hpp>
 
+#include <magic_enum.hpp>
+
 namespace galaxy {
 enum class ColonizationStatus
 {
@@ -28,6 +30,11 @@ enum class SpectralType
     Unknown,
 };
 
+inline auto spectralTypeToIndex(SpectralType type) -> std::size_t
+{
+    return magic_enum::enum_integer(type);
+}
+
 static constexpr auto StarColors = std::array<pg::Color, 7>{
     pg::Color{155, 176, 255}, // O: Bluish white
     pg::Color{170, 191, 255}, // B: Blue-white
@@ -37,6 +44,10 @@ static constexpr auto StarColors = std::array<pg::Color, 7>{
     pg::Color{255, 210, 161}, // K: Orange
     pg::Color{255, 204, 111}  // M: Reddish-orange
 };
+
+// Lower and upper bounds of relative sizes for each spectral type
+static constexpr auto StarLowerRelativeSizes = std::array<float, 7>{1.0f, 0.7f, 0.5f, 0.3f, 0.1f, 0.05f, 0.02f};
+static constexpr auto StarUpperRelativeSizes = std::array<float, 7>{1.0f, 0.9f, 0.7f, 0.5f, 0.3f, 0.1f, 0.05f};
 
 struct Orbit
 {
