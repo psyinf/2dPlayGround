@@ -81,9 +81,8 @@ public:
             auto dot_sprite = getGame().getResource<pg::Sprite>("sprites/star.png");
             // size from star class
 
-            auto index = spectralTypeToIndex(system.spectralType);
             auto rendererStates = pg::States{};
-            auto color = StarColors.at(index);
+            auto color = pg::asRBGA(pgOrbit::getForSpectralType(pgOrbit::StarColors, system.spectralType));
             rendererStates.push(pg::TextureColorState{color});
             // sprite for central star
             auto sprite_entity = pg::game::makeEntity<pg::Transform2D,
@@ -94,7 +93,8 @@ public:
 
                 (getSceneRegistry(),
                  {.pos{0, 0},
-                  .scale{StarLowerRelativeSizes.at(index) * pg::fVec2{0.1f, 0.1f}},
+                  .scale{pgOrbit::getForSpectralType(pgOrbit::StarLowerRelativeSizes, system.spectralType) *
+                         pg::fVec2{0.1f, 0.1f}},
                   .scaleSpace{pg::TransformScaleSpace::World}},
                  pg::game::Drawable{dot_sprite},
                  {rendererStates},

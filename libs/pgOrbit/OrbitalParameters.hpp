@@ -17,4 +17,5 @@ struct OrbitalParameters
                                orbit were circular and free of perturbations. While nominally a simple longitude, in
                                practice the mean longitude does not correspond to any one physical angle.**/
 };
+
 } // namespace pgOrbit

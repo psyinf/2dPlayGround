@@ -146,4 +146,10 @@ static constexpr pg::Vec<T, SIZE> scale(const pg::Vec<T, SIZE>& lhs, U scale)
     }
     return res;
 }
+
+constexpr pg::Color asRBGA(const std::array<uint8_t, 3>& rgb, uint8_t alpha = 255)
+{
+    return {rgb[0], rgb[1], rgb[2], 255};
+}
+
 } // namespace pg

@@ -9,6 +9,7 @@ target_sources(${PROJECT_NAME}
 		FloatingPointType.hpp
 		OrbitalMechanics.hpp
 		OrbitalParameters.hpp
+		StarParameters.hpp
 )
 
 target_link_libraries(${PROJECT_NAME}

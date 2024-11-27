@@ -16,6 +16,8 @@
 #include <systems/GuiRenderSystem.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 #include <pgEngine/math/VecUtils.hpp>
+
+#include <pgOrbit/StarParameters.hpp>
 #include <systems/UpdateStarsSystem.hpp>
 #include <systems/PickingSystem.hpp>
 #include <systems/DroneSystem.hpp>
@@ -30,25 +32,6 @@
 
 namespace galaxy {
 using entt::literals::operator""_hs;
-
-float applyGamma(float brightness, float gamma)
-{
-    return std::powf(brightness, 1.0f / gamma);
-}
-
-// Function to convert a vector of brightness values by a gamma correction value
-std::vector<float> convertBrightnessByGamma(const std::vector<float>& brightness, float gamma)
-{
-    std::vector<float> correctedBrightness;
-    correctedBrightness.reserve(brightness.size()); // To optimize memory allocation
-
-    for (float value : brightness)
-    {
-        correctedBrightness.push_back(applyGamma(value, gamma));
-    }
-
-    return correctedBrightness;
-}
 
 class GalaxyScene : public pg::game::Scene
 {
@@ -185,14 +168,9 @@ private:
         std::normal_distribution<float> d(0.0f, 200.0f);
         std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
-        std::vector<double> star_class_probabilities = {0.00003, 0.001, 0.007, 0.03, 0.08, 0.12, 0.75};
-        // Lower and upper bounds of relative sizes for each spectral type
-
-        std::vector<float> perceivedBrightness = {1.0f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f, 0.05f};
-        std::vector<float> gammaCorrectedBrightness = convertBrightnessByGamma(perceivedBrightness, 2.6f);
-
         // Random number generator setup
-        std::discrete_distribution<> star_class_dist(star_class_probabilities.begin(), star_class_probabilities.end());
+        std::discrete_distribution<> star_class_dist(pgOrbit::star_class_probabilities.cbegin(),
+                                                     pgOrbit::star_class_probabilities.cend());
 
         auto dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
 
@@ -203,10 +181,11 @@ private:
             auto color = pg::Color{255, 0, 0, 255};
             rendererStates.push(pg::TextureColorState{color});
             auto new_pos = pg::fVec2{d(gen), d(gen)};
-            auto index = star_class_dist(gen);
-            auto spectral_type = magic_enum::enum_value<SpectralType>(index);
 
-            auto new_size = gammaCorrectedBrightness[index] * pg::fVec2{1.0f, 1.0f} * 0.025f;
+            auto spectral_type = pgOrbit::indexToSpectralType(star_class_dist(gen));
+            auto gammaCorrectedBrightness = pgOrbit::convertBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
+            auto new_size =
+                gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
             auto entity = pg::game::makeEntity<pg::Transform2D,
                                                pg::game::Drawable,
                                                galaxy::StarSystemState,
