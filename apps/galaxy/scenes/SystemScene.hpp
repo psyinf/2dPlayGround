@@ -73,7 +73,7 @@ public:
             auto orbitalParams = pgOrbit::OrbitalParameters<float>{
                 .eccentricity = 0.70,
                 .semimajor_axis = 100.0,
-                .incliniation = 0.0,
+                .inclination = 0.0,
                 .longAN = 1.0,
                 .longPA = 0.0,
                 .meanLongitude = 0.0,

@@ -10,11 +10,15 @@ target_sources(${PROJECT_NAME}
 		OrbitalMechanics.hpp
 		OrbitalParameters.hpp
 		StarParameters.hpp
+		OrbitCreator.hpp
+	PRIVATE
+		OrbitCreator.cpp
 )
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     PRIVATE
+	magic_enum::magic_enum
 )
 
 target_include_directories(

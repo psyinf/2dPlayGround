@@ -9,7 +9,7 @@ struct OrbitalParameters
     // orbital parameters
     T eccentricity;
     T semimajor_axis;
-    T incliniation;
+    T inclination;
     T longAN; ///> longitude of ascending node
     T longPA; ///> longitude of periapsis, basically the orientation of the ellipse
     /// time specific parameters

@@ -51,7 +51,7 @@ public:
 
         T r = getRadius(op, eccentricAnomaly);
 
-        return EulerCoordinates<T>{psi, op.longAN, op.incliniation, r};
+        return EulerCoordinates<T>{psi, op.longAN, op.inclination, r};
     }
 
     // TODO: this is a simplification over a orbit derived from an object "falling" around a central mass and having its

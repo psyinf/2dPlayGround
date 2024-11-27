@@ -7,7 +7,7 @@ TEST_CASE("SmokeTests", "[OrbitalTests]")
     pgOrbit::OrbitalParameters<float> op{
         .eccentricity = 0.70,
         .semimajor_axis = 100,
-        .incliniation = 0.0,
+        .inclination = 0.0,
         .longAN = 0.0,
         .longPA = 0.0,
     };
