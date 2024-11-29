@@ -18,6 +18,7 @@
 #include <renderables/Orbit.hpp>
 #include <entt/core/hashed_string.hpp>
 #include <components/Tags.hpp>
+#include <pgOrbit/OrbitCreator.hpp>
 
 namespace galaxy {
 
@@ -56,7 +57,6 @@ public:
             getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
                 selected_entity);
         // add tag based on system name, to find it later
-
         auto&& storage = getSceneRegistry().storage<void>(entt::hashed_string::value(system.name.c_str()));
 
         if (storage.size() > 0)
@@ -68,56 +68,79 @@ public:
             }
             return;
         }
-        else
+        else { createSystem(system); }
+    }
+
+    void createSystem(galaxy::StarSystemState& system)
+    {
+        createStar(system);
+
+        createObjects(system);
+    }
+
+    void createObjects(galaxy::StarSystemState& system)
+    {
+        pgOrbit::OrbitCreator orbitCreator{system.spectralType};
+        auto                  orbits = orbitCreator.generateSystem();
+
+        for (auto&& [orbit, type] : orbits)
         {
-            auto orbitalParams = pgOrbit::OrbitalParameters<float>{
-                .eccentricity = 0.70,
-                .semimajor_axis = 100.0,
-                .inclination = 0.0,
-                .longAN = 1.0,
-                .longPA = 0.0,
-                .meanLongitude = 0.0,
-            };
-            auto dot_sprite = getGame().getResource<pg::Sprite>("sprites/star.png");
-            // size from star class
-
-            auto rendererStates = pg::States{};
-            auto color = pg::asRBGA(pgOrbit::getForSpectralType(pgOrbit::StarColors, system.spectralType));
-            rendererStates.push(pg::TextureColorState{color});
-            // sprite for central star
-            auto sprite_entity = pg::game::makeEntity<pg::Transform2D,
-                                                      pg::game::Drawable,
-                                                      pg::game::RenderState,
-                                                      pg::tags::SystemRenderTag,
-                                                      pg::tags::SelectedItemTag>
-
-                (getSceneRegistry(),
-                 {.pos{0, 0},
-                  .scale{pgOrbit::getForSpectralType(pgOrbit::StarLowerRelativeSizes, system.spectralType) *
-                         pg::fVec2{0.1f, 0.1f}},
-                  .scaleSpace{pg::TransformScaleSpace::World}},
-                 pg::game::Drawable{dot_sprite},
-                 {rendererStates},
-                 {},
-                 {});
-
-            auto entity = pg::game::makeEntity<pg::Transform2D,
-                                               pg::game::Drawable,
-                                               pg::game::RenderState,
-                                               pg::tags::SystemRenderTag,
-                                               pg::tags::SelectedItemTag>
-                //
-                (getSceneRegistry(),
-                 {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
-                 pg::game::Drawable{
-                     std::make_unique<galaxy::OrbitRenderable>(orbitalParams, 1000, pg::Color{1, 1, 1, 1})},
-                 {},
-                 {},
-                 {});
-            storage.emplace(entity);
-            storage.emplace(sprite_entity);
-            _selectedEntities = {entity, sprite_entity};
+            createOrbit(orbit, system);
         }
+    }
+
+    void createOrbit(pgOrbit::OrbitalParameters<double>& orbitalParams, galaxy::StarSystemState& system)
+    {
+        auto entity = pg::game::makeEntity<pg::Transform2D,
+                                           pg::game::Drawable,
+                                           pg::game::RenderState,
+                                           pg::tags::SystemRenderTag,
+                                           pg::tags::SelectedItemTag>
+            //
+            (getSceneRegistry(),
+             {.pos{0, 0}, .scaleSpace{pg::TransformScaleSpace::World}},
+             pg::game::Drawable{std::make_unique<galaxy::OrbitRenderable>(orbitalParams, 1000, pg::Color{1, 1, 1, 1})},
+             {},
+             {},
+             {});
+        auto&& storage = getSceneRegistry().storage<void>(entt::hashed_string::value(system.name.c_str()));
+        storage.emplace(entity);
+
+        _selectedEntities.push_back(entity);
+    }
+
+    void createStar(galaxy::StarSystemState& system)
+    {
+        auto&& storage = getSceneRegistry().storage<void>(entt::hashed_string::value(system.name.c_str()));
+        auto   dot_sprite = getGame().getResource<pg::Sprite>("sprites/star.png");
+        // size from star class
+        auto rendererStates = pg::States{};
+        auto color = pg::asRBGA(pgOrbit::getForSpectralType(pgOrbit::StarColors, system.spectralType));
+        rendererStates.push(pg::TextureColorState{color});
+        // sprite for central star
+
+        auto randomScaleLower = pgOrbit::getForSpectralType(pgOrbit::StarLowerRelativeSizes, system.spectralType);
+        auto randomScaleUpper = pgOrbit::getForSpectralType(pgOrbit::StarUpperRelativeSizes, system.spectralType);
+
+        auto scale = pg::randomBetween(randomScaleLower, randomScaleUpper) * pg::fVec2{0.1f, 0.1f};
+        // scale to AU
+        scale *= 0.00465f;
+
+        auto sprite_entity = pg::game::makeEntity<pg::Transform2D,
+                                                  pg::game::Drawable,
+                                                  pg::game::RenderState,
+                                                  pg::tags::SystemRenderTag,
+                                                  pg::tags::SelectedItemTag>
+
+            (getSceneRegistry(),
+             {.pos{0, 0}, .scale{scale}, .scaleSpace{pg::TransformScaleSpace::World}},
+             pg::game::Drawable{dot_sprite},
+             {rendererStates},
+             {},
+             {});
+
+        storage.emplace(sprite_entity);
+        _selectedEntities.push_back(sprite_entity);
     }
 
     void stop() override

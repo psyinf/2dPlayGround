@@ -13,6 +13,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
     pgGame::pgGame
+    pgOrbit::pgOrbit
     fmt::fmt
     spdlog::spdlog
     magic_enum::magic_enum

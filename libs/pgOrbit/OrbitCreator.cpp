@@ -4,10 +4,12 @@
 pgOrbit::OrbitCreator::OrbitCreator(SpectralType spectralClass)
   : _spectralClass(spectralClass)
 {
+    calculateBasicParameters();
 }
 
 float pgOrbit::OrbitCreator::randomBetween(float min, float max)
 {
+    if (min > max) { std::swap(min, max); }
     // generator
     std::random_device                    rd;
     std::mt19937                          gen(rd());
@@ -29,4 +31,8 @@ void pgOrbit::OrbitCreator::estimateMass()
     _mass = randomBetween(lowerMass, upperMass);
 }
 
-void pgOrbit::OrbitCreator::calculateBasicParameters() {}
+void pgOrbit::OrbitCreator::calculateBasicParameters()
+{
+    estimateMass();
+    estimateLuminosity();
+}
