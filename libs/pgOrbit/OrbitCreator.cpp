@@ -1,8 +1,8 @@
 #include "OrbitCreator.hpp"
 #include <random>
 
-pgOrbit::OrbitCreator::OrbitCreator(SpectralType spectralClass)
-  : _spectralClass(spectralClass)
+pgOrbit::OrbitCreator::OrbitCreator(OrbitCreatorConfig&& config)
+  : _config(std::move(config))
 {
     calculateBasicParameters();
 }
@@ -26,8 +26,8 @@ void pgOrbit::OrbitCreator::estimateLuminosity()
 
 void pgOrbit::OrbitCreator::estimateMass()
 {
-    auto lowerMass = pgOrbit::getForSpectralType(pgOrbit::StarLowerRelativeSunMasses, _spectralClass);
-    auto upperMass = pgOrbit::getForSpectralType(pgOrbit::StarUpperRelativeSunMasses, _spectralClass);
+    auto lowerMass = pgOrbit::getForSpectralType(pgOrbit::StarLowerRelativeSunMasses, getSpectralClass());
+    auto upperMass = pgOrbit::getForSpectralType(pgOrbit::StarUpperRelativeSunMasses, getSpectralClass());
     _mass = randomBetween(lowerMass, upperMass);
 }
 

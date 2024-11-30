@@ -8,10 +8,18 @@ namespace pgOrbit {
 
 class OrbitCreator
 {
+    struct OrbitCreatorConfig
+    {
+        pgOrbit::SpectralType spectralClass{pgOrbit::SpectralType::Unknown};
+        double                scale{1.0};
+        size_t                min_orbits{3};
+        size_t                max_orbits{10};
+    };
+
     using OrbitalParams = OrbitalParameters<double>;
 
 public:
-    OrbitCreator(pgOrbit::SpectralType spectralClass);
+    OrbitCreator(OrbitCreatorConfig&&);
 
     enum class PlanetType
     {
@@ -46,8 +54,9 @@ public:
     {
         std::vector<std::pair<OrbitalParams, PlanetType>> system;
 
-        double frostLine = 4.85 * std::sqrt(_luminosity);           // Calculate frost line
-        int    numPlanets = static_cast<int>(randomBetween(4, 10)); // Random number of planets
+        double frostLine = 4.85 * std::sqrt(_luminosity); // Calculate frost line
+        int    numPlanets =
+            static_cast<int>(randomBetween(_config.min_orbits, _config.max_orbits)); // Random number of planets
 
         // Generate orbits without overlap
         auto orbits = generateOrbits(_luminosity, numPlanets, frostLine);
@@ -63,17 +72,21 @@ public:
     }
 
 private:
+    pgOrbit::SpectralType getSpectralClass() const { return _config.spectralClass; }
+
     float randomBetween(float min, float max);
 
     double generateSemiMajorAxis(double luminosity)
     {
+        // TODO: configuration
         double innerLimit = 0.1;
         double outerLimit = 30.0;
-        return std::pow(10, randomBetween(std::log10(innerLimit), std::log10(outerLimit)));
+        return _config.scale * std::pow(10, randomBetween(std::log10(innerLimit), std::log10(outerLimit)));
     }
 
     double generateEccentricity(double semiMajorAxis, double frostLine)
     {
+        // TODO: configuration
         return (semiMajorAxis > frostLine) ? randomBetween(0.0, 0.4) : randomBetween(0.0, 0.2);
     }
 
@@ -143,7 +156,11 @@ private:
             double spacingFactor = randomBetween(1.4, 1.8);
             currentAxis *= spacingFactor;
         }
-
+        // apply scale
+        for (auto& orbit : orbits)
+        {
+            orbit.semimajor_axis *= _config.scale;
+        }
         return orbits;
     }
 
@@ -229,8 +246,8 @@ private:
 
     void calculateBasicParameters();
 
-    float                 _mass;
-    float                 _luminosity;
-    pgOrbit::SpectralType _spectralClass;
+    float              _mass;
+    float              _luminosity;
+    OrbitCreatorConfig _config;
 };
 } // namespace pgOrbit

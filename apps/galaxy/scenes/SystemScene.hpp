@@ -80,7 +80,7 @@ public:
 
     void createObjects(galaxy::StarSystemState& system)
     {
-        pgOrbit::OrbitCreator orbitCreator{system.spectralType};
+        pgOrbit::OrbitCreator orbitCreator{{system.spectralType, 500.0f}};
         auto                  orbits = orbitCreator.generateSystem();
 
         for (auto&& [orbit, type] : orbits)
@@ -124,7 +124,7 @@ public:
 
         auto scale = pg::randomBetween(randomScaleLower, randomScaleUpper) * pg::fVec2{0.1f, 0.1f};
         // scale to AU
-        scale *= 0.00465f;
+        // scale *= 0.00465f;
 
         auto sprite_entity = pg::game::makeEntity<pg::Transform2D,
                                                   pg::game::Drawable,
@@ -202,6 +202,7 @@ private:
 
         getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
             auto zoom = galaxyConfig.zoom;
+            zoom.max *= 10;
             getGlobalTransform().scale *= static_cast<float>(std::pow(zoom.factor + 1.0f, pos[1]));
             getGlobalTransform().scale[0] = std::clamp(getGlobalTransform().scale[0], zoom.min, zoom.max);
             getGlobalTransform().scale[1] = std::clamp(getGlobalTransform().scale[1], zoom.min, zoom.max);
