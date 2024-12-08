@@ -20,3 +20,12 @@ TEST_CASE("angleBetween", "[VecTests]")
     auto res = pg::angleBetween(ref, std::get<0>(data));
     REQUIRE(res == Catch::Approx(std::get<1>(data)));
 }
+
+TEST_CASE("swizzle", "[VecTests]")
+{
+    using namespace pg;
+    auto v = Vec4<int>{1, 2, 3, 4};
+
+    auto res = pg::sub<0, 0>(v);
+    REQUIRE(res == Vec2<int>{1, 1});
+}
