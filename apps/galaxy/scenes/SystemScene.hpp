@@ -20,6 +20,8 @@
 #include <components/Tags.hpp>
 #include <pgOrbit/OrbitCreator.hpp>
 
+#include <pgEngine/math/VecOps.hpp>
+
 namespace galaxy {
 
 template <uint32_t Name>
@@ -86,8 +88,36 @@ public:
         for (auto&& [orbit, type] : orbits)
         {
             createOrbit(orbit, system);
+            // create some object on the orbit
+            createPlanet(orbit, type, system);
         }
     }
+
+    void createPlanet(pgOrbit::OrbitalParameters<double>& orbitalParams,
+                      pgOrbit::OrbitCreator::PlanetType,
+                      galaxy::StarSystemState& system)
+    {
+        auto dot_sprite = getGame().getResource<pg::Sprite>("sprites/planet_244.png");
+
+        // for now fixed position
+        auto pos = pg::vec_cast<float>(
+            pgOrbit::OrbitalMechanics<double>::getEulerAnglesFromEccentricAnomaly(orbitalParams, 0.0).toCartesian());
+        auto entity = pg::game::makeEntity<pg::Transform2D,
+                                           pg::game::Drawable,
+                                           pg::game::RenderState,
+                                           pg::tags::SystemRenderTag,
+                                           pg::tags::SelectedItemTag>
+            //
+            (getSceneRegistry(),
+             {.pos{pg::swizzle(pos, pg::XY{})}, .scaleSpace{pg::TransformScaleSpace::World}},
+             pg::game::Drawable{dot_sprite},
+             {},
+             {},
+             {});
+        auto&& storage = getSceneRegistry().storage<void>(entt::hashed_string::value(system.name.c_str()));
+        storage.emplace(entity);
+        _selectedEntities.push_back(entity);
+    };
 
     void createOrbit(pgOrbit::OrbitalParameters<double>& orbitalParams, galaxy::StarSystemState& system)
     {
