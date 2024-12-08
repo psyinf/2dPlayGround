@@ -162,6 +162,11 @@ struct VecTraits<VecType<T, SIZE>>
     static constexpr size_t Capacity = SIZE;
 };
 
+template <size_t... Indices>
+struct Swizzle
+{
+};
+
 // for now: we could pre-define the Indices as xyz etc but we need to pass std::integer_sequence<size_t, Indices...>
 template <size_t... Indices, typename Vec>
 auto sub(const Vec& lhs) -> pg::Vec<typename VecTraits<Vec>::ValueType, sizeof...(Indices)>
@@ -176,4 +181,24 @@ auto sub(const Vec& lhs) -> pg::Vec<typename VecTraits<Vec>::ValueType, sizeof..
     ((res[idx++] = lhs[Indices]), ...);
     return res;
 }
+
+template <size_t... Indices, typename Vec>
+auto swizzle(const Vec& lhs, Swizzle<Indices...>) -> pg::Vec<typename VecTraits<Vec>::ValueType, sizeof...(Indices)>
+{
+    constexpr size_t VecCapacity = VecTraits<Vec>::Capacity;
+    using ContainedType = typename VecTraits<Vec>::ValueType;
+    // check if the indices are within the bounds of the vector
+    static_assert(((Indices < VecCapacity) && ...), "Index out of bounds");
+
+    pg::Vec<ContainedType, sizeof...(Indices)> res{};
+    size_t                                     idx = 0;
+    ((res[idx++] = lhs[Indices]), ...);
+    return res;
+}
+
+using XYZ = Swizzle<0, 1, 2>;
+using RGB = Swizzle<0, 1, 2>;
+using RGBA = Swizzle<0, 1, 2, 3>;
+using XY = Swizzle<0, 1>;
+
 } // namespace pg
