@@ -6,6 +6,7 @@
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
 #include <systems/GuiRenderSystem.hpp>
+#include <systems/UpdateCurrentSystem.hpp>
 #include <scenes/SystemScene.hpp>
 
 galaxy::GalacticCore::GalacticCore()
@@ -53,6 +54,7 @@ void galaxy::GalacticCore::setup()
         galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag, pg::tags::SelectedItemTag>>("systemRenderSystem", true);
 
     pg::game::SystemsFactory::registerSystem<galaxy::UpdateStarsSystem>("updateStarsSystem");
+    pg::game::SystemsFactory::registerSystem<galaxy::UpdateCurrentSystem>("updateCurrentSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::PickingSystem>("pickingSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::DroneSystem>("droneSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::LifetimeSystem>("lifeTimeSystem");
@@ -73,7 +75,8 @@ void galaxy::GalacticCore::setup()
                                                         "behaviorSystem",
                                                         "statsSystem"}});
 
-    game->createScene<galaxy::SystemScene>("system", {.systems = {"soundSystem", "systemRenderSystem", "guiSystem"}});
+    game->createScene<galaxy::SystemScene>(
+        "system", {.systems = {"soundSystem", "systemRenderSystem", "guiSystem", "updateCurrentSystem"}});
 
     game->addSingleton_as<pg::game::SystemInterface::Config>("guiSystem.loadGalaxy.config",
                                                              pg::game::SystemInterface::Config{{"standalone", "true"}});

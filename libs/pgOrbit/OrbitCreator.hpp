@@ -1,6 +1,7 @@
 #pragma once
 #include <pgOrbit/StarParameters.hpp>
 #include <pgOrbit/OrbitalParameters.hpp>
+#include <pgOrbit/Constants.hpp>
 #include <random>
 #include <numbers>
 
@@ -76,7 +77,7 @@ private:
 
     float randomBetween(float min, float max);
 
-    double generateSemiMajorAxis(double luminosity)
+    double generateSemiMajorAxis_AU(double luminosity)
     {
         // TODO: configuration
         double innerLimit = 0.1;
@@ -92,12 +93,12 @@ private:
 
     double generateInclination() { return randomBetween(0.0, 10.0); }
 
-    double generateLongitude() { return randomBetween(0.0, 360.0); }
+    double generateLongitude() { return randomBetween(-std::numbers::pi, std::numbers::pi); }
 
     OrbitalParameters<double> generateOrbit(double luminosity, double frostLine)
     {
         OrbitalParameters<double> orbit;
-        orbit.semimajor_axis = generateSemiMajorAxis(luminosity);
+        orbit.semimajor_axis = generateSemiMajorAxis_AU(luminosity) * constants::AU;
         orbit.eccentricity = generateEccentricity(orbit.semimajor_axis, frostLine);
         orbit.inclination = generateInclination();
         orbit.longAN = generateLongitude();
@@ -144,10 +145,10 @@ private:
             orbit.eccentricity = randomEccentricity();
 
             // Generate other orbital parameters
-            orbit.inclination = randomBetween(0.0, std::numbers::pi / 18);  // Small inclination (0 to 10° in radians)
-            orbit.longAN = randomBetween(0.0, 2 * std::numbers::pi);        // Random longitude of ascending node
-            orbit.longPA = randomBetween(0.0, 2 * std::numbers::pi);        // Random longitude of periapsis
-            orbit.meanLongitude = randomBetween(0.0, 2 * std::numbers::pi); // Random mean longitude
+            orbit.inclination = generateLongitude() / 18.0; // Small inclination (0 to 10° in radians)
+            orbit.longAN = generateLongitude();             // Random longitude of ascending node
+            orbit.longPA = generateLongitude();             // Random longitude of periapsis
+            orbit.meanLongitude = generateLongitude();      // Random mean longitude
 
             // Add orbit to the list
             orbits.push_back(orbit);
@@ -164,7 +165,7 @@ private:
         return orbits;
     }
 
-    std::vector<OrbitalParams> generateOrbits2(double luminosity, int numPlanets, double frostLine)
+    /*std::vector<OrbitalParams> generateOrbits2(double luminosity, int numPlanets, double frostLine)
     {
         std::vector<OrbitalParams> orbits;
 
@@ -238,11 +239,11 @@ private:
         }
 
         return orbits;
-    }
+    }*/
 
-    void estimateLuminosity();
+    void estimateRelLuminosity();
 
-    void estimateMass();
+    void estimateRelMass();
 
     void calculateBasicParameters();
 

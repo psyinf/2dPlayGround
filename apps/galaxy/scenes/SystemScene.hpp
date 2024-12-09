@@ -18,6 +18,7 @@
 #include <renderables/Orbit.hpp>
 #include <entt/core/hashed_string.hpp>
 #include <components/Tags.hpp>
+#include <components/Orbit.hpp>
 #include <pgOrbit/OrbitCreator.hpp>
 
 #include <pgEngine/math/VecOps.hpp>
@@ -87,7 +88,7 @@ public:
 
         for (auto&& [orbit, type] : orbits)
         {
-            createOrbit(orbit, system);
+            auto orbit_entity = createOrbit(orbit, system);
             // create some object on the orbit
             createPlanet(orbit, type, system);
         }
@@ -104,13 +105,17 @@ public:
             pgOrbit::OrbitalMechanics<double>::getEulerAnglesFromEccentricAnomaly(orbitalParams, 0.0).toCartesian());
         auto entity = pg::game::makeEntity<pg::Transform2D,
                                            pg::game::Drawable,
+                                           galaxy::Orbiter,
+                                           pgOrbit::OrbitalParameters<double>,
                                            pg::game::RenderState,
                                            pg::tags::SystemRenderTag,
                                            pg::tags::SelectedItemTag>
             //
             (getSceneRegistry(),
-             {.pos{pg::swizzle(pos, pg::XY{})}, .scaleSpace{pg::TransformScaleSpace::World}},
+             {.pos{pg::swizzle(pos, pg::XY{})}, .scale{0.01, 0.01f}, .scaleSpace{pg::TransformScaleSpace::World}},
              pg::game::Drawable{dot_sprite},
+             {0.0, 0.00025},
+             pgOrbit::OrbitalParameters<double>{orbitalParams},
              {},
              {},
              {});
@@ -119,7 +124,7 @@ public:
         _selectedEntities.push_back(entity);
     };
 
-    void createOrbit(pgOrbit::OrbitalParameters<double>& orbitalParams, galaxy::StarSystemState& system)
+    auto createOrbit(pgOrbit::OrbitalParameters<double>& orbitalParams, galaxy::StarSystemState& system)
     {
         auto entity = pg::game::makeEntity<pg::Transform2D,
                                            pg::game::Drawable,
@@ -137,6 +142,7 @@ public:
         storage.emplace(entity);
 
         _selectedEntities.push_back(entity);
+        return entity;
     }
 
     void createStar(galaxy::StarSystemState& system)

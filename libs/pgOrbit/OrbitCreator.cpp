@@ -17,14 +17,14 @@ float pgOrbit::OrbitCreator::randomBetween(float min, float max)
     return dis(gen);
 }
 
-void pgOrbit::OrbitCreator::estimateLuminosity()
+void pgOrbit::OrbitCreator::estimateRelLuminosity()
 {
     if (_mass < 0.43f) { _luminosity = 0.23f * std::pow(_mass, 2.3f); }
     else if (_mass <= 2.0f) { _luminosity = std::pow(_mass, 4.0f); }
     else { _luminosity = 1.5f * std::pow(_mass, 3.5f); }
 }
 
-void pgOrbit::OrbitCreator::estimateMass()
+void pgOrbit::OrbitCreator::estimateRelMass()
 {
     auto lowerMass = pgOrbit::getForSpectralType(pgOrbit::StarLowerRelativeSunMasses, getSpectralClass());
     auto upperMass = pgOrbit::getForSpectralType(pgOrbit::StarUpperRelativeSunMasses, getSpectralClass());
@@ -33,6 +33,6 @@ void pgOrbit::OrbitCreator::estimateMass()
 
 void pgOrbit::OrbitCreator::calculateBasicParameters()
 {
-    estimateMass();
-    estimateLuminosity();
+    estimateRelMass();
+    estimateRelLuminosity();
 }

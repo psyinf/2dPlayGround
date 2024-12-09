@@ -6,6 +6,7 @@
 #include <pgGame/components/Drawable.hpp>
 #include <components/Faction.hpp>
 #include <components/StarSystem.hpp>
+#include <components/Orbit.hpp>
 
 #include <events/DroneEvents.hpp>
 #include <pgGame/components/RenderState.hpp>
