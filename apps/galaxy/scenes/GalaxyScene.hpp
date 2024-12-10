@@ -10,6 +10,7 @@
 #include <gui/SystemInfo.hpp>
 #include <gui/DashBoardWidget.hpp>
 #include <gui/LoadResourcesWidget.hpp>
+#include <gui/MainBarWidget.hpp>
 
 #include <serializer/ConfigSerializer.hpp>
 
@@ -158,6 +159,9 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::StatsWidget>(getGame())});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
+                                                    {std::make_unique<galaxy::gui::MainBarWidget>(getGame())});
     }
 
     void setupGalaxy()

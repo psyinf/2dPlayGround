@@ -116,17 +116,17 @@ void game::Game::loop()
 {
     sdlApp.getEventHandler().quit = [this](auto) { running = false; };
 
-    FrameStamp frameStamp{0, 0, sdlApp.getFPSCounter().getLastFrameDuration()};
+    _currentFrameStamp = {0, 0, sdlApp.getFPSCounter().getLastFrameDuration()};
     while (running)
     {
-        frameStamp.frameNumber++;
-        frameStamp.lastFrameDuration = sdlApp.getFPSCounter().getLastFrameDuration();
+        _currentFrameStamp.frameNumber++;
+        _currentFrameStamp.lastFrameDuration = sdlApp.getFPSCounter().getLastFrameDuration();
         if (_gameState.pauseState != PauseState::Paused)
         {
-            frameStamp.time.add(sdlApp.getFPSCounter().getLastFrameDuration(), _gameState.timeScale);
+            _currentFrameStamp.time.add(sdlApp.getFPSCounter().getLastFrameDuration(), _gameState.timeScale);
         }
 
-        frame(frameStamp);
+        frame(_currentFrameStamp);
         sdlApp.getFPSCounter().frame();
     }
 }

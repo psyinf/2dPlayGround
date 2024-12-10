@@ -78,6 +78,7 @@ private:
 
     pgf::NamedTypeRegistry _eventNameRegistry;
     GameState              _gameState;
+    FrameStamp             _currentFrameStamp;
 
 public:
     Game();
@@ -135,6 +136,10 @@ public:
         createScene<Type>(id, std::move(cfg));
         return switchScene(id);
     }
+
+    const auto& getCurrentTimeStamp() const { return _currentFrameStamp; }
+
+    const auto& getCurrentGameState() const { return _gameState; }
 
     void loop();
 
