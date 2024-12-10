@@ -8,6 +8,7 @@
 #include <systems/GuiRenderSystem.hpp>
 #include <systems/UpdateCurrentSystem.hpp>
 #include <scenes/SystemScene.hpp>
+#include <components/GameState.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -82,6 +83,7 @@ void galaxy::GalacticCore::setup()
                                                              pg::game::SystemInterface::Config{{"standalone", "true"}});
     game->addSingleton_as<pg::game::SystemInterface::Config>(
         "guiSystem.system.config", pg::game::SystemInterface::Config{{"standalone", "false"}});
+
 
     auto& scene = game->switchScene("splashScreen");
     scene.start();

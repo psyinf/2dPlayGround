@@ -36,8 +36,8 @@ public:
         try
         {
             // TODO: support for {next} etc.
-            game.switchScene(sse.new_scene);
-            auto& scene = game.getCurrentScene();
+            _game.switchScene(sse.new_scene);
+            auto& scene = _game.getCurrentScene();
             scene.start();
         }
         catch (pg::game::ResourceNotFoundException&)
@@ -47,16 +47,25 @@ public:
         }
     }
 
-    void handleQuitEvent(const pg::game::events::QuitEvent&) { game.quit(); }
+    void handleQuitEvent(const pg::game::events::QuitEvent&) { _game.quit(); }
 
     void handleDestroyEntityEvent(const pg::game::events::DestroyEntityEvent& dee)
     {
-        game.getGlobalRegistry().destroy(dee.entity);
+        _game.getGlobalRegistry().destroy(dee.entity);
+    }
+
+    void handlePlayPauseEvent(const pg::game::events::PlayPauseEvent& ppe)
+    {
+        if (ppe.state == pg::game::events::PlayPauseEvent::State::Pause)
+        {
+            _gameState.pauseState = pg::game::PauseState::Paused;
+        }
+        else { _gameState.pauseState = pg::game::PauseState::Running; }
     }
 };
 
 game::Game::Game()
-  : pimpl(std::make_unique<Pimpl>(*this))
+  : pimpl(std::make_unique<Pimpl>(*this, _gameState))
   , _inputEventDispatcher(sdlApp.getEventHandler(), {})
 {
     gui = std::make_unique<pg::Gui>(getApp());
@@ -66,6 +75,9 @@ game::Game::Game()
     dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*pimpl));
     dispatcher.sink<pg::game::events::DestroyEntityEvent>().connect<&Pimpl::handleDestroyEntityEvent>(
         dynamic_cast<Pimpl&>(*pimpl));
+    dispatcher.sink<pg::game::events::PlayPauseEvent>().connect<&Pimpl::handlePlayPauseEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
+
     createAndSwitchScene("__default__");
 }
 
@@ -109,6 +121,10 @@ void game::Game::loop()
     {
         frameStamp.frameNumber++;
         frameStamp.lastFrameDuration = sdlApp.getFPSCounter().getLastFrameDuration();
+        if (_gameState.pauseState != PauseState::Paused)
+        {
+            frameStamp.time.add(sdlApp.getFPSCounter().getLastFrameDuration(), _gameState.timeScale);
+        }
 
         frame(frameStamp);
         sdlApp.getFPSCounter().frame();
