@@ -13,6 +13,8 @@ struct Time
         seconds += milliseconds_accumulator / 1000;
         milliseconds_accumulator %= 1000;
     }
+
+    float getFractionalSeconds() const { return seconds + milliseconds_accumulator / 1000.0f; }
 };
 
 struct FrameStamp
@@ -22,13 +24,24 @@ struct FrameStamp
     std::chrono::milliseconds lastFrameDuration{0};
 
     Time time;
+    Time previousTime;
 
+    // get the frame duration in seconds
     float getFrameDuration_sec() const
     {
         auto f_secs = std::chrono::duration_cast<std::chrono::duration<float>>(lastFrameDuration);
         return f_secs.count();
     }
 
-    void updateTimeFromLastFrame(float time_scale) { time.add(lastFrameDuration, time_scale); }
+    void update(std::chrono::milliseconds last_frame_duration, float time_scale)
+    {
+        frameNumber++;
+        lastFrameDuration = last_frame_duration;
+        previousTime = time;
+        time.add(lastFrameDuration, time_scale);
+    }
+
+    // get the real time passed in seconds
+    auto getRealTimePassed() const { return time.getFractionalSeconds() - previousTime.getFractionalSeconds(); }
 };
 } // namespace pg
