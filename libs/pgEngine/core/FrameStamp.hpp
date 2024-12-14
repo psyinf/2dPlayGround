@@ -31,6 +31,7 @@ struct FrameStamp
     Time time;
     Time previousTime;
 
+private:
     // get the frame duration in seconds
     float getFrameDuration_sec() const
     {
@@ -38,6 +39,7 @@ struct FrameStamp
         return f_secs.count();
     }
 
+public:
     void update(std::chrono::milliseconds last_frame_duration, float time_scale)
     {
         frameNumber++;
@@ -47,7 +49,7 @@ struct FrameStamp
     }
 
     // get the real time passed in seconds
-    auto getRealTimePassed() const { return time.getFractionalSeconds() - previousTime.getFractionalSeconds(); }
+    auto getRealTimePassed_sec() const { return time.getFractionalSeconds() - previousTime.getFractionalSeconds(); }
 
     auto formatTime()
     {

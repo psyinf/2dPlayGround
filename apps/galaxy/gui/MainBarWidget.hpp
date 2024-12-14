@@ -23,7 +23,7 @@ public:
         ImGui::Text("Frame: %d", timeStamp.frameNumber);
         ImGui::Text("Game Tick: %d", timeStamp.gameTick);
         ImGui::Text("Seconds: %f", timeStamp.time.getFractionalSeconds());
-        ImGui::Text("Time Passed: %f", timeStamp.getRealTimePassed());
+        ImGui::Text("Time Passed: %f", timeStamp.getRealTimePassed_sec());
         ImGui::Text("Galaxy Time: %s", timeStamp.formatTime().c_str());
 
         // add some play/pause button

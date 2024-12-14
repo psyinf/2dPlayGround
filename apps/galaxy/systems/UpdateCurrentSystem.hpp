@@ -44,7 +44,7 @@ public:
             const auto& test = registry.get<pg::Transform2D>(entity);
 
             // get passed time
-            auto seconds = frameStamp.getFrameDuration_sec();
+            auto seconds = frameStamp.getRealTimePassed_sec();
             //
             //             auto [orbital_parameters, central_body_ref] =
             //                 scene.getRegistry().get<OrbitalParameters, CentralBodyRef>(orbiter.orbit);

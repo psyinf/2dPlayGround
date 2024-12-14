@@ -79,6 +79,7 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
 
     for (const auto& faction : galaxy_config.factions)
     {
+        // TODO: this needs to be based on the real time passed (e.g. years)
         if (faction.startParams.start_cycle != frameStamp.gameTick) { continue; }
 
         auto view = _game.getGlobalRegistry()
