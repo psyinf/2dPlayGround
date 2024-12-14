@@ -24,6 +24,7 @@ public:
         ImGui::Text("Game Tick: %d", timeStamp.gameTick);
         ImGui::Text("Seconds: %f", timeStamp.time.getFractionalSeconds());
         ImGui::Text("Time Passed: %f", timeStamp.getRealTimePassed());
+        ImGui::Text("Galaxy Time: %s", timeStamp.formatTime().c_str());
 
         // add some play/pause button
         // play/pause event
@@ -38,6 +39,28 @@ public:
             auto event = pg::game::events::PlayPauseEvent{.state = pg::game::events::PlayPauseEvent::State::Play};
             getGame().getGlobalDispatcher().enqueue<pg::game::events::PlayPauseEvent>(event);
         }
+        // time acceleration
+        if (ImGui::Button("1x"))
+        {
+            auto event = pg::game::events::TimeScaleEvent{.time_scale = 1.0f};
+            getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
+        }
+        if (ImGui::Button("10x"))
+        {
+            auto event = pg::game::events::TimeScaleEvent{.time_scale = 10.0f};
+            getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
+        }
+        if (ImGui::Button("100x"))
+        {
+            auto event = pg::game::events::TimeScaleEvent{.time_scale = 100.0f};
+            getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
+        }
+        if (ImGui::Button("1000x"))
+        {
+            auto event = pg::game::events::TimeScaleEvent{.time_scale = 1000.0f};
+            getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
+        }
+
         // display second based time as
 
         // TODO: structured time/GalaxyTime

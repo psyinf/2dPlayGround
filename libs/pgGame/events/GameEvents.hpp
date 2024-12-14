@@ -25,4 +25,9 @@ struct PlayPauseEvent : pgf::TypeRegistrar<PlayPauseEvent, "PlayPauseEvent">
 
     State state;
 };
+
+struct TimeScaleEvent : pgf::TypeRegistrar<TimeScaleEvent, "TimeScaleEvent">
+{
+    float time_scale;
+};
 } // namespace pg::game::events

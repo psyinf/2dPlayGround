@@ -62,6 +62,8 @@ public:
         }
         else { _gameState.pauseState = pg::game::PauseState::Running; }
     }
+
+    void handleTimeScaleEvent(const pg::game::events::TimeScaleEvent& tse) { _gameState.timeScale = tse.time_scale; }
 };
 
 game::Game::Game()
@@ -77,7 +79,8 @@ game::Game::Game()
         dynamic_cast<Pimpl&>(*pimpl));
     dispatcher.sink<pg::game::events::PlayPauseEvent>().connect<&Pimpl::handlePlayPauseEvent>(
         dynamic_cast<Pimpl&>(*pimpl));
-
+    dispatcher.sink<pg::game::events::TimeScaleEvent>().connect<&Pimpl::handleTimeScaleEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
     createAndSwitchScene("__default__");
 }
 
@@ -119,12 +122,9 @@ void game::Game::loop()
     _currentFrameStamp = {0, 0, sdlApp.getFPSCounter().getLastFrameDuration()};
     while (running)
     {
-        _currentFrameStamp.frameNumber++;
-        _currentFrameStamp.lastFrameDuration = sdlApp.getFPSCounter().getLastFrameDuration();
-        if (_gameState.pauseState != PauseState::Paused)
-        {
-            _currentFrameStamp.time.add(sdlApp.getFPSCounter().getLastFrameDuration(), _gameState.timeScale);
-        }
+        float effectiveTimeScale = _gameState.timeScale;
+        if (_gameState.pauseState == pg::game::PauseState::Paused) { effectiveTimeScale = 0.0f; }
+        _currentFrameStamp.update(sdlApp.getFPSCounter().getLastFrameDuration(), effectiveTimeScale);
 
         frame(_currentFrameStamp);
         sdlApp.getFPSCounter().frame();

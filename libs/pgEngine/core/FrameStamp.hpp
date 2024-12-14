@@ -1,6 +1,11 @@
 #pragma once
 #include <chrono>
 
+#include <fmt/format.h>
+#include <fmt/chrono.h>
+
+#include <fmt/core.h>
+
 namespace pg {
 struct Time
 {
@@ -43,5 +48,25 @@ struct FrameStamp
 
     // get the real time passed in seconds
     auto getRealTimePassed() const { return time.getFractionalSeconds() - previousTime.getFractionalSeconds(); }
+
+    auto formatTime()
+    {
+        auto seconds = time.seconds;
+
+        auto secs = std::chrono::seconds(seconds);
+        auto years = std::chrono::duration_cast<std::chrono::years>(secs);
+        auto months = std::chrono::duration_cast<std::chrono::months>(secs) %
+                      std::chrono::duration_cast<std::chrono::months>(std::chrono::years(1)).count();
+        auto days = std::chrono::duration_cast<std::chrono::days>(secs) %
+                    std::chrono::duration_cast<std::chrono::days>(std::chrono::months(1)).count();
+        auto hours = std::chrono::duration_cast<std::chrono::hours>(secs) %
+                     std::chrono::duration_cast<std::chrono::hours>(std::chrono::days(1)).count();
+        return fmt::format("{}.{:02}.{:02}.{:05}",
+                           years.count(),
+                           months.count(),
+                           days.count(),
+                           secs.count() %
+                               std::chrono::duration_cast<std::chrono::seconds>(std::chrono::days(1)).count());
+    }
 };
 } // namespace pg
