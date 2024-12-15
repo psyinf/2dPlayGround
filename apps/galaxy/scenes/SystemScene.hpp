@@ -88,7 +88,7 @@ public:
 
         for (auto&& [orbit, type] : orbits)
         {
-            auto orbit_entity = createOrbit(orbit, system);
+            createOrbit(orbit, system);
             // create some object on the orbit
             createPlanet(orbit, type, system);
         }
@@ -112,7 +112,7 @@ public:
                                            pg::tags::SelectedItemTag>
             //
             (getSceneRegistry(),
-             {.pos{pg::swizzle(pos, pg::XY{})}, .scale{0.01, 0.01f}, .scaleSpace{pg::TransformScaleSpace::World}},
+             {.pos{pg::swizzle(pos, pg::XY{})}, .scale{0.01f, 0.01f}, .scaleSpace{pg::TransformScaleSpace::World}},
              pg::game::Drawable{dot_sprite},
              {0.0, 0.00025},
              pgOrbit::OrbitalParameters<double>{orbitalParams},

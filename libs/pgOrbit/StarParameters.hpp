@@ -30,7 +30,7 @@ inline auto spectralTypeToIndex(SpectralType type) -> std::size_t
     return magic_enum::enum_integer(type);
 }
 
-inline SpectralType indexToSpectralType(std::size_t index)
+inline SpectralType indexToSpectralType(int index)
 {
     return magic_enum::enum_cast<SpectralType>(index).value_or(SpectralType::Unknown);
 }
@@ -51,7 +51,8 @@ static constexpr auto StarUpperRelativeSizes = std::array<float, 7>{1.0f, 0.9f, 
 
 static constexpr auto StarLowerRelativeSunMasses = std::array<float, 7>{16.0f, 2.1f, 1.4f, 1.04f, 0.8f, 0.45f, 0.08f};
 static constexpr auto StarUpperRelativeSunMasses = std::array<float, 7>{150.0f, 16.0f, 2.1f, 1.4f, 1.04f, 0.8f, 0.45f};
-static constexpr auto star_class_probabilities = std::array<float, 7>{0.00003, 0.001, 0.007, 0.03, 0.08, 0.12, 0.75};
+static constexpr auto star_class_probabilities =
+    std::array<float, 7>{0.00003f, 0.001f, 0.007f, 0.03f, 0.08f, 0.12f, 0.75f};
 // Lower and upper bounds of relative sizes for each spectral type
 
 static constexpr auto perceivedBrightness = std::array<float, 7>{1.0f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f, 0.05f};

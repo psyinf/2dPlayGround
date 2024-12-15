@@ -41,7 +41,6 @@ public:
             //
             auto&& [transform, orbiter, orbitalParameters] =
                 view.get<pg::Transform2D, galaxy::Orbiter, pgOrbit::OrbitalParameters<double>>(entity);
-            const auto& test = registry.get<pg::Transform2D>(entity);
 
             // get passed time
             auto seconds = frameStamp.getRealTimePassed_sec();

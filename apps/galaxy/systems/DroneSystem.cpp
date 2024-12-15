@@ -24,7 +24,7 @@
 
 #include <behaviors/EntityQueueLoop.hpp>
 
-void galaxy::DroneSystem::setup(std::string_view scene_id)
+void galaxy::DroneSystem::setup(std::string_view /*scene_id*/)
 {
     ctx = std::make_shared<behavior::Context>(&_game, std::make_unique<BT::BehaviorTreeFactory>());
     _game.getDispatcher().sink<galaxy::events::DroneFailedEvent>().connect<&galaxy::DroneSystem::handleDroneFailed>(

@@ -46,7 +46,7 @@ static void setRendererDrawColor(sdl::Renderer& renderer, SDL_Color color)
 class DropAnimation : public pg::Sprite
 {
 public:
-    DropAnimation(std::shared_ptr<sdl::Texture> tex, float scale = 1.0f, float duration = 60)
+    DropAnimation(std::shared_ptr<sdl::Texture> tex, float scale = 1.0f, size_t duration = 60)
       : Sprite(tex)
       , _maxFrame(duration)
       , _scale(scale)

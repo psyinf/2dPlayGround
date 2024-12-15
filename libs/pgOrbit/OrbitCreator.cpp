@@ -7,16 +7,6 @@ pgOrbit::OrbitCreator::OrbitCreator(OrbitCreatorConfig&& config)
     calculateBasicParameters();
 }
 
-float pgOrbit::OrbitCreator::randomBetween(float min, float max)
-{
-    if (min > max) { std::swap(min, max); }
-    // generator
-    std::random_device                    rd;
-    std::mt19937                          gen(rd());
-    std::uniform_real_distribution<float> dis(min, max);
-    return dis(gen);
-}
-
 void pgOrbit::OrbitCreator::estimateRelLuminosity()
 {
     if (_mass < 0.43f) { _luminosity = 0.23f * std::pow(_mass, 2.3f); }

@@ -41,12 +41,12 @@ public:
         else if (semiMajorAxis < 4.0)
         {
             // Between frost line and snow line - likely ice giants or super-Earths
-            return randomBetween(0, 1) < 0.5 ? PlanetType::IceGiant : PlanetType::SuperEarth;
+            return randomBetween(0.0f, 1.0f) < 0.5f ? PlanetType::IceGiant : PlanetType::SuperEarth;
         }
         else
         {
             // Beyond snow line - gas giants or ice giants
-            return randomBetween(0, 1) < 0.5 ? PlanetType::GasGiant : PlanetType::IceGiant;
+            return randomBetween(0.0f, 1.0f) < 0.5f ? PlanetType::GasGiant : PlanetType::IceGiant;
         }
     }
 
@@ -75,9 +75,26 @@ public:
 private:
     pgOrbit::SpectralType getSpectralClass() const { return _config.spectralClass; }
 
-    float randomBetween(float min, float max);
+    template <typename T>
+    inline static T randomBetween(T min, T max)
+    {
+        if (min > max) { std::swap(min, max); }
+        // generator
+        std::random_device rd;
+        std::mt19937       gen(rd());
+        if constexpr (std::is_integral_v<T>)
+        {
+            std::uniform_int_distribution<T> dis(min, max);
+            return dis(gen);
+        }
+        else
+        {
+            std::uniform_real_distribution<T> dis(min, max);
+            return dis(gen);
+        }
+    }
 
-    double generateSemiMajorAxis_AU(double luminosity)
+    double generateSemiMajorAxis_AU(double /*luminosity*/)
     {
         // TODO: configuration
         double innerLimit = 0.1;
@@ -122,7 +139,7 @@ private:
         return std::min(x / (x + y), 0.15); // Cap eccentricity at 0.3
     }
 
-    std::vector<OrbitalParams> generateOrbits(double luminosity, int numPlanets, double frostLine)
+    std::vector<OrbitalParams> generateOrbits(double /*luminosity*/, int numPlanets, double frostLine)
     {
         std::vector<OrbitalParams> orbits;
 
