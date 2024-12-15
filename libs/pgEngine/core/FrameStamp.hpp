@@ -14,7 +14,7 @@ struct Time
 
     void add(std::chrono::milliseconds ms, float time_scale)
     {
-        milliseconds_accumulator += ms.count() * time_scale;
+        milliseconds_accumulator += static_cast<uint64_t>(ms.count() * time_scale);
         seconds += milliseconds_accumulator / 1000;
         milliseconds_accumulator %= 1000;
     }

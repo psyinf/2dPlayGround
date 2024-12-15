@@ -274,6 +274,8 @@ private:
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::StarSystemWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
+                                                    {std::make_unique<galaxy::gui::MainBarWidget>(getGame())});
     }
 
 private:
