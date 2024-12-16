@@ -30,6 +30,8 @@
 #include <pgGame/core/RegistryHelper.hpp>
 #include <components/Tags.hpp>
 #include <entt/entt.hpp>
+#include <components/singletons/RegisteredPreloaders.hpp>
+#include <pgEngine/resources/SpriteResource.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -44,6 +46,61 @@ public:
         pg::save("../data/galaxy_default_config.json", galaxy_config);
 
         galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
+        // add preloaders
+        auto&                    preLoaders = game.getSingleton<singleton::RegisteredLoaders>();
+        std::vector<std::string> files = {
+            "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
+
+        for (auto& file : files)
+        {
+            if (preLoaders.loaders.contains(file)) { continue; }
+            auto& game = getGame();
+            auto  loader = [&game, file](PercentCompleted& percentLoaded) {
+                percentLoaded[file] = 0.0f;
+                game.getResourceManager().get().load<pg::Sprite, sdl::Renderer&>(file, game.getApp().getRenderer());
+                percentLoaded[file] = 1.0f;
+            };
+            preLoaders.loaders.emplace(file, loader);
+        }
+
+        /// add markov chain for names
+        auto loader = [this](PercentCompleted& completion) {
+            std::ifstream fileStreamIn("../data/text/corpi/stars.txt", std::ios_base::binary);
+            std::ifstream fileStreamIn2("../data/text/corpi/boys.txt", std::ios_base::binary);
+            auto          file1_size = std::filesystem::file_size("../data/text/corpi/stars.txt");
+            auto          file2_size = std::filesystem::file_size("../data/text/corpi/boys.txt");
+            auto          total_size = file1_size + file2_size;
+            auto          resource = "markov";
+            pg::generators::MarkovFrequencyMap<4> fmg;
+
+            while (!fileStreamIn.eof() && fileStreamIn)
+            {
+                std::string word;
+                fileStreamIn >> word;
+                // current file position
+                auto pos = fileStreamIn.tellg();
+                completion[resource] = static_cast<float>(pos) / total_size;
+                fmg.add(word);
+            }
+
+            while (!fileStreamIn2.eof() && fileStreamIn2)
+            {
+                std::string word;
+                fileStreamIn2 >> word;
+                auto pos = fileStreamIn2.tellg();
+                completion[resource] = static_cast<float>(pos) / total_size;
+                fmg.add(word);
+            }
+            if (fmg.size() == 0)
+            {
+                fmg.add("empty");
+                // log
+                spdlog::error("No words loaded from file");
+            }
+            getGame().addSingleton_as<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap", fmg);
+        };
+
+        preLoaders.loaders.emplace("markov", std::move(loader));
     }
 
     virtual ~GalaxyScene() = default;

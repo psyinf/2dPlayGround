@@ -10,6 +10,8 @@
 #include <scenes/SystemScene.hpp>
 #include <components/GameState.hpp>
 
+#include <components/singletons/RegisteredPreloaders.hpp>
+
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
 {
@@ -28,6 +30,8 @@ void galaxy::GalacticCore::setup()
     static const auto event_sound_cfg = std::unordered_map<std::string, EventSound>{
         {"PickEvent", {"../data/sound/asteroids/laser_short.wav"}},
         {"MenuButtonPressed", {"../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}}};
+    game->addSingleton<galaxy::singleton::RegisteredLoaders>(singleton::RegisteredLoaders{});
+
     // TODO: structure of files/resources to be loaded
     //  the structure must be annotated to allow for dispatching to specific loader
     //   e.g. sounds, markov-chains, etc
@@ -83,7 +87,6 @@ void galaxy::GalacticCore::setup()
                                                              pg::game::SystemInterface::Config{{"standalone", "true"}});
     game->addSingleton_as<pg::game::SystemInterface::Config>(
         "guiSystem.system.config", pg::game::SystemInterface::Config{{"standalone", "false"}});
-
 
     auto& scene = game->switchScene("splashScreen");
     scene.start();

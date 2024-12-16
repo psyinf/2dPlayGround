@@ -12,11 +12,9 @@
 #include <resources/SoundResource.hpp>
 #include <pgEngine/generators/MarkovNameGen.hpp>
 
+#include <components/singletons/RegisteredPreloaders.hpp>
+
 namespace galaxy {
-
-using Loader = std::function<void()>;
-
-using Loaders = std::map<std::string, Loader>;
 
 class PreLoadResources : public pg::game::Scene
 {
@@ -43,63 +41,11 @@ public:
         // add percentage of resources loaded as singleton
         addSingleton_as<float&>("resourceLoader.totalProgress", _percentTotalResourcesLoaded);
         addSingleton_as<std::map<std::string, float>&>("resourceLoader.resourcesProgress", _percentResourcesLoaded);
-        // TODO: from configuration
-
-        // use resource cache to load resources
-        // TODO: collect from config
-        std::vector<std::string> sound_files = {
-            "../data/music/a-meditation-through-time-amp-space-11947.mp3",
-            "../data/music/dead-space-style-ambient-music-184793.mp3",
-            "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
-
-        // start loading thread
-
-        for (auto& file : sound_files)
-        {
-            auto loader = [this, file]() {
-                getGame().getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&>(
-                    file, _percentResourcesLoaded[file]);
-            };
-            _loaders[file] = std::move(loader);
-        }
-        auto loader = [this]() {
-            std::ifstream fileStreamIn("../data/text/corpi/stars.txt", std::ios_base::binary);
-            std::ifstream fileStreamIn2("../data/text/corpi/boys.txt", std::ios_base::binary);
-            auto          file1_size = std::filesystem::file_size("../data/text/corpi/stars.txt");
-            auto          file2_size = std::filesystem::file_size("../data/text/corpi/boys.txt");
-            auto          total_size = file1_size + file2_size;
-            auto          resource = "markov";
-            pg::generators::MarkovFrequencyMap<4> fmg;
-
-            while (!fileStreamIn.eof() && fileStreamIn)
-            {
-                std::string word;
-                fileStreamIn >> word;
-                // current file position
-                auto pos = fileStreamIn.tellg();
-                _percentResourcesLoaded[resource] = static_cast<float>(pos) / total_size;
-                fmg.add(word);
-            }
-
-            while (!fileStreamIn2.eof() && fileStreamIn2)
-            {
-                std::string word;
-                fileStreamIn2 >> word;
-                auto pos = fileStreamIn2.tellg();
-                _percentResourcesLoaded[resource] = static_cast<float>(pos) / total_size;
-                fmg.add(word);
-            }
-            if (fmg.size() == 0)
-            {
-                fmg.add("empty");
-                // log
-                spdlog::error("No words loaded from file");
-            }
-            getGame().addSingleton_as<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap", fmg);
-        };
-
-        _loaders["markov"] = std::move(loader);
-
+        // get all registered loaders
+        // TODO: this might be per scene
+        auto& loaders = getGame().getSingleton<galaxy::singleton::RegisteredLoaders>();
+        _loaders = loaders.loaders;
+        // build thread threads and barrier
         _threads_running = std::make_unique<std::barrier<>>(_loaders.size() + 2);
         for (auto& [file, load_function] : _loaders)
         {
@@ -109,7 +55,6 @@ public:
         createWatchProgressThread(_loaders.size());
         setupOverlay();
         // load resources for coming scene(s)
-
         Scene::start();
     };
 
@@ -127,8 +72,10 @@ public:
         std::jthread([this, loader = std::move(loader), resource] {
             try
             {
-                loader();
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                spdlog::info("Pre-Loading resource: {}", resource);
+                loader(_percentResourcesLoaded);
+                // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                spdlog::info("Pre-Loaded resource: {}", resource);
             }
             catch (const std::exception&)
             {

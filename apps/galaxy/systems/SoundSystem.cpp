@@ -9,8 +9,9 @@
 #include <events/PickEvent.hpp>
 #include <events/UIEvents.hpp>
 #include <components/SoundScape.hpp>
-
+#include <resources/SoundResource.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
+#include <components/singletons/RegisteredPreloaders.hpp>
 
 class Dispatcher
 {
@@ -72,6 +73,22 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
   , _dispatcher(std::make_unique<Dispatcher>(*_bgPlayer))
 
 {
+    // register all resources here
+    auto&                    preLoaders = game.getSingleton<singleton::RegisteredLoaders>();
+    std::vector<std::string> sound_files = {
+        "../data/music/a-meditation-through-time-amp-space-11947.mp3",
+        "../data/music/dead-space-style-ambient-music-184793.mp3",
+        "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
+
+    for (auto& file : sound_files)
+    {
+        if (preLoaders.loaders.contains(file)) { continue; }
+        auto loader = [&game, file](PercentCompleted& percentLoaded) {
+            game.getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&>(file,
+                                                                                                percentLoaded[file]);
+        };
+        preLoaders.loaders.emplace(file, loader);
+    }
 }
 
 void galaxy::SoundSystem::setup(std::string_view scene_id)
