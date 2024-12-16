@@ -5,16 +5,32 @@
 #include <pgf/caching/ResourceLocator.hpp>
 #include "SDL_ttf.h"
 
+#include <spdlog/spdlog.h>
+
 sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, std::string_view resource_name)
 {
+    auto img = IMG_Load(resource_name.data());
+    if (!img)
+    {
+        spdlog::error("Failed to load image: {} {}", resource_name, IMG_GetError());
+        sdl::Surface default_surface(SDL_CreateRGBSurface(0, 1, 1, 8, 0, 0, 0, 0));
+        return sdl::Texture(renderer.get(), default_surface.get());
+    }
     sdl::Surface surface(IMG_Load(resource_name.data()));
     return sdl::Texture(renderer.get(), surface.get());
 }
 
 pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, std::string_view resource_name)
 {
-    const auto   path = _resourceLocator.locate(std::string{resource_name});
-    sdl::Surface spriteSurface(IMG_Load(path.string().c_str()));
+    const auto path = _resourceLocator.locate(std::string{resource_name});
+    auto       img = IMG_Load(path.string().c_str());
+    if (!img)
+    {
+        spdlog::error("Failed to load image: {} {}", resource_name, IMG_GetError());
+        sdl::Surface default_surface(SDL_CreateRGBSurface(0, 1, 1, 8, 0, 0, 0, 0));
+        return Sprite(std::make_shared<sdl::Texture>(renderer.get(), default_surface.get()));
+    }
+    sdl::Surface spriteSurface(img);
     return Sprite(std::make_shared<sdl::Texture>(renderer.get(), spriteSurface.get()));
 }
 

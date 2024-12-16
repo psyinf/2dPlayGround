@@ -5,6 +5,7 @@
 #include <behaviors/utils/BehaviorActionNode.hpp>
 #include <helpers/GalaxyHelpers.hpp>
 #include <fmt/core.h>
+#include <components/Tags.hpp>
 
 namespace behavior {
 
@@ -42,7 +43,8 @@ public:
                                  galaxy::Dynamic,
                                  galaxy::Faction,
                                  galaxy::Lifetime,
-                                 pg::game::RenderState>(
+                                 pg::game::RenderState,
+                                 pg::tags::GalaxyRenderTag>(
                 game.getGlobalRegistry(),
                 {.pos{transform.pos}, .scale{0.00125f, 0.00125f}},
                 pg::game::Drawable{dot_sprite},
@@ -51,7 +53,8 @@ public:
                 std::move(f),
                 galaxy::Lifetime{.expected_lifetime{drone_params.expected_lifetime},
                                  .reliability_factor{drone_params.reliability_factor}},
-                {std::move(renderState)});
+                {std::move(renderState)},
+                {});
 
         // add behavior"
 

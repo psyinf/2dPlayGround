@@ -20,6 +20,7 @@
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgGame/config/GenericConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
+#include <pgGame/components/GameState.hpp>
 
 namespace pg::game {
 
@@ -33,17 +34,20 @@ class GamePimpl
 public:
     virtual ~GamePimpl() = default;
 
-    GamePimpl(Game& game)
-      : game(game)
+    GamePimpl(Game& game, GameState& gameState)
+      : _game(game)
+      , _gameState(gameState)
     {
     }
 
-    Game& game;
+    GameState& _gameState;
+    Game&      _game;
 };
 
 class Game : public SingletonInterface<Game>
 {
     friend class SingletonInterface<Game>;
+    friend class GamePimpl;
     Game(Game&&) = delete;
     Game(const Game&) = delete;
     Game& operator=(Game&&) = delete;
@@ -73,6 +77,8 @@ private:
     GenericConfig _config;
 
     pgf::NamedTypeRegistry _eventNameRegistry;
+    GameState              _gameState;
+    FrameStamp             _currentFrameStamp;
 
 public:
     Game();
@@ -130,6 +136,10 @@ public:
         createScene<Type>(id, std::move(cfg));
         return switchScene(id);
     }
+
+    const auto& getCurrentTimeStamp() const { return _currentFrameStamp; }
+
+    const auto& getCurrentGameState() const { return _gameState; }
 
     void loop();
 

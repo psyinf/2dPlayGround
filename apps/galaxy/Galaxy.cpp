@@ -6,7 +6,11 @@
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
 #include <systems/GuiRenderSystem.hpp>
+#include <systems/UpdateCurrentSystem.hpp>
 #include <scenes/SystemScene.hpp>
+#include <components/GameState.hpp>
+
+#include <components/singletons/RegisteredPreloaders.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -26,6 +30,8 @@ void galaxy::GalacticCore::setup()
     static const auto event_sound_cfg = std::unordered_map<std::string, EventSound>{
         {"PickEvent", {"../data/sound/asteroids/laser_short.wav"}},
         {"MenuButtonPressed", {"../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}}};
+    game->addSingleton<galaxy::singleton::RegisteredLoaders>(singleton::RegisteredLoaders{});
+
     // TODO: structure of files/resources to be loaded
     //  the structure must be annotated to allow for dispatching to specific loader
     //   e.g. sounds, markov-chains, etc
@@ -49,10 +55,11 @@ void galaxy::GalacticCore::setup()
     pg::game::SystemsFactory::registerSystem<galaxy::GuiRenderSystem>("guiSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::GalaxyRenderTag>>(
         "galaxyRenderSystem", false);
-    pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag>>(
-        "systemRenderSystem", true);
+    pg::game::SystemsFactory::registerSystem<
+        galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag, pg::tags::SelectedItemTag>>("systemRenderSystem", true);
 
     pg::game::SystemsFactory::registerSystem<galaxy::UpdateStarsSystem>("updateStarsSystem");
+    pg::game::SystemsFactory::registerSystem<galaxy::UpdateCurrentSystem>("updateCurrentSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::PickingSystem>("pickingSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::DroneSystem>("droneSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::LifetimeSystem>("lifeTimeSystem");
@@ -73,7 +80,8 @@ void galaxy::GalacticCore::setup()
                                                         "behaviorSystem",
                                                         "statsSystem"}});
 
-    game->createScene<galaxy::SystemScene>("system", {.systems = {"soundSystem", "systemRenderSystem", "guiSystem"}});
+    game->createScene<galaxy::SystemScene>(
+        "system", {.systems = {"soundSystem", "systemRenderSystem", "guiSystem", "updateCurrentSystem"}});
 
     game->addSingleton_as<pg::game::SystemInterface::Config>("guiSystem.loadGalaxy.config",
                                                              pg::game::SystemInterface::Config{{"standalone", "true"}});

@@ -36,9 +36,9 @@ public:
         try
         {
             // TODO: support for {next} etc.
-            game.switchScene(sse.new_scene);
-            auto& scene = game.getCurrentScene();
-            if (!scene.started()) { scene.start(); }
+            _game.switchScene(sse.new_scene);
+            auto& scene = _game.getCurrentScene();
+            scene.start();
         }
         catch (pg::game::ResourceNotFoundException&)
         {
@@ -47,16 +47,27 @@ public:
         }
     }
 
-    void handleQuitEvent(const pg::game::events::QuitEvent&) { game.quit(); }
+    void handleQuitEvent(const pg::game::events::QuitEvent&) { _game.quit(); }
 
     void handleDestroyEntityEvent(const pg::game::events::DestroyEntityEvent& dee)
     {
-        game.getGlobalRegistry().destroy(dee.entity);
+        _game.getGlobalRegistry().destroy(dee.entity);
     }
+
+    void handlePlayPauseEvent(const pg::game::events::PlayPauseEvent& ppe)
+    {
+        if (ppe.state == pg::game::events::PlayPauseEvent::State::Pause)
+        {
+            _gameState.pauseState = pg::game::PauseState::Paused;
+        }
+        else { _gameState.pauseState = pg::game::PauseState::Running; }
+    }
+
+    void handleTimeScaleEvent(const pg::game::events::TimeScaleEvent& tse) { _gameState.timeScale = tse.time_scale; }
 };
 
 game::Game::Game()
-  : pimpl(std::make_unique<Pimpl>(*this))
+  : pimpl(std::make_unique<Pimpl>(*this, _gameState))
   , _inputEventDispatcher(sdlApp.getEventHandler(), {})
 {
     gui = std::make_unique<pg::Gui>(getApp());
@@ -65,6 +76,10 @@ game::Game::Game()
         dynamic_cast<Pimpl&>(*pimpl));
     dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*pimpl));
     dispatcher.sink<pg::game::events::DestroyEntityEvent>().connect<&Pimpl::handleDestroyEntityEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
+    dispatcher.sink<pg::game::events::PlayPauseEvent>().connect<&Pimpl::handlePlayPauseEvent>(
+        dynamic_cast<Pimpl&>(*pimpl));
+    dispatcher.sink<pg::game::events::TimeScaleEvent>().connect<&Pimpl::handleTimeScaleEvent>(
         dynamic_cast<Pimpl&>(*pimpl));
     createAndSwitchScene("__default__");
 }
@@ -104,13 +119,14 @@ void game::Game::loop()
 {
     sdlApp.getEventHandler().quit = [this](auto) { running = false; };
 
-    FrameStamp frameStamp{0, 0, sdlApp.getFPSCounter().getLastFrameDuration()};
+    _currentFrameStamp = {0, 0, sdlApp.getFPSCounter().getLastFrameDuration()};
     while (running)
     {
-        frameStamp.frameNumber++;
-        frameStamp.lastFrameDuration = sdlApp.getFPSCounter().getLastFrameDuration();
+        float effectiveTimeScale = _gameState.timeScale;
+        if (_gameState.pauseState == pg::game::PauseState::Paused) { effectiveTimeScale = 0.0f; }
+        _currentFrameStamp.update(sdlApp.getFPSCounter().getLastFrameDuration(), effectiveTimeScale);
 
-        frame(frameStamp);
+        frame(_currentFrameStamp);
         sdlApp.getFPSCounter().frame();
     }
 }

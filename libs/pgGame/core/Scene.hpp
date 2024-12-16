@@ -35,7 +35,7 @@ public:
 
     virtual ~Scene() { stop(); }
 
-    virtual void postFrame(FrameStamp&){};
+    virtual void postFrame(FrameStamp&) {};
 
     const Systems& getSystems() const;
 

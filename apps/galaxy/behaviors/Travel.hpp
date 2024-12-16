@@ -23,12 +23,11 @@ public:
         { //
             return BT::NodeStatus::FAILURE;
         }
-        // travel to target
-        // transform.pos += (drone.targetPos - transform.pos) * 0.01f;
+        auto dt = 0.02 * game().getCurrentTimeStamp().getRealTimePassed_sec();
         transform.pos = dynamic.calculateDynamics(
-            pg::vec_cast<float>(transform.pos), drone.targetPos, drone.maxAcceleration, drone.maxVelocity, 0.02f);
+            pg::vec_cast<float>(transform.pos), drone.targetPos, drone.maxAcceleration, drone.maxVelocity, dt);
         // check if we are at the target
-        if (pg::lengthSquared(transform.pos - drone.targetPos) < 0.001f)
+        if (pg::lengthSquared(transform.pos - drone.targetPos) < (0.001f * game().getCurrentGameState().timeScale))
         {
             transform.pos = drone.targetPos;
             dynamic.reset();
