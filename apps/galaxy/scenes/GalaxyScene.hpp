@@ -30,7 +30,7 @@
 #include <pgGame/core/RegistryHelper.hpp>
 #include <components/Tags.hpp>
 #include <entt/entt.hpp>
-#include <components/singletons/RegisteredPreloaders.hpp>
+#include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
 
 namespace galaxy {
@@ -47,15 +47,15 @@ public:
 
         galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
         // add preloaders
-        auto&                    preLoaders = game.getSingleton<singleton::RegisteredLoaders>();
+
+        auto& preLoaders = game.getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
         std::vector<std::string> files = {
             "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
 
         for (auto& file : files)
         {
             if (preLoaders.loaders.contains(file)) { continue; }
-            auto& game = getGame();
-            auto  loader = [&game, file](PercentCompleted& percentLoaded) {
+            auto loader = [&game, file](PercentCompleted& percentLoaded) {
                 percentLoaded[file] = 0.0f;
                 game.getResourceManager().get().load<pg::Sprite, sdl::Renderer&>(file, game.getApp().getRenderer());
                 percentLoaded[file] = 1.0f;

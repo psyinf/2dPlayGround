@@ -6,9 +6,10 @@ using Loader = std::function<void(PercentCompleted&)>;
 
 using Loaders = std::map<std::string, Loader>;
 
-namespace galaxy::singleton {
+namespace pg::singleton {
 struct RegisteredLoaders
 {
+    Loaders sync_loaders;
     Loaders loaders;
 };
-} // namespace galaxy::singleton
+} // namespace pg::singleton

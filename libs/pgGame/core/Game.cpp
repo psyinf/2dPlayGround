@@ -6,6 +6,7 @@
 #include <events/SceneManagementEvents.hpp>
 #include <events/GameEvents.hpp>
 #include <ranges>
+#include <components/singletons/RegisteredPreloaders.hpp>
 
 using namespace pg;
 
@@ -81,7 +82,7 @@ game::Game::Game()
         dynamic_cast<Pimpl&>(*pimpl));
     dispatcher.sink<pg::game::events::TimeScaleEvent>().connect<&Pimpl::handleTimeScaleEvent>(
         dynamic_cast<Pimpl&>(*pimpl));
-    createAndSwitchScene("__default__");
+    createAndSwitchScene({"__default__"});
 }
 
 void game::Game::frame(FrameStamp& frameStamp)
@@ -138,6 +139,7 @@ pg::game::Scene& game::Game::getScene(std::string_view id)
 
 void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
 {
+    if (id.empty()) { throw std::invalid_argument("Scene id cannot be empty"); }
     // internal switch of scene for setup
     {
         ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
@@ -204,4 +206,11 @@ void game::Game::quit()
 entt::registry& game::Game::getSceneRegistry(std::string_view id)
 {
     return getScene(id).getSceneRegistry();
+}
+
+void game::Game::registerGlobalSingletons(std::string_view scene_id, const SceneConfig& cfg)
+{
+    addSingleton_as<SceneConfig>(scene_id, cfg);
+    addSingleton_as<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders",
+                                                      pg::singleton::RegisteredLoaders{});
 }

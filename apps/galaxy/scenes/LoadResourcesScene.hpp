@@ -12,25 +12,31 @@
 #include <resources/SoundResource.hpp>
 #include <pgEngine/generators/MarkovNameGen.hpp>
 
-#include <components/singletons/RegisteredPreloaders.hpp>
+#include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 
 namespace galaxy {
-
-class PreLoadResources : public pg::game::Scene
+// TODO: pre loader per scene-transition
+class LoadResourcesScene : public pg::game::Scene
 {
     static constexpr bool coarse = false;
 
 public:
-    using pg::game::Scene::Scene;
+    LoadResourcesScene(pg::game::Game& game, pg::game::SceneConfig&& scene_cfg, std::string sceneIdToPrepareFor)
+      : pg::game::Scene(game, std::move(scene_cfg))
+      , _sceneIdToPrepareFor(sceneIdToPrepareFor)
+    {
+    }
 
-    virtual ~PreLoadResources()
+    // using pg::game::Scene::Scene;
+
+    virtual ~LoadResourcesScene()
     {
         // wait for threads to finish
 
-        if (_threads_running)
+        if (_threads_running_barrier)
         {
             spdlog::info("Waiting for loading threads to finish");
-            _threads_running->arrive_and_wait();
+            _threads_running_barrier->arrive_and_wait();
             spdlog::info("Loading threads finished");
         }
     }
@@ -43,10 +49,10 @@ public:
         addSingleton_as<std::map<std::string, float>&>("resourceLoader.resourcesProgress", _percentResourcesLoaded);
         // get all registered loaders
         // TODO: this might be per scene
-        auto& loaders = getGame().getSingleton<galaxy::singleton::RegisteredLoaders>();
+        auto& loaders = getGame().getSingleton<pg::singleton::RegisteredLoaders>(_sceneIdToPrepareFor + ".loaders");
         _loaders = loaders.loaders;
         // build thread threads and barrier
-        _threads_running = std::make_unique<std::barrier<>>(_loaders.size() + 2);
+        _threads_running_barrier = std::make_unique<std::barrier<>>(_loaders.size() + 2);
         for (auto& [file, load_function] : _loaders)
         {
             createLoaderThread(std::move(load_function), file);
@@ -63,7 +69,7 @@ public:
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
         if (totalProgress >= 1.0f)
         {
-            getGame().getGlobalDispatcher().trigger<pg::game::events::SwitchSceneEvent>({"galaxy"});
+            getGame().getGlobalDispatcher().trigger<pg::game::events::SwitchSceneEvent>({_sceneIdToPrepareFor});
         }
     }
 
@@ -75,7 +81,7 @@ public:
                 spdlog::info("Pre-Loading resource: {}", resource);
                 loader(_percentResourcesLoaded);
                 // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-                spdlog::info("Pre-Loaded resource: {}", resource);
+                spdlog::info("Pre-Loaded resource: {}. {} remaining", resource, _loaders.size() - _numThreadsFinished);
             }
             catch (const std::exception&)
             {
@@ -86,7 +92,8 @@ public:
             _numRead++;
             std::unique_lock<std::mutex> lk(_mutex);
             _cv.notify_one();
-            std::ignore = _threads_running->arrive();
+            std::ignore = _threads_running_barrier->arrive();
+            _numThreadsFinished++;
         }).detach();
     }
 
@@ -103,7 +110,8 @@ public:
                     _percentTotalResourcesLoaded = static_cast<float>(_numRead) / size;
                     std::this_thread::sleep_for(std::chrono::milliseconds(10));
                 }
-                std::ignore = _threads_running->arrive();
+                std::ignore = _threads_running_barrier->arrive();
+                _numThreadsFinished++;
             }).detach();
         }
         else
@@ -123,7 +131,8 @@ public:
                     _percentTotalResourcesLoaded = percentTotalResourcesLoaded / _percentResourcesLoaded.size();
                 }
                 _percentTotalResourcesLoaded = 1.0f;
-                std::ignore = _threads_running->arrive();
+                std::ignore = _threads_running_barrier->arrive();
+                _numThreadsFinished++;
             }).detach();
         }
     }
@@ -152,7 +161,8 @@ private:
 
     std::mutex                      _mutex;
     std::condition_variable         _cv;
-    std::unique_ptr<std::barrier<>> _threads_running;
-    std::atomic_uint32_t            _numThreads{};
+    std::unique_ptr<std::barrier<>> _threads_running_barrier;
+    std::atomic_uint32_t            _numThreadsFinished{};
+    std::string                     _sceneIdToPrepareFor;
 };
 } // namespace galaxy

@@ -14,7 +14,9 @@ namespace pg::game {
 
 struct SceneConfig
 {
-    std::vector<std::string> systems; //< systems associated with this scene
+    std::string              scene_id;      //< name of the scene
+    std::vector<std::string> systems;       //< systems associated with this scene
+    std::string              followUpScene; //< scene to switch to after this scene
 };
 
 /**
@@ -63,6 +65,8 @@ public:
     bool started() const { return started_; }
 
     void frame(FrameStamp& frameStamp);
+
+    const SceneConfig& getSceneConfig() const { return _config; }
 
 protected:
     entt::registry& getRegistry() { return registry; }

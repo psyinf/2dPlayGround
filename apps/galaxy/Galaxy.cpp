@@ -2,7 +2,7 @@
 #include <scenes/GalaxyScene.hpp>
 #include <scenes/SplashScreen.hpp>
 
-#include <scenes/PreLoadResources.hpp>
+#include <scenes/LoadResourcesScene.hpp>
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
 #include <systems/GuiRenderSystem.hpp>
@@ -10,7 +10,7 @@
 #include <scenes/SystemScene.hpp>
 #include <components/GameState.hpp>
 
-#include <components/singletons/RegisteredPreloaders.hpp>
+#include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -30,7 +30,6 @@ void galaxy::GalacticCore::setup()
     static const auto event_sound_cfg = std::unordered_map<std::string, EventSound>{
         {"PickEvent", {"../data/sound/asteroids/laser_short.wav"}},
         {"MenuButtonPressed", {"../data/sounds/ui/spacebar-click-keyboard-199448.mp3"}}};
-    game->addSingleton<galaxy::singleton::RegisteredLoaders>(singleton::RegisteredLoaders{});
 
     // TODO: structure of files/resources to be loaded
     //  the structure must be annotated to allow for dispatching to specific loader
@@ -45,6 +44,13 @@ void galaxy::GalacticCore::setup()
 
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
         "galaxy",
+        "soundScape",
+        {.background_music{"../data/music/a-meditation-through-time-amp-space-11947.mp3"},
+         .event_sounds = {event_sound_cfg}
+
+        });
+    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
+        "loadGalaxy",
         "soundScape",
         {.background_music{"../data/music/a-meditation-through-time-amp-space-11947.mp3"},
          .event_sounds = {event_sound_cfg}
@@ -67,10 +73,12 @@ void galaxy::GalacticCore::setup()
     pg::game::SystemsFactory::registerSystem<galaxy::StatsSystem>("statsSystem");
 
     // scenes
-    game->createScene<galaxy::SplashScreen>("splashScreen", {.systems = {"soundSystem", "guiSystem"}});
-    game->createScene<galaxy::PreLoadResources>("loadGalaxy", {.systems = {"soundSystem", "guiSystem"}});
-    game->createScene<galaxy::GalaxyScene>("galaxy",
-                                           {.systems = {"soundSystem",
+    game->createScene<galaxy::SplashScreen>(
+        {.scene_id = "splashScreen", .systems = {"soundSystem", "guiSystem"}, .followUpScene = "galaxy"});
+    game->createScene<galaxy::LoadResourcesScene>({.scene_id = "loadGalaxy", .systems = {"soundSystem", "guiSystem"}},
+                                                  "galaxy");
+    game->createScene<galaxy::GalaxyScene>({.scene_id = "galaxy",
+                                            .systems = {"soundSystem",
                                                         "galaxyRenderSystem",
                                                         "guiSystem",
                                                         "updateStarsSystem",
@@ -81,7 +89,7 @@ void galaxy::GalacticCore::setup()
                                                         "statsSystem"}});
 
     game->createScene<galaxy::SystemScene>(
-        "system", {.systems = {"soundSystem", "systemRenderSystem", "guiSystem", "updateCurrentSystem"}});
+        {.scene_id = "system", .systems = {"soundSystem", "systemRenderSystem", "guiSystem", "updateCurrentSystem"}});
 
     game->addSingleton_as<pg::game::SystemInterface::Config>("guiSystem.loadGalaxy.config",
                                                              pg::game::SystemInterface::Config{{"standalone", "true"}});
