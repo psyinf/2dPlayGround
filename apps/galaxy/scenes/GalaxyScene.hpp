@@ -49,6 +49,8 @@ public:
         // add preloaders
 
         auto& preLoaders = game.getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
+// for now, no images
+#if 0
         std::vector<std::string> files = {
             "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
 
@@ -62,7 +64,7 @@ public:
             };
             preLoaders.loaders.emplace(file, loader);
         }
-
+#endif
         /// add markov chain for names
         auto loader = [this](PercentCompleted& completion) {
             std::ifstream fileStreamIn("../data/text/corpi/stars.txt", std::ios_base::binary);

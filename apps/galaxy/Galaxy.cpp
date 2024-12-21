@@ -49,13 +49,13 @@ void galaxy::GalacticCore::setup()
          .event_sounds = {event_sound_cfg}
 
         });
-    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
-        "loadGalaxy",
-        "soundScape",
-        {.background_music{"../data/music/a-meditation-through-time-amp-space-11947.mp3"},
-         .event_sounds = {event_sound_cfg}
-
-        });
+    //     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
+    //         "loadGalaxy",
+    //         "soundScape",
+    //         {.background_music{"../data/music/dead-space-style-ambient-music-184793.mp3"}, .event_sounds =
+    //         {event_sound_cfg}
+    //
+    //         });
     // systems
     pg::game::SystemsFactory::registerSystem<galaxy::SoundSystem>("soundSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::GuiRenderSystem>("guiSystem");
@@ -75,8 +75,7 @@ void galaxy::GalacticCore::setup()
     // scenes
     game->createScene<galaxy::SplashScreen>(
         {.scene_id = "splashScreen", .systems = {"soundSystem", "guiSystem"}, .followUpScene = "galaxy"});
-    game->createScene<galaxy::LoadResourcesScene>({.scene_id = "loadGalaxy", .systems = {"soundSystem", "guiSystem"}},
-                                                  "galaxy");
+    game->createScene<galaxy::LoadResourcesScene>({.scene_id = "loadGalaxy", .systems = {"guiSystem"}}, "galaxy");
     game->createScene<galaxy::GalaxyScene>({.scene_id = "galaxy",
                                             .systems = {"soundSystem",
                                                         "galaxyRenderSystem",
