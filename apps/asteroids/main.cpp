@@ -27,8 +27,8 @@ try
     pg::game::SystemsFactory::registerSystem<asteroids::RenderSystem>("renderSystem");
     pg::game::SystemsFactory::registerSystem<asteroids::DynamicsSystem>("dynamicsSystem");
     pg::game::SystemsFactory::registerSystem<asteroids::SoundSystem>("soundSystem");
-    game.createScene("start",
-                     {.systems{"lasers",
+    game.createScene({.scene_id = "start",
+                      .systems{"lasers",
                                "player",
                                "asteroids",
                                "background",
