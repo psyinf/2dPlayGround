@@ -39,7 +39,7 @@ public:
         return new_transform;
     }
 
-    void handle(const pg::FrameStamp& frameStamp)
+    void handle(const pg::FrameStamp& frameStamp) override
     {
         auto renderer = pg::Renderer{_game.getApp().getRenderer(), frameStamp};
         renderer.clear();

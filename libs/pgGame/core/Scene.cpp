@@ -34,7 +34,6 @@ void pg::game::Scene::start()
     }
     firstFrame_ = true;
     started_ = true;
-    // std::ranges::for_each(getSystems(), [](auto& system) { system->setup(); });
 }
 
 pg::game::Scene::Scene(Game& game, SceneConfig&& cfg)

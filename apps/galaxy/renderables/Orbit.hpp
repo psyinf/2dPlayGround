@@ -2,22 +2,27 @@
 #include <pgEngine/primitives/Renderable.hpp>
 #include <pgEngine/math/Transform.hpp>
 
+#include <pgOrbit/OrbitalMechanics.hpp>
+
 namespace galaxy {
 
 class OrbitRenderable : public pg::Renderable
 {
 public:
-    OrbitRenderable(float radius, int segments, pg::Color color)
+    OrbitRenderable(const pgOrbit::OrbitalParameters<double>& op, int segments, pg::Color color)
       : _color(color)
     {
         _points.reserve(segments + 1);
-        for (int i = 0; i < segments; ++i)
+
+        for (int i = 360; i-- > 0;)
         {
-            float angle = 2.0f * std::numbers::pi_v<float> * i / segments;
-            float x = radius * cos(angle);
-            float y = radius * sin(angle);
-            _points.push_back({x, y});
+            // std constant for pi
+            auto p = pgOrbit::OrbitalMechanics<double>::getEulerAnglesFromEccentricAnomaly(
+                         op, i / 360.0 * 2 * std::numbers::pi)
+                         .toCartesian();
+            _points.push_back({static_cast<float>(p[0]), static_cast<float>(p[1])});
         }
+
         _points.push_back(_points[0]);
     }
 

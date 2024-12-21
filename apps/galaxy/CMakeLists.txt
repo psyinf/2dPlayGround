@@ -13,6 +13,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
     pgGame::pgGame
+    pgOrbit::pgOrbit
     fmt::fmt
     spdlog::spdlog
     magic_enum::magic_enum
@@ -27,6 +28,8 @@ target_include_directories(${PROJECT_NAME}
 		$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 
-enable_coverage(${PROJECT_NAME})
+if (ENABLE_COVERAGE)
+    enable_coverage(${PROJECT_NAME})
+endif()
 
 install(TARGETS ${PROJECT_NAME})

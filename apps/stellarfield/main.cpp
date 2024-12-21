@@ -92,7 +92,7 @@ void textdemo_main()
 
         updateStars(particles, 1.0f / fpsCounter.getLastFrameFPS(), {0, 0, windowSize[0], windowSize[1]});
 
-        if (fpsCounter.getCurrentFrameCount() % 100 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
+        if (fpsCounter.getCurrentFrameCount() % 500 == 0) { std::cout << fpsCounter.getAverageFPSAndReset() << "\n"; }
     };
 
     auto done = false;

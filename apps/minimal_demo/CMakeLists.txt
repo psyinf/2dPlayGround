@@ -11,8 +11,9 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
 )
-
-enable_coverage(${PROJECT_NAME})
+if (ENABLE_COVERAGE)
+    enable_coverage(${PROJECT_NAME})
+endif()
 
 install(TARGETS ${PROJECT_NAME}
         #RUNTIME DESTINATION bin

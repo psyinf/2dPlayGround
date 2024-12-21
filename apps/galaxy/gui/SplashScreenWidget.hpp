@@ -112,6 +112,7 @@ public:
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
+        // TODO: save internally
         auto dot_texture = getGame().getResource<sdl::Texture>("../data/background/splash1.png");
         auto button_texture = getGame().getResource<sdl::Texture>("../data/UI/frame.png");
 

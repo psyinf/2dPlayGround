@@ -14,4 +14,20 @@ struct DestroyEntityEvent : pgf::TypeRegistrar<DestroyEntityEvent, "DestroyEntit
 {
     entt::entity entity;
 };
+
+struct PlayPauseEvent : pgf::TypeRegistrar<PlayPauseEvent, "PlayPauseEvent">
+{
+    enum class State
+    {
+        Play,
+        Pause,
+    };
+
+    State state;
+};
+
+struct TimeScaleEvent : pgf::TypeRegistrar<TimeScaleEvent, "TimeScaleEvent">
+{
+    float time_scale;
+};
 } // namespace pg::game::events

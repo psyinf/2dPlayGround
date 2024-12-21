@@ -10,12 +10,15 @@
 #include <gui/SystemInfo.hpp>
 #include <gui/DashBoardWidget.hpp>
 #include <gui/LoadResourcesWidget.hpp>
+#include <gui/MainBarWidget.hpp>
 
 #include <serializer/ConfigSerializer.hpp>
 
 #include <systems/GuiRenderSystem.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 #include <pgEngine/math/VecUtils.hpp>
+
+#include <pgOrbit/StarParameters.hpp>
 #include <systems/UpdateStarsSystem.hpp>
 #include <systems/PickingSystem.hpp>
 #include <systems/DroneSystem.hpp>
@@ -27,28 +30,11 @@
 #include <pgGame/core/RegistryHelper.hpp>
 #include <components/Tags.hpp>
 #include <entt/entt.hpp>
+#include <pgGame/components/singletons/RegisteredPreloaders.hpp>
+#include <pgEngine/resources/SpriteResource.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
-
-float applyGamma(float brightness, float gamma)
-{
-    return std::powf(brightness, 1.0f / gamma);
-}
-
-// Function to convert a vector of brightness values by a gamma correction value
-std::vector<float> convertBrightnessByGamma(const std::vector<float>& brightness, float gamma)
-{
-    std::vector<float> correctedBrightness;
-    correctedBrightness.reserve(brightness.size()); // To optimize memory allocation
-
-    for (float value : brightness)
-    {
-        correctedBrightness.push_back(applyGamma(value, gamma));
-    }
-
-    return correctedBrightness;
-}
 
 class GalaxyScene : public pg::game::Scene
 {
@@ -60,21 +46,81 @@ public:
         pg::save("../data/galaxy_default_config.json", galaxy_config);
 
         galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
+        // add preloaders
+
+        auto& preLoaders = game.getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
+// for now, no images
+#if 0
+        std::vector<std::string> files = {
+            "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
+
+        for (auto& file : files)
+        {
+            if (preLoaders.loaders.contains(file)) { continue; }
+            auto loader = [&game, file](PercentCompleted& percentLoaded) {
+                percentLoaded[file] = 0.0f;
+                game.getResourceManager().get().load<pg::Sprite, sdl::Renderer&>(file, game.getApp().getRenderer());
+                percentLoaded[file] = 1.0f;
+            };
+            preLoaders.loaders.emplace(file, loader);
+        }
+#endif
+        /// add markov chain for names
+        auto loader = [this](PercentCompleted& completion) {
+            std::ifstream fileStreamIn("../data/text/corpi/stars.txt", std::ios_base::binary);
+            std::ifstream fileStreamIn2("../data/text/corpi/boys.txt", std::ios_base::binary);
+            auto          file1_size = std::filesystem::file_size("../data/text/corpi/stars.txt");
+            auto          file2_size = std::filesystem::file_size("../data/text/corpi/boys.txt");
+            auto          total_size = file1_size + file2_size;
+            auto          resource = "markov";
+            pg::generators::MarkovFrequencyMap<4> fmg;
+
+            while (!fileStreamIn.eof() && fileStreamIn)
+            {
+                std::string word;
+                fileStreamIn >> word;
+                // current file position
+                auto pos = fileStreamIn.tellg();
+                completion[resource] = static_cast<float>(pos) / total_size;
+                fmg.add(word);
+            }
+
+            while (!fileStreamIn2.eof() && fileStreamIn2)
+            {
+                std::string word;
+                fileStreamIn2 >> word;
+                auto pos = fileStreamIn2.tellg();
+                completion[resource] = static_cast<float>(pos) / total_size;
+                fmg.add(word);
+            }
+            if (fmg.size() == 0)
+            {
+                fmg.add("empty");
+                // log
+                spdlog::error("No words loaded from file");
+            }
+            getGame().addSingleton_as<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap", fmg);
+        };
+
+        preLoaders.loaders.emplace("markov", std::move(loader));
     }
 
     virtual ~GalaxyScene() = default;
 
     void start() override
     {
-        setupKeyHandler();
-        setupOverlay();
-        setupSelectionMarker();
-        setupGalaxy();
+        if (!started())
+        {
+            setupKeyHandler();
+            setupOverlay();
+            setupSelectionMarker();
+            setupGalaxy();
 
-        addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
-        addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
+            addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
+            addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
 
-        Scene::start();
+            Scene::start();
+        }
     }
 
     void stop() override { Scene::stop(); }
@@ -172,6 +218,9 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::StatsWidget>(getGame())});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
+                                                    {std::make_unique<galaxy::gui::MainBarWidget>(getGame())});
     }
 
     void setupGalaxy()
@@ -182,24 +231,24 @@ private:
         std::normal_distribution<float> d(0.0f, 200.0f);
         std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
-        std::vector<double> star_class_probabilities = {0.00003, 0.001, 0.007, 0.03, 0.08, 0.12, 0.75};
-        // Lower and upper bounds of relative sizes for each spectral type
-        std::vector<double> lowerRelativeSizes = {1.0, 0.7, 0.5, 0.3, 0.1, 0.05, 0.02};
-        std::vector<double> upperRelativeSizes = {1.0, 0.9, 0.7, 0.5, 0.3, 0.1, 0.05};
-        std::vector<float>  perceivedBrightness = {1.0f, 0.8f, 0.6f, 0.4f, 0.2f, 0.1f, 0.05f};
-        std::vector<float>  gammaCorrectedBrightness = convertBrightnessByGamma(perceivedBrightness, 2.6f);
-
         // Random number generator setup
-        std::discrete_distribution<> star_class_dist(star_class_probabilities.begin(), star_class_probabilities.end());
+        std::discrete_distribution<> star_class_dist(pgOrbit::star_class_probabilities.cbegin(),
+                                                     pgOrbit::star_class_probabilities.cend());
 
         auto dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
 
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 15000})
         {
+            // color state
+            auto rendererStates = pg::States{};
+            auto color = pg::Color{255, 0, 0, 255};
+            rendererStates.push(pg::TextureColorState{color});
             auto new_pos = pg::fVec2{d(gen), d(gen)};
-            auto index = star_class_dist(gen);
-            auto spectral_type = magic_enum::enum_value<SpectralType>(index);
-            auto new_size = gammaCorrectedBrightness[index] * pg::fVec2{1.0f, 1.0f} * 0.025f;
+
+            auto spectral_type = pgOrbit::indexToSpectralType(star_class_dist(gen));
+            auto gammaCorrectedBrightness = pgOrbit::convertBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
+            auto new_size =
+                gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
             auto entity = pg::game::makeEntity<pg::Transform2D,
                                                pg::game::Drawable,
                                                galaxy::StarSystemState,
@@ -212,7 +261,7 @@ private:
                  pg::game::Drawable{dot_sprite},
                  galaxy::StarSystemState{.spectralType{spectral_type}},
                  galaxy::Faction{"None"},
-                 {},
+                 {std::move(rendererStates)},
                  {});
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);

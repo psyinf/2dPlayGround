@@ -1,4 +1,6 @@
 #pragma once
+
+#include <mutex>
 #include <pgEngine/font/Font.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgEngine/primitives/FramedSprite.hpp>
@@ -12,6 +14,9 @@ namespace pg {
 class SpriteFactory
 {
 public:
+    // TODO: progress callback
+    static auto loadFromFile(const std::string& path);
+
     static sdl::Texture makeTexture(sdl::Renderer& renderer, std::string_view resource_name);
 
     static Sprite makeSprite(sdl::Renderer& renderer, std::string_view resource_name);
@@ -34,6 +39,8 @@ public:
 
 private:
     static inline pg::foundation::PathResourceLocator _resourceLocator{"../data"};
+    static inline std::mutex                          _sdlMutex;
+    static inline std::mutex                          _loaderMutex;
 };
 
 } // namespace pg

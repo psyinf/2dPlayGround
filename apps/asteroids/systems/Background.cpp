@@ -10,7 +10,7 @@ void asteroids::Background::handle(const pg::FrameStamp&)
     auto view = _game.getGlobalRegistry().view<pg::Transform2D, asteroids::Dynamics, backgroundTag>();
 }
 
-void asteroids::Background::setup(std::string_view scene_id)
+void asteroids::Background::setup(std::string_view /*scene_id*/)
 {
     auto& registry = _game.getGlobalRegistry();
     auto  background = registry.create();

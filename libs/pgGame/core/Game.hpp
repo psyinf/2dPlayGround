@@ -20,6 +20,7 @@
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgGame/config/GenericConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
+#include <pgGame/components/GameState.hpp>
 
 namespace pg::game {
 
@@ -33,17 +34,20 @@ class GamePimpl
 public:
     virtual ~GamePimpl() = default;
 
-    GamePimpl(Game& game)
-      : game(game)
+    GamePimpl(Game& game, GameState& gameState)
+      : _game(game)
+      , _gameState(gameState)
     {
     }
 
-    Game& game;
+    GameState& _gameState;
+    Game&      _game;
 };
 
 class Game : public SingletonInterface<Game>
 {
     friend class SingletonInterface<Game>;
+    friend class GamePimpl;
     Game(Game&&) = delete;
     Game(const Game&) = delete;
     Game& operator=(Game&&) = delete;
@@ -73,6 +77,8 @@ private:
     GenericConfig _config;
 
     pgf::NamedTypeRegistry _eventNameRegistry;
+    GameState              _gameState;
+    FrameStamp             _currentFrameStamp;
 
 public:
     Game();
@@ -102,21 +108,17 @@ public:
 
     auto& getResourceManager() { return resourceManager; }
 
-    /// Scene interfaces
-    //     template <typename Type = pg::game::Scene, typename... Args>
-    //     void createScene(std::string_view id, Args&&... args)
-    //     {
-    //         // static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
-    //         if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
-    //         createScene(id, std::make_unique<Type>(*this, std::forward<Args>(args)...));
-    //     }
-    // TODO: scene management interface?
-    template <typename Type = pg::game::Scene>
-    void createScene(std::string_view id, pg::game::SceneConfig&& cfg = {})
+    template <typename Type = pg::game::Scene, typename... Args>
+    void createScene(pg::game::SceneConfig&& cfg = {}, Args&&... args)
     {
-        // static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
-        if (scenes.contains(std::string(id))) { throw std::invalid_argument("Scene already exists"); }
-        createSceneInternal(id, std::make_unique<Type>(*this, std::move(cfg)));
+        auto scene_id = cfg.scene_id;
+        static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
+
+        if (scene_id.empty()) { throw std::invalid_argument("Empty scene id is not allowed"); }
+        if (scenes.contains(scene_id)) { throw std::invalid_argument("Scene already exists"); }
+
+        registerGlobalSingletons(scene_id, cfg);
+        createSceneInternal(scene_id, std::make_unique<Type>(*this, std::move(cfg), std::forward<Args>(args)...));
     }
 
     Scene& getCurrentScene() { return getScene(currentSceneId); }
@@ -125,11 +127,16 @@ public:
     Scene& switchScene(std::string_view id);
 
     template <typename Type = pg::game::Scene>
-    Scene& createAndSwitchScene(std::string_view id, SceneConfig&& cfg = {})
+    Scene& createAndSwitchScene(SceneConfig&& cfg = {})
     {
-        createScene<Type>(id, std::move(cfg));
+        auto id = cfg.scene_id;
+        createScene<Type>(std::move(cfg));
         return switchScene(id);
     }
+
+    const auto& getCurrentTimeStamp() const { return _currentFrameStamp; }
+
+    const auto& getCurrentGameState() const { return _gameState; }
 
     void loop();
 
@@ -143,6 +150,8 @@ private:
     void frame(FrameStamp& frameStamp);
 
     void createSceneInternal(std::string_view id, std::unique_ptr<Scene>&& scene);
+
+    void registerGlobalSingletons(std::string_view scene_id, const SceneConfig& cfg);
 
     entt::registry& getRegistry() { return _registry; }
 
