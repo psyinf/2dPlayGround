@@ -1,13 +1,12 @@
 
 CPMAddPackage(
     NAME pgf
-
     GITHUB_REPOSITORY psyinf/pgfoundation
-    GIT_TAG features
+    GIT_TAG v0.1.0
 )
 
 CPMAddPackage(
 	NAME soundEngine
 	GITHUB_REPOSITORY psyinf/soundEngine 
-    GIT_TAG order_fix
+    GIT_TAG v0.1.1
 )
