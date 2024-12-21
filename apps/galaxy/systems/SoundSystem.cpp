@@ -11,7 +11,7 @@
 #include <components/SoundScape.hpp>
 #include <resources/SoundResource.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
-#include <components/singletons/RegisteredPreloaders.hpp>
+#include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 
 class Dispatcher
 {
@@ -73,8 +73,15 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
   , _dispatcher(std::make_unique<Dispatcher>(*_bgPlayer))
 
 {
+}
+
+void galaxy::SoundSystem::setup(std::string_view scene_id)
+{
+    // register-pre loaders
+    auto& scene_config = _game.getSingleton<pg::game::SceneConfig>(scene_id);
+#if 1
     // register all resources here
-    auto&                    preLoaders = game.getSingleton<singleton::RegisteredLoaders>();
+    auto& preLoaders = _game.getSingleton<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders");
     std::vector<std::string> sound_files = {
         "../data/music/a-meditation-through-time-amp-space-11947.mp3",
         "../data/music/dead-space-style-ambient-music-184793.mp3",
@@ -83,16 +90,13 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
     for (auto& file : sound_files)
     {
         if (preLoaders.loaders.contains(file)) { continue; }
-        auto loader = [&game, file](PercentCompleted& percentLoaded) {
-            game.getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&>(file,
-                                                                                                percentLoaded[file]);
+        auto loader = [this, file](PercentCompleted& percentLoaded) {
+            _game.getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&>(file,
+                                                                                                 percentLoaded[file]);
         };
         preLoaders.loaders.emplace(file, loader);
     }
-}
-
-void galaxy::SoundSystem::setup(std::string_view scene_id)
-{
+#endif
     auto& soundScapeConfig = _game.getConfig().getPerSceneConfig<SceneSoundScape>(std::string{scene_id}, "soundScape");
     _game.getCurrentScene().addSingleton_as<SceneSoundScape>("scene.soundScape", soundScapeConfig);
     // add sound events to dispatcher

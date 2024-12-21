@@ -80,7 +80,7 @@ public:
             {
                 spdlog::info("Pre-Loading resource: {}", resource);
                 loader(_percentResourcesLoaded);
-                // std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 spdlog::info("Pre-Loaded resource: {}. {} remaining", resource, _loaders.size() - _numThreadsFinished);
             }
             catch (const std::exception&)
@@ -153,7 +153,7 @@ public:
 private:
     float _percentTotalResourcesLoaded{};
 
-    std::map<std::string, float> _percentResourcesLoaded{};
+    PercentCompleted _percentResourcesLoaded{};
 
     std::atomic<uint32_t> _numRead{};
     Loaders               _loaders;
