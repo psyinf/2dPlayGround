@@ -14,8 +14,9 @@ target_link_libraries(${PROJECT_NAME}
      BT::behaviortree_cpp
 )
 
-enable_coverage(${PROJECT_NAME})
-
+if (ENABLE_COVERAGE)
+    enable_coverage(${PROJECT_NAME})
+endif()
 install(TARGETS ${PROJECT_NAME}
         #RUNTIME DESTINATION bin
         #LIBRARY DESTINATION lib

@@ -20,6 +20,8 @@ target_include_directories(${PROJECT_NAME}
 		$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}>
 )
 
-enable_coverage(${PROJECT_NAME})
+if (ENABLE_COVERAGE)
+    enable_coverage(${PROJECT_NAME})
+endif()
 
 install(TARGETS ${PROJECT_NAME})
