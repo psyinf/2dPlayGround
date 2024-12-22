@@ -87,7 +87,10 @@ public:
             }
 
             if (count == 0) { count = 1; }
-            result.append_range(std::views::repeat(letter, count));
+
+            auto repeat_pattern = std::views::repeat(letter, count);
+            // result.append_range(repeat_pattern); not working for gcc
+            result.insert(result.end(), repeat_pattern.begin(), repeat_pattern.end());
         }
         return result;
     }

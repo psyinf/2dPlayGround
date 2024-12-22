@@ -20,6 +20,7 @@ target_link_libraries(${PROJECT_NAME}
     BT::behaviortree_cpp
     soundEngine::soundEngine
     pgf::pgf
+    pgFoundation::pgFoundation
     ${ADDITION_LIBS}
 )
 target_include_directories(${PROJECT_NAME}

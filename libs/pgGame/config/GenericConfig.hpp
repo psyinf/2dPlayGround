@@ -38,7 +38,7 @@ struct GenericConfig
     }
 
     template <class T>
-    void addPerSceneConfig(const std::string& scene, const std::string& key, const T& value)
+    void addPerSceneConfig(const std::string& scene, const std::string& key, const T&& value)
     {
         config[scene + "::" + key] = value;
     }

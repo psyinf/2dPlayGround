@@ -2,6 +2,7 @@
 #include "Factory.hpp"
 #include <deque>
 #include <optional>
+#include <algorithm>
 #include <ranges>
 #include <fmt/core.h>
 #include <fmt/format.h>
@@ -13,6 +14,7 @@
 #include "FractionalAmoundFormatter.hpp"
 #include "Storage.hpp"
 #include "ProductionLine.hpp"
+#include <iostream>
 
 using Resource = Asset;
 using Material = Product;

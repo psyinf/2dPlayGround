@@ -25,7 +25,7 @@ public:
     {
     }
 
-    void setup(std::string_view [[maybe_unused]] /*scene_id*/) {}
+    void setup(std::string_view /*scene_id*/) {}
 
     pg::Transform2D calculateTransform(const pg::Transform2D& transform,
                                        const pg::Transform2D& globalTransform,
@@ -60,7 +60,7 @@ public:
              auto& entity : view)
         {
             auto&& [drawable, transform, renderState] =
-                view.get<pg::game::Drawable, pg::Transform2D, pg::game::RenderState>(entity);
+                view.template get<pg::game::Drawable, pg::Transform2D, pg::game::RenderState>(entity);
 
             rendererStates.push_states(renderState.states);
 

@@ -163,18 +163,16 @@ private:
             };
         });
 
-        getKeyStateMap().registerMouseDoubleClickedCallback(
-            [this](auto [[maybe_unused]] /*pos*/, auto button, bool pressed) {
-                if (!pressed && button == SDL_BUTTON_LEFT)
-                {
-                    auto selected_entity =
-                        getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
-                    if (selected_entity == entt::null) { return; }
-                    // TODO: entering the system should be possible for systems explored/occupied by current faction
+        getKeyStateMap().registerMouseDoubleClickedCallback([this](auto /*pos*/, auto button, bool pressed) {
+            if (!pressed && button == SDL_BUTTON_LEFT)
+            {
+                auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
+                if (selected_entity == entt::null) { return; }
+                // TODO: entering the system should be possible for systems explored/occupied by current faction
 
-                    getGame().getGlobalDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"system"});
-                }
-            });
+                getGame().getGlobalDispatcher().enqueue<pg::game::events::SwitchSceneEvent>({"system"});
+            }
+        });
 
         getKeyStateMap().registerMouseWheelCallback([this](auto pos) {
             auto zoom = galaxyConfig.zoom;

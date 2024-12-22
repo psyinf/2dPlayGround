@@ -124,7 +124,7 @@ public:
         _selectedEntities.push_back(entity);
     };
 
-    auto createOrbit(pgOrbit::OrbitalParameters<double>& orbitalParams, galaxy::StarSystemState& system)
+    auto createOrbit(pgOrbit::OrbitalParameters<double>& orbitalParams, galaxy::StarSystemState& system) -> entt::entity
     {
         auto entity = pg::game::makeEntity<pg::Transform2D,
                                            pg::game::Drawable,
