@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <iostream>
 
 /**
  * A type that represents a fractional amount with a fixed number of digits. This obviously has some limitations if the
@@ -103,17 +104,14 @@ private:
     std::uint32_t _value{};
 };
 
-
-
 namespace std {
 template <typename DigitsType, DigitsType NumDigits>
 class numeric_limits<FractionalAmount<DigitsType, NumDigits>>
 {
 public:
-    static constexpr FractionalAmount<DigitsType, NumDigits> max() 
+    static constexpr FractionalAmount<DigitsType, NumDigits> max()
     {
         return FractionalAmount<DigitsType, NumDigits>(std::numeric_limits<DigitsType>::max());
     }
-
 };
 } // namespace std

@@ -1,6 +1,6 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
-#include <pgfoundation/NamedTypeRegistrar.hpp>
+#include <pgFoundation/NamedTypeRegistrar.hpp>
 
 namespace asteroids { namespace events {
 

@@ -39,21 +39,21 @@ void galaxy::GalacticCore::setup()
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
         "splashScreen",
         "soundScape",
-        {.background_music{"../data/music/dead-space-style-ambient-music-184793.mp3"},
+        {.background_music{.music_list{{"../data/music/dead-space-style-ambient-music-184793.mp3"}}},
          .event_sounds = {event_sound_cfg}});
 
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
         "galaxy",
         "soundScape",
-        {.background_music{"../data/music/a-meditation-through-time-amp-space-11947.mp3"},
+        {.background_music{.music_list{{"../data/music/a-meditation-through-time-amp-space-11947.mp3"}}},
          .event_sounds = {event_sound_cfg}
 
         });
     //     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
     //         "loadGalaxy",
     //         "soundScape",
-    //         {.background_music{"../data/music/dead-space-style-ambient-music-184793.mp3"}, .event_sounds =
-    //         {event_sound_cfg}
+    //         {.background_music{.music_list{{.background_music{"../data/music/dead-space-style-ambient-music-184793.mp3"}}},
+    //         .event_sounds = {event_sound_cfg}
     //
     //         });
     // systems

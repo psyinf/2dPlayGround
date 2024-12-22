@@ -25,8 +25,9 @@ public:
 class InputEventDispatcher : public InputEventHandlerInterface
 {
 public:
-    InputEventDispatcher(sdl::EventHandler&                                                             eventHandler,
-                         std::unordered_map<std::string, std::shared_ptr<InputEventHandlerInterface>>&& handlerList)
+    using EventHandlers = std::unordered_map<std::string, std::shared_ptr<InputEventHandlerInterface>>;
+
+    InputEventDispatcher(sdl::EventHandler& eventHandler, EventHandlers&& handlerList)
     {
         eventHandler.keyDown = [this](const SDL_KeyboardEvent& keyboardEvent) { keyEvent(keyboardEvent); };
         eventHandler.keyUp = [this](const SDL_KeyboardEvent& keyboardEvent) { keyEvent(keyboardEvent); };
@@ -49,7 +50,7 @@ public:
 
     void evaluateCallbacks() const override
     {
-        for (auto& handler : getFilteredHandlers() | std::views::values)
+        for (auto handler : getFilteredHandlers() | std::views::values)
         {
             handler->evaluateCallbacks();
         }
@@ -64,7 +65,7 @@ public:
 protected:
     bool keyEvent(const SDL_KeyboardEvent& event) noexcept override
     {
-        for (auto handler : getFilteredHandlers())
+        for (const auto& handler : getFilteredHandlers())
         {
             (handler.second)->keyEvent(event);
         }
@@ -75,7 +76,7 @@ protected:
     {
         // filter out key events if no handler is active
 
-        for (auto handler : getFilteredHandlers())
+        for (const auto& handler : getFilteredHandlers())
         {
             (handler.second)->mouseMotion(event);
         }
@@ -84,7 +85,7 @@ protected:
 
     bool mouseButtonEvent(const SDL_MouseButtonEvent& event) noexcept override
     {
-        for (auto handler : getFilteredHandlers())
+        for (auto& handler : getFilteredHandlers())
         {
             (handler.second)->mouseButtonEvent(event);
         }
@@ -93,21 +94,30 @@ protected:
 
     bool mouseWheelEvent(const SDL_MouseWheelEvent& event) noexcept override
     {
-        for (auto handler : getFilteredHandlers())
+        for (auto& handler : getFilteredHandlers())
         {
             (handler.second)->mouseWheelEvent(event);
         }
         return false;
     }
 
-    auto getFilteredHandlers() const
+    EventHandlers getFilteredHandlers() const
     {
-        return eventHandlers |
-               std::views::filter([this](const auto& handler) { return activeHandlers.contains(handler.first); });
+        // TODO: gcc 14 does not like this
+        //         return EventHandlers{eventHandlers | std::views::filter([this](const auto& handler) {
+        //                                  return activeHandlers.contains(handler.first);
+        //                              })};
+
+        EventHandlers filteredHandlers;
+        for (const auto& handler : eventHandlers)
+        {
+            if (activeHandlers.contains(handler.first)) { filteredHandlers.insert(handler); }
+        }
+        return filteredHandlers;
     }
 
 private:
-    std::unordered_map<std::string, std::shared_ptr<InputEventHandlerInterface>> eventHandlers;
-    std::set<std::string>                                                        activeHandlers;
+    EventHandlers         eventHandlers;
+    std::set<std::string> activeHandlers;
 };
 } // namespace pg
