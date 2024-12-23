@@ -3,6 +3,12 @@
 #include <pgEngine/generators/markov/MarkovFrequencyMap.hpp>
 
 namespace pg::generators { namespace markov {
+
+static bool isVowel(char c)
+{
+    return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+}
+
 template <size_t Depth>
 static std::string generate(uint8_t minLength, uint8_t maxLength, const MarkovFrequencyMap<Depth>& frequencyMap)
 {
@@ -29,6 +35,16 @@ static std::string generate(uint8_t minLength, uint8_t maxLength, const MarkovFr
         name += freq[pg::randomBetween<size_t>(0u, freq.size() - 1)];
         start = name.substr(name.size() - Depth);
     }
+
+    // check if the first two are consonants and add a ' in between
+    if (!isVowel(name[0]) && !isVowel(name[1]))
+    {
+        name[1] = toupper(name[1]);
+        name.insert(1, "'");
+    }
+
+    // post process
+    name[0] = std::toupper(name[0]);
     return name;
 }
 
