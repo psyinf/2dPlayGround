@@ -7,31 +7,46 @@
 
 namespace pg {
 
-inline pg::fVec2 getRandomVector()
+class SeedGenerator
 {
-    static std::random_device                    rd;
-    static std::mt19937                          gen(rd());
+public:
+    SeedGenerator()
+      : _gen(std::random_device{}())
+    {
+    }
+
+    SeedGenerator(uint64_t fixed_seed)
+      : _gen(fixed_seed)
+    {
+    }
+
+    auto get() const -> std::mt19937& { return _gen; }
+
+private:
+    mutable std::mt19937 _gen;
+};
+
+static inline auto DefaultSeedGenerator = SeedGenerator();
+
+inline pg::fVec2 getRandomVector(const SeedGenerator& gen = DefaultSeedGenerator)
+{
     static std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
 
-    return makeNormal(pg::fVec2{dis(gen), dis(gen)});
+    return makeNormal(pg::fVec2{dis(gen.get()), dis(gen.get())});
 }
 
 template <typename T>
-inline T randomBetween(T min, T max)
+inline T randomBetween(T min, T max, const SeedGenerator& gen = SeedGenerator())
 {
     if constexpr (std::is_floating_point<T>::value)
     {
-        static std::random_device         rd;
-        static std::mt19937               gen(rd());
         std::uniform_real_distribution<T> dis(min, max);
-        return dis(gen);
+        return dis(gen.get());
     }
     if constexpr (std::is_integral<T>::value)
     {
-        static std::random_device        rd;
-        static std::mt19937              gen(rd());
         std::uniform_int_distribution<T> dis(min, max);
-        return dis(gen);
+        return dis(gen.get());
     }
 }
 

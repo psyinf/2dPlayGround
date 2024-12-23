@@ -72,8 +72,6 @@ void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent eve
 
 void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
 {
-    static std::random_device rd;
-    static std::mt19937       gen{rd()};
     // setup for all factions
     auto galaxy_config = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 

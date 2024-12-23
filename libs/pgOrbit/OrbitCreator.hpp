@@ -15,6 +15,8 @@ class OrbitCreator
         double                scale{1.0};
         size_t                min_orbits{3};
         size_t                max_orbits{10};
+        double                max_eccentricity{0.15};
+        std::mt19937          gen{};
     };
 
     using OrbitalParams = OrbitalParameters<double>;
@@ -76,21 +78,20 @@ private:
     pgOrbit::SpectralType getSpectralClass() const { return _config.spectralClass; }
 
     template <typename T>
-    inline static T randomBetween(T min, T max)
+    inline T randomBetween(T min, T max)
     {
         if (min > max) { std::swap(min, max); }
         // generator
-        std::random_device rd;
-        std::mt19937       gen(rd());
+
         if constexpr (std::is_integral_v<T>)
         {
             std::uniform_int_distribution<T> dis(min, max);
-            return dis(gen);
+            return dis(_config.gen);
         }
         else
         {
             std::uniform_real_distribution<T> dis(min, max);
-            return dis(gen);
+            return dis(_config.gen);
         }
     }
 
@@ -129,14 +130,12 @@ private:
     {
         double                    alpha = 1.5; // Shape parameter for more skew towards low values
         double                    beta = 30.0; // Shape parameter
-        std::random_device        rd;
-        std::mt19937              gen(rd());
         std::gamma_distribution<> gamma_alpha(alpha, 1.0);
         std::gamma_distribution<> gamma_beta(beta, 1.0);
 
-        double x = gamma_alpha(gen);
-        double y = gamma_beta(gen);
-        return std::min(x / (x + y), 0.15); // Cap eccentricity at 0.3
+        double x = gamma_alpha(_config.gen);
+        double y = gamma_beta(_config.gen);
+        return std::min(x / (x + y), _config.max_eccentricity); // Cap eccentricity at 0.15
     }
 
     std::vector<OrbitalParams> generateOrbits(double /*luminosity*/, int numPlanets, double frostLine)

@@ -24,8 +24,9 @@ public:
         // set up system name if not yet created
         if (system.name.empty())
         {
-            const auto& mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
-            system.name = pg::generators::markov::generate<4>(3, 8, mfm);
+            pg::SeedGenerator seed_gen(entt::to_integral(selected_entity));
+            const auto&       mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
+            system.name = pg::generators::markov::generate<4>(3, 8, mfm, seed_gen);
         }
 
         auto pos_str = fmt::format("Pos: {},{}", transform.pos[0], transform.pos[1]);

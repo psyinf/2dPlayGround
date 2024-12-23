@@ -224,17 +224,14 @@ private:
     void setupGalaxy()
     {
         galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
-        std::random_device              rd;
-        std::mt19937                    gen(rd());
         std::normal_distribution<float> d(0.0f, 200.0f);
-        std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
         // Random number generator setup
         std::discrete_distribution<> star_class_dist(pgOrbit::star_class_probabilities.cbegin(),
                                                      pgOrbit::star_class_probabilities.cend());
 
-        auto dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
-
+        auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
+        auto& gen = pg::SeedGenerator(galaxyConfig.stars_seed).get();
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 15000})
         {
             // color state
