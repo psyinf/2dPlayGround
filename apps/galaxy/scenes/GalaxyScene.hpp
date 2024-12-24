@@ -232,6 +232,25 @@ private:
 
         auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
         auto& gen = pg::SeedGenerator(galaxyConfig.stars_seed).get();
+        // add sector markers starting at - 15 degrees, 30 degrees per sector,
+        //     where 0 is up(x = 0, y = 1)
+        for (auto i : std::ranges::iota_view{0, 12})
+        {
+            auto rendererStates = pg::States{};
+            auto color = pg::Color{255, 0, 0, 255};
+            rendererStates.push(pg::ColorState{color});
+            auto angle = pg::math::toRadians(-15.0f + 30.0f * i);
+            auto pos = pg::fVec2{std::cos(angle), std::sin(angle)} * 550.0f;
+
+            auto sector_lines = std::make_shared<pg::Line>(pg::fVec2{0, 0}, pg::fVec2{pos});
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
+                getGlobalRegistry(),
+                {.pos{}, .scale{1, 1}, .scaleSpace{pg::TransformScaleSpace::World}},
+                pg::game::Drawable{sector_lines},
+                {std::move(rendererStates)},
+                {});
+        }
+
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 15000})
         {
             // color state
@@ -261,6 +280,7 @@ private:
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
+
         // add some background
         auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
         auto states = pg::States{};

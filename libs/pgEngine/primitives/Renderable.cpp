@@ -1,14 +1,26 @@
 #include <primitives/Renderable.hpp>
 
-pg::Line::Line(iVec2&& start, iVec2&& end)
+pg::Line::Line(fVec2&& start, fVec2&& end)
   : start(start)
   , end(end)
 {
 }
 
-void pg::Line::draw(pg::Renderer& r, const Transform2D&, const States&)
+void pg::Line::draw(pg::Renderer& r, const Transform2D& transform, const States& states)
 {
-    r.renderer.drawLine(start[0], start[1], end[0], end[1]);
+    // transform the point
+    auto s = start;
+    auto e = end;
+    // point -= (box.midpoint());
+    s *= transform.scale;
+    e *= transform.scale;
+    s += transform.pos;
+    e += transform.pos;
+
+    // point += (box.midpoint() * transform.scale);
+    states.apply(r.renderer);
+    SDL_RenderDrawLineF(r.renderer.get(), s[0], s[1], e[0], e[1]);
+    states.restore(r.renderer);
 }
 
 void pg::Point::draw(pg::Renderer& r, const Transform2D&, const States&)

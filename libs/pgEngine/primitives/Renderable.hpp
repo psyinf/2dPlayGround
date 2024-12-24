@@ -100,20 +100,20 @@ private:
 class Line : public Renderable
 {
 public:
-    Line(iVec2&& start, iVec2&& end);
+    Line(fVec2&& start, fVec2&& end);
 
     void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
 
 protected:
-    iVec2 start;
-    iVec2 end;
+    fVec2 start;
+    fVec2 end;
 };
 
 class Point : Renderable
 {
 public:
     Point(iVec2&& pos)
-      : pos(pos){};
+      : pos(pos) {};
 
     void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
 
@@ -124,23 +124,29 @@ protected:
 class LineStrip : public pg::Renderable
 {
 public:
-    LineStrip(std::vector<iVec2>&& points)
+    LineStrip(std::vector<fVec2>&& points)
       : points(points)
     {
     }
 
-    void draw(pg::Renderer& r, const Transform2D&, const States&) override
+    void draw(pg::Renderer& r, const Transform2D& transform, const States& states) override
     {
-        r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
-        // draw the polygon
-        // for (const auto& p : points)
+        // transform the points
+        auto p = points;
+        for (auto& point : p)
         {
-            r.renderer.drawLines(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
+            // point -= (box.midpoint());
+            point *= transform.scale;
+            point += transform.pos;
+            // point += (box.midpoint() * transform.scale);
         }
+        states.apply(r.renderer);
+        SDL_RenderDrawLinesF(r.renderer.get(), std::bit_cast<SDL_FPoint*>(p.data()), static_cast<int>(p.size()));
+        states.restore(r.renderer);
     }
 
 private:
-    std::vector<iVec2> points;
+    std::vector<fVec2> points;
 };
 
 class BoxPrimitive : public pg::Renderable
