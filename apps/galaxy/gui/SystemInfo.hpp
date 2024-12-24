@@ -6,23 +6,25 @@
 #include <magic_enum.hpp>
 #include <pgEngine/generators/MarkovNameGen.hpp>
 #include <pgEngine/math/Trigonometric.hpp>
+#include <pgEngine/core/Constants.hpp>
 
 namespace galaxy::gui {
 
 auto sectorNameFromAngle(float angle_deg) -> std::string
-{
+{ // 0° is up
+    angle_deg += 90.0f;
+    // adjust for sector 0 starting at -15 degrees
+    angle_deg += 15.0f;
+
     // normalize angle to 0-360
     angle_deg = std::fmod(angle_deg + 360.0f, 360.0f);
-    // 0° is up
-    angle_deg += 90.0f;
-    // every 30 degrees, starting at -15 degrees. First sector is alpha, last is omega
-    static constexpr auto greek_letter_names =
-        std::to_array({"alpha", "beta",  "gamma",  "delta",   "epsilon", "zeta", "eta",     "theta",
-                       "iota",  "kappa", "lambda", "mu",      "nu",      "xi",   "omicron", "pi",
-                       "rho",   "sigma", "tau",    "upsilon", "phi",     "chi",  "psi",     "omega"});
-    auto sector = static_cast<int>((angle_deg - 15.0f) / 30.0f);
 
-    return greek_letter_names.at(sector);
+    // every 30 degrees, starting at -15 degrees. First sector is alpha, last is omega
+
+    // first sector is between -15 and +15
+    auto sector = static_cast<int>(std::floor((angle_deg) / 30.0f));
+
+    return pg::constants::greek_letter_names.at(sector);
 }
 
 // the remainder-angle inside a sector
@@ -51,15 +53,8 @@ public:
             const auto&       mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
             system.name = pg::generators::markov::generate<4>(3, 8, mfm, seed_gen);
         }
-        auto polar_pos = pg::math::toPolar(transform.pos);
-        // auto pos_str = fmt::format("Pos: {},{}", polar_pos[0], polarAngleToDeg(polar_pos[1]));
-        //  name is polar lenght, sector name.remainder angle
-        auto sector_name = sectorNameFromAngle(pg::math::toDegrees(std::get<1>(polar_pos)));
-        auto sector_angle = inSectorAngle(std::get<1>(polar_pos));
+        auto name = buildSystemPositionStr(transform.pos);
 
-        auto pos_str = fmt::format("{}:{}.{}", std::get<0>(polar_pos), sector_name, sector_angle);
-
-        // auto pos_str = fmt::format("Pos: {},{}", transform.pos[0], transform.pos[1]);
         auto system_state_str = fmt::format("State: {}", magic_enum::enum_name(system.colonizationStatus));
         auto faction_str = fmt::format("Faction: {}", faction.name);
         auto system_name = fmt::format("Name: {}", system.name);
@@ -71,13 +66,23 @@ public:
         ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("System Info");
         ImGui::Text(system_name.data());
-        ImGui::Text(pos_str.data());
+        ImGui::Text(name.data());
         ImGui::Text(system_state_str.data());
         ImGui::Text(faction_str.data());
 
         ImGui::Text(spectral_type.data());
 
         ImGui::End();
+    }
+
+    auto buildSystemPositionStr(pg::fVec2 pos)
+    {
+        auto polar_pos = pg::math::toPolar(pos);
+
+        auto sector_name = sectorNameFromAngle(pg::math::toDegrees(std::get<1>(polar_pos)));
+        auto sector_angle = 10 * inSectorAngle(std::get<1>(polar_pos));
+        // name is sector - angle_in_sector:distance
+        return fmt::format("{}-{:.0f}:{:.0f}", sector_name, sector_angle, 10 * std::get<0>(polar_pos));
     }
 };
 
