@@ -251,7 +251,7 @@ private:
                 {});
         }
 
-        for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 15000})
+        for ([[maybe_unused]] auto i : std::ranges::iota_view{0u, galaxyConfig.num_stars})
         {
             // color state
             auto rendererStates = pg::States{};
