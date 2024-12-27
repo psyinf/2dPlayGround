@@ -116,6 +116,12 @@ public:
     }
 
     template <typename Type>
+    bool hasAccessor(std::string_view id)
+    {
+        return registry().ctx().template contains<Accessor<Type>>(entt::hashed_string{id.data()});
+    }
+
+    template <typename Type>
     Type callGetter(std::string_view id)
     {
         auto& accessor = getSingleton<Accessor<Type>>(id);
