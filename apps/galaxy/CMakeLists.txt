@@ -7,8 +7,6 @@ file(GLOB_RECURSE CPP_FILES 	CONFIGURE_DEPENDS "*.cpp")
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${CPP_FILES})
 
-find_package(fmt REQUIRED)
-
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
@@ -20,6 +18,7 @@ target_link_libraries(${PROJECT_NAME}
     BT::behaviortree_cpp
     soundEngine::soundEngine
     pgf::pgf
+    INTERFACE
     pgFoundation::pgFoundation
     ${ADDITION_LIBS}
 )

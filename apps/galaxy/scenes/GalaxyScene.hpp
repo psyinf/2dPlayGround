@@ -32,6 +32,7 @@
 #include <entt/entt.hpp>
 #include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
+#include <gui/InSceneOptionsWidget.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -51,6 +52,8 @@ public:
         auto& preLoaders = game.getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
 // for now, no images
 #if 0
+        TODO: images can be loaded, but not added to the SDL in a background task. Doing so will interfere with the state while rendering. 
+            This needs a two stage approach where adding to SDL is done protected by a mutex
         std::vector<std::string> files = {
             "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
 
@@ -219,34 +222,46 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::MainBarWidget>(getGame())});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(
+            getSceneRegistry(),
+            {std::make_unique<galaxy::gui::InSceneOptionsWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
     }
 
     void setupGalaxy()
     {
+        setupBackground();
+        setupMapMarkers();
+        setupStars();
+    }
+
+    void setupStars()
+    {
         galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
-        std::random_device              rd;
-        std::mt19937                    gen(rd());
         std::normal_distribution<float> d(0.0f, 200.0f);
-        std::normal_distribution<float> star_size_dist(0.0075f, 0.0025f);
 
         // Random number generator setup
         std::discrete_distribution<> star_class_dist(pgOrbit::star_class_probabilities.cbegin(),
                                                      pgOrbit::star_class_probabilities.cend());
 
-        auto dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
+        auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
+        auto& gen = pg::SeedGenerator(galaxyConfig.stars_seed).get();
 
-        for ([[maybe_unused]] auto i : std::ranges::iota_view{0, 15000})
+        for ([[maybe_unused]] auto i : std::ranges::iota_view{0u, galaxyConfig.num_stars})
         {
             // color state
             auto rendererStates = pg::States{};
             auto color = pg::Color{255, 0, 0, 255};
             rendererStates.push(pg::TextureColorState{color});
+            rendererStates.push(pg::BlendModeState{SDL_BLENDMODE_ADD});
+
             auto new_pos = pg::fVec2{d(gen), d(gen)};
 
             auto spectral_type = pgOrbit::indexToSpectralType(star_class_dist(gen));
-            auto gammaCorrectedBrightness = pgOrbit::convertBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
+            auto gammaCorrectedBrightness = pgOrbit::adaptBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
             auto new_size =
                 gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
+
             auto entity = pg::game::makeEntity<pg::Transform2D,
                                                pg::game::Drawable,
                                                galaxy::StarSystemState,
@@ -264,18 +279,84 @@ private:
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
-        // add some background
+        addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
+    }
+
+    void setupMapMarkers()
+    {
+        auto rendererStates = pg::States{};
+        auto color = pg::Color{0, 0, 255, 255};
+        rendererStates.push(pg::ColorState{color});
+        rendererStates.push(pg::BlendModeState{SDL_BLENDMODE_NONE});
+        auto markers_group = std::make_shared<pg::Switch>();
+        for (auto i : std::ranges::iota_view{0, 12})
+        {
+            auto angle = pg::math::toRadians(-15.0f + 30.0f * i);
+
+            auto sector_pie = std::make_shared<pg::CircleSector>(
+                pg::fVec2{0, 0}, 750.0f, angle, angle + pg::math::toRadians(30.0f), 25);
+            auto inner_sector_pie = std::make_shared<pg::CircleSector>(
+                pg::fVec2{0, 0}, 250.f, angle, angle + pg::math::toRadians(30.0f), 25, 500.0f);
+            auto medium_sector_pie = std::make_shared<pg::CircleSector>(
+                pg::fVec2{0, 0}, 500.f, angle, angle + pg::math::toRadians(30.0f), 25, 500.0f);
+
+            auto group = std::make_shared<pg::Group>();
+            group->addPrimitive(sector_pie);
+            group->addPrimitive(inner_sector_pie);
+            group->addPrimitive(medium_sector_pie);
+            markers_group->addPrimitive(group);
+        }
+
+        auto entity =
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
+                getGlobalRegistry(),
+                {.pos{}, .scale{1, 1}, .scaleSpace{pg::TransformScaleSpace::World}},
+                pg::game::Drawable{markers_group},
+                {std::move(rendererStates)},
+                {});
+
+        auto setOpacity = [entity, color, &registry = getGame().getGlobalRegistry()](float opacity) mutable {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+
+            auto colorState = renderState.states.get<pg::ColorState>();
+            auto new_color = pg::vec_cast<uint8_t>(pg::vec_cast<float>(color) * opacity);
+
+            colorState->setColor(new_color);
+        };
+        auto getOpacity = [color, &registry = getGame().getGlobalRegistry(), entity]() {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            return renderState.states.get<pg::ColorState>()->getColor()[3] / 255.0f;
+        };
+        registerAccessor<float>("galaxy.grid.opacity", std::move(setOpacity), std::move(getOpacity));
+    }
+
+    void setupBackground()
+
+    {
+        // add background
         auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
-        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
-            getGlobalRegistry(),
-            {.pos{0, 0}, .scale{0.5, 0.5}, .scaleSpace{pg::TransformScaleSpace::World}},
-            pg::game::Drawable{background_sprite},
-            {},
-            {});
+        states.push(pg::TextureColorState{pg::Color{255, 255, 255, 255}});
+        states.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
+        auto entity =
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
+                getGlobalRegistry(),
+                {.pos{0.0f, 0.0f}, .scale{0.5f, 0.5f}, .scaleSpace{pg::TransformScaleSpace::World}},
+                pg::game::Drawable{background_sprite},
+                {states},
+                {});
 
-        addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
+        // lambda to modify the background opacity
+        auto setOpacity = [entity, &registry = getGame().getGlobalRegistry()](float opacity) mutable {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            renderState.states.replace<pg::TextureAlphaState>(static_cast<uint8_t>(opacity * 255));
+        };
+        auto getOpacity = [&registry = getGame().getGlobalRegistry(), entity]() {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            return renderState.states.get<pg::TextureAlphaState>()->getAlpha() / 255.0f;
+        };
+        registerAccessor<float>("galaxy.background.opacity", std::move(setOpacity), std::move(getOpacity));
     }
 
     void setupQuadtreeDebug()

@@ -45,24 +45,28 @@ class ColorState : public RendererState
 {
 public:
     ColorState(const Color& color)
-      : color(color)
+      : _color(color)
     {
     }
 
     void apply(sdl::Renderer& renderer) override
     {
-        renderer.getDrawColor(&prevColor[0], &prevColor[1], &prevColor[2], &prevColor[3]);
-        renderer.setDrawColor(color[0], color[1], color[2], color[3]);
+        renderer.getDrawColor(&_prevColor[0], &_prevColor[1], &_prevColor[2], &_prevColor[3]);
+        renderer.setDrawColor(_color[0], _color[1], _color[2], _color[3]);
     }
 
     void restore(sdl::Renderer& renderer) override
     {
-        renderer.setDrawColor(prevColor[0], prevColor[1], prevColor[2], prevColor[3]);
+        renderer.setDrawColor(_prevColor[0], _prevColor[1], _prevColor[2], _prevColor[3]);
     }
 
+    auto getColor() const { return _color; }
+
+    void setColor(const Color& color) { _color = color; }
+
 public:
-    Color       prevColor;
-    const Color color;
+    Color _prevColor{};
+    Color _color{};
 };
 
 class TextureColorState : public TextureState
@@ -114,21 +118,25 @@ class TextureAlphaState : public TextureState
 {
 public:
     TextureAlphaState(uint8_t alpha)
-      : alpha(alpha)
+      : _alpha(alpha)
     {
     }
 
     void apply(sdl::Renderer&, sdl::Texture& texture) override
     {
-        texture.getAlphaMod(&storeAlpha);
-        texture.setAlphaMod(alpha);
+        texture.getAlphaMod(&_storeAlpha);
+        texture.setAlphaMod(_alpha);
     }
 
-    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setAlphaMod(storeAlpha); }
+    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setAlphaMod(_storeAlpha); }
+
+    auto getAlpha() const { return _alpha; }
+
+    void setAlpha(uint8_t alpha) { _alpha = alpha; }
 
 private:
-    uint8_t       storeAlpha;
-    const uint8_t alpha;
+    uint8_t _storeAlpha{};
+    uint8_t _alpha;
 };
 
 class RendererDelegegateState : public RendererState

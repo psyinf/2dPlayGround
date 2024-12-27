@@ -10,6 +10,26 @@
 #include <spdlog/spdlog.h>
 
 namespace pg {
+
+// functional getter/setter interfaces
+// TODO: for now
+template <typename T>
+using SetterFunc = std::function<void(T)>;
+
+template <typename T>
+using GetterFunc = std::function<const T()>;
+
+template <typename T>
+struct Accessor
+{
+    SetterFunc<T> setterFunc;
+    GetterFunc<T> getterFunc;
+
+    void set(T value) { setterFunc(value); }
+
+    const T get() const { return getterFunc(); }
+};
+
 // specify access function via template specialization
 template <typename T>
 class SingletonInterface
@@ -85,6 +105,34 @@ public:
     auto& addSingleton(Args&&... args)
     {
         return registry().ctx().template emplace_as<Type>(entt::type_id<Type>().hash(), std::forward<Args>(args)...);
+    }
+
+    // accessor interface
+    template <typename Type>
+    void registerAccessor(std::string_view id, SetterFunc<Type>&& setter, GetterFunc<Type>&& getter)
+    {
+        registry().ctx().template emplace_as<Accessor<Type>>(entt::hashed_string{id.data()},
+                                                             Accessor<Type>{std::move(setter), std::move(getter)});
+    }
+
+    template <typename Type>
+    bool hasAccessor(std::string_view id)
+    {
+        return registry().ctx().template contains<Accessor<Type>>(entt::hashed_string{id.data()});
+    }
+
+    template <typename Type>
+    Type callGetter(std::string_view id)
+    {
+        auto& accessor = getSingleton<Accessor<Type>>(id);
+        return accessor.get();
+    }
+
+    template <typename Type>
+    void callSetter(std::string_view id, Type value)
+    {
+        auto& accessor = getSingleton<Accessor<Type>>(id);
+        accessor.set(value);
     }
 
     entt::registry& registry() { return static_cast<T*>(this)->getRegistry(); }

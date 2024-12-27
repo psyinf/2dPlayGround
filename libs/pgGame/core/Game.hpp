@@ -72,7 +72,7 @@ private:
 
     Scenes scenes;
 
-    std::string currentSceneId{"__default__"};
+    std::string _currentSceneId{"__default__"};
 
     GenericConfig _config;
 
@@ -121,7 +121,7 @@ public:
         createSceneInternal(scene_id, std::make_unique<Type>(*this, std::move(cfg), std::forward<Args>(args)...));
     }
 
-    Scene& getCurrentScene() { return getScene(currentSceneId); }
+    Scene& getCurrentScene() { return getScene(_currentSceneId); }
 
     Scene& getScene(std::string_view id);
     Scene& switchScene(std::string_view id);
@@ -145,6 +145,8 @@ public:
     const auto& getConfig() const { return _config; }
 
     auto& getConfig() { return _config; }
+
+    auto getCurrentSceneId() const { return _currentSceneId; }
 
 private:
     void frame(FrameStamp& frameStamp);

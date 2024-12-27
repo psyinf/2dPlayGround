@@ -44,8 +44,6 @@ public:
         auto renderer = pg::Renderer{_game.getApp().getRenderer(), frameStamp};
         renderer.clear();
         auto rendererStates = pg::States{};
-        // rendererStates.push(pg::TextureColorState{pg::Color{255, 255, 0, 255}});
-        rendererStates.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
         rendererStates.apply(renderer.renderer);
         auto windowRect = _game.getCurrentScene().getSingleton<pg::game::WindowDetails>().windowRect;
 

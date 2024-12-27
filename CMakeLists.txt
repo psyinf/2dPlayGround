@@ -6,7 +6,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 #options
 option(ENABLE_COVERAGE "Enable coverage" OFF)
-
+#bigobj
+if (MSVC)
+    add_compile_options(/bigobj)
+endif()
 
 #add cmake script to download conan-cmake integrations
 #include(cmake/conan_config.cmake)

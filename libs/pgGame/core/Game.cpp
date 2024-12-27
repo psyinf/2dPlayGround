@@ -90,20 +90,20 @@ void game::Game::frame(FrameStamp& frameStamp)
     // dispatcher update
     dispatcher.update();
     // check preconditions
-    if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
+    if (_currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
     // poll all events
     while (sdlApp.getEventHandler().poll()) {};
     // evaluate all callbacks bound to events
     _inputEventDispatcher.evaluateCallbacks();
 
     // update the scene
-    scenes.at(currentSceneId)->frame(frameStamp);
+    scenes.at(_currentSceneId)->frame(frameStamp);
 }
 
 entt::registry& game::Game::getCurrentSceneRegistry()
 {
-    if (currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
-    return getScene(currentSceneId).getSceneRegistry();
+    if (_currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
+    return getScene(_currentSceneId).getSceneRegistry();
 }
 
 entt::dispatcher& game::Game::getGlobalDispatcher()
@@ -142,7 +142,7 @@ void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::ga
     if (id.empty()) { throw std::invalid_argument("Scene id cannot be empty"); }
     // internal switch of scene for setup
     {
-        ScopedSwitchSceneId switcher(currentSceneId, std::string{id});
+        ScopedSwitchSceneId switcher(_currentSceneId, std::string{id});
         scenes.emplace(std::string{id}, std::move(scene));
         auto scenePtr = scenes.at(std::string(id)).get();
 
@@ -161,22 +161,22 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
 {
     try
     {
-        if (currentSceneId == id) { return getScene(id); }
+        if (_currentSceneId == id) { return getScene(id); }
         std::string idStr{id};
         auto        scene = scenes.at(idStr).get();
         // stop current scene
-        if (!currentSceneId.empty())
+        if (!_currentSceneId.empty())
         {
-            auto& currentScene = scenes.at(currentSceneId);
+            auto& currentScene = scenes.at(_currentSceneId);
             for (const auto& system : currentScene->getSystems())
             {
-                system->exitScene(currentSceneId);
+                system->exitScene(_currentSceneId);
             }
 
             currentScene->stop();
-            _inputEventDispatcher.setHandlerActive(currentSceneId, false);
+            _inputEventDispatcher.setHandlerActive(_currentSceneId, false);
         }
-        currentSceneId = id;
+        _currentSceneId = id;
         for (const auto& system : scene->getSystems())
         {
             system->enterScene(id);

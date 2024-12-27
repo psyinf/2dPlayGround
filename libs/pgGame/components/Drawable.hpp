@@ -10,6 +10,7 @@ static constexpr int32_t DRAWABLE_LAST = std::numeric_limits<int32_t>::max();
 
 static constexpr int32_t DRAWABLE_DOCKING_AREA = -10000;
 static constexpr int32_t DRAWABLE_DEFAULT = 0;
+static constexpr int32_t DRAWABLE_OVERLAY_MENU = 1'000'000;
 
 struct Drawable
 {

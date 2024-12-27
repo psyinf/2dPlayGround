@@ -10,6 +10,7 @@ void pg::game::Scene::frame(FrameStamp& frameStamp)
         firstFrame_ = false;
         frameStamp.gameTick = 0;
     }
+    preFrame(frameStamp);
     std::ranges::for_each(systems_, [&frameStamp](auto& system) { system->handle(frameStamp); });
     frameStamp.gameTick++;
     postFrame(frameStamp);

@@ -97,6 +97,55 @@ public:
         else { static_assert(always_false<T>, "Invalid state type"); }
     }
 
+    // get a specific state
+    // caveat: will return the first state of the type found
+    template <typename T>
+    constexpr std::shared_ptr<T> get()
+    {
+        if constexpr (std::is_base_of_v<pg::RendererState, T>)
+        {
+            for (auto& state : rendererStates)
+            {
+                if (auto s = std::dynamic_pointer_cast<T>(state); s != nullptr) { return s; }
+            }
+        }
+        else if constexpr (std::is_base_of_v<pg::TextureState, T>)
+        {
+            for (auto& state : textureStates)
+            {
+                if (auto s = std::dynamic_pointer_cast<T>(state); s != nullptr) { return s; }
+            }
+        }
+        return nullptr;
+    }
+
+    template <typename T>
+    void replace(T&& state)
+    {
+        if constexpr (std::is_base_of_v<pg::RendererState, std::decay_t<T>>)
+        {
+            for (auto& s : rendererStates)
+            {
+                if (auto r = std::dynamic_pointer_cast<T>(s); r != nullptr)
+                {
+                    s = std::make_unique<std::decay_t<T>>(std::forward<T>(state));
+                    return;
+                }
+            }
+        }
+        else if constexpr (std::is_base_of_v<pg::TextureState, std::decay_t<T>>)
+        {
+            for (auto& s : textureStates)
+            {
+                if (auto r = std::dynamic_pointer_cast<T>(s); r != nullptr)
+                {
+                    s = std::make_unique<std::decay_t<T>>(std::forward<T>(state));
+                    return;
+                }
+            }
+        }
+    }
+
 private:
     std::vector<RendererStatePointer> rendererStates;
     std::vector<TextureStatePointer>  textureStates;

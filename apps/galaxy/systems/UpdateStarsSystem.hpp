@@ -14,6 +14,7 @@
 #include <Config.hpp>
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include <components/Tags.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -36,7 +37,7 @@ public:
         // TODO: use an animation
 
         auto& transform = _game.getGlobalRegistry().get<pg::Transform2D>(event.entity);
-        auto& marker_transform = _game.getGlobalRegistry().get<pg::Transform2D>(
+        auto& marker_transform = _game.getCurrentSceneRegistry().get<pg::Transform2D>(
             _game.getCurrentScene().getSingleton<entt::entity>("galaxy.debug.marker"));
         marker_transform.pos = transform.pos;
     }

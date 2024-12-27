@@ -23,7 +23,7 @@ int main()
 
     for (int i = 0; i < 100; i++)
     {
-        std::cout << pg::generators::markov::generate(3, 10, fmg) << "\n";
+        std::cout << pg::generators::markov::generate(3, 10, fmg, pg::DefaultSeedGenerator) << "\n";
     }
 
     return 0;

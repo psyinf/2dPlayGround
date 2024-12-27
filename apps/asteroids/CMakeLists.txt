@@ -16,10 +16,12 @@ target_link_libraries(${PROJECT_NAME}
     pgEngine::pgEngine
     pgGame::pgGame
     soundEngine::soundEngine
-    pgFoundation::pgFoundation
+
     pgf::pgf
     fmt::fmt
     EnTT::EnTT
+    INTERFACE
+    pgFoundation::pgFoundation
 )
 target_include_directories(${PROJECT_NAME}
 	PRIVATE

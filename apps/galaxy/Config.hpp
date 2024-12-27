@@ -57,6 +57,8 @@ struct Galaxy
     BackgoundParameters  background;
     ZoomParameters       zoom;
     Debugging            debugging;
+    uint64_t             stars_seed{0};
+    uint32_t             num_stars{15000};
     std::vector<Faction> factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
         //{.name{"Vogons"}, .color{255, 0, 0, 255}},

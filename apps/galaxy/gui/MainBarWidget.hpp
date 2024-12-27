@@ -61,16 +61,6 @@ public:
             getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
         }
 
-        // display second based time as
-
-        // TODO: structured time/GalaxyTime
-        //         ImGui::Text(system_name.data());
-        //         ImGui::Text(pos_str.data());
-        //         ImGui::Text(system_state_str.data());
-        //         ImGui::Text(faction_str.data());
-        //
-        //         ImGui::Text(spectral_type.data());
-
         ImGui::End();
     }
 };

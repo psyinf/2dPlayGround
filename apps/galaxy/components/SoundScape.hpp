@@ -40,18 +40,7 @@ struct SceneSoundScape
 {
     BackgroundMusic                             background_music{};
     std::unordered_map<std::string, EventSound> event_sounds;
+    float                                       master_volume{0.75f};
 };
-
-struct SoundConfig
-{
-    float master_gain{1.0f};
-    //     float music_gain{1.0f};
-    //     float sfx_gain{1.0f};
-    //     float voice_gain{1.0f};
-    //     float ambiance_gain{1.0f};
-    //     float ui_gain{1.0f};
-};
-
-;
 
 } // namespace galaxy
