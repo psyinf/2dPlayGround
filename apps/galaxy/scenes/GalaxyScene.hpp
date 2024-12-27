@@ -223,6 +223,14 @@ private:
 
     void setupGalaxy()
     {
+        // setupStars();
+
+        setupBackground();
+        // setupMapMarkers();
+    }
+
+    void setupStars()
+    {
         galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::normal_distribution<float> d(0.0f, 200.0f);
 
@@ -232,24 +240,6 @@ private:
 
         auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
         auto& gen = pg::SeedGenerator(galaxyConfig.stars_seed).get();
-        // add sector markers starting at - 15 degrees, 30 degrees per sector,
-        //     where 0 is up(x = 0, y = 1)
-        for (auto i : std::ranges::iota_view{0, 12})
-        {
-            auto rendererStates = pg::States{};
-            auto color = pg::Color{255, 0, 0, 255};
-            rendererStates.push(pg::ColorState{color});
-            auto angle = pg::math::toRadians(-15.0f + 30.0f * i);
-            auto pos = pg::fVec2{std::cos(angle), std::sin(angle)} * 550.0f;
-
-            auto sector_lines = std::make_shared<pg::Line>(pg::fVec2{0, 0}, pg::fVec2{pos});
-            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
-                getGlobalRegistry(),
-                {.pos{}, .scale{1, 1}, .scaleSpace{pg::TransformScaleSpace::World}},
-                pg::game::Drawable{sector_lines},
-                {std::move(rendererStates)},
-                {});
-        }
 
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0u, galaxyConfig.num_stars})
         {
@@ -257,12 +247,15 @@ private:
             auto rendererStates = pg::States{};
             auto color = pg::Color{255, 0, 0, 255};
             rendererStates.push(pg::TextureColorState{color});
+            rendererStates.push(pg::BlendModeState{SDL_BLENDMODE_ADD});
+
             auto new_pos = pg::fVec2{d(gen), d(gen)};
 
             auto spectral_type = pgOrbit::indexToSpectralType(star_class_dist(gen));
             auto gammaCorrectedBrightness = pgOrbit::adaptBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
             auto new_size =
                 gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
+
             auto entity = pg::game::makeEntity<pg::Transform2D,
                                                pg::game::Drawable,
                                                galaxy::StarSystemState,
@@ -280,17 +273,56 @@ private:
 
             galaxyQuadtree->insert({new_pos, new_size}, entity, galaxyQuadtree->root);
         }
+        addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
+    }
 
-        // add some background
+    void setupMapMarkers()
+    {
+        for (auto i : std::ranges::iota_view{0, 12})
+        {
+            auto rendererStates = pg::States{};
+            auto color = pg::Color{0, 0, 255, 255};
+            rendererStates.push(pg::ColorState{color});
+            rendererStates.push(pg::BlendModeState{SDL_BLENDMODE_ADD});
+            auto angle = pg::math::toRadians(-15.0f + 30.0f * i);
+
+            auto sector_pie = std::make_shared<pg::CircleSector>(
+                pg::fVec2{0, 0}, 750.0f, angle, angle + pg::math::toRadians(30.0f), 25);
+            auto inner_sector_pie = std::make_shared<pg::CircleSector>(
+                pg::fVec2{0, 0}, 250.f, angle, angle + pg::math::toRadians(30.0f), 25, 500.0f);
+            auto medium_sector_pie = std::make_shared<pg::CircleSector>(
+                pg::fVec2{0, 0}, 500.f, angle, angle + pg::math::toRadians(30.0f), 25, 500.0f);
+
+            auto group = std::make_shared<pg::Group>();
+            group->addPrimitive(sector_pie);
+            group->addPrimitive(inner_sector_pie);
+            group->addPrimitive(medium_sector_pie);
+
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
+                getGlobalRegistry(),
+                {.pos{}, .scale{1, 1}, .scaleSpace{pg::TransformScaleSpace::World}},
+                pg::game::Drawable{group},
+                {std::move(rendererStates)},
+                {});
+        }
+    }
+
+    void setupBackground()
+
+    {
+        // add background
         auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
-        pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
-            getGlobalRegistry(),
-            {.pos{0, 0}, .scale{0.5, 0.5}, .scaleSpace{pg::TransformScaleSpace::World}},
-            pg::game::Drawable{background_sprite},
-            {},
-            {});
+        states.push(pg::TextureColorState{pg::Color{255, 255, 255, 255}});
+        states.push(pg::TextureBlendModeState{SDL_BLENDMODE_BLEND});
+        auto entity =
+            pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
+                getGlobalRegistry(),
+                {.pos{0.0f, 0.0f}, .scale{0.5f, 0.5f}, .scaleSpace{pg::TransformScaleSpace::World}},
+                pg::game::Drawable{background_sprite},
+                {states},
+                {});
 
         addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
     }
