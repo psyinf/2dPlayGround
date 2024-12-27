@@ -114,6 +114,15 @@ void galaxy::SoundSystem::setup(std::string_view scene_id)
             .sink<galaxy::events::MenuButtonPressed>()
             .connect<&Dispatcher::dispatch<galaxy::events::MenuButtonPressed>>(_dispatcher);
     }
+
+    // add accessors for volume
+    _game.getCurrentScene().registerAccessor<float>(
+        "scene.sound.volume", soundEngineX::Listener::setGain, soundEngineX::Listener::getGain);
+
+    // get Scene config
+    auto& soundScape = _game.getCurrentScene().getSingleton<SceneSoundScape>("scene.soundScape");
+    // set inital volume levels
+    soundEngineX::Listener::setGain(soundScape.master_volume);
 }
 
 void galaxy::SoundSystem::handle(const pg::FrameStamp&)
