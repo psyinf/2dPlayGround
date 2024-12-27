@@ -51,6 +51,8 @@ public:
         auto& preLoaders = game.getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
 // for now, no images
 #if 0
+        TODO: images can be loaded, but not added to the SDL in a background task. Doing so will interfere with the state while rendering. 
+            This needs a two stage approach where adding to SDL is done protected by a mutex
         std::vector<std::string> files = {
             "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
 
@@ -223,10 +225,9 @@ private:
 
     void setupGalaxy()
     {
-        // setupStars();
-
         setupBackground();
-        // setupMapMarkers();
+        setupMapMarkers();
+        setupStars();
     }
 
     void setupStars()
@@ -315,7 +316,7 @@ private:
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
         states.push(pg::TextureColorState{pg::Color{255, 255, 255, 255}});
-        states.push(pg::TextureBlendModeState{SDL_BLENDMODE_BLEND});
+        states.push(pg::TextureBlendModeState{SDL_BLENDMODE_ADD});
         auto entity =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
                 getGlobalRegistry(),
@@ -329,9 +330,11 @@ private:
             auto& renderState = registry.get<pg::game::RenderState>(entity);
             renderState.states.replace<pg::TextureAlphaState>(static_cast<uint8_t>(opacity * 255));
         };
-
-        // add a lambda as singleton
-        addSingleton_as<std::function<void(float)>>("galaxy.background.setOpacity", std::move(setOpacity));
+        auto getOpacity = [&registry = getGame().getGlobalRegistry(), entity]() {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            return renderState.states.get<pg::TextureAlphaState>()->getAlpha() / 255.0f;
+        };
+        registerAccessor<float>("galaxy.background.opacity", std::move(setOpacity), std::move(getOpacity));
     }
 
     void setupQuadtreeDebug()

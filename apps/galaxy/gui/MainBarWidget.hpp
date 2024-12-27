@@ -60,6 +60,12 @@ public:
             auto event = pg::game::events::TimeScaleEvent{.time_scale = 1000.0f};
             getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
         }
+        // add a slider for the opacit
+        auto opacity = getGame().getCurrentScene().callGetter<float>("galaxy.background.opacity");
+        if (ImGui::SliderFloat("Opacity", &opacity, 0.f, 1.f))
+        {
+            getGame().getCurrentScene().callSetter<float>("galaxy.background.opacity", opacity);
+        }
 
         // display second based time as
 

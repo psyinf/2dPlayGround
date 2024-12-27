@@ -114,21 +114,25 @@ class TextureAlphaState : public TextureState
 {
 public:
     TextureAlphaState(uint8_t alpha)
-      : alpha(alpha)
+      : _alpha(alpha)
     {
     }
 
     void apply(sdl::Renderer&, sdl::Texture& texture) override
     {
-        texture.getAlphaMod(&storeAlpha);
-        texture.setAlphaMod(alpha);
+        texture.getAlphaMod(&_storeAlpha);
+        texture.setAlphaMod(_alpha);
     }
 
-    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setAlphaMod(storeAlpha); }
+    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setAlphaMod(_storeAlpha); }
+
+    auto getAlpha() const { return _alpha; }
+
+    void setAlpha(uint8_t alpha) { _alpha = alpha; }
 
 private:
-    uint8_t       storeAlpha;
-    const uint8_t alpha;
+    uint8_t _storeAlpha{};
+    uint8_t _alpha;
 };
 
 class RendererDelegegateState : public RendererState
