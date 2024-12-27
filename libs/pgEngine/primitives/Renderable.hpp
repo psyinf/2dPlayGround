@@ -16,6 +16,8 @@
 namespace pg {
 static constexpr auto white = SDL_Color{255, 255, 255, 255};
 
+class Renderer;
+
 class ScopedScale
 {
 public:
@@ -52,29 +54,37 @@ private:
 
 struct Renderer
 {
-    sdl::Renderer&        renderer;
-    const pg::FrameStamp& frameStamp;
+    sdl::Renderer&    renderer;
+    const FrameStamp& frameStamp;
 
     void clear() { renderer.clear(); }
 
     void present() { renderer.present(); };
 
-    void apply(pg::States& states) { states.apply(renderer); }
+    void apply(States& states) { states.apply(renderer); }
 
-    void restore(pg::States& states) { states.restore(renderer); }
+    void restore(States& states) { states.restore(renderer); }
 };
 
 class Renderable
 {
 public:
     virtual ~Renderable() = default;
-    virtual void draw(pg::Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
+    virtual void draw(Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
+
+    static fVec2 transformPoint(const fVec2& point, const Transform2D& transform)
+    {
+        auto p = point;
+        p *= transform.scale;
+        p += transform.pos;
+        return p;
+    }
 };
 
 class Placeholder : public Renderable
 {
 public:
-    void draw(pg::Renderer&, const Transform2D&, const States&) override
+    void draw(Renderer&, const Transform2D&, const States&) override
     {
         // do nothing
     }
@@ -83,18 +93,25 @@ public:
 class Group : public Renderable
 {
 public:
-    void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    Group(std::vector<std::shared_ptr<Renderable>>&& primitives)
+      : _primitives(std::move(primitives))
     {
-        for (auto& p : primitives)
+    }
+
+    Group() = default;
+
+    void draw(Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        for (auto& p : _primitives)
         {
             p->draw(r, transform, rendererStates);
         }
     }
 
-    void addPrimitive(std::unique_ptr<Renderable>&& p) { primitives.push_back(std::move(p)); }
+    void addPrimitive(std::shared_ptr<Renderable>&& p) { _primitives.push_back(std::move(p)); }
 
 private:
-    std::vector<std::unique_ptr<Renderable>> primitives;
+    std::vector<std::shared_ptr<Renderable>> _primitives;
 };
 
 class Line : public Renderable
@@ -102,7 +119,7 @@ class Line : public Renderable
 public:
     Line(fVec2&& start, fVec2&& end);
 
-    void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
+    void draw(Renderer& r, const Transform2D& transform, const States& rendererStates) override;
 
 protected:
     fVec2 start;
@@ -112,27 +129,27 @@ protected:
 class Point : Renderable
 {
 public:
-    Point(iVec2&& pos)
-      : pos(pos) {};
+    Point(fVec2&& pos)
+      : _pos(std::move(pos)) {};
 
-    void draw(pg::Renderer& r, const Transform2D& transform, const States& rendererStates) override;
+    void draw(Renderer& r, const Transform2D& transform, const States& rendererStates) override;
 
 protected:
-    iVec2 pos;
+    fVec2 _pos;
 };
 
-class LineStrip : public pg::Renderable
+class LineStrip : public Renderable
 {
 public:
     LineStrip(std::vector<fVec2>&& points)
-      : points(points)
+      : _points(points)
     {
     }
 
-    void draw(pg::Renderer& r, const Transform2D& transform, const States& states) override
+    void draw(Renderer& r, const Transform2D& transform, const States& states) override
     {
         // transform the points
-        auto p = points;
+        auto p = _points;
         for (auto& point : p)
         {
             // point -= (box.midpoint());
@@ -145,20 +162,22 @@ public:
         states.restore(r.renderer);
     }
 
+    void setPoints(std::vector<fVec2>&& points) { _points = std::move(points); }
+
 private:
-    std::vector<fVec2> points;
+    std::vector<fVec2> _points;
 };
 
-class BoxPrimitive : public pg::Renderable
+class BoxPrimitive : public Renderable
 {
 public:
-    BoxPrimitive(const pg::fBox& box, Color color = {255, 255, 255, 255})
+    BoxPrimitive(const fBox& box, Color color = {255, 255, 255, 255})
       : box(box)
       , color(color)
     {
     }
 
-    void draw(pg::Renderer& r, const Transform2D& transform, const States&) override
+    void draw(Renderer& r, const Transform2D& transform, const States&) override
     {
         // transform the box
         auto b = box;
@@ -170,17 +189,17 @@ public:
         b.pos += (box.midpoint() * transform.scale);
         auto rect = (SDL_FRect{b.left(), b.top(), b.width(), b.height()});
         // r.setDrawColor(255, 255, 255, 255);
-        pg::ScopedColor sc{r.renderer, color};
+        ScopedColor sc{r.renderer, color};
         // draw the polygon
         SDL_RenderDrawRectF(r.renderer.get(), &rect);
     }
 
 private:
-    const pg::fBox box;
-    const Color    color;
+    const fBox  box;
+    const Color color;
 };
 
-class Points : public pg::Renderable
+class Points : public Renderable
 {
 public:
     Points(std::vector<iVec2>&& points)
@@ -188,7 +207,7 @@ public:
     {
     }
 
-    void draw(pg::Renderer& r, const Transform2D&, const States&) override
+    void draw(Renderer& r, const Transform2D&, const States&) override
     {
         r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
@@ -200,10 +219,10 @@ private:
     std::vector<iVec2> points;
 };
 
-class RefPoints : public pg::Renderable
+class RefPoints : public Renderable
 {
 public:
-    RefPoints(const std::vector<pg::iVec2>& points)
+    RefPoints(const std::vector<iVec2>& points)
       : points(points)
       , maxElement(points.size())
     {
@@ -213,7 +232,7 @@ public:
 
     size_t getMaxElement() const { return maxElement; }
 
-    void draw(pg::Renderer& r, const Transform2D& transform, const States&) override
+    void draw(Renderer& r, const Transform2D& transform, const States&) override
     {
         ScopedScale ss(r.renderer, transform.scale);
         r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
@@ -227,10 +246,10 @@ private:
     size_t                    maxElement{points.size()};
 };
 
-class RefLines : public pg::Renderable
+class RefLines : public Renderable
 {
 public:
-    RefLines(const std::vector<pg::iVec2>& points)
+    RefLines(const std::vector<iVec2>& points)
       : points(points)
       , maxElement(points.size())
     {
@@ -242,7 +261,7 @@ public:
 
     size_t size() const { return points.size(); }
 
-    void draw(pg::Renderer& r, const Transform2D& transform, const States&) override
+    void draw(Renderer& r, const Transform2D& transform, const States&) override
     {
         ScopedScale ss(r.renderer, transform.scale);
         r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
@@ -254,5 +273,33 @@ public:
 private:
     const std::vector<iVec2>& points;
     size_t                    maxElement{points.size()};
+};
+
+class CircleSector : public LineStrip
+{
+public:
+    CircleSector(fVec2&&  center,
+                 float    radius,
+                 float    startAngle,
+                 float    endAngle,
+                 uint32_t num_arc_points,
+                 bool     draw_wedges = true)
+      : LineStrip({})
+    {
+        auto       points = std::vector<fVec2>{};
+        const auto numSegments = num_arc_points;
+        const auto angleStep = (endAngle - startAngle) / numSegments;
+        if (draw_wedges) { points.push_back(center); }
+        for (auto i = 0; i < numSegments; ++i)
+        {
+            const auto angle = startAngle + angleStep * i;
+            const auto x = center[0] + radius * std::cos(angle);
+            const auto y = center[1] + radius * std::sin(angle);
+            points.emplace_back(fVec2{x, y});
+        }
+        points.emplace_back(fVec2{center[0] + radius * std::cos(endAngle), center[1] + radius * std::sin(endAngle)});
+        if (draw_wedges) { points.push_back(center); }
+        setPoints(std::move(points));
+    }
 };
 } // namespace pg

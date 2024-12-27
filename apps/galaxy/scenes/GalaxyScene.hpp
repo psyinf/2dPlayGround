@@ -260,7 +260,7 @@ private:
             auto new_pos = pg::fVec2{d(gen), d(gen)};
 
             auto spectral_type = pgOrbit::indexToSpectralType(star_class_dist(gen));
-            auto gammaCorrectedBrightness = pgOrbit::convertBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
+            auto gammaCorrectedBrightness = pgOrbit::adaptBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
             auto new_size =
                 gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
             auto entity = pg::game::makeEntity<pg::Transform2D,

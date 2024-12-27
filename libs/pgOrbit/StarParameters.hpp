@@ -64,7 +64,7 @@ static inline float applyGamma(float brightness, float gamma)
 }
 
 // Function to convert a vector of brightness values by a gamma correction value
-static constexpr std::array<float, 7> convertBrightnessByGamma(const std::array<float, 7>& brightness, float gamma)
+static constexpr std::array<float, 7> adaptBrightnessByGamma(const std::array<float, 7>& brightness, float gamma)
 {
     auto correctedBrightness = brightness;
 

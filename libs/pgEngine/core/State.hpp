@@ -61,8 +61,8 @@ public:
     }
 
 public:
-    Color       prevColor;
-    const Color color;
+    Color       prevColor{};
+    const Color color{};
 };
 
 class TextureColorState : public TextureState
