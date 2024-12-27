@@ -324,7 +324,14 @@ private:
                 {states},
                 {});
 
-        addSingleton_as<const pg::Quadtree<entt::entity>&>("galaxy.quadtree", *galaxyQuadtree);
+        // lambda to modify the background opacity
+        auto setOpacity = [entity, &registry = getGame().getGlobalRegistry()](float opacity) mutable {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            renderState.states.replace<pg::TextureAlphaState>(static_cast<uint8_t>(opacity * 255));
+        };
+
+        // add a lambda as singleton
+        addSingleton_as<std::function<void(float)>>("galaxy.background.setOpacity", std::move(setOpacity));
     }
 
     void setupQuadtreeDebug()
