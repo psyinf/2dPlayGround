@@ -114,7 +114,35 @@ private:
     std::vector<std::shared_ptr<Renderable>> _primitives;
 };
 
+// effectively a Group  with a switch
+class Switch : public Group
+{
+    using Group::Group;
+
+    Switch(std::vector<std::shared_ptr<Renderable>>&& primitives, bool enabled)
+      : Group(std::move(primitives))
+      , _enabled(enabled)
+    {
+    }
+
+    Switch(bool enabled) { _enabled = enabled; }
+
+public:
+    void draw(Renderer& r, const Transform2D& transform, const States& rendererStates) override
+    {
+        if (_enabled) { Group::draw(r, transform, rendererStates); }
+    }
+
+    void setEnabled(bool enable) { _enabled = enable; }
+
+    bool isEnabled() const { return _enabled; }
+
+private:
+    bool _enabled{true};
+};
+
 class Line : public Renderable
+
 {
 public:
     Line(fVec2&& start, fVec2&& end);
