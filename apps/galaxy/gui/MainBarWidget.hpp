@@ -60,32 +60,6 @@ public:
             auto event = pg::game::events::TimeScaleEvent{.time_scale = 1000.0f};
             getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
         }
-        // HACK:
-        if (getGame().getCurrentSceneId() == "galaxy")
-        {
-            // TODO: options?
-            // add a slider for the opacit
-            auto opacity = getGame().getCurrentScene().callGetter<float>("galaxy.background.opacity");
-            if (ImGui::SliderFloat("Opacity", &opacity, 0.f, 1.f))
-            {
-                getGame().getCurrentScene().callSetter<float>("galaxy.background.opacity", opacity);
-            }
-        }
-
-        auto volume = getGame().getCurrentScene().callGetter<float>("scene.sound.volume");
-        if (ImGui::SliderFloat("Global Volume", &volume, 0.f, 1.f))
-        {
-            getGame().getCurrentScene().callSetter<float>("scene.sound.volume", volume);
-        }
-        // display second based time as
-
-        // TODO: structured time/GalaxyTime
-        //         ImGui::Text(system_name.data());
-        //         ImGui::Text(pos_str.data());
-        //         ImGui::Text(system_state_str.data());
-        //         ImGui::Text(faction_str.data());
-        //
-        //         ImGui::Text(spectral_type.data());
 
         ImGui::End();
     }
