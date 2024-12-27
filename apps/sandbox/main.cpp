@@ -115,9 +115,9 @@ try
     pg::Line l{pg::fVec2{0, 0}, pg::fVec2{1280, 720}};
     pg::Line l2{pg::fVec2{5, 5}, pg::fVec2{1285, 725}};
 
-    pg::Point p1{pg::iVec2{10, 10}};
-    pg::Point p2{pg::iVec2{9, 9}};
-    pg::Point p3{pg::iVec2{9, 9}};
+    pg::Point p1{pg::fVec2{10, 10}};
+    pg::Point p2{pg::fVec2{9, 9}};
+    pg::Point p3{pg::fVec2{9, 9}};
     Circler   c({550, 550}, 100, 555);
     int       frame = 0;
 

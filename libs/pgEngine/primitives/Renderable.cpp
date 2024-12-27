@@ -8,22 +8,15 @@ pg::Line::Line(fVec2&& start, fVec2&& end)
 
 void pg::Line::draw(pg::Renderer& r, const Transform2D& transform, const States& states)
 {
-    // transform the point
-    auto s = start;
-    auto e = end;
-    // point -= (box.midpoint());
-    s *= transform.scale;
-    e *= transform.scale;
-    s += transform.pos;
-    e += transform.pos;
-
-    // point += (box.midpoint() * transform.scale);
+    auto s = transformPoint(start, transform);
+    auto e = transformPoint(end, transform);
     states.apply(r.renderer);
     SDL_RenderDrawLineF(r.renderer.get(), s[0], s[1], e[0], e[1]);
     states.restore(r.renderer);
 }
 
-void pg::Point::draw(pg::Renderer& r, const Transform2D&, const States&)
+void pg::Point::draw(Renderer& r, const Transform2D& transform, const States& rendererStates)
 {
-    r.renderer.drawPoint(pos[0], pos[1]);
+    auto p = transformPoint(_pos, transform);
+    SDL_RenderDrawPointF(r.renderer.get(), p[0], p[1]);
 }
