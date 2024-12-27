@@ -75,7 +75,7 @@ public:
         ImGui::End();
     }
 
-    auto buildSystemPositionStr(pg::fVec2 pos)
+    auto buildSystemPositionStr(pg::fVec2 pos) -> std::string
     {
         auto polar_pos = pg::math::toPolar(pos);
 
