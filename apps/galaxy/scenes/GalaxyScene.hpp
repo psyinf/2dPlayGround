@@ -32,6 +32,7 @@
 #include <entt/entt.hpp>
 #include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
+#include <gui/InSceneOptionsWidget.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -221,6 +222,10 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::MainBarWidget>(getGame())});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(
+            getSceneRegistry(),
+            {std::make_unique<galaxy::gui::InSceneOptionsWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
     }
 
     void setupGalaxy()
@@ -279,12 +284,13 @@ private:
 
     void setupMapMarkers()
     {
+        auto rendererStates = pg::States{};
+        auto color = pg::Color{0, 0, 255, 255};
+        rendererStates.push(pg::ColorState{color});
+        rendererStates.push(pg::BlendModeState{SDL_BLENDMODE_NONE});
+        auto markers_group = std::make_shared<pg::Switch>();
         for (auto i : std::ranges::iota_view{0, 12})
         {
-            auto rendererStates = pg::States{};
-            auto color = pg::Color{0, 0, 255, 255};
-            rendererStates.push(pg::ColorState{color});
-            rendererStates.push(pg::BlendModeState{SDL_BLENDMODE_ADD});
             auto angle = pg::math::toRadians(-15.0f + 30.0f * i);
 
             auto sector_pie = std::make_shared<pg::CircleSector>(
@@ -298,14 +304,30 @@ private:
             group->addPrimitive(sector_pie);
             group->addPrimitive(inner_sector_pie);
             group->addPrimitive(medium_sector_pie);
+            markers_group->addPrimitive(group);
+        }
 
+        auto entity =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::GalaxyRenderTag>(
                 getGlobalRegistry(),
                 {.pos{}, .scale{1, 1}, .scaleSpace{pg::TransformScaleSpace::World}},
-                pg::game::Drawable{group},
+                pg::game::Drawable{markers_group},
                 {std::move(rendererStates)},
                 {});
-        }
+
+        auto setOpacity = [entity, color, &registry = getGame().getGlobalRegistry()](float opacity) mutable {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+
+            auto colorState = renderState.states.get<pg::ColorState>();
+            auto new_color = pg::vec_cast<uint8_t>(pg::vec_cast<float>(color) * opacity);
+
+            colorState->setColor(new_color);
+        };
+        auto getOpacity = [color, &registry = getGame().getGlobalRegistry(), entity]() {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            return renderState.states.get<pg::ColorState>()->getColor()[3] / 255.0f;
+        };
+        registerAccessor<float>("galaxy.grid.opacity", std::move(setOpacity), std::move(getOpacity));
     }
 
     void setupBackground()
