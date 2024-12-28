@@ -42,12 +42,12 @@ static std::string generate(uint8_t                          minLength,
     // check if the first two are consonants and add a ' in between
     if (!isVowel(name[0]) && !isVowel(name[1]))
     {
-        name[1] = toupper(name[1]);
+        name[1] = static_cast<char>(std::toupper(name[1]));
         name.insert(1, "'");
     }
 
     // post process
-    name[0] = std::toupper(name[0]);
+    name[0] = static_cast<char>(std::toupper(name[0]));
     return name;
 }
 
