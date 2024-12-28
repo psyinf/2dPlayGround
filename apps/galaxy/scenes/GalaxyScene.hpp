@@ -33,6 +33,7 @@
 #include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 #include <pgEngine/resources/SpriteResource.hpp>
 #include <gui/InSceneOptionsWidget.hpp>
+#include <gui/MainFrameWidget.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -212,6 +213,10 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
+            {std::make_unique<galaxy::gui::MainFrameWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
+        /*
+        pg::game::makeEntity<pg::game::GuiDrawable>(
+            getSceneRegistry(),
             {std::make_unique<galaxy::gui::DashBoardWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
@@ -226,6 +231,9 @@ private:
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::InSceneOptionsWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
+
+
+            */
     }
 
     void setupGalaxy()

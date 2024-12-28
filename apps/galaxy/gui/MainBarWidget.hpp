@@ -11,24 +11,14 @@ public:
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
+        ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{12.0f, 12.0f});
         // make
         auto timeStamp = getGame().getCurrentTimeStamp();
         auto gameStamp = getGame().getCurrentGameState();
         ImGui::BeginMainMenuBar();
-        // Add menu bar items here
-        ImGui::EndMainMenuBar();
 
-        ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        ImGui::Text("Main Info");
-        ImGui::Text("Frame: %d", timeStamp.frameNumber);
-        ImGui::Text("Game Tick: %d", timeStamp.gameTick);
-        ImGui::Text("Seconds: %f", timeStamp.time.getFractionalSeconds());
-        ImGui::Text("Time Passed: %f", timeStamp.getRealTimePassed_sec());
-        ImGui::Text("Galaxy Time: %s", timeStamp.formatTime().c_str());
-
-        // add some play/pause button
-        // play/pause event
-
+        // set main menu bar height
+        ImGui::SetWindowSize(ImVec2(0, 120));
         if (ImGui::Button("Pause"))
         {
             auto event = pg::game::events::PlayPauseEvent{.state = pg::game::events::PlayPauseEvent::State::Pause};
@@ -61,7 +51,21 @@ public:
             getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
         }
 
+        ImGui::EndMainMenuBar();
+
+        ImGui::Begin("System Info", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
+        ImGui::Text("Main Info");
+        ImGui::Text("Frame: %d", timeStamp.frameNumber);
+        ImGui::Text("Game Tick: %d", timeStamp.gameTick);
+        ImGui::Text("Seconds: %f", timeStamp.time.getFractionalSeconds());
+        ImGui::Text("Time Passed: %f", timeStamp.getRealTimePassed_sec());
+        ImGui::Text("Galaxy Time: %s", timeStamp.formatTime().c_str());
+
+        // add some play/pause button
+        // play/pause event
+
         ImGui::End();
+        ImGui::PopStyleVar();
     }
 };
 
