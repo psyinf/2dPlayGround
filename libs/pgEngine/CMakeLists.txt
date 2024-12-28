@@ -54,6 +54,7 @@ target_link_libraries(${PROJECT_NAME}
 	nlohmann_json::nlohmann_json
     imgui
 	pgf::pgf
+	IconFontCppHeaders
 	PRIVATE
 	SDL2_ttf::SDL2_ttf-static
 	soundEngine::soundEngine

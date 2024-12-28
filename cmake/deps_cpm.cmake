@@ -150,7 +150,7 @@ CPMAddPackage(
 CPMAddPackage(
     NAME imgui
     GITHUB_REPOSITORY ocornut/imgui
-    GIT_TAG v1.90.8-docking
+    GIT_TAG v1.91.6-docking
 )
 #if (imgui_ADDED)
 add_library(imgui STATIC
@@ -181,6 +181,20 @@ CPMAddPackage(
     GITHUB_REPOSITORY pybind/pybind11
     GIT_TAG v2.12.0
 )
+
+
+endif()
+
+CPMAddPackage(NAME  IconFontCppHeaders
+    GIT_TAG         main
+    GITHUB_REPOSITORY  juliettef/IconFontCppHeaders
+    GIT_SHALLOW     TRUE
+    DONWLOAD_ONLY   TRUE
+)
+
+if (IconFontCppHeaders_ADDED)
+    add_library(IconFontCppHeaders INTERFACE)
+    target_include_directories(IconFontCppHeaders INTERFACE "${IconFontCppHeaders_SOURCE_DIR}")
 endif()
 
 

@@ -21,6 +21,7 @@ public:
 
 private:
     void bindEventProcessing();
+    void prepareFonts();
 
     pg::SDLApp& app;
 };

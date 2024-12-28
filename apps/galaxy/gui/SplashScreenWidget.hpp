@@ -131,7 +131,8 @@ public:
         // center vertically
         ImGui::SetCursorPos(ImVec2(centering.x, (ImGui::GetIO().DisplaySize.y * 0.5f) - (size_y * 0.5f)));
         // background sprite
-        ImGui::Image((void*)dot_texture.get()->get(), ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
+        ImGui::Image((ImTextureID)dot_texture.get()->get(),
+                     ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
         // TODO: style from config
 
         ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 10.0f);

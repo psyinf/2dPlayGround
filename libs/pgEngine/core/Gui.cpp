@@ -1,5 +1,6 @@
 #include "Gui.hpp"
 #include "App.hpp"
+#include "IconsFontAwesome5.h"
 
 pg::Gui::~Gui()
 {
@@ -85,9 +86,9 @@ void SetupImGuiStyle()
     style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
     style.Colors[ImGuiCol_Tab] = ImVec4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
     style.Colors[ImGuiCol_TabHovered] = ImVec4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
-    style.Colors[ImGuiCol_TabActive] = ImVec4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
-    style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
-    style.Colors[ImGuiCol_TabUnfocusedActive] =
+    style.Colors[ImGuiCol_TabSelected] = ImVec4(0.1176470592617989f, 0.1333333402872086f, 0.1490196138620377f, 1.0f);
+    style.Colors[ImGuiCol_TabDimmed] = ImVec4(0.0784313753247261f, 0.08627451211214066f, 0.1019607856869698f, 1.0f);
+    style.Colors[ImGuiCol_TabDimmedSelected] =
         ImVec4(0.125490203499794f, 0.2745098173618317f, 0.572549045085907f, 1.0f);
     style.Colors[ImGuiCol_PlotLines] = ImVec4(0.5215686559677124f, 0.6000000238418579f, 0.7019608020782471f, 1.0f);
     style.Colors[ImGuiCol_PlotLinesHovered] =
@@ -103,7 +104,7 @@ void SetupImGuiStyle()
     style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(0.09803921729326248f, 0.105882354080677f, 0.1215686276555061f, 1.0f);
     style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.9372549057006836f, 0.9372549057006836f, 0.9372549057006836f, 1.0f);
     style.Colors[ImGuiCol_DragDropTarget] = ImVec4(0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f);
-    style.Colors[ImGuiCol_NavHighlight] = ImVec4(0.2666666805744171f, 0.2901960909366608f, 1.0f, 1.0f);
+    style.Colors[ImGuiCol_NavCursor] = ImVec4(0.2666666805744171f, 0.2901960909366608f, 1.0f, 1.0f);
     style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(0.4980392158031464f, 0.5137255191802979f, 1.0f, 1.0f);
     style.Colors[ImGuiCol_NavWindowingDimBg] =
         ImVec4(0.196078434586525f, 0.1764705926179886f, 0.5450980663299561f, 0.501960813999176f);
@@ -187,9 +188,9 @@ void SetupImGuiStyleVS()
     style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.321568638086319f, 0.321568638086319f, 0.3333333432674408f, 1.0f);
     style.Colors[ImGuiCol_Tab] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
     style.Colors[ImGuiCol_TabHovered] = ImVec4(0.1137254908680916f, 0.5921568870544434f, 0.9254902005195618f, 1.0f);
-    style.Colors[ImGuiCol_TabActive] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
-    style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
-    style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
+    style.Colors[ImGuiCol_TabSelected] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
+    style.Colors[ImGuiCol_TabDimmed] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
+    style.Colors[ImGuiCol_TabDimmedSelected] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
     style.Colors[ImGuiCol_PlotLines] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
     style.Colors[ImGuiCol_PlotLinesHovered] =
         ImVec4(0.1137254908680916f, 0.5921568870544434f, 0.9254902005195618f, 1.0f);
@@ -205,7 +206,7 @@ void SetupImGuiStyleVS()
     style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.05999999865889549f);
     style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
     style.Colors[ImGuiCol_DragDropTarget] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
-    style.Colors[ImGuiCol_NavHighlight] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
+    style.Colors[ImGuiCol_NavCursor] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
     style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.699999988079071f);
     style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.2f);
     style.Colors[ImGuiCol_ModalWindowDimBg] =
@@ -290,9 +291,9 @@ void SetupImGuiStyleGame()
     style.Colors[ImGuiCol_ResizeGripActive] = ImVec4(0.321568638086319f, 0.321568638086319f, 0.3333333432674408f, 1.0f);
     style.Colors[ImGuiCol_Tab] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
     style.Colors[ImGuiCol_TabHovered] = ImVec4(0.1137254908680916f, 0.5921568870544434f, 0.9254902005195618f, 1.0f);
-    style.Colors[ImGuiCol_TabActive] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
-    style.Colors[ImGuiCol_TabUnfocused] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
-    style.Colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
+    style.Colors[ImGuiCol_TabSelected] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
+    style.Colors[ImGuiCol_TabDimmed] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
+    style.Colors[ImGuiCol_TabDimmedSelected] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
     style.Colors[ImGuiCol_PlotLines] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
     style.Colors[ImGuiCol_PlotLinesHovered] =
         ImVec4(0.1137254908680916f, 0.5921568870544434f, 0.9254902005195618f, 1.0f);
@@ -308,7 +309,7 @@ void SetupImGuiStyleGame()
     style.Colors[ImGuiCol_TableRowBgAlt] = ImVec4(1.0f, 1.0f, 1.0f, 0.05999999865889549f);
     style.Colors[ImGuiCol_TextSelectedBg] = ImVec4(0.0f, 0.4666666686534882f, 0.7843137383460999f, 1.0f);
     style.Colors[ImGuiCol_DragDropTarget] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
-    style.Colors[ImGuiCol_NavHighlight] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
+    style.Colors[ImGuiCol_NavCursor] = ImVec4(0.1450980454683304f, 0.1450980454683304f, 0.1490196138620377f, 1.0f);
     style.Colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.0f, 1.0f, 1.0f, 0.699999988079071f);
     style.Colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.800000011920929f, 0.800000011920929f, 0.800000011920929f, 0.2f);
     style.Colors[ImGuiCol_ModalWindowDimBg] =
@@ -323,16 +324,19 @@ pg::Gui::Gui(SDLApp& app)
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
-    ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+    ImGui::GetIO().ConfigFlags = 0;
+    //|= ImGuiConfigFlags_DockingEnable;
 
     bindEventProcessing();
 
     ImGui::StyleColorsDark();
     ImGui::GetIO().Fonts->AddFontFromFileTTF("../data/fonts/CONSOLA.ttf", 16);
-    SetupImGuiStyle();
-    // Setup Platform/Renderer bindings
+    // SetupImGuiStyle();
+    //  Setup Platform/Renderer bindings
     ImGui_ImplSDL2_InitForSDLRenderer(window.get(), renderer.get());
     ImGui_ImplSDLRenderer2_Init(renderer.get());
+
+    prepareFonts();
 }
 
 void pg::Gui::begin()
@@ -368,4 +372,22 @@ void pg::Gui::bindEventProcessing()
         if (io.WantCaptureMouse || io.WantCaptureKeyboard) { return true; }
         return false;
     });
+}
+
+void pg::Gui::prepareFonts()
+{
+    ImGuiIO& io = ImGui::GetIO();
+    float    baseFontSize = 20.0f; // 13.0f is the size of the default font. Change to the font size you use.
+    // icons are smaller than text, so we need to scale them down a bit to match the size of the text
+
+    float iconFontSize = baseFontSize * 2.0f / 3.0f;
+    // merge in icons from Font Awesome
+    static const ImWchar icons_ranges[] = {ICON_MIN_FA, ICON_MAX_16_FA, 0};
+    ImFontConfig         icons_config;
+    icons_config.MergeMode = true;
+    icons_config.PixelSnapH = true;
+    icons_config.GlyphMinAdvanceX = iconFontSize;
+    io.Fonts->AddFontFromFileTTF(
+        "../data/gui/webfonts/" FONT_ICON_FILE_NAME_FAS, iconFontSize, &icons_config, icons_ranges);
+    // use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid
 }
