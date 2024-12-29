@@ -46,13 +46,6 @@ public:
             getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
                 selected_entity);
 
-        // set up system name if not yet created
-        if (system.name.empty())
-        {
-            pg::SeedGenerator seed_gen(entt::to_integral(selected_entity));
-            const auto&       mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
-            system.name = pg::generators::markov::generate<4>(3, 8, mfm, seed_gen);
-        }
         auto name = buildSystemPositionStr(transform.pos);
 
         auto system_state_str = fmt::format("State: {}", magic_enum::enum_name(system.colonizationStatus));

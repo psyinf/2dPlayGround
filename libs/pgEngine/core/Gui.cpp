@@ -1,6 +1,6 @@
 #include "Gui.hpp"
 #include "App.hpp"
-#include "IconsFontAwesome5.h"
+#include "IconsFontAwesome6.h"
 
 pg::Gui::~Gui()
 {

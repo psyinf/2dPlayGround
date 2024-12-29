@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IconsFontAwesome5.h"
+#include "IconsFontAwesome6.h"
 #include <gui/GameGuiWidget.hpp>
 #include <imgui.h>
 
@@ -44,6 +44,16 @@ private:
         getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
     };
 
+    auto getCurrentSystem() -> galaxy::StarSystemState
+    {
+        auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
+        if (selected_entity == entt::null) { return StarSystemState{}; }
+        auto&& [system, transform, faction] =
+            getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
+                selected_entity);
+        return system;
+    }
+
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
 
@@ -62,13 +72,13 @@ public:
             /// @separator
 
             /// @begin Text
-            ImGui::TextUnformatted("text");
+            ImGui::Text(ICON_FA_SUN " %s", getCurrentSystem().name.data());
             ImGui::TextUnformatted("text");
             /// @end Text
 
             /// @begin Button
             ImGui::NextColumn();
-            if (ImGui::Button(ICON_FA_FAST_BACKWARD)) { modifiyTimeScaleAndSend(current_time_scale, false); }
+            if (ImGui::Button(ICON_FA_BACKWARD)) { modifiyTimeScaleAndSend(current_time_scale, false); }
             ImGui::SameLine();
             if (ImGui::Button(ICON_FA_PAUSE))
             {
@@ -85,7 +95,7 @@ public:
                 // speed to 1
             }
             ImGui::SameLine();
-            if (ImGui::Button(ICON_FA_FAST_FORWARD)) { modifiyTimeScaleAndSend(current_time_scale, true); }
+            if (ImGui::Button(ICON_FA_FORWARD)) { modifiyTimeScaleAndSend(current_time_scale, true); }
             /// @end Button
 
             /// @begin Text
@@ -94,7 +104,7 @@ public:
             /// @end Text
 
             /// @begin Text
-            ImGui::Text(ICON_FA_SPINNER ": %.2f", getGame().getCurrentGameState().timeScale);
+            ImGui::Text(ICON_FA_GAUGE ": %.2f", getGame().getCurrentGameState().timeScale);
             /// @end Text
 
             /// @separator

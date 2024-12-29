@@ -270,17 +270,22 @@ private:
             auto new_size =
                 gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
 
-            auto entity = pg::game::makeEntity<pg::Transform2D,
-                                               pg::game::Drawable,
-                                               galaxy::StarSystemState,
-                                               galaxy::Faction,
-                                               pg::game::RenderState,
-                                               pg::tags::GalaxyRenderTag>
+            auto              entity = getGlobalRegistry().create();
+            pg::SeedGenerator seed_gen(entt::to_integral(entity));
+            const auto&       mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
+            auto              name = pg::generators::markov::generate<4>(3, 8, mfm, seed_gen);
+            pg::game::addComponents<pg::Transform2D,
+                                    pg::game::Drawable,
+                                    galaxy::StarSystemState,
+                                    galaxy::Faction,
+                                    pg::game::RenderState,
+                                    pg::tags::GalaxyRenderTag>
                 //
                 (getGlobalRegistry(),
+                 entity,
                  {.pos{new_pos}, .scale{new_size}, .scaleSpace{pg::TransformScaleSpace::Local}},
                  pg::game::Drawable{dot_sprite},
-                 galaxy::StarSystemState{.spectralType{spectral_type}},
+                 galaxy::StarSystemState{.name = name, .spectralType{spectral_type}},
                  galaxy::Faction{"None"},
                  {std::move(rendererStates)},
                  {});
