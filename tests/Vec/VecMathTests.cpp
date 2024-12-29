@@ -9,7 +9,7 @@
 TEST_CASE("angleBetween", "[VecTests]")
 {
     using namespace pg;
-    fVec2 ref{0, 1};
+    fVec2 ref{0.0f, 1.0f};
     auto  data = GENERATE(table<pg::fVec2, float>({
         {{0, 1}, 0.0f},
         {{1, 0}, -std::numbers::pi / 2.0f},
