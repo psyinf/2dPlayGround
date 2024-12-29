@@ -73,7 +73,7 @@ public:
 
             /// @begin Text
             ImGui::Text(ICON_FA_SUN " %s", getCurrentSystem().name.data());
-            ImGui::TextUnformatted("text");
+            ImGui::Text(ICON_FA_TURN_UP " %s", magic_enum::enum_name(getCurrentSystem().spectralType).data());
             /// @end Text
 
             /// @begin Button
