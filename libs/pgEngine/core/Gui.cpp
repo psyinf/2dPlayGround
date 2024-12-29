@@ -331,7 +331,7 @@ pg::Gui::Gui(SDLApp& app)
 
     ImGui::StyleColorsDark();
     ImGui::GetIO().Fonts->AddFontFromFileTTF("../data/fonts/CONSOLA.ttf", 16);
-    // SetupImGuiStyle();
+    SetupImGuiStyle();
     //  Setup Platform/Renderer bindings
     ImGui_ImplSDL2_InitForSDLRenderer(window.get(), renderer.get());
     ImGui_ImplSDLRenderer2_Init(renderer.get());
@@ -377,7 +377,7 @@ void pg::Gui::bindEventProcessing()
 void pg::Gui::prepareFonts()
 {
     ImGuiIO& io = ImGui::GetIO();
-    float    baseFontSize = 20.0f; // 13.0f is the size of the default font. Change to the font size you use.
+    float    baseFontSize = 16.0f; // 13.0f is the size of the default font. Change to the font size you use.
     // icons are smaller than text, so we need to scale them down a bit to match the size of the text
 
     float iconFontSize = baseFontSize * 2.0f / 3.0f;
@@ -386,7 +386,8 @@ void pg::Gui::prepareFonts()
     ImFontConfig         icons_config;
     icons_config.MergeMode = true;
     icons_config.PixelSnapH = true;
-    icons_config.GlyphMinAdvanceX = iconFontSize;
+    icons_config.GlyphMinAdvanceX = iconFontSize; // Use if you want to make the icon monospaced
+    icons_config.GlyphOffset.y = 0.0f;
     io.Fonts->AddFontFromFileTTF(
         "../data/gui/webfonts/" FONT_ICON_FILE_NAME_FAS, iconFontSize, &icons_config, icons_ranges);
     // use FONT_ICON_FILE_NAME_FAR if you want regular instead of solid

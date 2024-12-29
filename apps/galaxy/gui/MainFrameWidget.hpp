@@ -44,14 +44,22 @@ private:
         getGame().getGlobalDispatcher().enqueue<pg::game::events::TimeScaleEvent>(event);
     };
 
-    auto getCurrentSystem() -> galaxy::StarSystemState
+    struct StarSystemDetails
+    {
+        StarSystemState state;
+        pg::Transform2D trans;
+        galaxy::Faction faction;
+    };
+
+    auto getCurrentSystem() -> StarSystemDetails
     {
         auto selected_entity = getGame().getSingleton_or<PickedEntity>("picked.entity", PickedEntity{}).entity;
-        if (selected_entity == entt::null) { return StarSystemState{}; }
-        auto&& [system, transform, faction] =
+        if (selected_entity == entt::null) { return StarSystemDetails{}; }
+        auto&& [state, transform, faction] =
             getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
                 selected_entity);
-        return system;
+
+        return StarSystemDetails{.state = state, .trans = transform, .faction = faction};
     }
 
 public:
@@ -67,13 +75,20 @@ public:
                          ImGuiWindowFlags_NoScrollWithMouse);
         ImGui::SetWindowPos(ImVec2(0, ImGui::GetCursorPosY() + 5));
         ImGui::SetWindowSize(ImVec2(ImGui::GetIO().DisplaySize.x, 50));
+
+        // disable button frame
+        ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 0.1f);
+
         {
             ImGui::Columns(3, "", true);
             /// @separator
 
             /// @begin Text
-            ImGui::Text(ICON_FA_SUN " %s", getCurrentSystem().name.data());
-            ImGui::Text(ICON_FA_TURN_UP " %s", magic_enum::enum_name(getCurrentSystem().spectralType).data());
+            ImGui::Text(ICON_FA_SUN " %s", getCurrentSystem().state.name.data());
+            auto details_text = fmt::format("Class:{}, Pos: {}",
+                                            magic_enum::enum_name(getCurrentSystem().state.spectralType),
+                                            galaxy::buildSystemPositionStr(getCurrentSystem().trans.pos));
+            ImGui::Text(ICON_FA_MAGNIFYING_GLASS " %s", details_text.data());
             /// @end Text
 
             /// @begin Button
@@ -109,6 +124,7 @@ public:
 
             /// @separator
         }
+        ImGui::PopStyleVar(1);
         ImGui::End();
 
         /// @end Child
