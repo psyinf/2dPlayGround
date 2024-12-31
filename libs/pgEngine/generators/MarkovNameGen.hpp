@@ -9,11 +9,10 @@ static bool isVowel(char c)
     return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
 }
 
-template <size_t Depth>
-static std::string generate(uint8_t                          minLength,
-                            uint8_t                          maxLength,
-                            const MarkovFrequencyMap<Depth>& frequencyMap,
-                            const SeedGenerator&             seed_gen)
+static std::string generate(uint8_t                   minLength,
+                            uint8_t                   maxLength,
+                            const MarkovFrequencyMap& frequencyMap,
+                            const SeedGenerator&      seed_gen)
 {
     const auto map_size = frequencyMap.size();
     if (map_size == 0) { throw std::runtime_error("Empty frequencies"); }
@@ -36,7 +35,7 @@ static std::string generate(uint8_t                          minLength,
         }
         // append random letter
         name += freq[pg::randomBetween<size_t>(0u, freq.size() - 1, seed_gen)];
-        start = name.substr(name.size() - Depth);
+        start = name.substr(name.size() - frequencyMap.getDepth());
     }
 
     // check if the first two are consonants and add a ' in between

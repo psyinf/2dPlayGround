@@ -15,6 +15,7 @@ target_sources(${PROJECT_NAME}
 		font/Font.cpp
 		"core/FPSCounter.cpp"
 		core/Gui.cpp
+		generators/markov/MarkovFrequencyMap.cpp
 	PUBLIC
 		factories/Factories.hpp
 		
@@ -54,6 +55,7 @@ target_link_libraries(${PROJECT_NAME}
 	nlohmann_json::nlohmann_json
     imgui
 	pgf::pgf
+	cereal::cereal
 	IconFontCppHeaders
 	PRIVATE
 	SDL2_ttf::SDL2_ttf-static

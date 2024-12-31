@@ -34,9 +34,82 @@
 #include <pgEngine/resources/SpriteResource.hpp>
 #include <gui/InSceneOptionsWidget.hpp>
 #include <gui/MainFrameWidget.hpp>
+#include <pgEngine/generators/markov/MarkovFrequencyMapSerializer.hpp>
+
+#include <cereal/types/vector.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
+
+class CachedNames
+{
+public:
+    CachedNames(const std::string&                        set_name,
+                uint32_t                                  num_names,
+                const pg::generators::MarkovFrequencyMap& mfm,
+                std::function<void(float)>                progress)
+    {
+        auto file_name = fmt::format("../data/text/{}-{}.names", set_name, num_names);
+        progress(0.0f);
+        try
+        {
+            load(file_name);
+            progress(1.0f);
+        }
+        catch (const std::exception&)
+        {
+            spdlog::info("No names loaded from file");
+            generate(mfm, num_names, progress);
+            save(file_name);
+        }
+    }
+
+    void generate(const pg::generators::MarkovFrequencyMap& mfm,
+                  size_t                                    numNames,
+                  std::function<void(float)>                progress,
+                  uint32_t                                  seed = 0)
+    {
+        _names.clear();
+        _names.reserve(numNames);
+        for (auto i : std::ranges::iota_view{0u, numNames})
+        {
+            progress(static_cast<float>(i) / numNames - 1);
+            pg::SeedGenerator seed_gen(i + seed);
+
+            auto name = pg::generators::markov::generate(3, 8, mfm, seed_gen);
+            _names.push_back(name);
+        }
+        fmt::print("Generated {} names\n", numNames);
+    }
+
+    const std::string& getName(size_t index) const { return _names.at(index); }
+
+    // serialize
+    template <class Archive>
+    void serialize(Archive& archive)
+    {
+        archive(_names);
+    }
+
+    void save(const std::string& filename)
+    {
+        std::ofstream ofs(filename, std::ios::binary);
+        // binary archive
+        cereal::BinaryOutputArchive archive(ofs);
+        archive(_names);
+    }
+
+    void load(const std::string& filename)
+    {
+        std::ifstream ifs(filename, std::ios::binary);
+        // binary archive
+        cereal::BinaryInputArchive archive(ifs);
+        archive(_names);
+    }
+
+private:
+    std::vector<std::string> _names;
+};
 
 class GalaxyScene : public pg::game::Scene
 {
@@ -63,44 +136,81 @@ public:
             preLoaders.loaders.emplace(file, loader);
         }
 #endif
+        getGame().addSingleton_as<std::atomic_bool>("markovFrequencyMap.loaded", false);
         /// add markov chain for names
-        auto loader = [this](PercentCompleted& completion) {
-            std::ifstream fileStreamIn("../data/text/corpi/stars.txt", std::ios_base::binary);
-            std::ifstream fileStreamIn2("../data/text/corpi/boys.txt", std::ios_base::binary);
-            auto          file1_size = std::filesystem::file_size("../data/text/corpi/stars.txt");
-            auto          file2_size = std::filesystem::file_size("../data/text/corpi/boys.txt");
-            auto          total_size = file1_size + file2_size;
-            auto          resource = "markov";
-            pg::generators::MarkovFrequencyMap<4> fmg;
+        auto markov_loader = [this](PercentCompleted& completion) {
+            // try cached
+            // get atomic bool
 
-            while (!fileStreamIn.eof() && fileStreamIn)
+            auto& loaded = getGame().getSingleton<std::atomic_bool>("markovFrequencyMap.loaded");
+            pg::generators::MarkovFrequencyMap fmg;
+            try
             {
-                std::string word;
-                fileStreamIn >> word;
-                // current file position
-                auto pos = fileStreamIn.tellg();
-                completion[resource] = static_cast<float>(pos) / total_size;
-                fmg.add(word);
+                fmg = pg::generators::loadFrequencyMap("../data/text/star_names.mfm");
             }
-
-            while (!fileStreamIn2.eof() && fileStreamIn2)
+            catch (const std::exception& e)
             {
-                std::string word;
-                fileStreamIn2 >> word;
-                auto pos = fileStreamIn2.tellg();
-                completion[resource] = static_cast<float>(pos) / total_size;
-                fmg.add(word);
-            }
-            if (fmg.size() == 0)
-            {
-                fmg.add("empty");
                 // log
-                spdlog::error("No words loaded from file");
+                spdlog::info("No markov frequency map found for stars ("
+                             "../data/text/star_names.mfm"
+                             ")");
+                std::ifstream fileStreamIn("../data/text/corpi/stars.txt", std::ios_base::binary);
+                std::ifstream fileStreamIn2("../data/text/corpi/boys.txt", std::ios_base::binary);
+                auto          file1_size = std::filesystem::file_size("../data/text/corpi/stars.txt");
+                auto          file2_size = std::filesystem::file_size("../data/text/corpi/boys.txt");
+                auto          total_size = file1_size + file2_size;
+                auto          resource = "markov";
+                while (!fileStreamIn.eof() && fileStreamIn)
+                {
+                    std::string word;
+                    fileStreamIn >> word;
+                    // current file position
+                    auto pos = fileStreamIn.tellg();
+                    completion[resource] = static_cast<float>(pos) / total_size;
+                    fmg.add(word);
+                }
+
+                while (!fileStreamIn2.eof() && fileStreamIn2)
+                {
+                    std::string word;
+                    fileStreamIn2 >> word;
+                    auto pos = fileStreamIn2.tellg();
+                    completion[resource] = static_cast<float>(pos) / total_size;
+                    fmg.add(word);
+                }
+                if (fmg.size() == 0)
+                {
+                    fmg.add("empty");
+                    // log
+                    spdlog::error("No words loaded from file");
+                }
+                pg::generators::saveFrequencyMap("../data/text/star_names.mfm", fmg.getFrequencyMap());
             }
-            getGame().addSingleton_as<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap", fmg);
+
+            getGame().addSingleton_as<pg::generators::MarkovFrequencyMap>("markovFrequencyMap", fmg);
+            loaded = true;
         };
 
-        preLoaders.loaders.emplace("markov", std::move(loader));
+        // cached name loader
+        auto name_loader = [this](PercentCompleted& completion) {
+            // wait for markov loader
+            completion["Generate Names"] = 0.0f;
+            auto& loaded = getGame().getSingleton<std::atomic_bool>("markovFrequencyMap.loaded");
+            // wait for markov loader
+            while (!loaded)
+            {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            }
+            CachedNames cachedNames("star_names",
+                                    galaxyConfig.num_stars,
+                                    getGame().getSingleton<pg::generators::MarkovFrequencyMap>("markovFrequencyMap"),
+                                    [&completion](float percentage) { completion["Generate Names"] = percentage; });
+            getGame().addSingleton_as<CachedNames>("cachedNames", cachedNames);
+            completion["Generate Names"] = 1.0f;
+        };
+
+        preLoaders.loaders.emplace("Generate Markov Name Chains", std::move(markov_loader));
+        preLoaders.loaders.emplace("Pre-load names", std::move(name_loader));
     }
 
     virtual ~GalaxyScene() = default;
@@ -253,6 +363,7 @@ private:
 
         auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
         auto& gen = pg::SeedGenerator(galaxyConfig.stars_seed).get();
+        auto& cachedNames = getGame().getSingleton<CachedNames>("cachedNames");
 
         for ([[maybe_unused]] auto i : std::ranges::iota_view{0u, galaxyConfig.num_stars})
         {
@@ -269,10 +380,8 @@ private:
             auto new_size =
                 gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
 
-            auto              entity = getGlobalRegistry().create();
-            pg::SeedGenerator seed_gen(entt::to_integral(entity));
-            const auto&       mfm = getGame().getSingleton<pg::generators::MarkovFrequencyMap<4>>("markovFrequencyMap");
-            auto              name = pg::generators::markov::generate<4>(3, 8, mfm, seed_gen);
+            auto entity = getGlobalRegistry().create();
+
             pg::game::addComponents<pg::Transform2D,
                                     pg::game::Drawable,
                                     galaxy::StarSystemState,
@@ -284,7 +393,7 @@ private:
                  entity,
                  {.pos{new_pos}, .scale{new_size}, .scaleSpace{pg::TransformScaleSpace::Local}},
                  pg::game::Drawable{dot_sprite},
-                 galaxy::StarSystemState{.name = name, .spectralType{spectral_type}},
+                 galaxy::StarSystemState{.name = cachedNames.getName(i), .spectralType{spectral_type}},
                  galaxy::Faction{"None"},
                  {std::move(rendererStates)},
                  {});
