@@ -44,12 +44,6 @@ public:
     GalaxyScene(pg::game::Game& game, pg::game::SceneConfig&& scene_cfg)
       : pg::game::Scene(game, std::move(scene_cfg))
     {
-        galaxy::config::Galaxy galaxy_config;
-        pg::save("../data/galaxy_default_config.json", galaxy_config);
-
-        galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
-        // add preloaders
-
         auto& preLoaders = game.getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
 // for now, no images
 #if 0
@@ -115,6 +109,11 @@ public:
     {
         if (!started())
         {
+            galaxy::config::Galaxy galaxy_config;
+            // pg::save("../data/galaxy_default_config.json", galaxy_config);
+
+            galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
+            // add preloaders
             setupKeyHandler();
             setupOverlay();
             setupSelectionMarker();

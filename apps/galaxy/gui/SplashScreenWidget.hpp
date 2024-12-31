@@ -30,7 +30,12 @@ private:
 class SplashScreenWidget : public galaxy::gui::GameGuiWidget
 {
 public:
-    using galaxy::gui::GameGuiWidget::GameGuiWidget;
+    SplashScreenWidget(pg::game::Game& game)
+      : galaxy::gui::GameGuiWidget(game)
+    {
+        // load config
+        pg::load("../data/galaxy_config.json", galaxy_config);
+    }
 
     static constexpr auto lineColor = ImU32{IM_COL32(255, 0.7 * 255, 0 * 255, 128)};
 
@@ -65,6 +70,18 @@ public:
             lineColor,
             2.0f);
 
+        if (res)
+        {
+            getGame().getDispatcher().trigger<galaxy::events::MenuButtonPressed>(
+                {.menuName = "mainScreen", .buttonName = name});
+            if (func) { func(); }
+        }
+    }
+
+    void button(const ImVec2& anchor, const std::string& name, std::function<void()> func = {})
+    {
+        auto current = ImGui::GetCursorPos();
+        auto res = ImGui::Button(name.c_str(), ImVec2(200, 50));
         if (res)
         {
             getGame().getDispatcher().trigger<galaxy::events::MenuButtonPressed>(
@@ -159,7 +176,14 @@ public:
         auto options_anchor = ImVec2(ImGui::GetCursorPosX() + 200, ImGui::GetCursorPosY() + 50);
         // add size of button
 
-        menuButton(anchor, "Options", [this]() { active_menu = "options"; });
+        menuButton(anchor, "Options", [this]() {
+            if (active_menu == "options")
+            {
+                active_menu = {};
+                return;
+            }
+            active_menu = "options";
+        });
 
         menuButton(anchor, "Help");
 
@@ -171,16 +195,36 @@ public:
         ImGui::EndGroup();
         if (active_menu == "options")
         {
-            if (0)
-            {
-                ImGui::SetCursorPos(ImVec2(300, 50));
-                ImGui::BeginChild("Options", ImVec2(350, 400), true);
-
-                ImGui::EndChild();
-            }
+            ImGui::SetCursorPos(ImVec2(300, 50));
             ImGui::SetCursorPos(ImVec2(400, 50));
-
             menuButton(options_anchor, "Close ", [this]() { active_menu = {}; });
+            ImGui::BeginChild("Options", ImVec2(350, 400), true);
+
+            // slider for opacity
+            ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f);
+
+            // on save
+            button(ImVec2(100, 100), "Save", [this]() {
+                //
+                ImGui::OpenPopup("Save?");
+            });
+
+            if (ImGui::BeginPopupModal("Save?"))
+            {
+                ImGui::Text("Save changes?");
+                if (ImGui::Button("OK", ImVec2(120, 0)))
+                {
+                    pg::save("../data/galaxy_config.json", galaxy_config);
+                    ImGui::CloseCurrentPopup();
+                }
+                ImGui::SameLine();
+                if (ImGui::Button("Cancel", ImVec2(120, 0))) { ImGui::CloseCurrentPopup(); }
+                ImGui::EndPopup();
+            }
+
+            ImGui::EndChild();
+
+            // frame
         }
 
         else if (active_menu == "about")
@@ -199,7 +243,8 @@ public:
         ImGui::End();
     }
 
-    std::string active_menu{};
+    std::string            active_menu{};
+    galaxy::config::Galaxy galaxy_config;
 };
 
 } // namespace galaxy::gui
