@@ -60,9 +60,13 @@ void galaxy::GalacticCore::setup()
     pg::game::SystemsFactory::registerSystem<galaxy::SoundSystem>("soundSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::GuiRenderSystem>("guiSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::GalaxyRenderTag>>(
-        "galaxyRenderSystem", false);
+        "galaxyRenderSystem", RenderSystemConfig{.perScene{false}});
+    pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::MarkerTag>>(
+        "galaxyMarkers", RenderSystemConfig{.perScene{true}, .clear{false}});
+
     pg::game::SystemsFactory::registerSystem<
-        galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag, pg::tags::SelectedItemTag>>("systemRenderSystem", true);
+        galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag, pg::tags::SelectedItemTag>>("systemRenderSystem",
+                                                                                          RenderSystemConfig{});
 
     pg::game::SystemsFactory::registerSystem<galaxy::UpdateStarsSystem>("updateStarsSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::UpdateCurrentSystem>("updateCurrentSystem");
@@ -79,6 +83,7 @@ void galaxy::GalacticCore::setup()
     game->createScene<galaxy::GalaxyScene>({.scene_id = "galaxy",
                                             .systems = {"soundSystem",
                                                         "galaxyRenderSystem",
+                                                        "galaxyMarkers",
                                                         "guiSystem",
                                                         "updateStarsSystem",
                                                         "pickingSystem",

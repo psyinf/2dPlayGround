@@ -15,13 +15,19 @@ class States;
 namespace galaxy {
 using entt::literals::operator""_hs;
 
+struct RenderSystemConfig
+{
+    bool perScene = true;
+    bool clear = true;
+};
+
 template <typename... Tags>
 class TaggedRenderSystem : public pg::game::SystemInterface
 {
 public:
-    TaggedRenderSystem(pg::game::Game& game, const std::string& name, bool perScene)
+    TaggedRenderSystem(pg::game::Game& game, const std::string& name, const RenderSystemConfig& renderSystemConfig)
       : SystemInterface(game, name)
-      , _perScene(perScene)
+      , _renderSystemConfig(std::move(renderSystemConfig))
     {
     }
 
@@ -42,7 +48,8 @@ public:
     void handle(const pg::FrameStamp& frameStamp) override
     {
         auto renderer = pg::Renderer{_game.getApp().getRenderer(), frameStamp};
-        renderer.clear();
+        if (_renderSystemConfig.clear) { renderer.clear(); }
+        // TODO: overarching renderer state in RenderSystemConfig
         auto rendererStates = pg::States{};
         rendererStates.apply(renderer.renderer);
         auto windowRect = _game.getCurrentScene().getSingleton<pg::game::WindowDetails>().windowRect;
@@ -65,6 +72,7 @@ public:
             drawable.prim->draw(renderer, calculateTransform(transform, globalTransform, windowRect), rendererStates);
             rendererStates.pop_states(renderState.states);
         }
+
         // local
 
         // TODO: global config for debug items
@@ -93,7 +101,7 @@ public:
     template <typename... Args, typename... Excludes>
     auto getView(Excludes... excludes)
     {
-        if (_perScene)
+        if (_renderSystemConfig.perScene)
         {
             return _game.getCurrentSceneRegistry().view<Args..., Tags...>(std::forward<Excludes>(excludes)...);
         }
@@ -101,7 +109,7 @@ public:
     }
 
 private:
-    bool _perScene;
+    RenderSystemConfig _renderSystemConfig;
 };
 
 using RenderSystem = TaggedRenderSystem<>;
