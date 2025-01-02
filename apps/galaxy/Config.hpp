@@ -51,14 +51,19 @@ struct Debugging
     bool draw_quadtree{false};
 };
 
+struct Creation
+{
+    uint32_t stars_seed{0};
+    uint32_t num_stars{15000};
+};
+
 struct Galaxy
 {
     Star                 star;
     BackgoundParameters  background;
     ZoomParameters       zoom;
     Debugging            debugging;
-    uint32_t             stars_seed{0};
-    uint32_t             num_stars{15000};
+    Creation             creation;
     std::vector<Faction> factions = {
         {.name{"Terra"}, .color{0, 0, 255, 255}},
         //{.name{"Vogons"}, .color{255, 0, 0, 255}},

@@ -117,7 +117,13 @@ public:
     GalaxyScene(pg::game::Game& game, pg::game::SceneConfig&& scene_cfg)
       : pg::game::Scene(game, std::move(scene_cfg))
     {
-        auto& preLoaders = game.getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
+        initialize();
+    }
+
+    void initialize()
+    {
+        auto& preLoaders =
+            getGame().getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
 // for now, no images
 #if 0
         TODO: images can be loaded, but not added to the SDL in a background task. Doing so will interfere with the state while rendering. 
@@ -194,6 +200,8 @@ public:
         // cached name loader
         auto name_loader = [this](PercentCompleted& completion) {
             // wait for markov loader
+            galaxy::config::Galaxy galaxy_config;
+            galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
             completion["Generate Names"] = 0.0f;
             auto& loaded = getGame().getSingleton<std::atomic_bool>("markovFrequencyMap.loaded");
             // wait for markov loader
@@ -202,7 +210,7 @@ public:
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
             }
             CachedNames cachedNames("star_names",
-                                    galaxyConfig.num_stars,
+                                    galaxyConfig.creation.num_stars,
                                     getGame().getSingleton<pg::generators::MarkovFrequencyMap>("markovFrequencyMap"),
                                     [&completion](float percentage) { completion["Generate Names"] = percentage; });
             getGame().addSingleton_as<CachedNames>("cachedNames", cachedNames);
@@ -220,8 +228,6 @@ public:
         if (!started())
         {
             galaxy::config::Galaxy galaxy_config;
-            // pg::save("../data/galaxy_default_config.json", galaxy_config);
-
             galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
             // add preloaders
             setupKeyHandler();
@@ -362,10 +368,10 @@ private:
                                                      pgOrbit::star_class_probabilities.cend());
 
         auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
-        auto& gen = pg::SeedGenerator(galaxyConfig.stars_seed).get();
+        auto& gen = pg::SeedGenerator(galaxyConfig.creation.stars_seed).get();
         auto& cachedNames = getGame().getSingleton<CachedNames>("cachedNames");
 
-        for ([[maybe_unused]] auto i : std::ranges::iota_view{0u, galaxyConfig.num_stars})
+        for ([[maybe_unused]] auto i : std::ranges::iota_view{0u, galaxyConfig.creation.num_stars})
         {
             // color state
             auto rendererStates = pg::States{};

@@ -202,6 +202,28 @@ public:
 
             // slider for opacity
             ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f);
+            // number of stars as small (1000), medium (5000), large (15000)
+            auto current_item = galaxy_config.creation.num_stars <= 1000   ? 0
+                                : galaxy_config.creation.num_stars <= 5000 ? 1
+                                                                           : 2;
+
+            ;
+            if (ImGui::Combo("Number of stars", &current_item, "Small\0Medium\0Large\0\0"))
+            {
+                switch (current_item)
+                {
+                case 0:
+                    galaxy_config.creation.num_stars = 1000;
+                    break;
+                case 1:
+                    galaxy_config.creation.num_stars = 5000;
+                    break;
+                case 2:
+                    galaxy_config.creation.num_stars = 15000;
+                    break;
+                }
+            }
+            // star size
 
             // on save
             button(ImVec2(100, 100), "Save", [this]() {
