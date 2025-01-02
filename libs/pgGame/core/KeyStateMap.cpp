@@ -26,8 +26,8 @@ bool pg::KeyStateMap::keyEvent(const SDL_KeyboardEvent& event) noexcept
 bool pg::KeyStateMap::mouseMotion(const SDL_MouseMotionEvent& event) noexcept
 {
     if (mouseMovedCallback) { mouseMovedCallback({event.x, event.y}); }
-    if (event.state != 0 && mouseDraggedCallback) { mouseDraggedCallback({event.x, event.y}, event.state); }
-    if (event.state != 0 && mouseRelativeDraggedCallback)
+    if (event.state != 0u && mouseDraggedCallback) { mouseDraggedCallback({event.x, event.y}, event.state); }
+    if (event.state != 0u && mouseRelativeDraggedCallback)
     {
         mouseRelativeDraggedCallback({event.xrel, event.yrel}, event.state);
     }

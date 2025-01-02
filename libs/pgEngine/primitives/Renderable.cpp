@@ -15,7 +15,7 @@ void pg::Line::draw(pg::Renderer& r, const Transform2D& transform, const States&
     states.restore(r.renderer);
 }
 
-void pg::Point::draw(Renderer& r, const Transform2D& transform, const States& rendererStates)
+void pg::Point::draw(Renderer& r, const Transform2D& transform, const States& /*rendererStates*/)
 {
     auto p = transformPoint(_pos, transform);
     SDL_RenderDrawPointF(r.renderer.get(), p[0], p[1]);

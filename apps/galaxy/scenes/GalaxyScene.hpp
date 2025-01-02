@@ -154,7 +154,7 @@ public:
             {
                 fmg = pg::generators::loadFrequencyMap("../data/text/star_names.mfm");
             }
-            catch (const std::exception& e)
+            catch (const std::exception& /*e*/)
             {
                 // log
                 spdlog::info("No markov frequency map found for stars ("

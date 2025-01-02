@@ -9,7 +9,7 @@
 
 namespace pg {
 
-enum class MouseButton : uint8_t
+enum class MouseButton : uint32_t
 {
     LEFT,
     MIDDLE,
@@ -21,7 +21,7 @@ enum class MouseButton : uint8_t
 class KeyStateMap : public InputEventHandlerInterface
 {
 public:
-    using MouseButtonsState = uint8_t;
+    using MouseButtonsState = uint32_t;
 
     KeyStateMap() = default;
 
