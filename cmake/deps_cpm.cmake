@@ -189,7 +189,7 @@ CPMAddPackage(NAME  IconFontCppHeaders
     GIT_TAG         main
     GITHUB_REPOSITORY  juliettef/IconFontCppHeaders
     GIT_SHALLOW     TRUE
-    DONWLOAD_ONLY   TRUE
+    DOWNLOAD_ONLY   TRUE
 )
 
 if (IconFontCppHeaders_ADDED)
