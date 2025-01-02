@@ -3,15 +3,10 @@
 #include <pgGame/systems/SystemInterface.hpp>
 #include <memory>
 
-#include <pgEngine/core/LoadSave.hpp>
-#include <pgEngine/resources/SpriteResource.hpp>
-
 #include <gui/StatsWidget.hpp>
 #include <gui/SystemInfo.hpp>
-#include <gui/DashBoardWidget.hpp>
 
 #include <gui/StarSystemWidget.hpp>
-#include <gui/LoadResourcesWidget.hpp>
 
 #include <serializer/ConfigSerializer.hpp>
 #include <systems/GuiRenderSystem.hpp>
@@ -22,6 +17,7 @@
 #include <pgOrbit/OrbitCreator.hpp>
 
 #include <pgEngine/math/VecOps.hpp>
+#include <gui/MainBarWidget.hpp>
 
 namespace galaxy {
 

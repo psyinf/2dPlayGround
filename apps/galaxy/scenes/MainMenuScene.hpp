@@ -2,17 +2,17 @@
 #include <pgGame/core/Scene.hpp>
 #include <pgEngine/core/Gui.hpp>
 #include <memory>
-#include <gui/SplashScreenWidget.hpp>
+#include <gui/MainMenuWidget.hpp>
 #include <components/SoundScape.hpp>
 
 namespace galaxy {
 
-class SplashScreen : public pg::game::Scene
+class MainMenuScene : public pg::game::Scene
 {
 public:
     using pg::game::Scene::Scene;
 
-    virtual ~SplashScreen() = default;
+    virtual ~MainMenuScene() = default;
 
     void start() override
     {
@@ -31,7 +31,7 @@ public:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
-            {std::make_unique<galaxy::gui::SplashScreenWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
+            {std::make_unique<galaxy::gui::MainMenuWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
 };
 } // namespace galaxy

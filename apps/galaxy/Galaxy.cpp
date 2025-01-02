@@ -1,6 +1,6 @@
 #include "Galaxy.hpp"
 #include <scenes/GalaxyScene.hpp>
-#include <scenes/SplashScreen.hpp>
+#include <scenes/MainMenuScene.hpp>
 
 #include <scenes/LoadResourcesScene.hpp>
 #include <systems/RenderSystem.hpp>
@@ -8,9 +8,11 @@
 #include <systems/GuiRenderSystem.hpp>
 #include <systems/UpdateCurrentSystem.hpp>
 #include <scenes/SystemScene.hpp>
-#include <components/GameState.hpp>
 
-#include <pgGame/components/singletons/RegisteredPreloaders.hpp>
+#include <systems/DroneSystem.hpp>
+#include <systems/LifetimeSystem.hpp>
+#include <systems/BehaviorSystem.hpp>
+#include <systems/StatsSystem.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -77,8 +79,8 @@ void galaxy::GalacticCore::setup()
     pg::game::SystemsFactory::registerSystem<galaxy::StatsSystem>("statsSystem");
 
     // scenes
-    game->createScene<galaxy::SplashScreen>(
-        {.scene_id = "splashScreen", .systems = {"soundSystem", "guiSystem"}, .followUpScene = "galaxy"});
+    game->createScene<galaxy::MainMenuScene>(
+        {.scene_id = "mainMenu", .systems = {"soundSystem", "guiSystem"}, .followUpScene = "galaxy"});
     game->createScene<galaxy::LoadResourcesScene>({.scene_id = "loadGalaxy", .systems = {"guiSystem"}}, "galaxy");
     game->createScene<galaxy::GalaxyScene>({.scene_id = "galaxy",
                                             .systems = {"soundSystem",
@@ -100,7 +102,7 @@ void galaxy::GalacticCore::setup()
     game->addSingleton_as<pg::game::SystemInterface::Config>(
         "guiSystem.system.config", pg::game::SystemInterface::Config{{"standalone", "false"}});
 
-    auto& scene = game->switchScene("splashScreen");
+    auto& scene = game->switchScene("mainMenu");
     scene.start();
 }
 

@@ -1,13 +1,10 @@
 #include "DroneSystem.hpp"
 #include <components/Drone.hpp>
-#include <components/Lifetime.hpp>
 #include <components/StarSystem.hpp>
 
 #include <pgGame/components/Drawable.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
-#include <pgEngine/math/Quadtree.hpp>
-#include <pgEngine/math/Vec.hpp>
 #include <Config.hpp>
 #include <components/Faction.hpp>
 
@@ -15,8 +12,6 @@
 #include <pgEngine/math/Random.hpp>
 #include <events/DroneEvents.hpp>
 
-#include <ranges>
-#include <pgGame/components/RenderState.hpp>
 #include <behaviors/FindNextSystem.hpp>
 #include <behaviors/Travel.hpp>
 #include <behaviors/MakeDrone.hpp>

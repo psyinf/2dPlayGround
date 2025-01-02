@@ -1,18 +1,13 @@
 #pragma once
 #include <pgGame/core/Scene.hpp>
-#include <pgEngine/core/Gui.hpp>
 #include <memory>
-#include <gui/SplashScreenWidget.hpp>
-#include <sndX/BufferCache.hpp>
 
 #include <atomic>
 #include <barrier>
 #include <pgEngine/core/FrameStamp.hpp>
 
-#include <resources/SoundResource.hpp>
-#include <pgEngine/generators/MarkovNameGen.hpp>
-
 #include <pgGame/components/singletons/RegisteredPreloaders.hpp>
+#include <gui/LoadResourcesWidget.hpp>
 
 namespace galaxy {
 // TODO: pre loader per scene-transition

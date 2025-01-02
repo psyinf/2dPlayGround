@@ -3,6 +3,7 @@
 #include "IconsFontAwesome6.h"
 #include <gui/GameGuiWidget.hpp>
 #include <imgui.h>
+#include <pgGame/events/GameEvents.hpp>
 
 namespace galaxy::gui {
 

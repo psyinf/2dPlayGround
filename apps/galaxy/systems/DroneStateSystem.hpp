@@ -1,10 +1,8 @@
 #pragma once
 #include <entt/entt.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
-#include <pgEngine/math/Vec.hpp>
 
 #include <events/DroneEvents.hpp>
-#include <Config.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;

@@ -5,16 +5,10 @@
 #include <pgEngine/math/Vec.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 #include <pgEngine/math/Box.hpp>
-#include <pgGame/components/Drawable.hpp>
 #include "events/PickEvent.hpp"
-#include <fmt/core.h>
-#include <fmt/ranges.h>
 
 #include <deque>
-#include <ranges>
 #include <pgEngine/math/Transform.hpp>
-#include <pgEngine/primitives/Sprite.hpp>
-
 #include <components/PickedEntity.hpp>
 
 namespace galaxy {

@@ -6,6 +6,8 @@
 #include <helpers/GalaxyHelpers.hpp>
 #include <fmt/core.h>
 #include <components/Tags.hpp>
+#include <components/Lifetime.hpp>
+#include <pgGame/components/RenderState.hpp>
 
 namespace behavior {
 

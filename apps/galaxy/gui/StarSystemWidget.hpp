@@ -1,8 +1,6 @@
 #pragma once
 #include <gui/GameGuiWidget.hpp>
 #include <imgui.h>
-#include <components/Stats.hpp>
-#include <ranges>
 
 namespace galaxy::gui {
 

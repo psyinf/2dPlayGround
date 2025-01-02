@@ -1,42 +1,23 @@
 #pragma once
 #include <pgGame/core/Scene.hpp>
-#include <pgGame/systems/SystemInterface.hpp>
 #include <memory>
 
 #include <pgEngine/core/LoadSave.hpp>
-#include <pgEngine/resources/SpriteResource.hpp>
 
-#include <gui/StatsWidget.hpp>
-#include <gui/SystemInfo.hpp>
-#include <gui/DashBoardWidget.hpp>
-#include <gui/LoadResourcesWidget.hpp>
-#include <gui/MainBarWidget.hpp>
-
-#include <serializer/ConfigSerializer.hpp>
-
-#include <systems/GuiRenderSystem.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 #include <pgEngine/math/VecUtils.hpp>
 
 #include <pgOrbit/StarParameters.hpp>
 #include <systems/UpdateStarsSystem.hpp>
 #include <systems/PickingSystem.hpp>
-#include <systems/DroneSystem.hpp>
-#include <systems/LifetimeSystem.hpp>
-#include <systems/BehaviorSystem.hpp>
-#include <systems/StatsSystem.hpp>
 #include <components/Tags.hpp>
 
 #include <pgGame/core/RegistryHelper.hpp>
-#include <components/Tags.hpp>
-#include <entt/entt.hpp>
 #include <pgGame/components/singletons/RegisteredPreloaders.hpp>
-#include <pgEngine/resources/SpriteResource.hpp>
-#include <gui/InSceneOptionsWidget.hpp>
 #include <gui/MainFrameWidget.hpp>
 #include <pgEngine/generators/markov/MarkovFrequencyMapSerializer.hpp>
-
-#include <cereal/types/vector.hpp>
+#include <pgEngine/generators/MarkovNameGen.hpp>
+#include <pgGame/events/SceneManagementEvents.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;

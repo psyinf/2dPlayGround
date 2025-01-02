@@ -45,10 +45,10 @@ private:
     size_t _colors{0};
 };
 
-class SplashScreenWidget : public galaxy::gui::GameGuiWidget
+class MainMenuWidget : public galaxy::gui::GameGuiWidget
 {
 public:
-    SplashScreenWidget(pg::game::Game& game)
+    MainMenuWidget(pg::game::Game& game)
       : galaxy::gui::GameGuiWidget(game)
     {
         pg::load("../data/galaxy_config.json", galaxy_config);
