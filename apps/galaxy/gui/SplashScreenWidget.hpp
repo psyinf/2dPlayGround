@@ -131,11 +131,13 @@ public:
             pg::gui::button<ButtonSize::Medium>("Save", [this](auto) {
                 //
                 ImGui::OpenPopup("Save?");
+                onButtonPressed("Save");
             });
             ImGui::SameLine();
             pg::gui::button<pg::gui::ButtonSize::Medium>("Close", [this](auto) {
                 //
                 ImGui::OpenPopup("Close?");
+                onButtonPressed("Close");
             });
 
             if (ImGui::BeginPopupModal("Save?"))
@@ -143,6 +145,7 @@ public:
                 ImGui::Text("Save changes?");
                 if (ImGui::Button("OK", ImVec2(120, 0)))
                 {
+                    onButtonPressed("Saved");
                     active_menu = {};
                     pg::save("../data/galaxy_config.json", galaxy_config);
                     ImGui::CloseCurrentPopup();
