@@ -13,6 +13,7 @@
 #include <systems/SoundSystem.hpp>
 
 #include <pgGame/systems/SystemsRegistry.hpp>
+#include <pgGame/events/GameEvents.hpp>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
@@ -37,6 +38,9 @@ try
                                "dynamicsSystem",
                                "soundSystem"}});
     game.switchScene("start");
+    // send start event
+    game.getGlobalDispatcher().enqueue<pg::game::events::PlayPauseEvent>(
+        {.state = pg::game::events::PlayPauseEvent::State::Play});
 
     // TODO: from external config
     game.getCurrentScene().addSingleton<asteroids::RenderConfig>(
