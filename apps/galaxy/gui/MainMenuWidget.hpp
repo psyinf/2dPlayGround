@@ -1,5 +1,6 @@
 #pragma once
 #include <gui/GameGuiWidget.hpp>
+#include <gui/menus/OptionsMenu.hpp>
 #include <pgGame/events/SceneManagementEvents.hpp>
 #include <pgGame/events/GameEvents.hpp>
 #include <events/UIEvents.hpp>
@@ -67,88 +68,18 @@ public:
 
     void handleOptionsMenu()
     {
-        using pg::gui::ButtonSize;
-        ImGui::SetCursorPos(ImVec2(50, 50));
-        // menuButton(options_anchor, "Close ", [this]() { active_menu = {}; });
-        ImGui::BeginChild("Options");
-
-        // slider for opacity
-        ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f);
-        // number of stars as small (1000), medium (5000), large (15000)
-        auto current_item = galaxy_config.creation.num_stars <= 1000   ? 0
-                            : galaxy_config.creation.num_stars <= 5000 ? 1
-                                                                       : 2;
-
-        ;
-        if (ImGui::Combo("Number of stars", &current_item, "Small\0Medium\0Large\0\0"))
+        bool closed = false;
+        if (galaxy::gui::optionsMenu(galaxy_config, closed, [this](const auto& name) { onButtonPressed(name, false); }))
         {
-            switch (current_item)
-            {
-            case 0:
-                galaxy_config.creation.num_stars = 1000;
-                break;
-            case 1:
-                galaxy_config.creation.num_stars = 5000;
-                break;
-            case 2:
-                galaxy_config.creation.num_stars = 15000;
-                break;
-            }
+            active_menu = {};
+            // save the config
+            pg::save("../data/galaxy_config.json", galaxy_config);
         }
-        // star size
-
-        // on save
-        pg::gui::button<ButtonSize::Medium>("Save", [this](auto) {
+        if (closed)
+        {
             //
-            ImGui::OpenPopup("Save?");
-            onButtonPressed("Save");
-        });
-        ImGui::SameLine();
-        pg::gui::button<pg::gui::ButtonSize::Medium>("Close", [this](auto) {
-            //
-            ImGui::OpenPopup("Close?");
-            onButtonPressed("Close");
-        });
-
-        if (ImGui::BeginPopupModal("Save?"))
-        {
-            ImGui::Text("Save changes?");
-            if (ImGui::Button("OK", ImVec2(120, 0)))
-            {
-                onButtonPressed("Saved");
-                active_menu = {};
-                pg::save("../data/galaxy_config.json", galaxy_config);
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
-            {
-                ImGui::CloseCurrentPopup();
-                onButtonPressed("Closed");
-            }
-            ImGui::EndPopup();
+            active_menu = {};
         }
-        if (ImGui::BeginPopupModal("Close?"))
-        {
-            ImGui::Text("Discard changes?");
-            if (ImGui::Button("OK", ImVec2(120, 0)))
-            {
-                active_menu = {};
-                ImGui::CloseCurrentPopup();
-                onButtonPressed("Closed");
-            }
-            ImGui::SameLine();
-            if (ImGui::Button("Cancel", ImVec2(120, 0)))
-            {
-                ImGui::CloseCurrentPopup();
-                onButtonPressed("Closed");
-            }
-            ImGui::EndPopup();
-        }
-
-        ImGui::EndChild();
-
-        // frame
     }
 
     void handleHelpMenu()
