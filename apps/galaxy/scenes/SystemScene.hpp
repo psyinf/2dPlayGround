@@ -181,7 +181,6 @@ public:
         {
             getSceneRegistry().remove<pg::tags::SelectedItemTag>(entity);
         }
-
         Scene::stop();
     }
 

@@ -3,7 +3,6 @@
 #include <pgGame/core/Game.hpp>
 #include <components/Entities.h>
 #include <events/Collision.h>
-#include <iostream>
 
 void asteroids::Collisions::setup(std::string_view /*scene_id*/) {}
 

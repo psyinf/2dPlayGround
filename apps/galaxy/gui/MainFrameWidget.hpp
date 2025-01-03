@@ -34,7 +34,6 @@ private:
         else
         {
             if (it == factors.begin()) { return; }
-
             it--;
         }
 
