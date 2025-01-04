@@ -3,6 +3,10 @@
 #include <pgEngine/core/Gui.hpp>
 #include <pgEngine/guiElements/guiElements.hpp>
 
+#include <string>
+#include <functional>
+#include <array>
+
 // guiElements.hpp
 
 namespace galaxy::gui {
@@ -12,7 +16,6 @@ static constexpr auto medium_galaxy_stars = 5000;
 static constexpr auto large_galaxy_stars = 15000;
 static constexpr auto huge_galaxy_stars = 25000;
 static constexpr auto massive_galaxy_stars = 50000;
-constexpr std::array  myStrings = {"one", "two", "three"};
 // array of names
 static constexpr auto galaxy_star_sizes = std::to_array({"Small", "Medium", "Large", "Huge", "Massive"});
 static constexpr auto galaxy_star_sizes_counts = std::to_array({1000u, 5000u, 10000u, 20000u, 50000u});
@@ -35,35 +38,47 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
                         bool&                                   closed,
                         std::function<void(const std::string&)> buttonPressed)
 {
-    bool save = false;
+    // TODO: tabs
+
+    static bool changes = false;
+    bool        save = false;
     closed = false;
     using pg::gui::ButtonSize;
     ImGui::SetCursorPos(ImVec2(50, 50));
-    ImGui::BeginChild("Options");
+    ImGui::BeginChild("##Options");
+    ImGui::BeginTabBar("Options");
 
+    ImGui::BeginTabItem("Galaxy");
+
+    ImGui::SeparatorText("View");
     // slider for opacity
-    ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f);
+    if (ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f)) { changes = true; }
     // number of stars as small (1000), medium (5000), large (15000)
     auto current_item = galaxy_config.creation.num_stars <= 1000 ? 0 : galaxy_config.creation.num_stars <= 5000 ? 1 : 2;
     // string from names
     // const char* data = galaxy_star_sizes.data();
+    // horizontal line with name
+    ImGui::SeparatorText("Galaxy");
     if (ImGui::Combo("Number of stars", &current_item, getNullSeparatedNames().data()))
     {
+        changes = true;
         galaxy_config.creation.num_stars = galaxy_star_sizes_counts.at(current_item);
     }
-    // star size
 
     // on save
-    pg::gui::button<ButtonSize::Medium>("Save", [=](auto) {
-        //
-        ImGui::OpenPopup("Save?");
+    if (changes)
+    {
+        pg::gui::button<ButtonSize::Medium>("Save", [=](auto) {
+            ImGui::OpenPopup("Save?");
+            buttonPressed("Save");
+        });
+        ImGui::SameLine();
+    }
 
-        buttonPressed("Save");
-    });
-    ImGui::SameLine();
-    pg::gui::button<pg::gui::ButtonSize::Medium>("Close", [=](auto) {
+    pg::gui::button<pg::gui::ButtonSize::Medium>("Close", [=, &closed](auto) {
         //
-        ImGui::OpenPopup("Close?");
+        if (changes) { ImGui::OpenPopup("Close?"); }
+        else { closed = true; }
         buttonPressed("Close");
     });
 
@@ -75,6 +90,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
             buttonPressed("Saved");
             closed = true;
             save = true;
+            changes = false;
             ImGui::CloseCurrentPopup();
         }
         ImGui::SameLine();
@@ -92,6 +108,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
         {
             closed = true;
             save = false;
+            changes = false;
             ImGui::CloseCurrentPopup();
             buttonPressed("Closed");
         }
@@ -104,6 +121,8 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
         ImGui::EndPopup();
     }
 
+    ImGui::EndTabItem();
+    ImGui::EndTabBar();
     ImGui::EndChild();
 
     return save;

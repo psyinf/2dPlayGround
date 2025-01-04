@@ -59,7 +59,7 @@ struct Creation
 
 struct Galaxy
 {
-    Star                 star;
+    // TODO: split into runtime and serialized config
     BackgoundParameters  background;
     ZoomParameters       zoom;
     Debugging            debugging;

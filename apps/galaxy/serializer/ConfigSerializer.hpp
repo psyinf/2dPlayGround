@@ -18,5 +18,5 @@ NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(DroneParameters,
                                                 reliability_factor)
 NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE(Faction, name, color, startParams, droneParams)
 
-NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Galaxy, star, background, zoom, creation, factions);
+NLOHMANN_DEFINE_TYPE_NON_INTRUSIVE_WITH_DEFAULT(Galaxy, background, zoom, creation, factions);
 } // namespace galaxy::config

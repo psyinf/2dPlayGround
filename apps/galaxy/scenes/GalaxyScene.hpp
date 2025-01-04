@@ -210,13 +210,11 @@ public:
         {
             galaxy::config::Galaxy galaxy_config;
             galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
-            // add preloaders
             setupKeyHandler();
             setupOverlay();
             setupSelectionMarker();
             setupGalaxy();
 
-            addSingleton_as<const pg::Color&>("galaxy.star.default_color", galaxyConfig.star.default_color);
             addSingleton_as<const galaxy::config::Galaxy&>("galaxy.config", galaxyConfig);
 
             Scene::start();
