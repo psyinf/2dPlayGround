@@ -1,7 +1,8 @@
 #pragma once
 #include <imgui.h>
 #include <pgEngine/core/Gui.hpp>
-#include <pgEngine/guiElements/guiElements.hpp>
+#include <pgEngine/gui/GuiElements.hpp>
+#include <pgEngine/gui/ImGuiScopedWrappers.hpp>
 
 #include <string>
 #include <functional>
@@ -46,25 +47,33 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
     using pg::gui::ButtonSize;
     ImGui::SetCursorPos(ImVec2(50, 50));
     ImGui::BeginChild("##Options");
-    ImGui::BeginTabBar("Options");
-
-    ImGui::BeginTabItem("Galaxy");
-
-    ImGui::SeparatorText("View");
-    // slider for opacity
-    if (ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f)) { changes = true; }
-    // number of stars as small (1000), medium (5000), large (15000)
-    auto current_item = galaxy_config.creation.num_stars <= 1000 ? 0 : galaxy_config.creation.num_stars <= 5000 ? 1 : 2;
-    // string from names
-    // const char* data = galaxy_star_sizes.data();
-    // horizontal line with name
-    ImGui::SeparatorText("Galaxy");
-    if (ImGui::Combo("Number of stars", &current_item, getNullSeparatedNames().data()))
+    // ImGui::BeginTabBar("Options");
     {
-        changes = true;
-        galaxy_config.creation.num_stars = galaxy_star_sizes_counts.at(current_item);
+        pgf::gui::TabBar tab_bar("Options");
+        // ImGui::BeginTabItem("Galaxy");
+        {
+            pgf::gui::TabItem tab_item("Galaxy");
+            ImGui::SeparatorText("View");
+            // slider for opacity
+            if (ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f))
+            {
+                changes = true;
+            }
+            // number of stars as small (1000), medium (5000), large (15000)
+            auto current_item = galaxy_config.creation.num_stars <= 1000   ? 0
+                                : galaxy_config.creation.num_stars <= 5000 ? 1
+                                                                           : 2;
+            // string from names
+            // const char* data = galaxy_star_sizes.data();
+            // horizontal line with name
+            ImGui::SeparatorText("Galaxy");
+            if (ImGui::Combo("Number of stars", &current_item, getNullSeparatedNames().data()))
+            {
+                changes = true;
+                galaxy_config.creation.num_stars = galaxy_star_sizes_counts.at(current_item);
+            }
+        }
     }
-
     // on save
     if (changes)
     {
@@ -121,8 +130,6 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
         ImGui::EndPopup();
     }
 
-    ImGui::EndTabItem();
-    ImGui::EndTabBar();
     ImGui::EndChild();
 
     return save;
