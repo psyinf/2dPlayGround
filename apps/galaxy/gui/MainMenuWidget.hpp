@@ -1,50 +1,13 @@
 #pragma once
 #include <gui/GameGuiWidget.hpp>
 #include <gui/menus/OptionsMenu.hpp>
+#include <pgEngine/gui/GuiElements.hpp>
 #include <pgGame/events/SceneManagementEvents.hpp>
 #include <pgGame/events/GameEvents.hpp>
 #include <events/UIEvents.hpp>
 #include <imgui.h>
-#include <sndX/BackgroundPlayer.hpp>
-
-#include <unordered_map>
-#include <pgEngine/guiElements/guiElements.hpp>
-
-static soundEngineX::BackgroundPlayer _bgPlayer;
 
 namespace galaxy::gui {
-
-class StyleStack
-{
-public:
-    ~StyleStack()
-    {
-        ImGui::PopStyleVar(static_cast<int>(_styles));
-        ImGui::PopStyleColor(static_cast<int>(_colors));
-    }
-
-    void pushStyle(ImGuiStyleVar style, float value)
-    {
-        _styles++;
-        ImGui::PushStyleVar(style, value);
-    }
-
-    void pushStyle(ImGuiStyleVar style, const ImVec2& value)
-    {
-        _styles++;
-        ImGui::PushStyleVar(style, value);
-    }
-
-    void pushStyleColor(ImGuiCol style, const ImVec4& value)
-    {
-        _colors++;
-        ImGui::PushStyleColor(style, value);
-    }
-
-private:
-    size_t _styles{0};
-    size_t _colors{0};
-};
 
 class MainMenuWidget : public galaxy::gui::GameGuiWidget
 {
@@ -144,7 +107,7 @@ public:
             ImGui::Image((ImTextureID)dot_texture.get()->get(),
                          ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
             // TODO: style from config
-            StyleStack stack;
+            pgf::gui::StyleStack stack;
             stack.pushStyle(ImGuiStyleVar_FrameRounding, 10.0f);
             stack.pushStyle(ImGuiStyleVar_FrameBorderSize, 2.0f);
 
