@@ -7,10 +7,6 @@
 namespace galaxy {
 using entt::literals::operator""_hs;
 
-class Game;
-struct Drone;
-struct Faction;
-
 class DroneSystem : public pg::game::SystemInterface
 {
 public:

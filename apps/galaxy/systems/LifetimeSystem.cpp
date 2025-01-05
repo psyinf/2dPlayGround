@@ -11,12 +11,12 @@ bool lifeTimeExceeded(const galaxy::Lifetime& lifetime)
 {
     auto r = lifetime.reliability_factor; // reliability factor. smaller values mean higher reliability
 
-    auto l = 1.0 - (std::exp(-r * static_cast<float>(lifetime.time_alive / lifetime.expected_lifetime)));
+    auto l = 1.0f - (std::exp(-r * static_cast<float>(lifetime.time_alive / lifetime.expected_lifetime)));
 
     return (pg::randomBetween(0.0f, 1.0f) < l);
 }
 
-void galaxy::LifetimeSystem::handle(const pg::FrameStamp& )
+void galaxy::LifetimeSystem::handle(const pg::FrameStamp&)
 {
     auto view = _game.getGlobalRegistry().view<galaxy::Lifetime>();
     for (auto& entity : view)

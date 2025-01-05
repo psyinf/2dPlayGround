@@ -84,11 +84,26 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
             // collapsible faction list
             ImGui::SeparatorText("Factions");
             // list of factions as tree
+            // add button
+            if (ImGui::Button("Activate Faction"))
+            {
+                // find first inactive faction
+                auto it = std::find_if(galaxy_config.factions.begin(),
+                                       galaxy_config.factions.end(),
+                                       [](const auto& faction) { return !faction.active; });
+                if (it != galaxy_config.factions.end())
+                {
+                    it->active = true;
+                    changes = true;
+                }
+                else { ImGui::OpenPopup("No Inactive Factions"); }
+                changes = true;
+            }
 
             for (auto&& [id, faction] : std::views::enumerate(galaxy_config.factions))
             {
                 // we need to copy the faction name to avoid treeNode close on edit
-
+                if (!faction.active) { continue; }
                 std::vector<char> name(256, '\0');
                 std::copy_n(faction.name.begin(), faction.name.size(), name.begin());
                 auto label_name = faction.name + "###" + std::to_string(id);
@@ -100,6 +115,13 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
 
                 if (pgf::gui::TreeNode(label_name.c_str()).get())
                 {
+                    // active
+                    // button to deactivate faction
+                    if (ImGui::Button("Deactivate Faction"))
+                    {
+                        faction.active = false;
+                        changes = true;
+                    }
                     // faction name
                     if (ImGui::InputText("Faction Name", name.data(), name.size()))
                     {
@@ -115,7 +137,49 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
                                          static_cast<uint8_t>(color.z * 255),
                                          static_cast<uint8_t>(color.w * 255)};
                     }
-                    // faction icon
+                    // faction starting parameters
+                    ImGui::SeparatorText("Starting Parameters");
+                    // TODO: should support minutes/hours/ ...
+                    if (ImGui::InputScalar(
+                            "Starting delay (sec)", ImGuiDataType_U64, &faction.startParams.start_offset_seconds))
+                    {
+                        changes = true;
+                    }
+                    // number of drones
+                    if (ImGui::InputScalar(
+                            "Number of Starting Drones", ImGuiDataType_U8, &faction.startParams.num_start_drones))
+                    {
+                        changes = true;
+                    }
+
+                    // faction drone parameters
+                    ImGui::SeparatorText("Drone Parameters");
+                    // max acceleration
+                    if (ImGui::SliderFloat("Max Acceleration (g)", &faction.droneParams.max_acceleration, 0.f, 1000.f))
+                    {
+                        changes = true;
+                    }
+                    // max speed
+                    if (ImGui::SliderFloat("Max Speed (c)", &faction.droneParams.max_speed, 0.0f, 1.0f))
+                    {
+                        changes = true;
+                    }
+                    // max range
+                    if (ImGui::SliderFloat("Max Range (ly)", &faction.droneParams.max_range, 0.0f, 100.0f))
+                    {
+                        changes = true;
+                    }
+                    // expected lifetime
+                    if (ImGui::InputScalar(
+                            "Expected Lifetime (sec)", ImGuiDataType_U32, &faction.droneParams.expected_lifetime))
+                    {
+                        changes = true;
+                    }
+                    // reliability factor
+                    if (ImGui::SliderFloat("Reliability Factor", &faction.droneParams.reliability_factor, 0.0f, 1.0f))
+                    {
+                        changes = true;
+                    }
                 }
             }
         }

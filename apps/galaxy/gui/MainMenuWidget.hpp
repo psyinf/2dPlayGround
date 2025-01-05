@@ -15,7 +15,14 @@ public:
     MainMenuWidget(pg::game::Game& game)
       : galaxy::gui::GameGuiWidget(game)
     {
-        pg::load("../data/galaxy_config.json", galaxy_config);
+        try
+        {
+            galaxy_config = pg::load("../data/galaxy_config.json", galaxy_config);
+        }
+        catch (const std::exception&)
+        {
+            pg::save("../data/galaxy_config.json", galaxy_config);
+        }
     }
 
     void onButtonPressed(const std::string& name, bool switchScene = true)

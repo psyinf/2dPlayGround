@@ -12,7 +12,7 @@ struct Star
 
 struct StartingParameters
 {
-    uint64_t start_cycle{0};
+    uint64_t start_offset_seconds{0};
     uint8_t  num_start_drones{1};
 };
 
@@ -27,6 +27,7 @@ struct DroneParameters
 
 struct Faction
 {
+    bool               active{false};
     std::string        name;
     pg::Color          color{0, 0, 255, 255};
     StartingParameters startParams;
@@ -65,12 +66,10 @@ struct Galaxy
     Debugging            debugging;
     Creation             creation;
     std::vector<Faction> factions = {
-        {.name{"Terra"}, .color{0, 0, 255, 255}},
-        //{.name{"Vogons"}, .color{255, 0, 0, 255}},
-        //{.name{"Grays"}, .color{255, 255, 0, 255}},
-        //{.name{"Vogons"}, .color{255, 0, 0, 255}},
-        //{.name{"Grays"}, .color{255, 255, 0, 255}},
-        //{.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_cycle{}, .num_start_drones{}}}
+        {.active = true, .name{"Terra"}, .color{0, 0, 255, 255}},
+        {.name{"Vogons"}, .color{255, 0, 0, 255}},
+        {.name{"Grays"}, .color{255, 255, 0, 255}},
+        {.name{"Drifters"}, .color{0, 255, 255, 255}, .startParams{.start_offset_seconds{}, .num_start_drones{}}}
         //
     };
 };

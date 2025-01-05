@@ -72,8 +72,10 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
 
     for (const auto& faction : galaxy_config.factions)
     {
+        // skip inactive factions
+        if (!faction.active) { continue; }
         // TODO: this needs to be based on the real time passed (e.g. years)
-        if (faction.startParams.start_cycle != frameStamp.gameTick) { continue; }
+        if (faction.startParams.start_offset_seconds >= frameStamp.time.seconds) { continue; }
 
         auto view = _game.getGlobalRegistry()
                         .view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
