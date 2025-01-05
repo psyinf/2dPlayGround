@@ -46,9 +46,10 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
     closed = false;
     using pg::gui::ButtonSize;
     ImGui::SetCursorPos(ImVec2(50, 50));
-    ImGui::BeginChild("##Options");
-    // ImGui::BeginTabBar("Options");
+
     {
+        pgf::gui::Child child("##Options" /*ImVec2(400, 400), true, ImGuiWindowFlags_NoScrollbar*/);
+        // ImGui::BeginChild("##Options");
         pgf::gui::TabBar tab_bar("Options");
         // ImGui::BeginTabItem("Galaxy");
         {

@@ -1,7 +1,7 @@
 #pragma once
 
 namespace pgf {
-template <typename T, int value>
+template <typename T, T value>
 struct ParameterInstance
 {
     static T get() { return T(value); }
