@@ -39,12 +39,17 @@ private:
 };
 
 // we need to wrap BeginChild due to function overloading
-void WrappedBeginChild(const char*      str_id,
+bool WrappedBeginChild(const char*      str_id,
                        const ImVec2&    size = {},
                        ImGuiChildFlags  childFlags = 0,
                        ImGuiWindowFlags flags = 0)
 {
-    ImGui::BeginChild(str_id, size, childFlags, flags);
+    return ImGui::BeginChild(str_id, size, childFlags, flags);
+}
+
+bool WrappedTreeNode(const char* label)
+{
+    return ImGui::TreeNode(label);
 }
 
 using Child = ScopedBeginEnd<WrappedBeginChild,
@@ -58,4 +63,8 @@ using TabItem = ScopedBeginEnd<ImGui::BeginTabItem,
                                ParameterInstance<ImGuiTabItemFlags, 0>>;
 using TabBar = ScopedBeginEnd<ImGui::BeginTabBar, ImGui::EndTabBar, ParameterInstance<ImGuiTabBarFlags, 0>>;
 
+using TreeNode = ScopedBeginEnd<[](const char* label) { return ImGui::TreeNode(label); }, ImGui::TreePop>;
+using Tree = VoidScopedBeginEnd<[](const char* label) { ImGui::TreePush(label); }, ImGui::TreePop>;
+
+using PushId = VoidScopedBeginEnd<[](int id) { ImGui::PushID(id); }, ImGui::PopID>;
 } // namespace pgf::gui
