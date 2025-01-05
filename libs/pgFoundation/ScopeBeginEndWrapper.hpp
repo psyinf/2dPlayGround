@@ -14,10 +14,37 @@ public:
     template <typename... Args>
     ScopedBeginEnd(Args&&... args)
     {
+        res = begin(std::forward<Args>(args)..., get_value<BeginArgs>()...);
+    }
+
+    ~ScopedBeginEnd()
+    {
+        if (res) { end(); }
+    }
+
+    bool get() const { return res; }
+
+private:
+    bool res{false};
+
+    template <typename T>
+    static auto get_value()
+    {
+        return T::get();
+    }
+};
+
+template <auto begin, auto end, typename... BeginArgs>
+class VoidScopedBeginEnd
+{
+public:
+    template <typename... Args>
+    VoidScopedBeginEnd(Args&&... args)
+    {
         begin(std::forward<Args>(args)..., get_value<BeginArgs>()...);
     }
 
-    ~ScopedBeginEnd() { end(); }
+    ~VoidScopedBeginEnd() { end(); }
 
 private:
     template <typename T>
