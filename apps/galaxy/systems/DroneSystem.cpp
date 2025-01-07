@@ -7,6 +7,8 @@
 #include <pgGame/core/RegistryHelper.hpp>
 #include <Config.hpp>
 #include <components/Faction.hpp>
+#include <components/StarSystem.hpp>
+#include <components/FactionState.hpp>
 
 #include <components/Behavior.hpp>
 #include <pgEngine/math/Random.hpp>
@@ -71,12 +73,15 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
     // setup for all factions
     auto galaxy_config = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
-    for (const auto& faction : galaxy_config.factions)
+    for (const auto& faction : galaxy_config.factions | std::views::filter([](auto f) { return f.active; }))
     {
-        // skip inactive factions
-        if (!faction.active) { continue; }
+        auto& faction_state = _game.getOrCreateSingleton<galaxy::FactionState>(faction.name);
         // TODO: this needs to be based on the real time passed (e.g. years)
+        if (faction_state.has_started) { continue; }
         if (faction.startParams.start_offset_seconds >= frameStamp.time.seconds) { continue; }
+        faction_state.has_started = true;
+        // faction activated event
+        _game.getDispatcher().enqueue<galaxy::events::FactionActivatedEvent>({.faction_name = faction.name});
 
         auto view = _game.getGlobalRegistry()
                         .view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
