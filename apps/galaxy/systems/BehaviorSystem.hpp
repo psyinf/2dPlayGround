@@ -1,5 +1,4 @@
 #pragma once
-#include <entt/entt.hpp>
 #include <pgGame/systems/SystemInterface.hpp>
 #include <components/Behavior.hpp>
 

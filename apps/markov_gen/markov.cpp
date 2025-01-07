@@ -7,7 +7,7 @@ int main()
     std::ifstream fileStreamIn("../data/stars.txt", std::ios_base::binary);
     std::ifstream fileStreamIn2("../data/boys.txt", std::ios_base::binary);
 
-    pg::generators::MarkovFrequencyMap<4> fmg;
+    pg::generators::MarkovFrequencyMap fmg;
     while (!fileStreamIn.eof())
     {
         std::string word;

@@ -20,7 +20,8 @@ endif()
 include(cmake/stacktrace.cmake)
 include(cmake/setup_cpm.cmake)
 include(cmake/deps_cpm.cmake)
-
+include(cmake/disable_3rd_party_warnings.cmake)
+make_all_targets_system()
 
 
 enable_testing()

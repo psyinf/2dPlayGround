@@ -18,6 +18,7 @@ target_link_libraries(${PROJECT_NAME}
     BT::behaviortree_cpp
     soundEngine::soundEngine
     pgf::pgf
+    IconFontCppHeaders
     INTERFACE
     pgFoundation::pgFoundation
     ${ADDITION_LIBS}
@@ -33,3 +34,8 @@ if (ENABLE_COVERAGE)
 endif()
 
 install(TARGETS ${PROJECT_NAME})
+
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4>)
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>)
+
+set_property( DIRECTORY PROPERTY VS_STARTUP_PROJECT ${PROJECT_NAME} )

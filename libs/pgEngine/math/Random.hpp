@@ -15,7 +15,7 @@ public:
     {
     }
 
-    SeedGenerator(uint64_t fixed_seed)
+    SeedGenerator(uint32_t fixed_seed)
       : _gen(fixed_seed)
     {
     }

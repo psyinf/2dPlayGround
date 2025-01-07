@@ -52,8 +52,9 @@ private:
     Color          color;
 };
 
-struct Renderer
+class Renderer
 {
+public:
     sdl::Renderer&    renderer;
     const FrameStamp& frameStamp;
 
@@ -318,7 +319,7 @@ public:
         const auto numSegments = num_arc_points;
         const auto angleStep = (endAngle - startAngle) / numSegments;
         if (draw_wedges) { points.push_back(center); }
-        for (auto i = 0; i < numSegments; ++i)
+        for (auto i = 0u; i < numSegments; ++i)
         {
             const auto angle = startAngle + angleStep * i;
             const auto x = center[0] + radius * std::cos(angle);

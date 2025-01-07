@@ -1,6 +1,5 @@
 #pragma once
 #include <entt/entt.hpp>
-#include <events/LaserFired.h>
 #include <pgGame/systems/SystemInterface.hpp>
 
 namespace asteroids {

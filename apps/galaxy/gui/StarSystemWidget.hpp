@@ -1,8 +1,6 @@
 #pragma once
 #include <gui/GameGuiWidget.hpp>
 #include <imgui.h>
-#include <components/Stats.hpp>
-#include <ranges>
 
 namespace galaxy::gui {
 
@@ -19,7 +17,7 @@ public:
             getGame().getGlobalRegistry().get<galaxy::StarSystemState, pg::Transform2D, galaxy::Faction>(
                 selected_entity);
 
-        // window fixed on the top line, not moveable
+        // window fixed on the top line, not movable
 
         ImGui::SetNextWindowPos(ImVec2(0, 0));
         ImGui::Begin("Star System",

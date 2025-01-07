@@ -8,11 +8,9 @@
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/Transform.hpp>
 #include <pgEngine/math/VecUtils.hpp>
-#include <pgEngine/primitives/BackgoundSprite.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
 #include <pgGame/components/Drawable.hpp>
-#include <algorithm>
 #include <random>
 
 #include <systems/Lasers.h>
@@ -195,7 +193,7 @@ void asteroids::Asteroids::createExplosion(pg::fVec2& position)
             if (frame_number >= max_frames)
             {
                 //
-                _game.getDispatcher().enqueue<pg::game::events::DestroyEntityEvent>({.entity = entity});
+                _game.getGlobalDispatcher().enqueue<pg::game::events::DestroyEntityEvent>({.entity = entity});
             }
         }));
     pg::game::addComponents<pg::game::Drawable>(_game.getGlobalRegistry(), entity, pg::game::Drawable{animation});

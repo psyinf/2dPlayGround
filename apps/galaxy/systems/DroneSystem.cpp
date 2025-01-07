@@ -1,13 +1,10 @@
 #include "DroneSystem.hpp"
 #include <components/Drone.hpp>
-#include <components/Lifetime.hpp>
 #include <components/StarSystem.hpp>
 
 #include <pgGame/components/Drawable.hpp>
 #include <pgGame/core/Game.hpp>
 #include <pgGame/core/RegistryHelper.hpp>
-#include <pgEngine/math/Quadtree.hpp>
-#include <pgEngine/math/Vec.hpp>
 #include <Config.hpp>
 #include <components/Faction.hpp>
 
@@ -15,8 +12,6 @@
 #include <pgEngine/math/Random.hpp>
 #include <events/DroneEvents.hpp>
 
-#include <ranges>
-#include <pgGame/components/RenderState.hpp>
 #include <behaviors/FindNextSystem.hpp>
 #include <behaviors/Travel.hpp>
 #include <behaviors/MakeDrone.hpp>
@@ -77,8 +72,10 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
 
     for (const auto& faction : galaxy_config.factions)
     {
+        // skip inactive factions
+        if (!faction.active) { continue; }
         // TODO: this needs to be based on the real time passed (e.g. years)
-        if (faction.startParams.start_cycle != frameStamp.gameTick) { continue; }
+        if (faction.startParams.start_offset_seconds >= frameStamp.time.seconds) { continue; }
 
         auto view = _game.getGlobalRegistry()
                         .view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();

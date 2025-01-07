@@ -78,7 +78,7 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
 void galaxy::SoundSystem::setup(std::string_view scene_id)
 {
     // register-pre loaders
-    auto& scene_config = _game.getSingleton<pg::game::SceneConfig>(scene_id);
+    // auto& scene_config = _game.getSingleton<pg::game::SceneConfig>(scene_id);
 #if 1
     // register all resources here
     auto& preLoaders = _game.getSingleton<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders");

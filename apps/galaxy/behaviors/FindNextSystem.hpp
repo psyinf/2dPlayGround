@@ -1,6 +1,7 @@
 #pragma once
 
 #include <behaviors/utils/BehaviorActionNode.hpp>
+#include <pgEngine/math/Quadtree.hpp>
 
 namespace behavior {
 

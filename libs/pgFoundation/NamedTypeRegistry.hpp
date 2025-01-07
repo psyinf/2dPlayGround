@@ -4,6 +4,7 @@
 #include <typeinfo>
 #include <typeindex>
 
+/* Type to Name mapping monostate*/
 namespace pgf {
 class NamedTypeRegistry
 {

@@ -21,6 +21,8 @@ constexpr void registerEvent(const std::string name)
     pgf::NamedTypeRegistry::registerType<T>(std::string{name});
 }
 
+/*Helper class to be derived to register an EventClass by name to later construct an event by name*/
+/*this is currently used to map events to a string that can later be used to get a sound resource etc.*/
 template <typename T, StringLiteral name>
 struct TypeRegistrar
 {

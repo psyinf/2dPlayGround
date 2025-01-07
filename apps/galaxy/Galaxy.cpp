@@ -1,6 +1,6 @@
 #include "Galaxy.hpp"
 #include <scenes/GalaxyScene.hpp>
-#include <scenes/SplashScreen.hpp>
+#include <scenes/MainMenuScene.hpp>
 
 #include <scenes/LoadResourcesScene.hpp>
 #include <systems/RenderSystem.hpp>
@@ -8,9 +8,11 @@
 #include <systems/GuiRenderSystem.hpp>
 #include <systems/UpdateCurrentSystem.hpp>
 #include <scenes/SystemScene.hpp>
-#include <components/GameState.hpp>
 
-#include <pgGame/components/singletons/RegisteredPreloaders.hpp>
+#include <systems/DroneSystem.hpp>
+#include <systems/LifetimeSystem.hpp>
+#include <systems/BehaviorSystem.hpp>
+#include <systems/StatsSystem.hpp>
 
 galaxy::GalacticCore::GalacticCore()
   : game(std::make_unique<pg::game::Game>())
@@ -37,7 +39,7 @@ void galaxy::GalacticCore::setup()
     //  we also need some loader abstraction/way to report progress -> LoaderProgressInterface
 
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
-        "splashScreen",
+        "mainMenu",
         "soundScape",
         {.background_music{.music_list{{"../data/music/dead-space-style-ambient-music-184793.mp3"}}},
          .event_sounds = {event_sound_cfg}});
@@ -60,9 +62,13 @@ void galaxy::GalacticCore::setup()
     pg::game::SystemsFactory::registerSystem<galaxy::SoundSystem>("soundSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::GuiRenderSystem>("guiSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::GalaxyRenderTag>>(
-        "galaxyRenderSystem", false);
+        "galaxyRenderSystem", RenderSystemConfig{.perScene{false}});
+    pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::MarkerTag>>(
+        "galaxyMarkers", RenderSystemConfig{.perScene{true}, .clear{false}});
+
     pg::game::SystemsFactory::registerSystem<
-        galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag, pg::tags::SelectedItemTag>>("systemRenderSystem", true);
+        galaxy::TaggedRenderSystem<pg::tags::SystemRenderTag, pg::tags::SelectedItemTag>>("systemRenderSystem",
+                                                                                          RenderSystemConfig{});
 
     pg::game::SystemsFactory::registerSystem<galaxy::UpdateStarsSystem>("updateStarsSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::UpdateCurrentSystem>("updateCurrentSystem");
@@ -73,12 +79,13 @@ void galaxy::GalacticCore::setup()
     pg::game::SystemsFactory::registerSystem<galaxy::StatsSystem>("statsSystem");
 
     // scenes
-    game->createScene<galaxy::SplashScreen>(
-        {.scene_id = "splashScreen", .systems = {"soundSystem", "guiSystem"}, .followUpScene = "galaxy"});
+    game->createScene<galaxy::MainMenuScene>(
+        {.scene_id = "mainMenu", .systems = {"soundSystem", "guiSystem"}, .followUpScene = "galaxy"});
     game->createScene<galaxy::LoadResourcesScene>({.scene_id = "loadGalaxy", .systems = {"guiSystem"}}, "galaxy");
     game->createScene<galaxy::GalaxyScene>({.scene_id = "galaxy",
                                             .systems = {"soundSystem",
                                                         "galaxyRenderSystem",
+                                                        "galaxyMarkers",
                                                         "guiSystem",
                                                         "updateStarsSystem",
                                                         "pickingSystem",
@@ -95,7 +102,7 @@ void galaxy::GalacticCore::setup()
     game->addSingleton_as<pg::game::SystemInterface::Config>(
         "guiSystem.system.config", pg::game::SystemInterface::Config{{"standalone", "false"}});
 
-    auto& scene = game->switchScene("splashScreen");
+    auto& scene = game->switchScene("mainMenu");
     scene.start();
 }
 
