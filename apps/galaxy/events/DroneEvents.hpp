@@ -5,6 +5,10 @@
 #include <pgFoundation/NamedTypeRegistrar.hpp>
 
 namespace galaxy::events {
+struct FactionActivatedEvent : pgf::TypeRegistrar<FactionActivatedEvent, "FactionCreatedEvent">
+{
+    std::string faction_name;
+};
 
 struct DroneCreatedEvent : pgf::TypeRegistrar<DroneCreatedEvent, "DroneCreatedEvent">
 {
