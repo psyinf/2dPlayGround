@@ -53,7 +53,7 @@ public:
             return starsystem.colonizationStatus == galaxy::ColonizationStatus::Unexplored;
         };
 
-        const auto& drone_conf = galaxy::getFactionConfig(game(), faction).droneParams;
+        const auto& drone_conf = galaxy::getFactionConfig(game(), faction.name).droneParams;
         const auto  range = pg::fVec2{drone_conf.max_range * 0.5f, drone_conf.max_range * 0.5f};
         //clang-format off
         // TODO: assert result.data is always of size 1
