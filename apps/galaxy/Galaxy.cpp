@@ -39,7 +39,7 @@ void galaxy::GalacticCore::setup()
     //  we also need some loader abstraction/way to report progress -> LoaderProgressInterface
 
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
-        "splashScreen",
+        "mainMenu",
         "soundScape",
         {.background_music{.music_list{{"../data/music/dead-space-style-ambient-music-184793.mp3"}}},
          .event_sounds = {event_sound_cfg}});

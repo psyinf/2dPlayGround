@@ -21,11 +21,6 @@
 
 namespace galaxy {
 
-template <uint32_t Name>
-struct SystemIdTag
-{
-};
-
 class SystemScene : public pg::game::Scene
 {
 public:
