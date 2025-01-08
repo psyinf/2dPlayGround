@@ -168,6 +168,12 @@ set_target_properties(imgui PROPERTIES FOLDER third-party) # optoinal IDE dir
 #alias
 add_library(imgui::imgui ALIAS imgui)
 #endif()
+CPMAddPackage(
+    NAME vfspp
+    GITHUB_REPOSITORY psyinf/vfspp
+    GIT_TAG fixes
+)
+add_library(vfspp::vfspp ALIAS vfspp)
 
 if(SCRIPTING)
 CPMAddPackage(
@@ -181,8 +187,6 @@ CPMAddPackage(
     GITHUB_REPOSITORY pybind/pybind11
     GIT_TAG v2.12.0
 )
-
-
 endif()
 
 CPMAddPackage(NAME  IconFontCppHeaders

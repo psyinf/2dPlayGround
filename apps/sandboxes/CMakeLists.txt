@@ -1,0 +1,8 @@
+add_subdirectory(textdemo)
+add_subdirectory(stellarfield)
+add_subdirectory(minimal_demo)
+add_subdirectory(sandbox)
+add_subdirectory(btcpp)
+add_subdirectory(productionSandbox)
+add_subdirectory(markov_gen)
+add_subdirectory(resourceLoaderSandbox)
