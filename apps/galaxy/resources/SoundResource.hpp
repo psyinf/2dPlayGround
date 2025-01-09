@@ -8,11 +8,12 @@
 namespace pg::foundation {
 template <>
 inline std::shared_ptr<soundEngineX::Buffer> loadResource<std::shared_ptr<soundEngineX::Buffer>>(
-    const std::string& file,
-    float&             percentResourcesLoaded)
+    DataProvider& dataProvider,
+    float&        percentResourcesLoaded)
 {
-    return soundEngineX::BufferCache::get(file, {file, [&](soundEngineX::loader::LoadProgressInfo progress) {
-                                                     percentResourcesLoaded = progress.percent();
-                                                 }});
+    return soundEngineX::BufferCache::get(dataProvider.getUri(),
+                                          {dataProvider.getUri(), [&](soundEngineX::loader::LoadProgressInfo progress) {
+                                               percentResourcesLoaded = progress.percent();
+                                           }});
 }
 } // namespace pg::foundation
