@@ -21,6 +21,7 @@
 #include <pgGame/config/GenericConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
 #include <pgGame/components/GameState.hpp>
+#include <pgFoundation/DataProvider.hpp>
 
 namespace pg::game {
 
@@ -55,7 +56,7 @@ class Game : public SingletonInterface<Game>
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
-    using ResourceManager = foundation::ResourceManagerMonostate<foundation::IdentityResourceLocator>;
+    using ResourceManager = foundation::ResourceManagerMonostate;
 
 private:
     pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "Ad astra!"}; // TODO: from config
