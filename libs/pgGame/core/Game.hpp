@@ -21,7 +21,6 @@
 #include <pgGame/config/GenericConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
 #include <pgGame/components/GameState.hpp>
-#include <pgFoundation/DataProvider.hpp>
 
 namespace pg::game {
 

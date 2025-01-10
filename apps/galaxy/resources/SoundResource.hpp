@@ -11,9 +11,14 @@ inline std::shared_ptr<soundEngineX::Buffer> loadResource<std::shared_ptr<soundE
     DataProvider& dataProvider,
     float&        percentResourcesLoaded)
 {
-    return soundEngineX::BufferCache::get(dataProvider.getUri(),
-                                          {dataProvider.getUri(), [&](soundEngineX::loader::LoadProgressInfo progress) {
-                                               percentResourcesLoaded = progress.percent();
-                                           }});
+    auto file_type = soundEngineX::loader::getType(dataProvider.getUri().type.empty() ? dataProvider.getUri().uri
+                                                                                      : dataProvider.getUri().type);
+
+    return soundEngineX::BufferCache::get(
+        dataProvider.getUri(),
+        dataProvider.asStream(),
+        file_type,
+        {.resource = dataProvider.getUri().uri,
+         .cb = [&](soundEngineX::loader::LoadProgressInfo progress) { percentResourcesLoaded = progress.percent(); }});
 }
 } // namespace pg::foundation

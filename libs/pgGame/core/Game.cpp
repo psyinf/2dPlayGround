@@ -146,10 +146,10 @@ void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::ga
         scenes.emplace(std::string{id}, std::move(scene));
         auto scenePtr = scenes.at(std::string(id)).get();
 
-        scenePtr->addSingleton<pg::foundation::TypedResourceCache<pg::Sprite>>(
-            [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-        scenePtr->addSingleton<pg::foundation::TypedResourceCache<sdl::Texture>>(
-            [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
+        //         scenePtr->addSingleton<pg::foundation::TypedResourceCache<pg::Sprite>>(
+        //             [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
+        //         scenePtr->addSingleton<pg::foundation::TypedResourceCache<sdl::Texture>>(
+        //             [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
         scenePtr->addSingleton<WindowDetails&>(windowDetails);
         scenePtr->addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName,
                                                     getCurrentScene().getGlobalTransform());
