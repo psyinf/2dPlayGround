@@ -2,7 +2,7 @@ project(pgGame)
 
 add_library(${PROJECT_NAME} STATIC)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
-
+ 
 find_package(fmt REQUIRED)
 find_package(EnTT REQUIRED)
 
@@ -12,6 +12,7 @@ target_sources(${PROJECT_NAME}
 		core/KeyStateMap.cpp
 		core/Scene.cpp
 		systems/SystemInterface.cpp
+		core/VFSDataProvider.cpp
 	PUBLIC
 		core/Game.hpp
 		core/RegistryHelper.hpp
@@ -32,6 +33,7 @@ target_link_libraries(${PROJECT_NAME}
 	PRIVATE
 	    pgEngine::pgEngine
 		fmt::fmt
+		vfspp::vfspp
 
 )
 
