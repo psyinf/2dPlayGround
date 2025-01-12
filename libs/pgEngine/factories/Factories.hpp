@@ -20,6 +20,7 @@ public:
     static auto loadFromBuffer(const std::vector<char>& buffer) -> SDL_Surface*;
 
     static sdl::Texture makeTexture(sdl::Renderer& renderer, std::string_view resource_name);
+    static sdl::Texture makeTexture(sdl::Renderer& renderer, const std::vector<char>& buffer);
 
     static Sprite makeSprite(sdl::Renderer& renderer, std::string_view resource_name);
     static Sprite makeSprite(sdl::Renderer& renderer, const std::vector<char>& buffer);

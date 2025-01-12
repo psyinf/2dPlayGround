@@ -38,6 +38,22 @@ sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, std::string
     return sdl::Texture(renderer.get(), surface.get());
 }
 
+sdl::Texture pg::SpriteFactory::makeTexture(sdl::Renderer& renderer, const std::vector<char>& buffer)
+{
+    auto img = loadFromBuffer(buffer);
+
+    if (!img)
+    {
+        spdlog::error("Failed to get image from buffer {}", IMG_GetError());
+        sdl::Surface default_surface(SDL_CreateRGBSurface(0, 1, 1, 8, 0, 0, 0, 0));
+        return sdl::Texture(renderer.get(), default_surface.get());
+    }
+    // TODO: we cannot do this in parallel to rendering as it is not thread safe
+    std::lock_guard<std::mutex> lock(_sdlMutex);
+    sdl::Surface                surface(img);
+    return sdl::Texture(renderer.get(), surface.get());
+}
+
 pg::Sprite pg::SpriteFactory::makeSprite(sdl::Renderer& renderer, const std::vector<char>& data)
 {
     auto img = loadFromBuffer(data);
