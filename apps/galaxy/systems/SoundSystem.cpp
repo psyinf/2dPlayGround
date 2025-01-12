@@ -83,16 +83,15 @@ void galaxy::SoundSystem::setup(std::string_view scene_id)
     // register all resources here
     auto& preLoaders = _game.getSingleton<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders");
     std::vector<std::string> sound_files = {
-        "../data/music/a-meditation-through-time-amp-space-11947.mp3",
-        "../data/music/dead-space-style-ambient-music-184793.mp3",
-        "../data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
+        "data/music/a-meditation-through-time-amp-space-11947.mp3",
+        "data/music/dead-space-style-ambient-music-184793.mp3",
+        "data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
 
     for (auto& file : sound_files)
     {
         if (preLoaders.loaders.contains(file)) { continue; }
         auto loader = [this, file](PercentCompleted& percentLoaded) {
-            _game.getResourceManager().get().load<std::shared_ptr<soundEngineX::Buffer>, float&>(file,
-                                                                                                 percentLoaded[file]);
+            _game.getResourceManager().load<std::shared_ptr<soundEngineX::Buffer>, float&>(file, percentLoaded[file]);
         };
         preLoaders.loaders.emplace(file, loader);
     }

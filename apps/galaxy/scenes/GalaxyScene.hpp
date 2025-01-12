@@ -105,12 +105,12 @@ public:
     {
         auto& preLoaders =
             getGame().getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
-// for now, no images
+        // for now, no images
 #if 0
-        TODO: images can be loaded, but not added to the SDL in a background task. Doing so will interfere with the state while rendering. 
+        TODO: images can be loaded, but not added to the SDL in a background task.Doing so will interfere with the state while rendering.
             This needs a two stage approach where adding to SDL is done protected by a mutex
-        std::vector<std::string> files = {
-            "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
+            std::vector<std::string> files = {
+                "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png" };
 
         for (auto& file : files)
         {
@@ -119,7 +119,7 @@ public:
                 percentLoaded[file] = 0.0f;
                 game.getResourceManager().get().load<pg::Sprite, sdl::Renderer&>(file, game.getApp().getRenderer());
                 percentLoaded[file] = 1.0f;
-            };
+                };
             preLoaders.loaders.emplace(file, loader);
         }
 #endif
@@ -346,7 +346,7 @@ private:
         std::discrete_distribution<> star_class_dist(pgOrbit::star_class_probabilities.cbegin(),
                                                      pgOrbit::star_class_probabilities.cend());
 
-        auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
+        auto  dot_sprite = getGame().getResource<pg::Sprite>("data/circle_05.png");
         auto& gen = pg::SeedGenerator(galaxyConfig.creation.stars_seed).get();
         auto& cachedNames = getGame().getSingleton<CachedNames>("cachedNames");
 
@@ -440,7 +440,7 @@ private:
 
     {
         // add background
-        auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
+        auto background_sprite = getGame().getResource<pg::Sprite>("data/background/milky_way_blurred.png");
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
         states.push(pg::TextureColorState{pg::Color{255, 255, 255, 255}});
@@ -482,7 +482,7 @@ private:
     void setupSelectionMarker()
     {
         auto marker =
-            getGame().getResource<pg::Sprite, sdl::Renderer&>("../data/reticle.png", getGame().getApp().getRenderer());
+            getGame().getResource<pg::Sprite, sdl::Renderer&>("data/reticle.png", getGame().getApp().getRenderer());
         entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::MarkerTag>(
                 getSceneRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {}, {});
