@@ -90,7 +90,7 @@ void galaxy::SoundSystem::setup(std::string_view scene_id)
     for (auto& file : sound_files)
     {
         if (preLoaders.loaders.contains(file)) { continue; }
-        auto loader = [this, file](PercentCompleted& percentLoaded) {
+        auto loader = [this, file](PercentCompletedMap& percentLoaded) {
             _game.getResourceManager().load<std::shared_ptr<soundEngineX::Buffer>, float&>(file, percentLoaded[file]);
         };
         preLoaders.loaders.emplace(file, loader);
@@ -120,7 +120,7 @@ void galaxy::SoundSystem::setup(std::string_view scene_id)
 
     // get Scene config
     auto& soundScape = _game.getCurrentScene().getSingleton<SceneSoundScape>("scene.soundScape");
-    // set inital volume levels
+    // set initial volume levels
     soundEngineX::Listener::setGain(soundScape.master_volume);
 }
 

@@ -125,7 +125,7 @@ public:
 #endif
         getGame().addSingleton_as<std::atomic_bool>("markovFrequencyMap.loaded", false);
         /// add markov chain for names
-        auto markov_loader = [this](PercentCompleted& completion) {
+        auto markov_loader = [this](PercentCompletedMap& completion) {
             // try cached
             // get atomic bool
 
@@ -179,7 +179,7 @@ public:
         };
 
         // cached name loader
-        auto name_loader = [this](PercentCompleted& completion) {
+        auto name_loader = [this](PercentCompletedMap& completion) {
             // wait for markov loader
             galaxy::config::Galaxy galaxy_config;
             galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
