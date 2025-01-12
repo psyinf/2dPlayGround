@@ -78,9 +78,9 @@ public:
                 std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 spdlog::info("Pre-Loaded resource: {}. {} remaining", resource, _loaders.size() - _numThreadsFinished);
             }
-            catch (const std::exception&)
+            catch (const std::exception& e)
             {
-                spdlog::error("Failed to load resource: {}", resource);
+                spdlog::error("Failed to load resource: {} ({})", resource, e.what());
             }
             _percentResourcesLoaded[resource] =
                 1.0f; // might have been in cache already, thus not triggering a progress callback
