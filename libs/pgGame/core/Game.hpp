@@ -1,19 +1,11 @@
 #pragma once
 
-#include <pgEngine/factories/Factories.hpp>
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/core/Gui.hpp>
-#include <pgEngine/primitives/BackgoundSprite.hpp>
-#include <pgGame/core/KeyStateMap.hpp>
 #include <pgf/caching/ResourceManager.hpp>
-#include <pgEngine/resources/SpriteResource.hpp>
 #include <pgEngine/core/FrameStamp.hpp>
 #include <pgGame/core/Scene.hpp>
-#include <pgGame/systems/SystemInterface.hpp>
 
-#include <pgEngine/math/Vec.hpp>
-
-#include <entt/entt.hpp>
 #include <memory>
 #include <unordered_map>
 #include <pgGame/components/WindowDetails.hpp>
@@ -21,6 +13,20 @@
 #include <pgGame/config/GenericConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
 #include <pgGame/components/GameState.hpp>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
+#include <pgEngine/core/AppConfig.hpp>
+#include "InputEventDispatcher.hpp"
+#include <entt/entity/fwd.hpp>
+#include <entt/signal/fwd.hpp>
+#include <sdlpp.hpp>
+
+#include <pgEngine/resources/SpriteResource.hpp>
+
+namespace vfspp {
+class VirtualFileSystem;
+} // namespace vfspp
 
 namespace pg::game {
 
@@ -55,30 +61,28 @@ class Game : public SingletonInterface<Game>
 public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
-    using ResourceManager = foundation::ResourceManagerMonostate;
+    using ResourceManager = foundation::ResourceManager;
+    using VFSPtr = std::shared_ptr<vfspp::VirtualFileSystem>;
 
 private:
-    pg::config::WindowConfig windowConfig{0, {0, 20}, {800, 800}, "Ad astra!"}; // TODO: from config
-    // TODO vec4 from 2 vec2
-    WindowDetails windowDetails{
-        {windowConfig.offset[0], windowConfig.offset[1], windowConfig.size[0], windowConfig.size[1]}};
-    pg::SDLApp               sdlApp{windowConfig};
-    pg::InputEventDispatcher _inputEventDispatcher;
-    ResourceManager          resourceManager;
-    std::unique_ptr<pg::Gui> gui;
-
-    entt::dispatcher dispatcher;
-    entt::registry   _registry;
-
-    Scenes scenes;
-
-    std::string _currentSceneId{"__default__"};
-
-    GenericConfig _config;
-
-    pgf::NamedTypeRegistry _eventNameRegistry;
-    GameState              _gameState;
-    FrameStamp             _currentFrameStamp;
+    pg::config::WindowConfig _windowConfig{0, {0, 20}, {800, 800}, "Ad astra!"}; // TODO: from config
+    WindowDetails            _windowDetails{
+                   {_windowConfig.offset[0], _windowConfig.offset[1], _windowConfig.size[0], _windowConfig.size[1]}};
+    pg::SDLApp                 _sdlApp{_windowConfig};
+    pg::InputEventDispatcher   _inputEventDispatcher;
+    ResourceManager            _resourceManager;
+    std::unique_ptr<pg::Gui>   _gui;
+    entt::dispatcher           _dispatcher;
+    entt::registry             _registry;
+    Scenes                     _scenes;
+    std::string                _currentSceneId{"__default__"};
+    GenericConfig              _config;
+    pgf::NamedTypeRegistry     _eventNameRegistry;
+    GameState                  _gameState;
+    FrameStamp                 _currentFrameStamp;
+    bool                       _running{true};
+    VFSPtr                     _vfs;
+    std::unique_ptr<GamePimpl> _pimpl;
 
 public:
     Game();
@@ -103,10 +107,10 @@ public:
     template <typename Type, typename... Args>
     std::shared_ptr<Type> getResource(const std::string& uri, Args&&... args)
     {
-        return resourceManager.get().load<Type, Args...>(uri, std::forward<Args>(args)...);
+        return _resourceManager.load<Type, Args...>(uri, std::forward<Args>(args)...);
     }
 
-    auto& getResourceManager() { return resourceManager; }
+    auto& getResourceManager() { return _resourceManager; }
 
     template <typename Type = pg::game::Scene, typename... Args>
     void createScene(pg::game::SceneConfig&& cfg = {}, Args&&... args)
@@ -115,7 +119,7 @@ public:
         static_assert(std::is_base_of_v<pg::game::Scene, Type>, "Type must be derived from pg::game::Scene");
 
         if (scene_id.empty()) { throw std::invalid_argument("Empty scene id is not allowed"); }
-        if (scenes.contains(scene_id)) { throw std::invalid_argument("Scene already exists"); }
+        if (_scenes.contains(scene_id)) { throw std::invalid_argument("Scene already exists"); }
 
         registerGlobalSingletons(scene_id, cfg);
         createSceneInternal(scene_id, std::make_unique<Type>(*this, std::move(cfg), std::forward<Args>(args)...));
@@ -156,10 +160,6 @@ private:
     void registerGlobalSingletons(std::string_view scene_id, const SceneConfig& cfg);
 
     entt::registry& getRegistry() { return _registry; }
-
-    bool running{true};
-
-    std::unique_ptr<GamePimpl> pimpl;
 };
 
 // specialization of resource loading, need to be outside the class (explicit specialization in non-namespace scope)
@@ -167,12 +167,12 @@ private:
 template <>
 inline std::shared_ptr<pg::Sprite> Game::getResource(const std::string& uri)
 {
-    return resourceManager.get().load<pg::Sprite, sdl::Renderer&>(uri, getApp().getRenderer());
+    return _resourceManager.load<pg::Sprite, sdl::Renderer&>(uri, getApp().getRenderer());
 }
 
 template <>
 inline std::shared_ptr<sdl::Texture> Game::getResource(const std::string& uri)
 {
-    return resourceManager.get().load<sdl::Texture, sdl::Renderer&>(uri, getApp().getRenderer());
+    return _resourceManager.load<sdl::Texture, sdl::Renderer&>(uri, getApp().getRenderer());
 }
 } // namespace pg::game
