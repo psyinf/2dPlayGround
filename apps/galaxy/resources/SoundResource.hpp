@@ -18,7 +18,6 @@ inline std::shared_ptr<soundEngineX::Buffer> loadResource<std::shared_ptr<soundE
         dataProvider.getUri(),
         dataProvider.asBuffer(),
         file_type,
-        {},
         {.resource = dataProvider.getUri().uri,
          .cb = [&](soundEngineX::loader::LoadProgressInfo progress) { percentResourcesLoaded = progress.percent(); }});
 }
