@@ -41,7 +41,7 @@ void galaxy::GalacticCore::setup()
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
         "mainMenu",
         "soundScape",
-        {.background_music{.music_list{{"../data/music/dead-space-style-ambient-music-184793.mp3"}}},
+        {.background_music{.music_list{{"data/music/dead-space-style-ambient-music-184793.mp3"}}},
          .event_sounds = {event_sound_cfg}});
 
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(

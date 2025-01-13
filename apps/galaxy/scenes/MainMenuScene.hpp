@@ -4,6 +4,7 @@
 #include <memory>
 #include <gui/MainMenuWidget.hpp>
 #include <components/SoundScape.hpp>
+#include <pgGame/core/ResourcePreLoader.hpp>
 
 namespace galaxy {
 
@@ -16,6 +17,10 @@ public:
 
     void start() override
     {
+        if (started()) { return; }
+        auto& loaders = getGame().getSingleton<pg::singleton::RegisteredLoaders>(getId() + ".loaders");
+        _resourcePreloader.initialize(loaders.loaders, _filesLoaded, [this](float p) { _totalLoaded = p; });
+
         setupOverlay();
         Scene::start();
     };
@@ -33,5 +38,10 @@ public:
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::MainMenuWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
     }
+
+private:
+    ResourcePreloader   _resourcePreloader;
+    PercentCompletedMap _filesLoaded;
+    float               _totalLoaded{0.0f};
 };
 } // namespace galaxy
