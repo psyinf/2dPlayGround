@@ -68,21 +68,22 @@ private:
     pg::config::WindowConfig _windowConfig{0, {0, 20}, {800, 800}, "Ad astra!"}; // TODO: from config
     WindowDetails            _windowDetails{
                    {_windowConfig.offset[0], _windowConfig.offset[1], _windowConfig.size[0], _windowConfig.size[1]}};
-    pg::SDLApp                 _sdlApp{_windowConfig};
-    pg::InputEventDispatcher   _inputEventDispatcher;
-    ResourceManager            _resourceManager;
-    std::unique_ptr<pg::Gui>   _gui;
-    entt::dispatcher           _dispatcher;
-    entt::registry             _registry;
-    Scenes                     _scenes;
-    std::string                _currentSceneId{"__default__"};
-    GenericConfig              _config;
-    pgf::NamedTypeRegistry     _eventNameRegistry;
-    GameState                  _gameState;
-    FrameStamp                 _currentFrameStamp;
-    bool                       _running{true};
-    VFSPtr                     _vfs;
-    std::unique_ptr<GamePimpl> _pimpl;
+    pg::SDLApp                          _sdlApp{_windowConfig};
+    pg::InputEventDispatcher            _inputEventDispatcher;
+    ResourceManager                     _resourceManager;
+    std::unique_ptr<pg::Gui>            _gui;
+    entt::dispatcher                    _dispatcher;
+    entt::registry                      _registry;
+    Scenes                              _scenes;
+    std::string                         _currentSceneId{"__default__"};
+    GenericConfig                       _config;
+    pgf::NamedTypeRegistry              _eventNameRegistry;
+    GameState                           _gameState;
+    FrameStamp                          _currentFrameStamp;
+    bool                                _running{true};
+    VFSPtr                              _vfs;
+    std::unique_ptr<GamePimpl>          _pimpl;
+    pg::foundation::DataProviderFactory _dataProviderFactory;
 
 public:
     Game();
@@ -151,6 +152,8 @@ public:
     auto& getConfig() { return _config; }
 
     auto getCurrentSceneId() const { return _currentSceneId; }
+
+    auto getDataProviderFactory() -> pg::foundation::DataProviderFactory&;
 
 private:
     void frame(FrameStamp& frameStamp);

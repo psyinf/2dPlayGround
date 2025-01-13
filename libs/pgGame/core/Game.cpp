@@ -28,10 +28,6 @@ struct ScopedSwitchSceneId
     T& value_holder;
 };
 
-static constexpr auto VFSDataProviderFactory = [](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
-    return std::make_unique<pg::foundation::FileDataProvider>(uri, true);
-};
-
 class Pimpl : public pg::game::GamePimpl
 {
 public:
@@ -222,4 +218,13 @@ void game::Game::registerGlobalSingletons(std::string_view scene_id, const Scene
     addSingleton_as<SceneConfig>(scene_id, cfg);
     addSingleton_as<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders",
                                                       pg::singleton::RegisteredLoaders{});
+}
+
+auto game::Game::getDataProviderFactory() -> pg::foundation::DataProviderFactory&
+{
+    static auto vfs_data_provider_factory =
+        pg::foundation::DataProviderFactory{[this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
+            return std::make_unique<VFSDataProvider>(uri, _vfs);
+        }};
+    return vfs_data_provider_factory;
 }
