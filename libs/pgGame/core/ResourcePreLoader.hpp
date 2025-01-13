@@ -95,6 +95,7 @@ public:
             catch (const std::exception& e)
             {
                 spdlog::error("Failed to load resource: {} ({})", resource, e.what());
+                completedMap.insert({resource, 1.0f});
             }
             completedMap[resource] = 1.0f; // might have been in cache already, thus not triggering a progress callback
             _numRead++;

@@ -92,6 +92,7 @@ std::istream& pg::VFSDataProvider::asStream()
 std::vector<char> pg::VFSDataProvider::asBuffer()
 {
     auto file = _vfs->OpenFile({getUri()}, {vfspp::IFile::FileMode::Read});
+    if (!file) { throw std::runtime_error("Virtual Filesystem: File not found: " + getUri().uri); }
     auto buffer = std::vector<uint8_t>(file->Size());
     file->Read(buffer, buffer.size());
     return std::vector<char>(buffer.begin(), buffer.end());
