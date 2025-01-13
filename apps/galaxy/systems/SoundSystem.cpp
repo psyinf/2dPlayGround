@@ -13,6 +13,30 @@
 #include <pgFoundation/NamedTypeRegistry.hpp>
 #include <pgGame/components/singletons/RegisteredPreloaders.hpp>
 
+class DeferringBufferCacheProvider : public soundEngineX::BufferCacheProvider
+{
+public:
+    DeferringBufferCacheProvider(pg::foundation::DataProviderFactory& dataProviderFactory)
+      : _dataProviderFactory(dataProviderFactory)
+    {
+    }
+
+    soundEngineX::BufferPtr& get(const std::string& buffer_name, soundEngineX::LoaderDelegate delegate = {}) override
+    {
+        if (soundEngineX::BufferCache::has(buffer_name)) { return soundEngineX::BufferCache::retrieve(buffer_name); }
+        auto                         provider = _dataProviderFactory(buffer_name);
+        auto                         buffer = provider->asBuffer();
+        auto                         file_type = soundEngineX::loader::getType(buffer_name);
+        soundEngineX::LoaderDelegate l = [&](const auto& /*key*/, auto /*progress_cb*/) -> soundEngineX::BufferPtr {
+            return std::make_unique<soundEngineX::Buffer>(soundEngineX::loader::load(buffer, file_type, {}));
+        };
+        return soundEngineX::BufferCache::get(buffer_name, l, {});
+    }
+
+private:
+    pg::foundation::DataProviderFactory& _dataProviderFactory;
+};
+
 class Dispatcher
 {
     using SoundEventMap = std::unordered_map<std::string, galaxy::EventSound>;
@@ -69,7 +93,8 @@ galaxy::SoundSystem::~SoundSystem() = default;
 galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
   : SystemInterface(game, name)
   , _soundEngine(std::make_unique<soundEngineX::SoundEngine>())
-  , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>())
+  , _bgPlayer(std::make_unique<soundEngineX::BackgroundPlayer>(
+        std::make_shared<DeferringBufferCacheProvider>(game.getDataProviderFactory())))
   , _dispatcher(std::make_unique<Dispatcher>(*_bgPlayer))
 
 {
@@ -77,16 +102,21 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
 
 void galaxy::SoundSystem::setup(std::string_view scene_id)
 {
-    // register-pre loaders
-    // auto& scene_config = _game.getSingleton<pg::game::SceneConfig>(scene_id);
-#if 1
-    // register all resources here
-    auto& preLoaders = _game.getSingleton<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders");
-    std::vector<std::string> sound_files = {
-        "data/music/a-meditation-through-time-amp-space-11947.mp3",
-        "data/music/dead-space-style-ambient-music-184793.mp3",
-        "data/music/universe-cosmic-space-ambient-interstellar-soundscape-sci-fi-181916.mp3"};
+    auto& soundScapeConfig = _game.getConfig().getPerSceneConfig<SceneSoundScape>(std::string{scene_id}, "soundScape");
+    _game.getCurrentScene().addSingleton_as<SceneSoundScape>("scene.soundScape", soundScapeConfig);
 
+    // add all sounds to pre-loader
+    auto& preLoaders = _game.getSingleton<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders");
+    std::vector<std::string> sound_files;
+
+    for (const auto& [_, sound] : soundScapeConfig.event_sounds)
+    {
+        sound_files.push_back(sound.sound_file);
+    }
+    for (const auto& background_track : soundScapeConfig.background_music.music_list)
+    {
+        sound_files.push_back(background_track);
+    }
     for (auto& file : sound_files)
     {
         if (preLoaders.loaders.contains(file)) { continue; }
@@ -95,9 +125,7 @@ void galaxy::SoundSystem::setup(std::string_view scene_id)
         };
         preLoaders.loaders.emplace(file, loader);
     }
-#endif
-    auto& soundScapeConfig = _game.getConfig().getPerSceneConfig<SceneSoundScape>(std::string{scene_id}, "soundScape");
-    _game.getCurrentScene().addSingleton_as<SceneSoundScape>("scene.soundScape", soundScapeConfig);
+
     // add sound events to dispatcher
     _dispatcher->setSoundEventMap(soundScapeConfig.event_sounds);
 
