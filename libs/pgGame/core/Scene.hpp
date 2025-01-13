@@ -69,6 +69,8 @@ public:
 
     const SceneConfig& getSceneConfig() const { return _config; }
 
+    const std::string& getId() const { return _id; }
+
 protected:
     entt::registry& getRegistry() { return registry; }
 

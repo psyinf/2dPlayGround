@@ -46,6 +46,7 @@ pg::game::Scene::Scene(Game& game, SceneConfig&& cfg)
 
 void pg::game::Scene::setup([[maybe_unused]] std::string_view id)
 {
+    _id = id;
     game_.getInputEventDispatcher().registerHandler(std::string{id}, _keyStateMap);
     for (const auto& system : _config.systems)
     {
