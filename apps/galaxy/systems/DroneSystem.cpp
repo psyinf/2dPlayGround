@@ -18,6 +18,7 @@
 #include <behaviors/GetTargetsAvailable.hpp>
 
 #include <behaviors/EntityQueueLoop.hpp>
+#include <pgEngine/resources/TextResource.hpp>
 
 void galaxy::DroneSystem::setup(std::string_view /*scene_id*/)
 {
@@ -39,7 +40,7 @@ void galaxy::DroneSystem::setup(std::string_view /*scene_id*/)
         _game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({.entity = entity});
         return BT::NodeStatus::SUCCESS;
     });
-    factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");
+    factory.registerBehaviorTreeFromText(_game.getResourceManager().load<pg::TextResource>({"data/behaviors/drones.xml"})->asString());
 }
 
 void galaxy::DroneSystem::handle(const pg::FrameStamp& frameStamp)
