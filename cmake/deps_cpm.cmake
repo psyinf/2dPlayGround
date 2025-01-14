@@ -171,9 +171,8 @@ add_library(imgui::imgui ALIAS imgui)
 CPMAddPackage(
     NAME vfspp
     GITHUB_REPOSITORY psyinf/vfspp
-    GIT_TAG different_miniz-cpp
+    GIT_TAG development
 )
-add_library(vfspp::vfspp ALIAS vfspp)
 
 if(SCRIPTING)
 CPMAddPackage(
