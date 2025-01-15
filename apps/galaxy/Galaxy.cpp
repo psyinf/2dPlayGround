@@ -14,8 +14,8 @@
 #include <systems/BehaviorSystem.hpp>
 #include <systems/StatsSystem.hpp>
 
-galaxy::GalacticCore::GalacticCore()
-  : game(std::make_unique<pg::game::Game>())
+galaxy::GalacticCore::GalacticCore(pg::game::GameConfig&& config)
+  : game(std::make_unique<pg::game::Game>(std::move(config)))
 {
 }
 
@@ -47,7 +47,8 @@ void galaxy::GalacticCore::setup()
     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
         "galaxy",
         "soundScape",
-        {.background_music{.music_list{{"data/music/a-meditation-through-time-amp-space-11947.mp3"}}},
+        // {.background_music{.music_list{{"data/music/a-meditation-through-time-amp-space-11947.mp3"}}},
+        {.background_music{.music_list{{"music/cylinders/Chris Zabriskie - Cylinders - 08 Cylinder Eight.mp3"}}},
          .event_sounds = {event_sound_cfg}
 
         });

@@ -68,17 +68,45 @@ public:
     void handleTimeScaleEvent(const pg::game::events::TimeScaleEvent& tse) { _gameState.timeScale = tse.time_scale; }
 };
 
-game::Game::Game()
+game::Game::Game(pg::game::GameConfig&& config)
   : _pimpl(std::make_unique<Pimpl>(*this, _gameState))
+  , _gameConfig(std::move(config))
+  , _windowDetails(_gameConfig.getWindowRect())
+  , _sdlApp(_gameConfig.windowConfig)
   , _inputEventDispatcher(_sdlApp.getEventHandler(), {})
   , _vfs(std::make_unique<vfspp::VirtualFileSystem>())
   , _resourceManager([this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
       return std::make_unique<VFSDataProvider>(uri, _vfs);
   })
 {
-    auto fs = std::make_shared<vfspp::NativeFileSystem>("../data/");
-    fs->Initialize();
-    _vfs->AddFileSystem("data", fs);
+    // register all vfs's
+    for (const auto& vfsConfig : _gameConfig.vfsConfigs)
+    {
+        switch (vfsConfig.type)
+        {
+        case pg::game::VFSConfig::VFSType::PHYSICAL: {
+            auto fs = std::make_shared<vfspp::NativeFileSystem>(vfsConfig.root);
+            fs->Initialize();
+            _vfs->AddFileSystem(vfsConfig.alias, fs);
+            break;
+        }
+        case pg::game::VFSConfig::VFSType::ZIP: {
+            auto fs = std::make_shared<vfspp::ZipFileSystem>(vfsConfig.root);
+            fs->Initialize();
+            _vfs->AddFileSystem(vfsConfig.alias, fs);
+            break;
+        }
+        case pg::game::VFSConfig::VFSType::MEMORY: {
+            auto fs = std::make_shared<vfspp::MemoryFileSystem>();
+            fs->Initialize();
+            _vfs->AddFileSystem(vfsConfig.alias, fs);
+            break;
+        }
+        }
+    }
+    //     auto fs = std::make_shared<vfspp::NativeFileSystem>("../data/");
+    //     fs->Initialize();
+    //     _vfs->AddFileSystem("data", fs);
 
     _gui = std::make_unique<pg::Gui>(getApp());
     // register event handlers

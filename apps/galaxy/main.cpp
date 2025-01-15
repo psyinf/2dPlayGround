@@ -9,8 +9,17 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
+    pg::game::GameConfig config;
+    config.windowConfig.size = {800, 600};
+    config.windowConfig.windowName = "Galaxy";
+
+    config.vfsConfigs.push_back({.root = "../data", .alias = "data", .type = pg::game::VFSConfig::VFSType::PHYSICAL});
+    config.vfsConfigs.push_back({.root = "../data/music/cylinders/Chris Zabriskie - Cylinders.zip",
+                                 .alias = "music/cylinders",
+                                 .type = pg::game::VFSConfig::VFSType::ZIP});
+
     {
-        galaxy::GalacticCore gc;
+        galaxy::GalacticCore gc(std::move(config));
         gc.setup();
         gc.run();
     }

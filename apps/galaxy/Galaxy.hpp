@@ -7,7 +7,7 @@ class GalacticCore
 
 {
 public:
-    GalacticCore();
+    GalacticCore(pg::game::GameConfig&&);
 
     void setup();
 

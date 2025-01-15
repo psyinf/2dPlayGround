@@ -18,7 +18,7 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
-    pg::game::Game game;
+    pg::game::Game game({});
 
     pg::game::SystemsFactory::registerSystem<asteroids::Lasers>("lasers");
     pg::game::SystemsFactory::registerSystem<asteroids::Player>("player");

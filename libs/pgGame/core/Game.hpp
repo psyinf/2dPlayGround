@@ -11,6 +11,7 @@
 #include <pgGame/components/WindowDetails.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgGame/config/GenericConfig.hpp>
+#include <pgGame/config/GameConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
 #include <pgGame/components/GameState.hpp>
 #include <stdexcept>
@@ -65,10 +66,10 @@ public:
     using VFSPtr = std::shared_ptr<vfspp::VirtualFileSystem>;
 
 private:
-    pg::config::WindowConfig _windowConfig{0, {0, 20}, {800, 800}, "Ad astra!"}; // TODO: from config
-    WindowDetails            _windowDetails{
-                   {_windowConfig.offset[0], _windowConfig.offset[1], _windowConfig.size[0], _windowConfig.size[1]}};
-    pg::SDLApp                          _sdlApp{_windowConfig};
+    pg::game::GameConfig _gameConfig;
+
+    WindowDetails                       _windowDetails;
+    pg::SDLApp                          _sdlApp;
     pg::InputEventDispatcher            _inputEventDispatcher;
     ResourceManager                     _resourceManager;
     std::unique_ptr<pg::Gui>            _gui;
@@ -86,7 +87,7 @@ private:
     pg::foundation::DataProviderFactory _dataProviderFactory;
 
 public:
-    Game();
+    Game(pg::game::GameConfig&& config);
     entt::registry& getSceneRegistry(std::string_view id);
 
     entt::registry& getCurrentSceneRegistry();
