@@ -22,5 +22,6 @@ struct GuiDrawable
 {
     std::shared_ptr<pg::game::GuiRenderable> prim;
     int32_t                                  order{0};
+    bool                                     active{true};
 };
 } // namespace pg::game

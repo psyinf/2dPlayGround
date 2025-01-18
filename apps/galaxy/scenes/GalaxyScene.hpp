@@ -18,6 +18,7 @@
 #include <pgEngine/generators/markov/MarkovFrequencyMapSerializer.hpp>
 #include <pgEngine/generators/MarkovNameGen.hpp>
 #include <pgGame/events/SceneManagementEvents.hpp>
+#include <gui/InSceneOptionsWidget.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -321,13 +322,19 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::MainBarWidget>(getGame())});
-
-        pg::game::makeEntity<pg::game::GuiDrawable>(
+ */
+        auto options_menu_entity = pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::InSceneOptionsWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
 
-
-            */
+        // register a callback to handle the options menu
+        getKeyStateMap().registerKeyCallback(
+            SDLK_o,
+            [options_menu_entity, this](auto) {
+                auto& active = getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active;
+                active = !active;
+            },
+            true);
     }
 
     void setupGalaxy()
@@ -433,7 +440,16 @@ private:
             auto& renderState = registry.get<pg::game::RenderState>(entity);
             return renderState.states.get<pg::ColorState>()->getColor()[3] / 255.0f;
         };
-        registerAccessor<float>("galaxy.grid.opacity", std::move(setOpacity), std::move(getOpacity));
+        auto setColor = [entity, color, &registry = getGame().getGlobalRegistry()](const pg::Color& new_color) mutable {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            auto  colorState = renderState.states.get<pg::ColorState>();
+            colorState->setColor(new_color);
+        };
+        auto getColor = [&registry = getGame().getGlobalRegistry(), entity]() {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            return renderState.states.get<pg::ColorState>()->getColor();
+        };
+        registerAccessor<pg::Color>("galaxy.grid.color", std::move(setColor), std::move(getColor));
     }
 
     void setupBackground()

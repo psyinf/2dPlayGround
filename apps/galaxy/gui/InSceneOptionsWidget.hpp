@@ -21,13 +21,17 @@ public:
             {
                 getGame().getCurrentScene().callSetter<float>("galaxy.background.opacity", opacity);
             }
-            // grid visible
-            if (getGame().getCurrentScene().hasAccessor<float>("galaxy.grid.opacity"))
+
+            if (getGame().getCurrentScene().hasAccessor<pg::Color>("galaxy.grid.color"))
             {
-                float gridVisible = getGame().getCurrentScene().callGetter<float>("galaxy.grid.opacity");
-                if (ImGui::SliderFloat("Grid Visibility", &gridVisible, 0.f, 1.f))
+                pg::Color       gridColor = getGame().getCurrentScene().callGetter<pg::Color>("galaxy.grid.color");
+                pg::Vec4<float> gridColorFloat = pg::vec_cast<float>(gridColor);
+                gridColorFloat /= 255.f;
+
+                if (ImGui::ColorEdit3("Grid Visibility", gridColorFloat.data()))
                 {
-                    getGame().getCurrentScene().callSetter<float>("galaxy.grid.opacity", gridVisible);
+                    gridColor = pg::vec_cast<uint8_t>(gridColorFloat * 255.f);
+                    getGame().getCurrentScene().callSetter<pg::Color>("galaxy.grid.color", gridColor);
                 }
             }
         }
