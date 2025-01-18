@@ -87,14 +87,14 @@ public:
         std::jthread([this, loader = std::move(loader), resource, &completedMap] {
             try
             {
-                spdlog::info("Pre-Loading resource: {}", resource);
+                spdlog::debug("Pre-Loading resource: {}", resource);
                 loader(completedMap);
-                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+                // std::this_thread::sleep_for(std::chrono::milliseconds(100));
                 spdlog::info("Pre-Loaded resource: {}. {} remaining", resource, _loaders.size() - _numThreadsFinished);
             }
             catch (const std::exception& e)
             {
-                spdlog::error("Failed to load resource: {} ({})", resource, e.what());
+                spdlog::error("Failed to pre-load resource: {} ({})", resource, e.what());
                 completedMap.insert({resource, 1.0f});
             }
             completedMap[resource] = 1.0f; // might have been in cache already, thus not triggering a progress callback
