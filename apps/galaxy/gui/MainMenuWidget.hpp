@@ -11,6 +11,9 @@ namespace galaxy::gui {
 
 class MainMenuWidget : public galaxy::gui::GameGuiWidget
 {
+    std::shared_ptr<sdl::Texture> _button_texture;
+    std::shared_ptr<sdl::Texture> _dot_texture;
+
 public:
     MainMenuWidget(pg::game::Game& game)
       : galaxy::gui::GameGuiWidget(game)
@@ -18,11 +21,17 @@ public:
         try
         {
             galaxy_config = pg::load("../data/galaxy_config.json", galaxy_config);
+            if (!std::filesystem::exists("../data/galaxy_config.json"))
+            {
+                pg::save("../data/galaxy_config.json", galaxy_config);
+            }
         }
         catch (const std::exception&)
         {
             pg::save("../data/galaxy_config.json", galaxy_config);
         }
+        _dot_texture = getGame().getResource<sdl::Texture>("data/background/splash1.png");
+        _button_texture = getGame().getResource<sdl::Texture>("data/UI/frame.png");
     }
 
     void onButtonPressed(const std::string& name, bool switchScene = true)
@@ -91,12 +100,8 @@ public:
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
-        // TODO: save internally
-        auto dot_texture = getGame().getResource<sdl::Texture>("data/background/splash1.png");
-        auto button_texture = getGame().getResource<sdl::Texture>("data/UI/frame.png");
-
         int size_x, size_y;
-        dot_texture->query(nullptr, nullptr, &size_x, &size_y);
+        _dot_texture->query(nullptr, nullptr, &size_x, &size_y);
         // stretch or squeeze the image to fit the screen
         pg::gui::fitToScreen(size_x, size_y);
         auto centering = pg::gui::enforceMinimumSize(size_x, size_y, 0, 600);
@@ -111,7 +116,7 @@ public:
             // center vertically
             ImGui::SetCursorPos(ImVec2(centering.x, (ImGui::GetIO().DisplaySize.y * 0.5f) - (size_y * 0.5f)));
             // background sprite
-            ImGui::Image((ImTextureID)dot_texture.get()->get(),
+            ImGui::Image((ImTextureID)_dot_texture.get()->get(),
                          ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
             // TODO: style from config
             pgf::gui::StyleStack stack;
