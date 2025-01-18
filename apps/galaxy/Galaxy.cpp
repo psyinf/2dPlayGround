@@ -48,7 +48,8 @@ void galaxy::GalacticCore::setup()
         "galaxy",
         "soundScape",
         // {.background_music{.music_list{{"data/music/a-meditation-through-time-amp-space-11947.mp3"}}},
-        {.background_music{.music_list{{"music/cylinders/Chris Zabriskie - Cylinders - 08 Cylinder Eight.mp3"}}},
+        {.background_music{
+             .music_list{{"music/soundtracks/cylinders/Chris Zabriskie - Cylinders - 08 Cylinder Eight.mp3"}}},
          .event_sounds = {event_sound_cfg}
 
         });
