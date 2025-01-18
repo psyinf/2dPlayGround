@@ -200,5 +200,6 @@ using XYZ = Swizzle<0, 1, 2>;
 using RGB = Swizzle<0, 1, 2>;
 using RGBA = Swizzle<0, 1, 2, 3>;
 using XY = Swizzle<0, 1>;
+using A = Swizzle<3>;
 
 } // namespace pg
