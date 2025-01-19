@@ -54,8 +54,10 @@ public:
             // save the config
             pg::save("../data/galaxy_config.json", galaxy_config);
         }
+
         if (closed)
         {
+            galaxy_config = pg::load("../data/galaxy_config.json", galaxy_config);
             //
             active_menu = {};
         }
