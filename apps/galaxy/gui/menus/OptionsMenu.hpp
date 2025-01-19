@@ -56,7 +56,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
     {
         pgf::gui::Child  child("##Options" /*ImVec2(400, 400), true, ImGuiWindowFlags_NoScrollbar*/);
         pgf::gui::TabBar tab_bar("Options");
-        if (pgf::gui::TabItem("Galaxy").get())
+        if (auto item = pgf::gui::TabItem("Galaxy"); item.get())
         {
             ImGui::SeparatorText("View");
             // slider for opacity
@@ -79,7 +79,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
             // star count as text
             ImGui::Text(": %d", galaxy_config.creation.num_stars);
         }
-        if (pgf::gui::TabItem("Factions").get())
+        if (auto item = pgf::gui::TabItem("Factions"); item.get())
         {
             // collapsible faction list
             ImGui::SeparatorText("Factions");
@@ -113,7 +113,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
                                     faction.color[2] / 255.0f,
                                     faction.color[3] / 255.0f);
 
-                if (pgf::gui::TreeNode(label_name.c_str()).get())
+                if (auto node = pgf::gui::TreeNode(label_name.c_str()); node.get())
                 {
                     // active
                     // button to deactivate faction
