@@ -1,6 +1,7 @@
 #pragma once
 #include <gui/GameGuiWidget.hpp>
 #include <pgGame/events/GameEvents.hpp>
+#include <pgEngine/gui/ImGuiScopedWrappers.hpp>
 
 namespace galaxy::gui {
 
@@ -11,11 +12,11 @@ public:
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
-        ImGui::Begin("In Scene Options", nullptr, ImGuiWindowFlags_AlwaysAutoResize);
-        // HACK:
-        if (getGame().getCurrentSceneId() == "galaxy")
+        if (getGame().getCurrentSceneId() != "galaxy") { return; }
+        auto& menu_active = getGame().getCurrentScene().getSingleton<bool&>("galaxy.options_menu.active");
+        if (!menu_active) { return; }
         {
-            // background opacity
+            auto window = pgf::gui::Window("Options", &menu_active);
             auto opacity = getGame().getCurrentScene().callGetter<float>("galaxy.background.opacity");
             if (ImGui::SliderFloat("Opacity", &opacity, 0.f, 1.f))
             {
@@ -34,15 +35,14 @@ public:
                     getGame().getCurrentScene().callSetter<pg::Color>("galaxy.grid.color", gridColor);
                 }
             }
-        }
 
-        auto volume = getGame().getCurrentScene().callGetter<float>("scene.sound.volume");
-        if (ImGui::SliderFloat("Global Volume", &volume, 0.f, 1.f))
-        {
-            getGame().getCurrentScene().callSetter<float>("scene.sound.volume", volume);
-        }
-
-        ImGui::End();
+            auto volume = getGame().getCurrentScene().callGetter<float>("scene.sound.volume");
+            if (ImGui::SliderFloat("Global Volume", &volume, 0.f, 1.f))
+            {
+                getGame().getCurrentScene().callSetter<float>("scene.sound.volume", volume);
+            }
+            // ImGui::End();
+        } // PopUp;
     }
 };
 

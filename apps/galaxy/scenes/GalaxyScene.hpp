@@ -327,12 +327,16 @@ private:
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::InSceneOptionsWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
 
+        auto& active = getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active;
+        // register as singleton
+
+        addSingleton_as<bool>("galaxy.options_menu.active", active);
         // register a callback to handle the options menu
         getKeyStateMap().registerKeyCallback(
             SDLK_o,
             [options_menu_entity, this](auto) {
-                auto& active = getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active;
-                active = !active;
+                auto& menu_active = getSingleton<bool&>("galaxy.options_menu.active");
+                menu_active = true;
             },
             true);
     }
