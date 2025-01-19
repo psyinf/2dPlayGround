@@ -4,6 +4,13 @@
 #include "imgui.h"
 #include <pgFoundation/ScopeBeginEndWrapper.hpp>
 
+// Specialization for ImGui::Begin to always call ImGui::End
+template <>
+struct pgf::AlwaysEnd<ImGui::Begin>
+{
+    constexpr static bool value = true;
+};
+
 namespace pgf::gui {
 
 class StyleStack
@@ -52,11 +59,15 @@ bool WrappedTreeNode(const char* label)
     return ImGui::TreeNode(label);
 }
 
+using Window =
+    ScopedBeginEnd<ImGui::Begin, ImGui::End, ParameterInstance<bool*, nullptr>, ParameterInstance<ImGuiWindowFlags, 0>>;
+
 using Child = ScopedBeginEnd<WrappedBeginChild,
                              ImGui::EndChild,
                              ParameterInstance<ImVec2, ImVec2{}>,
                              ParameterInstance<ImGuiChildFlags, 0>,
                              ParameterInstance<ImGuiWindowFlags, 0>>;
+
 using TabItem = ScopedBeginEnd<ImGui::BeginTabItem,
                                ImGui::EndTabItem,
                                ParameterInstance<bool*, nullptr>,
@@ -67,4 +78,10 @@ using TreeNode = ScopedBeginEnd<[](const char* label) { return ImGui::TreeNode(l
 using Tree = VoidScopedBeginEnd<[](const char* label) { ImGui::TreePush(label); }, ImGui::TreePop>;
 
 using PushId = VoidScopedBeginEnd<[](int id) { ImGui::PushID(id); }, ImGui::PopID>;
+using PopUp = ScopedBeginEnd<ImGui::BeginPopup, ImGui::EndPopup, ParameterInstance<ImGuiWindowFlags, 0>>;
+
+using PopUpModal = ScopedBeginEnd<ImGui::BeginPopupModal,
+                                  ImGui::EndPopup,
+                                  /*ParameterInstance<bool*, nullptr>,*/
+                                  ParameterInstance<ImGuiWindowFlags, 0>>;
 } // namespace pgf::gui
