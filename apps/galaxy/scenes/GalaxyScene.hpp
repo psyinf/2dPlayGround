@@ -19,6 +19,7 @@
 #include <pgEngine/generators/MarkovNameGen.hpp>
 #include <pgGame/events/SceneManagementEvents.hpp>
 #include <gui/InSceneOptionsWidget.hpp>
+#include <gui/PauseMenuWidget.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -281,9 +282,7 @@ private:
         });
 
         getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
-        //         getKeyStateMap().registerKeyCallback(
-        //             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
-        // TODO: in Game class
+
         game.getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
             if (e.event == SDL_WINDOWEVENT_RESIZED)
             {
@@ -293,8 +292,7 @@ private:
             }
         };
 
-        // TODO: ESC/ESC
-        getKeyStateMap().registerKeyCallback(SDLK_ESCAPE, [this](auto) { getGlobalTransform() = {}; });
+        getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
         //
     }
 
@@ -325,20 +323,22 @@ private:
  */
         auto options_menu_entity = pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
-            {std::make_unique<galaxy::gui::InSceneOptionsWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
+            {std::make_unique<galaxy::gui::PauseMenuWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU, false});
 
-        auto& active = getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active;
         // register as singleton
-
-        addSingleton_as<bool>("galaxy.options_menu.active", active);
+        registerAccessor<bool>(
+            "galaxy.pause_menu_open",
+            // setter
+            [options_menu_entity, this](bool state) {
+                getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active = state;
+            },
+            // getter
+            [options_menu_entity, this]() {
+                return getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active;
+            });
         // register a callback to handle the options menu
         getKeyStateMap().registerKeyCallback(
-            SDLK_o,
-            [options_menu_entity, this](auto) {
-                auto& menu_active = getSingleton<bool&>("galaxy.options_menu.active");
-                menu_active = true;
-            },
-            true);
+            SDLK_o, [options_menu_entity, this](auto) { callSetter<bool>("galaxy.pause_menu_open", true); }, true);
     }
 
     void setupGalaxy()

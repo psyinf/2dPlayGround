@@ -42,6 +42,34 @@ static std::string_view getNullSeparatedNames()
     return result;
 }
 
+static void inGameOptions(pg::game::Game& game)
+{
+    auto opacity = game.getCurrentScene().callGetter<float>("galaxy.background.opacity");
+    if (ImGui::SliderFloat("Opacity", &opacity, 0.f, 1.f))
+    {
+        game.getCurrentScene().callSetter<float>("galaxy.background.opacity", opacity);
+    }
+
+    if (game.getCurrentScene().hasAccessor<pg::Color>("galaxy.grid.color"))
+    {
+        pg::Color       gridColor = game.getCurrentScene().callGetter<pg::Color>("galaxy.grid.color");
+        pg::Vec4<float> gridColorFloat = pg::vec_cast<float>(gridColor);
+        gridColorFloat /= 255.f;
+
+        if (ImGui::ColorEdit3("Grid Visibility", gridColorFloat.data()))
+        {
+            gridColor = pg::vec_cast<uint8_t>(gridColorFloat * 255.f);
+            game.getCurrentScene().callSetter<pg::Color>("galaxy.grid.color", gridColor);
+        }
+    }
+
+    auto volume = game.getCurrentScene().callGetter<float>("scene.sound.volume");
+    if (ImGui::SliderFloat("Global Volume", &volume, 0.f, 1.f))
+    {
+        game.getCurrentScene().callSetter<float>("scene.sound.volume", volume);
+    }
+}
+
 static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
                         bool&                                   closed,
                         std::function<void(const std::string&)> buttonPressed)
