@@ -23,17 +23,24 @@ auto drop_first_N(const std::tuple<Args...>& t)
 } // namespace
 
 namespace pgf {
+// class template to wrap a Default Parameter to a function
 template <typename T, T value>
 struct ParameterInstance
 {
     static T get() { return T(value); }
 };
 
+// tag to specialize for functions that need their end function to be called always
 template <auto T>
 struct AlwaysEnd
 {
     static constexpr bool value = false;
 };
+
+/* class template to wrap a pair of functions that need to be called in pairs where the user can pass arguments to the
+begin function. The class will call the end function in the destructor if the begin function returned true unless the
+AlwaysEnd specialization is used. DefaultArgs are the default arguments to the begin function (except for the first
+argument which is in the constructor alongside with arguments overriding the default ones) */
 
 template <auto begin, auto end, typename... DefaultArgs>
 class [[nodiscard]] ScopedBeginEnd
