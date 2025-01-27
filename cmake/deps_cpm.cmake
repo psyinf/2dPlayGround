@@ -170,8 +170,8 @@ add_library(imgui::imgui ALIAS imgui)
 #endif()
 CPMAddPackage(
     NAME vfspp
-    GITHUB_REPOSITORY psyinf/vfspp
-    GIT_TAG development
+    GITHUB_REPOSITORY nextgeniuspro/vfspp
+    GIT_TAG master
 )
 
 if(SCRIPTING)
