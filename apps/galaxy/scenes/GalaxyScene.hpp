@@ -308,9 +308,6 @@ private:
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::MainFrameWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
         /*
-        pg::game::makeEntity<pg::game::GuiDrawable>(
-            getSceneRegistry(),
-            {std::make_unique<galaxy::gui::DashBoardWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::SystemInfoWidget>(getGame())});

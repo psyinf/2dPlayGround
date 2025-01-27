@@ -16,12 +16,13 @@ class LoadingBarWidget : public galaxy::gui::GameGuiWidget
 
 public:
     using galaxy::gui::GameGuiWidget::GameGuiWidget;
+    static constexpr auto num_frames_to_fade = 200u;
 
     void draw([[maybe_unused]] pg::Gui& gui) override
     {
         float totalProgress = getGame().getCurrentScene().getSingleton<float&>("resourceLoader.totalProgress");
         if (totalProgress >= 1.0f) { numFramesFinished++; }
-        if (numFramesFinished > 200) { return; }
+        if (numFramesFinished > num_frames_to_fade) { return; }
 
         ImGui::Begin("Loading Resources",
                      nullptr,
@@ -39,13 +40,12 @@ public:
             // if number of frames finished is > 0 slowly fade out
             if (numFramesFinished > 0)
             {
-                float alpha = 1.0f - numFramesFinished / 200.0f;
+                float alpha = 1.0f - numFramesFinished / static_cast<float>(num_frames_to_fade);
                 // use blending to fade out
                 styleStack.pushStyle(ImGuiStyleVar_Alpha, alpha);
             }
 
             ImGui::ProgressBar(totalProgress, ImVec2{ImGui::GetIO().DisplaySize.x - 20, 40}, "");
-            // ImGui::Text("Loading... %.2f%%", totalProgress * 100.0f);
         }
 
         ImGui::End();
