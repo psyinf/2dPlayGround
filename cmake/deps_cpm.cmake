@@ -12,7 +12,7 @@ CPMAddPackage(
 CPMAddPackage(
     Name btcpp
     GITHUB_REPOSITORY psyinf/BehaviorTree.CPP
-    GIT_TAG c++23#4.6.1
+    GIT_TAG fix_export_minitrace
     SYSTEM TRUE
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
@@ -168,6 +168,11 @@ set_target_properties(imgui PROPERTIES FOLDER third-party) # optoinal IDE dir
 #alias
 add_library(imgui::imgui ALIAS imgui)
 #endif()
+CPMAddPackage(
+    NAME vfspp
+    GITHUB_REPOSITORY psyinf/vfspp
+    GIT_TAG bump_minizip_submodule
+)
 
 if(SCRIPTING)
 CPMAddPackage(
@@ -181,8 +186,6 @@ CPMAddPackage(
     GITHUB_REPOSITORY pybind/pybind11
     GIT_TAG v2.12.0
 )
-
-
 endif()
 
 CPMAddPackage(NAME  IconFontCppHeaders

@@ -7,6 +7,7 @@
 #include <events/GameEvents.hpp>
 #include <ranges>
 #include <components/singletons/RegisteredPreloaders.hpp>
+#include <pgGame/core/VFSDataProvider.hpp>
 
 using namespace pg;
 
@@ -67,37 +68,73 @@ public:
     void handleTimeScaleEvent(const pg::game::events::TimeScaleEvent& tse) { _gameState.timeScale = tse.time_scale; }
 };
 
-game::Game::Game()
-  : pimpl(std::make_unique<Pimpl>(*this, _gameState))
-  , _inputEventDispatcher(sdlApp.getEventHandler(), {})
+game::Game::Game(pg::game::GameConfig&& config)
+  : _pimpl(std::make_unique<Pimpl>(*this, _gameState))
+  , _gameConfig(std::move(config))
+  , _windowDetails(_gameConfig.getWindowRect())
+  , _sdlApp(_gameConfig.windowConfig)
+  , _inputEventDispatcher(_sdlApp.getEventHandler(), {})
+  , _vfs(std::make_unique<vfspp::VirtualFileSystem>())
+  , _resourceManager([this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
+      return std::make_unique<VFSDataProvider>(uri, _vfs);
+  })
 {
-    gui = std::make_unique<pg::Gui>(getApp());
+    // register all vfs's
+    for (const auto& vfsConfig : _gameConfig.vfsConfigs)
+    {
+        switch (vfsConfig.type)
+        {
+        case pg::game::VFSConfig::VFSType::PHYSICAL: {
+            auto fs = std::make_shared<vfspp::NativeFileSystem>(vfsConfig.root);
+            fs->Initialize();
+            _vfs->AddFileSystem(vfsConfig.alias, fs);
+            break;
+        }
+        case pg::game::VFSConfig::VFSType::ZIP: {
+            auto fs = std::make_shared<vfspp::ZipFileSystem>(vfsConfig.root);
+            fs->Initialize();
+            _vfs->AddFileSystem(vfsConfig.alias, fs);
+            break;
+        }
+        case pg::game::VFSConfig::VFSType::MEMORY: {
+            auto fs = std::make_shared<vfspp::MemoryFileSystem>();
+            fs->Initialize();
+            _vfs->AddFileSystem(vfsConfig.alias, fs);
+            break;
+        }
+        }
+    }
+    //     auto fs = std::make_shared<vfspp::NativeFileSystem>("../data/");
+    //     fs->Initialize();
+    //     _vfs->AddFileSystem("data", fs);
+
+    _gui = std::make_unique<pg::Gui>(getApp());
     // register event handlers
-    dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&Pimpl::handleSceneSwitchEvent>(
-        dynamic_cast<Pimpl&>(*pimpl));
-    dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*pimpl));
-    dispatcher.sink<pg::game::events::DestroyEntityEvent>().connect<&Pimpl::handleDestroyEntityEvent>(
-        dynamic_cast<Pimpl&>(*pimpl));
-    dispatcher.sink<pg::game::events::PlayPauseEvent>().connect<&Pimpl::handlePlayPauseEvent>(
-        dynamic_cast<Pimpl&>(*pimpl));
-    dispatcher.sink<pg::game::events::TimeScaleEvent>().connect<&Pimpl::handleTimeScaleEvent>(
-        dynamic_cast<Pimpl&>(*pimpl));
+    _dispatcher.sink<pg::game::events::SwitchSceneEvent>().connect<&Pimpl::handleSceneSwitchEvent>(
+        dynamic_cast<Pimpl&>(*_pimpl));
+    _dispatcher.sink<pg::game::events::QuitEvent>().connect<&Pimpl::handleQuitEvent>(dynamic_cast<Pimpl&>(*_pimpl));
+    _dispatcher.sink<pg::game::events::DestroyEntityEvent>().connect<&Pimpl::handleDestroyEntityEvent>(
+        dynamic_cast<Pimpl&>(*_pimpl));
+    _dispatcher.sink<pg::game::events::PlayPauseEvent>().connect<&Pimpl::handlePlayPauseEvent>(
+        dynamic_cast<Pimpl&>(*_pimpl));
+    _dispatcher.sink<pg::game::events::TimeScaleEvent>().connect<&Pimpl::handleTimeScaleEvent>(
+        dynamic_cast<Pimpl&>(*_pimpl));
     createAndSwitchScene({"__default__"});
 }
 
 void game::Game::frame(FrameStamp& frameStamp)
 {
     // dispatcher update
-    dispatcher.update();
+    _dispatcher.update();
     // check preconditions
     if (_currentSceneId.empty()) { throw std::invalid_argument("No scene has been set"); }
     // poll all events
-    while (sdlApp.getEventHandler().poll()) {};
+    while (_sdlApp.getEventHandler().poll()) {};
     // evaluate all callbacks bound to events
     _inputEventDispatcher.evaluateCallbacks();
 
     // update the scene
-    scenes.at(_currentSceneId)->frame(frameStamp);
+    _scenes.at(_currentSceneId)->frame(frameStamp);
 }
 
 entt::registry& game::Game::getCurrentSceneRegistry()
@@ -108,33 +145,33 @@ entt::registry& game::Game::getCurrentSceneRegistry()
 
 entt::dispatcher& game::Game::getGlobalDispatcher()
 {
-    return dispatcher;
+    return _dispatcher;
 }
 
 pg::SDLApp& game::Game::getApp()
 {
-    return sdlApp;
+    return _sdlApp;
 }
 
 void game::Game::loop()
 {
-    sdlApp.getEventHandler().quit = [this](auto) { running = false; };
+    _sdlApp.getEventHandler().quit = [this](auto) { _running = false; };
 
-    _currentFrameStamp = {0, 0, sdlApp.getFPSCounter().getLastFrameDuration()};
-    while (running)
+    _currentFrameStamp = {0, 0, _sdlApp.getFPSCounter().getLastFrameDuration()};
+    while (_running)
     {
         float effectiveTimeScale = _gameState.timeScale;
         if (_gameState.pauseState == pg::game::PauseState::Paused) { effectiveTimeScale = 0.0f; }
-        _currentFrameStamp.update(sdlApp.getFPSCounter().getLastFrameDuration(), effectiveTimeScale);
+        _currentFrameStamp.update(_sdlApp.getFPSCounter().getLastFrameDuration(), effectiveTimeScale);
 
         frame(_currentFrameStamp);
-        sdlApp.getFPSCounter().frame();
+        _sdlApp.getFPSCounter().frame();
     }
 }
 
 pg::game::Scene& game::Game::getScene(std::string_view id)
 {
-    return *scenes.at(std::string(id));
+    return *_scenes.at(std::string(id));
 }
 
 void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::game::Scene>&& scene)
@@ -143,14 +180,10 @@ void game::Game::createSceneInternal(std::string_view id, std::unique_ptr<pg::ga
     // internal switch of scene for setup
     {
         ScopedSwitchSceneId switcher(_currentSceneId, std::string{id});
-        scenes.emplace(std::string{id}, std::move(scene));
-        auto scenePtr = scenes.at(std::string(id)).get();
+        _scenes.emplace(std::string{id}, std::move(scene));
+        auto scenePtr = _scenes.at(std::string(id)).get();
 
-        scenePtr->addSingleton<pg::foundation::TypedResourceCache<pg::Sprite>>(
-            [this](const auto& e) { return pg::SpriteFactory::makeSprite(getApp().getRenderer(), e); });
-        scenePtr->addSingleton<pg::foundation::TypedResourceCache<sdl::Texture>>(
-            [this](const auto& e) { return pg::SpriteFactory::makeTexture(getApp().getRenderer(), e); });
-        scenePtr->addSingleton<WindowDetails&>(windowDetails);
+        scenePtr->addSingleton<WindowDetails&>(_windowDetails);
         scenePtr->addSingleton_as<pg::Transform2D&>(pg::game::Scene::GlobalTransformName,
                                                     getCurrentScene().getGlobalTransform());
         scenePtr->setup(id);
@@ -163,11 +196,11 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
     {
         if (_currentSceneId == id) { return getScene(id); }
         std::string idStr{id};
-        auto        scene = scenes.at(idStr).get();
+        auto        scene = _scenes.at(idStr).get();
         // stop current scene
         if (!_currentSceneId.empty())
         {
-            auto& currentScene = scenes.at(_currentSceneId);
+            auto& currentScene = _scenes.at(_currentSceneId);
             for (const auto& system : currentScene->getSystems())
             {
                 system->exitScene(_currentSceneId);
@@ -195,12 +228,12 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
 
 pg::Gui& game::Game::getGui()
 {
-    return *gui;
+    return *_gui;
 }
 
 void game::Game::quit()
 {
-    running = false;
+    _running = false;
 }
 
 entt::registry& game::Game::getSceneRegistry(std::string_view id)
@@ -213,4 +246,13 @@ void game::Game::registerGlobalSingletons(std::string_view scene_id, const Scene
     addSingleton_as<SceneConfig>(scene_id, cfg);
     addSingleton_as<pg::singleton::RegisteredLoaders>(std::string{scene_id} + ".loaders",
                                                       pg::singleton::RegisteredLoaders{});
+}
+
+auto game::Game::getDataProviderFactory() -> pg::foundation::DataProviderFactory&
+{
+    static auto vfs_data_provider_factory =
+        pg::foundation::DataProviderFactory{[this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
+            return std::make_unique<VFSDataProvider>(uri, _vfs);
+        }};
+    return vfs_data_provider_factory;
 }

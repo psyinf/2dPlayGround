@@ -1,3 +1,4 @@
+#pragma once
 #include <imgui.h>
 #include <imgui_internal.h>
 #include <numbers>
@@ -5,7 +6,11 @@
 // from https : // github.com/ocornut/imgui/issues/1901
 namespace pg::foundation::imgui {
 
-bool BufferingBar(const char* label, float value, const ImVec2& size_arg, const ImU32& bg_col, const ImU32& fg_col)
+static inline bool BufferingBar(const char*   label,
+                                float         value,
+                                const ImVec2& size_arg,
+                                const ImU32&  bg_col,
+                                const ImU32&  fg_col)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems) return false;
@@ -48,7 +53,7 @@ bool BufferingBar(const char* label, float value, const ImVec2& size_arg, const 
     return true;
 }
 
-bool Spinner(const char* label, float radius, float thickness, const ImU32& color)
+static inline bool Spinner(const char* label, float radius, float thickness, const ImU32& color)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems) return false;
@@ -87,12 +92,12 @@ bool Spinner(const char* label, float radius, float thickness, const ImU32& colo
     return true;
 }
 
-void LoadingIndicatorCircle(const char*   label,
-                            const float   indicator_radius,
-                            const ImVec4& main_color,
-                            const ImVec4& backdrop_color,
-                            const int     circle_count,
-                            const float   speed)
+static void LoadingIndicatorCircle(const char*   label,
+                                   const float   indicator_radius,
+                                   const ImVec4& main_color,
+                                   const ImVec4& backdrop_color,
+                                   const int     circle_count,
+                                   const float   speed)
 {
     ImGuiWindow* window = ImGui::GetCurrentWindow();
     if (window->SkipItems) { return; }

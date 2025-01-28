@@ -15,11 +15,15 @@ class SpriteFactory
 {
 public:
     // TODO: progress callback
-    static auto loadFromFile(const std::string& path);
+    static auto loadFromFile(const std::string& path) -> SDL_Surface*;
+
+    static auto loadFromBuffer(const std::vector<char>& buffer) -> SDL_Surface*;
 
     static sdl::Texture makeTexture(sdl::Renderer& renderer, std::string_view resource_name);
+    static sdl::Texture makeTexture(sdl::Renderer& renderer, const std::vector<char>& buffer);
 
     static Sprite makeSprite(sdl::Renderer& renderer, std::string_view resource_name);
+    static Sprite makeSprite(sdl::Renderer& renderer, const std::vector<char>& buffer);
 
     static Sprite makeTextSprite(sdl::Renderer& renderer, SDLFont& font, std::string_view text);
     /**

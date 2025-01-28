@@ -42,6 +42,34 @@ static std::string_view getNullSeparatedNames()
     return result;
 }
 
+static void inGameOptions(pg::game::Game& game)
+{
+    auto opacity = game.getCurrentScene().callGetter<float>("galaxy.background.opacity");
+    if (ImGui::SliderFloat("Opacity", &opacity, 0.f, 1.f))
+    {
+        game.getCurrentScene().callSetter<float>("galaxy.background.opacity", opacity);
+    }
+
+    if (game.getCurrentScene().hasAccessor<pg::Color>("galaxy.grid.color"))
+    {
+        pg::Color       gridColor = game.getCurrentScene().callGetter<pg::Color>("galaxy.grid.color");
+        pg::Vec4<float> gridColorFloat = pg::vec_cast<float>(gridColor);
+        gridColorFloat /= 255.f;
+
+        if (ImGui::ColorEdit3("Grid Visibility", gridColorFloat.data()))
+        {
+            gridColor = pg::vec_cast<uint8_t>(gridColorFloat * 255.f);
+            game.getCurrentScene().callSetter<pg::Color>("galaxy.grid.color", gridColor);
+        }
+    }
+
+    auto volume = game.getCurrentScene().callGetter<float>("scene.sound.volume");
+    if (ImGui::SliderFloat("Global Volume", &volume, 0.f, 1.f))
+    {
+        game.getCurrentScene().callSetter<float>("scene.sound.volume", volume);
+    }
+}
+
 static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
                         bool&                                   closed,
                         std::function<void(const std::string&)> buttonPressed)
@@ -56,7 +84,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
     {
         pgf::gui::Child  child("##Options" /*ImVec2(400, 400), true, ImGuiWindowFlags_NoScrollbar*/);
         pgf::gui::TabBar tab_bar("Options");
-        if (pgf::gui::TabItem("Galaxy").get())
+        if (auto item = pgf::gui::TabItem("Galaxy"); item.get())
         {
             ImGui::SeparatorText("View");
             // slider for opacity
@@ -79,7 +107,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
             // star count as text
             ImGui::Text(": %d", galaxy_config.creation.num_stars);
         }
-        if (pgf::gui::TabItem("Factions").get())
+        if (auto item = pgf::gui::TabItem("Factions"); item.get())
         {
             // collapsible faction list
             ImGui::SeparatorText("Factions");
@@ -113,7 +141,7 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
                                     faction.color[2] / 255.0f,
                                     faction.color[3] / 255.0f);
 
-                if (pgf::gui::TreeNode(label_name.c_str()).get())
+                if (auto node = pgf::gui::TreeNode(label_name.c_str()); node.get())
                 {
                     // active
                     // button to deactivate faction

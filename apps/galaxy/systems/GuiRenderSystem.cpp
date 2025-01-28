@@ -35,6 +35,7 @@ void galaxy::GuiRenderSystem::handle(const pg::FrameStamp& /*frameStamp*/)
     for (const auto& entity : view)
     {
         auto& drawable = view.get<pg::game::GuiDrawable>(entity);
+        if (!drawable.active) { continue; }
         drawable.prim->draw(gui);
     }
     ImGui::PopStyleVar(7);

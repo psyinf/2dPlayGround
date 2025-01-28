@@ -10,10 +10,18 @@ void pg::game::Scene::frame(FrameStamp& frameStamp)
         firstFrame_ = false;
         frameStamp.gameTick = 0;
     }
-    preFrame(frameStamp);
-    std::ranges::for_each(systems_, [&frameStamp](auto& system) { system->handle(frameStamp); });
-    frameStamp.gameTick++;
-    postFrame(frameStamp);
+    try
+    {
+        preFrame(frameStamp);
+        std::ranges::for_each(systems_, [&frameStamp](auto& system) { system->handle(frameStamp); });
+        frameStamp.gameTick++;
+        postFrame(frameStamp);
+    }
+    catch (const std::exception& e)
+    {
+        spdlog::error("Exception caught in Scene::frame of {} ({})", _id, e.what());
+    }
+ 
 }
 
 pg::game::Scene::Systems& pg::game::Scene::getSystems()
@@ -46,6 +54,7 @@ pg::game::Scene::Scene(Game& game, SceneConfig&& cfg)
 
 void pg::game::Scene::setup([[maybe_unused]] std::string_view id)
 {
+    _id = id;
     game_.getInputEventDispatcher().registerHandler(std::string{id}, _keyStateMap);
     for (const auto& system : _config.systems)
     {

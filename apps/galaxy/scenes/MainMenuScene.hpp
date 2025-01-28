@@ -4,6 +4,8 @@
 #include <memory>
 #include <gui/MainMenuWidget.hpp>
 #include <components/SoundScape.hpp>
+#include <pgGame/core/ResourcePreLoader.hpp>
+#include <gui/LoadingBarWidget.hpp>
 
 namespace galaxy {
 
@@ -16,6 +18,11 @@ public:
 
     void start() override
     {
+        if (started()) { return; }
+        getGame().getCurrentScene().addSingleton_as<float&>("resourceLoader.totalProgress", _totalLoaded);
+        auto& loaders = getGame().getSingleton<pg::singleton::RegisteredLoaders>(getId() + ".loaders");
+        _resourcePreloader.initialize(loaders.loaders, _filesLoaded, [this](float p) { _totalLoaded = p; });
+
         setupOverlay();
         Scene::start();
     };
@@ -32,6 +39,15 @@ public:
         pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::MainMenuWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
+
+        pg::game::makeEntity<pg::game::GuiDrawable>(
+            getSceneRegistry(),
+            {std::make_unique<galaxy::gui::LoadingBarWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA + 100});
     }
+
+private:
+    ResourcePreloader   _resourcePreloader;
+    PercentCompletedMap _filesLoaded;
+    float               _totalLoaded{0.0f};
 };
 } // namespace galaxy

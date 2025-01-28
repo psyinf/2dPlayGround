@@ -5,15 +5,15 @@
 namespace pg::foundation {
 
 template <>
-inline pg::Sprite loadResource<pg::Sprite, sdl::Renderer&>(const std::string& path, sdl::Renderer& r)
+inline pg::Sprite loadResource<pg::Sprite, sdl::Renderer&>(DataProvider& p, sdl::Renderer& r)
 {
-    return pg::SpriteFactory::makeSprite(r, path);
+    return pg::SpriteFactory::makeSprite(r, p.asBuffer());
 }
 
 template <>
-inline sdl::Texture loadResource<sdl::Texture>(const std::string& path, sdl::Renderer& r)
+inline sdl::Texture loadResource<sdl::Texture>(DataProvider& p, sdl::Renderer& r)
 {
-    return pg::SpriteFactory::makeTexture(r, path);
+    return pg::SpriteFactory::makeTexture(r, p.asBuffer());
 }
 
 } // namespace pg::foundation

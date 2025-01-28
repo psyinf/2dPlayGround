@@ -89,7 +89,7 @@ public:
                       pgOrbit::OrbitCreator::PlanetType,
                       galaxy::StarSystemState& system)
     {
-        auto dot_sprite = getGame().getResource<pg::Sprite>("sprites/planet_244.png");
+        auto dot_sprite = getGame().getResource<pg::Sprite>("data/sprites/planet_244.png");
 
         // for now fixed position
         auto pos = pg::vec_cast<float>(
@@ -139,7 +139,7 @@ public:
     void createStar(galaxy::StarSystemState& system)
     {
         auto&& storage = getSceneRegistry().storage<void>(entt::hashed_string::value(system.name.c_str()));
-        auto   dot_sprite = getGame().getResource<pg::Sprite>("sprites/star.png");
+        auto   dot_sprite = getGame().getResource<pg::Sprite>("data/sprites/star.png");
         // size from star class
         auto rendererStates = pg::States{};
         auto color = pg::asRBGA(pgOrbit::getForSpectralType(pgOrbit::StarColors, system.spectralType));

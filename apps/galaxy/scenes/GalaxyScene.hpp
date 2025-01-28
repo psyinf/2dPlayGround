@@ -18,6 +18,8 @@
 #include <pgEngine/generators/markov/MarkovFrequencyMapSerializer.hpp>
 #include <pgEngine/generators/MarkovNameGen.hpp>
 #include <pgGame/events/SceneManagementEvents.hpp>
+#include <gui/InSceneOptionsWidget.hpp>
+#include <gui/PauseMenuWidget.hpp>
 
 namespace galaxy {
 using entt::literals::operator""_hs;
@@ -105,12 +107,12 @@ public:
     {
         auto& preLoaders =
             getGame().getSingleton<pg::singleton::RegisteredLoaders>(getSceneConfig().scene_id + ".loaders");
-// for now, no images
+        // for now, no images
 #if 0
-        TODO: images can be loaded, but not added to the SDL in a background task. Doing so will interfere with the state while rendering. 
+        TODO: images can be loaded, but not added to the SDL in a background task.Doing so will interfere with the state while rendering.
             This needs a two stage approach where adding to SDL is done protected by a mutex
-        std::vector<std::string> files = {
-            "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png"};
+            std::vector<std::string> files = {
+                "../data/reticle.png", "../data/background/milky_way_blurred.png", "../data/circle_05.png" };
 
         for (auto& file : files)
         {
@@ -119,13 +121,13 @@ public:
                 percentLoaded[file] = 0.0f;
                 game.getResourceManager().get().load<pg::Sprite, sdl::Renderer&>(file, game.getApp().getRenderer());
                 percentLoaded[file] = 1.0f;
-            };
+                };
             preLoaders.loaders.emplace(file, loader);
         }
 #endif
         getGame().addSingleton_as<std::atomic_bool>("markovFrequencyMap.loaded", false);
         /// add markov chain for names
-        auto markov_loader = [this](PercentCompleted& completion) {
+        auto markov_loader = [this](PercentCompletedMap& completion) {
             // try cached
             // get atomic bool
 
@@ -179,7 +181,7 @@ public:
         };
 
         // cached name loader
-        auto name_loader = [this](PercentCompleted& completion) {
+        auto name_loader = [this](PercentCompletedMap& completion) {
             // wait for markov loader
             galaxy::config::Galaxy galaxy_config;
             galaxyConfig = pg::load<galaxy::config::Galaxy>("../data/galaxy_config.json", galaxy_config);
@@ -280,9 +282,7 @@ private:
         });
 
         getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
-        //         getKeyStateMap().registerKeyCallback(
-        //             SDLK_d, [this](auto) { drawDebugItems = !drawDebugItems; }, true);
-        // TODO: in Game class
+
         game.getApp().getEventHandler().windowEvent = [this](const SDL_WindowEvent e) {
             if (e.event == SDL_WINDOWEVENT_RESIZED)
             {
@@ -292,8 +292,7 @@ private:
             }
         };
 
-        // TODO: ESC/ESC
-        getKeyStateMap().registerKeyCallback(SDLK_ESCAPE, [this](auto) { getGlobalTransform() = {}; });
+        getKeyStateMap().registerKeyCallback(SDLK_SPACE, [this](auto) { getGlobalTransform() = {}; });
         //
     }
 
@@ -309,9 +308,6 @@ private:
             getSceneRegistry(),
             {std::make_unique<galaxy::gui::MainFrameWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
         /*
-        pg::game::makeEntity<pg::game::GuiDrawable>(
-            getSceneRegistry(),
-            {std::make_unique<galaxy::gui::DashBoardWidget>(getGame()), pg::game::DRAWABLE_DOCKING_AREA});
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::SystemInfoWidget>(getGame())});
@@ -321,13 +317,25 @@ private:
 
         pg::game::makeEntity<pg::game::GuiDrawable>(getSceneRegistry(),
                                                     {std::make_unique<galaxy::gui::MainBarWidget>(getGame())});
-
-        pg::game::makeEntity<pg::game::GuiDrawable>(
+ */
+        auto options_menu_entity = pg::game::makeEntity<pg::game::GuiDrawable>(
             getSceneRegistry(),
-            {std::make_unique<galaxy::gui::InSceneOptionsWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU});
+            {std::make_unique<galaxy::gui::PauseMenuWidget>(getGame()), pg::game::DRAWABLE_OVERLAY_MENU, false});
 
-
-            */
+        // register as singleton
+        registerAccessor<bool>(
+            "galaxy.pause_menu_open",
+            // setter
+            [options_menu_entity, this](bool state) {
+                getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active = state;
+            },
+            // getter
+            [options_menu_entity, this]() {
+                return getSceneRegistry().get<pg::game::GuiDrawable>(options_menu_entity).active;
+            });
+        // register a callback to handle the options menu
+        getKeyStateMap().registerKeyCallback(
+            SDLK_o, [options_menu_entity, this](auto) { callSetter<bool>("galaxy.pause_menu_open", true); }, true);
     }
 
     void setupGalaxy()
@@ -346,7 +354,7 @@ private:
         std::discrete_distribution<> star_class_dist(pgOrbit::star_class_probabilities.cbegin(),
                                                      pgOrbit::star_class_probabilities.cend());
 
-        auto  dot_sprite = getGame().getResource<pg::Sprite>("../data/circle_05.png");
+        auto  dot_sprite = getGame().getResource<pg::Sprite>("data/circle_05.png");
         auto& gen = pg::SeedGenerator(galaxyConfig.creation.stars_seed).get();
         auto& cachedNames = getGame().getSingleton<CachedNames>("cachedNames");
 
@@ -433,14 +441,23 @@ private:
             auto& renderState = registry.get<pg::game::RenderState>(entity);
             return renderState.states.get<pg::ColorState>()->getColor()[3] / 255.0f;
         };
-        registerAccessor<float>("galaxy.grid.opacity", std::move(setOpacity), std::move(getOpacity));
+        auto setColor = [entity, color, &registry = getGame().getGlobalRegistry()](const pg::Color& new_color) mutable {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            auto  colorState = renderState.states.get<pg::ColorState>();
+            colorState->setColor(new_color);
+        };
+        auto getColor = [&registry = getGame().getGlobalRegistry(), entity]() {
+            auto& renderState = registry.get<pg::game::RenderState>(entity);
+            return renderState.states.get<pg::ColorState>()->getColor();
+        };
+        registerAccessor<pg::Color>("galaxy.grid.color", std::move(setColor), std::move(getColor));
     }
 
     void setupBackground()
 
     {
         // add background
-        auto background_sprite = getGame().getResource<pg::Sprite>("../data/background/milky_way_blurred.png");
+        auto background_sprite = getGame().getResource<pg::Sprite>("data/background/milky_way_blurred.png");
         auto states = pg::States{};
         states.push(pg::TextureAlphaState{static_cast<uint8_t>(galaxyConfig.background.opacity * 255)});
         states.push(pg::TextureColorState{pg::Color{255, 255, 255, 255}});
@@ -482,7 +499,7 @@ private:
     void setupSelectionMarker()
     {
         auto marker =
-            getGame().getResource<pg::Sprite, sdl::Renderer&>("../data/reticle.png", getGame().getApp().getRenderer());
+            getGame().getResource<pg::Sprite, sdl::Renderer&>("data/reticle.png", getGame().getApp().getRenderer());
         entt::entity markers =
             pg::game::makeEntity<pg::Transform2D, pg::game::Drawable, pg::game::RenderState, pg::tags::MarkerTag>(
                 getSceneRegistry(), {.pos{0, 0}, .scale{0.015f, 0.015f}}, pg::game::Drawable{marker}, {}, {});

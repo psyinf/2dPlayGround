@@ -8,9 +8,9 @@ namespace pg::config {
 struct WindowConfig
 {
     uint8_t        screen{};
-    pg::Vec2Window offset;
-    pg::Vec2Window size;
-    std::string    windowName;
+    pg::Vec2Window offset{10, 40};
+    pg::Vec2Window size{800, 600};
+    std::string    windowName{"GameWindow"};
 };
 
 } // namespace pg::config
