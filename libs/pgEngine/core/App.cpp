@@ -83,23 +83,23 @@ auto pg::SDLApp::getFPSCounter() -> FPSCounter&
     return fpsCounter;
 }
 
-void SDLApp::loop(bool& done, const RenderFunction& renderFunc, const EventCallback&)
-{
-    getEventHandler().quit = [&done](const SDL_QuitEvent&) { done = true; };
-    // getEventHandler().setCallback(e);
-    while (!done)
-    {
-        while (getEventHandler().poll()) {}
-        // #TODO: configurable, if clear and which color
-        {
-            pg::ScopedColor sc{getRenderer(), Color{0, 0, 0, 255}};
-            renderer->clear();
-        }
-        renderFunc(*this);
-        renderer->present();
-        fpsCounter.frame();
-    }
-}
+// void SDLApp::loop(bool& done, const RenderFunction& renderFunc, const EventCallback&)
+// {
+//     getEventHandler().quit = [&done](const SDL_QuitEvent&) { done = true; };
+//     // getEventHandler().setCallback(e);
+//     while (!done)
+//     {
+//         while (getEventHandler().poll()) {}
+//         // #TODO: configurable, if clear and which color
+//         {
+//             pg::ScopedColor sc{getRenderer(), Color{0, 0, 0, 255}};
+//             renderer->clear();
+//         }
+//         renderFunc(*this);
+//         renderer->present();
+//         fpsCounter.frame();
+//     }
+// }
 
 void SDLApp::checkInitialized() const
 {

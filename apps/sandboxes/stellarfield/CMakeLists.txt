@@ -12,6 +12,7 @@ find_package(fmt REQUIRED)
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
+    pgGame::pgGame
     fmt::fmt
 )
 target_include_directories(${PROJECT_NAME}
