@@ -11,8 +11,8 @@ CPMAddPackage(
 )
 CPMAddPackage(
     Name btcpp
-    GITHUB_REPOSITORY psyinf/BehaviorTree.CPP
-    GIT_TAG fix_export_minitrace
+    GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
+    GIT_TAG b4bbef6800dca639dcf0316f0a5312c6f10e27ed
     SYSTEM TRUE
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
