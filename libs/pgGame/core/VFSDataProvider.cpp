@@ -10,10 +10,8 @@ void pg::VFSDataProvider::close() {}
 
 std::istream& pg::VFSDataProvider::asStream()
 {
-    auto file = _vfs->OpenFile({getUri()}, {vfspp::IFile::FileMode::Read});
-    if (!file) { throw std::runtime_error("File not found: " + getUri().uri); }
-    auto buffer = std::vector<uint8_t>(file->Size());
-    file->Read(buffer, buffer.size());
+    auto buffer = std::vector<uint8_t>(_file->Size());
+    _file->Read(buffer, buffer.size());
 
     _stream = std::make_shared<pg::foundation::OwningMemStream>(std::move(buffer));
     return *_stream;
@@ -21,20 +19,17 @@ std::istream& pg::VFSDataProvider::asStream()
 
 std::vector<char> pg::VFSDataProvider::asBuffer()
 {
-    auto file = _vfs->OpenFile({getUri()}, {vfspp::IFile::FileMode::Read});
-    if (!file) { throw std::runtime_error("Virtual Filesystem: File not found: " + getUri().uri); }
-    auto buffer = std::vector<uint8_t>(file->Size());
-    file->Read(buffer, buffer.size());
+    auto buffer = std::vector<uint8_t>(_file->Size());
+    _file->Read(buffer, buffer.size());
     return std::vector<char>(buffer.begin(), buffer.end());
 }
 
 void pg::VFSDataProvider::toBuffer(std::vector<char>& buffer, size_t max_ch)
 {
-    auto file = _vfs->OpenFile({getUri()}, {vfspp::IFile::FileMode::Read});
-    if (max_ch == 0) { max_ch = file->Size(); }
-    auto buffer_ = std::vector<uint8_t>(std::min(file->Size(), max_ch));
+    if (max_ch == 0) { max_ch = _file->Size(); }
+    auto buffer_ = std::vector<uint8_t>(std::min(_file->Size(), max_ch));
 
-    file->Read(buffer_, buffer_.size());
+    _file->Read(buffer_, buffer_.size());
     buffer.resize(buffer_.size());
     std::copy(buffer_.begin(), buffer_.end(), buffer.begin());
 }

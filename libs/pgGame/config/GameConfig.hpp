@@ -15,13 +15,14 @@ struct VFSConfig
 
     Root    root;
     Alias   alias;
-    VFSType type;
+    VFSType type{VFSType::PHYSICAL};
 };
 
 struct GameConfig
 {
     pg::config::WindowConfig windowConfig;
     std::vector<VFSConfig>   vfsConfigs;
+    std::string              resourcePrefix;
 
     SDL_Rect getWindowRect()
     {

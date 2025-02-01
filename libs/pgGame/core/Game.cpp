@@ -76,7 +76,7 @@ game::Game::Game(pg::game::GameConfig&& config)
   , _inputEventDispatcher(_sdlApp.getEventHandler(), {})
   , _vfs(std::make_unique<vfspp::VirtualFileSystem>())
   , _resourceManager([this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
-      return std::make_unique<VFSDataProvider>(uri, _vfs);
+      return std::make_unique<VFSDataProvider>(uri, _vfs, _gameConfig.resourcePrefix);
   })
 {
     // register all vfs's
