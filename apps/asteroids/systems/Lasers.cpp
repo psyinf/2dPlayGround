@@ -15,7 +15,7 @@ void asteroids::Lasers::setup(std::string_view /*scene_id*/)
 void asteroids::Lasers::createShot(const events::LaserFired& event)
 {
     auto& renderer = _game.getApp().getRenderer();
-    auto  sprite = _game.getResource<pg::Sprite, sdl::Renderer&>("../data/laserBlue01.png", renderer);
+    auto  sprite = _game.getResource<pg::Sprite, sdl::Renderer&>("laserBlue01.png", renderer);
 
     pg::game::Drawable d(sprite);
     // determine shoot position
