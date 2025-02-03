@@ -1,6 +1,6 @@
+#include <print>
 #include <pgEngine/core/ErrorTrace.hpp>
 #include <pgGame/core/Game.hpp>
-#include <fmt/format.h>
 
 #include <components/Entities.h>
 #include <systems/Asteroids.h>
@@ -12,8 +12,8 @@
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
 
-#include <pgGame/systems/SystemsRegistry.hpp>
 #include <pgGame/events/GameEvents.hpp>
+#include <pgGame/systems/SystemsRegistry.hpp>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
@@ -52,14 +52,14 @@ try
 
 catch (std::exception& e)
 {
-    fmt::print("Unhandled exception: {}\n", e.what());
+    std::print("Unhandled exception: {}\n", e.what());
     errorTrace::printErrorTrace();
     return -1;
 }
 
 catch (...)
 {
-    fmt::print("Unhandled exception\n");
+    std::print("Unhandled exception\n");
     errorTrace::printErrorTrace();
     return -1;
 }

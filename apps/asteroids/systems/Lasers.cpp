@@ -5,7 +5,6 @@
 #include <pgGame/core/RegistryHelper.hpp>
 #include <components/Entities.h>
 #include <pgGame/components/Drawable.hpp>
-#include <pgEngine/resources/SpriteResource.hpp>
 
 void asteroids::Lasers::setup(std::string_view /*scene_id*/)
 {

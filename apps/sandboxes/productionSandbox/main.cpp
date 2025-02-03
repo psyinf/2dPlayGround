@@ -4,14 +4,14 @@
 #include <optional>
 #include <algorithm>
 #include <ranges>
-#include <fmt/core.h>
-#include <fmt/format.h>
+#include <print>
+#include <format>
 #include <spdlog/spdlog.h>
 
 #include <magic_enum.hpp>
 #include <pgf/console/miniAnsi.hpp>
 #include "FractionalAmount.hpp"
-#include "FractionalAmoundFormatter.hpp"
+#include "FractionalAmountFormatter.hpp"
 #include "Storage.hpp"
 #include "ProductionLine.hpp"
 #include <iostream>
@@ -25,15 +25,19 @@ void printStorageOneLine(const Storage& storage)
 
     auto longest_key_size =
         storage.resources.empty() ? 3 : (*std::ranges::max_element(std::views::keys(storage.resources))).size() + 2;
-    fmt::println("{:^{}} ", fmt::join(std::views::keys(storage.resources), "|"), longest_key_size);
-    fmt::println("{:->{}}", "", storage.resources.size() * (longest_key_size + 1));
-    fmt::println("{:^{}} ", fmt::join(std::views::values(storage.resources), "|"), longest_key_size);
+    //     std::println("{:^{}} ", std::format::join(std::views::keys(storage.resources), "|"), longest_key_size);
+    //     std::println("{:->{}}", "", storage.resources.size() * (longest_key_size + 1));
+    //     std::println("{:^{}} ", fmt::join(std::views::values(storage.resources), "|"), longest_key_size);
+    std::println("{:^{}} ", std::views::keys(storage.resources), longest_key_size, "|");
+    std::println("{:->{}}", "", storage.resources.size() * (longest_key_size + 1));
+    // std::println("{:^{}} ", std::views::values(storage.resources), longest_key_size);
+    //  std::println("{:^{}} ", storage.resources.begin()->second, longest_key_size);
 }
 
 void printProductionLineState(const ProductionLine& productionLine)
 {
     auto [product, amount] = productionLine.currentProduct().value_or(ProductionLine::ProductAmount{"N/A", 0.0f});
-    fmt::println("Current Product: {} ({})", product.name, productionLine.currentFraction());
+    std::println("Current Product: {} ({})", product.name, productionLine.currentFraction(), ":");
 }
 
 void test1()

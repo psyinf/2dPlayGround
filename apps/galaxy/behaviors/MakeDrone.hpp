@@ -4,7 +4,6 @@
 #include <components/Drone.hpp>
 #include <behaviors/utils/BehaviorActionNode.hpp>
 #include <helpers/GalaxyHelpers.hpp>
-#include <fmt/core.h>
 #include <components/Tags.hpp>
 #include <components/Lifetime.hpp>
 #include <pgGame/components/RenderState.hpp>
@@ -65,7 +64,7 @@ public:
 
         auto blackboard = BT::Blackboard::create();
         blackboard->set("max_targets_to_find", faction_start_params.num_start_drones);
-        blackboard->set("ID", fmt::format("Drone: {}", entt::to_integral(entity)));
+        blackboard->set("ID", std::format("Drone: {}", entt::to_integral(entity)));
         blackboard->set("entity", entt::to_integral(entity));
 
         auto behavior_tree = ctx()->setupTree("Drone", entity, blackboard);

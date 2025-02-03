@@ -50,7 +50,7 @@ public:
         if (!hasSingleton<Type>(id))
         {
             spdlog::error("Singleton '{}' not found", id);
-            throw std::runtime_error(fmt::format("Singleton '{}' not found", id));
+            throw std::runtime_error(std::format("Singleton '{}' not found", id));
         }
         return registry().ctx().template get<Type>(entt::hashed_string{id.data()});
     }
@@ -90,7 +90,7 @@ public:
         if (!registry().ctx().template contains<Type>(id))
         {
             spdlog::error("Singleton '{}' not found", id);
-            throw std::runtime_error(fmt::format("Singleton '{}' not found", id));
+            throw std::runtime_error(std::format("Singleton '{}' not found", id));
         }
         return registry().ctx().template get<Type>(id);
     }

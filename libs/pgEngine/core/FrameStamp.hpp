@@ -1,11 +1,6 @@
 #pragma once
 #include <chrono>
 
-#include <fmt/format.h>
-#include <fmt/chrono.h>
-
-#include <fmt/core.h>
-
 namespace pg {
 struct Time
 {
@@ -63,7 +58,7 @@ public:
                     std::chrono::duration_cast<std::chrono::days>(std::chrono::months(1)).count();
         auto hours = std::chrono::duration_cast<std::chrono::hours>(secs) %
                      std::chrono::duration_cast<std::chrono::hours>(std::chrono::days(1)).count();
-        return fmt::format("{}y.{:02}m.{:02}d.{:05}s",
+        return std::format("{}y.{:02}m.{:02}d.{:05}s",
                            years.count(),
                            months.count(),
                            days.count(),

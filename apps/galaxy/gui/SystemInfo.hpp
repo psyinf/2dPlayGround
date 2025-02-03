@@ -22,10 +22,10 @@ public:
 
         auto name = buildSystemPositionStr(transform.pos);
 
-        auto system_state_str = fmt::format("State: {}", magic_enum::enum_name(system.colonizationStatus));
-        auto faction_str = fmt::format("Faction: {}", faction.name);
-        auto system_name = fmt::format("Name: {}", system.name);
-        auto spectral_type = fmt::format("Class: {}", magic_enum::enum_name(system.spectralType));
+        auto system_state_str = std::format("State: {}", magic_enum::enum_name(system.colonizationStatus));
+        auto faction_str = std::format("Faction: {}", faction.name);
+        auto system_name = std::format("Name: {}", system.name);
+        auto spectral_type = std::format("Class: {}", magic_enum::enum_name(system.spectralType));
         ImGui::BeginMainMenuBar();
         // Add menu bar items here
         ImGui::EndMainMenuBar();

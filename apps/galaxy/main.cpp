@@ -4,7 +4,7 @@
 
 #include <Config.hpp>
 #include <serializer/ConfigSerializer.hpp>
-#include <fmt/format.h>
+#include <print>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
@@ -29,13 +29,13 @@ try
 }
 catch (std::exception& e)
 {
-    fmt::print("Unhandled exception: {}\n", e.what());
+    std::print("Unhandled exception: {}\n", e.what());
     errorTrace::printErrorTrace();
     return -1;
 }
 catch (...)
 {
-    fmt::print("Unhandled exception");
+    std::print("Unhandled exception");
     errorTrace::printErrorTrace();
     return -1;
 }

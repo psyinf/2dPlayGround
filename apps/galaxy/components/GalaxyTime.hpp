@@ -33,7 +33,7 @@ struct StruturedTime
 
 //     static std::string format(const StruturedTime& structured_time) const
 //     {
-//         return fmt::format("{}.{:02}.{:02}.{:05}",
+//         return std::format("{}.{:02}.{:02}.{:05}",
 //                            structured_time.years.count(),
 //                            structured_time.months.count(),
 //                            structured_time.days.count(),

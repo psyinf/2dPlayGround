@@ -221,7 +221,7 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
 
     catch (std::out_of_range& e)
     {
-        spdlog::error(fmt::format("Cannot switch scene to {}, not found: {}", id, e.what()));
+        spdlog::error("Cannot switch scene to {}, not found: {}", id, e.what());
         throw e;
     }
 }

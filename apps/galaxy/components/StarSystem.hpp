@@ -55,6 +55,6 @@ inline auto buildSystemPositionStr(pg::fVec2 pos) -> std::string
     auto sector_name = sectorNameFromAngle(pg::math::toDegrees(std::get<1>(polar_pos)));
     auto sector_angle = 10 * inSectorAngle(std::get<1>(polar_pos));
     // name is sector - angle_in_sector:distance
-    return fmt::format("{}-{:.0f}:{:.0f}", sector_name, sector_angle, 10 * std::get<0>(polar_pos));
+    return std::format("{}-{:.0f}:{:.0f}", sector_name, sector_angle, 10 * std::get<0>(polar_pos));
 }
 } // namespace galaxy

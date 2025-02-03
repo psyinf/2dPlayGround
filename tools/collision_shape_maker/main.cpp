@@ -7,7 +7,6 @@
 #include <SDL_image.h>
 
 #include <deque>
-#include <fmt/format.h>
 #include <ranges>
 
 void printASCII(const std::span<uint8_t>& data, const pg::iVec2& dims)
@@ -75,8 +74,8 @@ auto calculateConvexHull(pg::SpritePixelData& pixelData)
 int main(int argc, char* argv[])
 try
 {
-    fmt::print("Usage: collision_shape_maker.exe <path_to_image>\n");
-    fmt::print("Example: collision_shape_maker.exe ../data/meteorBrown_big1.png\n");
+    std::print("Usage: collision_shape_maker.exe <path_to_image>\n");
+    std::print("Example: collision_shape_maker.exe ../data/meteorBrown_big1.png\n");
     // pg::SpritePixelData sprite("../data/meteorBrown_big1.png");
     // pg::SpritePixelData sprite("../data/laserBlue01.png");
     pg::SpritePixelData sprite("../data/playerShip1_blue.png");
@@ -88,13 +87,13 @@ try
 }
 catch (std::exception& e)
 {
-    fmt::print("Unhandled exception: {}\n", e.what());
+    std::print("Unhandled exception: {}\n", e.what());
     errorTrace::printErrorTrace();
     return -1;
 }
 catch (...)
 {
-    fmt::print("Unhandled exception");
+    std::print("Unhandled exception");
     errorTrace::printErrorTrace();
     return -1;
 }

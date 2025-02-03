@@ -1,5 +1,5 @@
 #include "Factories.hpp"
-
+#include <fstream>
 #include <SDL_image.h>
 #include <font/Font.hpp>
 #include <pgf/caching/ResourceLocator.hpp>

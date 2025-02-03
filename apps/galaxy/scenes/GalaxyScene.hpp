@@ -1,6 +1,7 @@
 #pragma once
 #include <pgGame/core/Scene.hpp>
 #include <memory>
+#include <print>
 
 #include <pgEngine/core/LoadSave.hpp>
 
@@ -32,7 +33,7 @@ public:
                 const pg::generators::MarkovFrequencyMap& mfm,
                 std::function<void(float)>                progress)
     {
-        auto file_name = fmt::format("../data/text/{}-{}.names", set_name, num_names);
+        auto file_name = std::format("../data/text/{}-{}.names", set_name, num_names);
         progress(0.0f);
         try
         {
@@ -62,7 +63,7 @@ public:
             auto name = pg::generators::markov::generate(3, 8, mfm, seed_gen);
             _names.push_back(name);
         }
-        fmt::print("Generated {} names\n", numNames);
+        std::print("Generated {} names\n", numNames);
     }
 
     const std::string& getName(size_t index) const { return _names.at(index); }
