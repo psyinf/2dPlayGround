@@ -38,13 +38,13 @@ void galaxy::GalacticCore::setup()
     //   e.g. sounds, markov-chains, etc
     //  we also need some loader abstraction/way to report progress -> LoaderProgressInterface
 
-    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
+    game->getGenericConfig().addPerContextConfig<galaxy::SceneSoundScape>(
         "mainMenu",
         "soundScape",
         {.background_music{.music_list{{"data/music/dead-space-style-ambient-music-184793.mp3"}}},
          .event_sounds = {event_sound_cfg}});
 
-    game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
+    game->getGenericConfig().addPerContextConfig<galaxy::SceneSoundScape>(
         "galaxy",
         "soundScape",
         // {.background_music{.music_list{{"data/music/a-meditation-through-time-amp-space-11947.mp3"}}},
@@ -72,6 +72,7 @@ void galaxy::GalacticCore::setup()
     pg::game::SystemsFactory::registerSystem<galaxy::LifetimeSystem>("lifeTimeSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::BehaviorSystem>("behaviorSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::StatsSystem>("statsSystem");
+    pg::game::SystemsFactory::registerSystem<galaxy::EventLoggingSystem>("eventLoggingSystem");
 
     // scenes
     game->createScene<galaxy::MainMenuScene>(

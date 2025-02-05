@@ -149,9 +149,13 @@ public:
 
     void quit();
 
-    const auto& getConfig() const { return _config; }
+    const auto& getGenericConfig() const { return _config; }
 
-    auto& getConfig() { return _config; }
+    auto& getGenericConfig() { return _config; }
+
+    auto& getGameConfig() const { return _gameConfig; }
+
+    const auto& getGameConfig() { return _gameConfig; }
 
     auto getCurrentSceneId() const { return _currentSceneId; }
 
