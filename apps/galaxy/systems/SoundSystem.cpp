@@ -56,7 +56,7 @@ public:
     {
         // do something with event
         const auto& name = _registry.getTypeName<T>();
-        spdlog::info("Dispatching event {} with name {}", typeid(T).name(), name);
+        spdlog::info("Dispatching sound event {} with name {}", typeid(T).name(), name);
 
         try
         {
