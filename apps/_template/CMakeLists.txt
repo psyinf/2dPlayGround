@@ -7,13 +7,11 @@ file(GLOB_RECURSE CPP_FILES 	CONFIGURE_DEPENDS "*.cpp")
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${CPP_FILES} )
 
-find_package(fmt REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgGame::pgGame
 	pgEngine::pgEngine
-    fmt::fmt
 )
 target_include_directories(${PROJECT_NAME}
 	PRIVATE

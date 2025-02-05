@@ -4,15 +4,11 @@ set(CMAKE_CXX_STANDARD 23)
 file(GLOB_RECURSE HEADER_FILES 	CONFIGURE_DEPENDS "*.h*")
 file(GLOB_RECURSE CPP_FILES 	CONFIGURE_DEPENDS "*.cpp")
 
-
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${CPP_FILES} )
-
-find_package(fmt REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
-    fmt::fmt
 	imgui
 )
 target_include_directories(${PROJECT_NAME}

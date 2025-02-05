@@ -30,8 +30,9 @@ void printStorageOneLine(const Storage& storage)
     //     std::println("{:^{}} ", fmt::join(std::views::values(storage.resources), "|"), longest_key_size);
     std::println("{:^{}} ", std::views::keys(storage.resources), longest_key_size, "|");
     std::println("{:->{}}", "", storage.resources.size() * (longest_key_size + 1));
-    // std::println("{:^{}} ", std::views::values(storage.resources), longest_key_size);
-    //  std::println("{:^{}} ", storage.resources.begin()->second, longest_key_size);
+    // TODO: this fails with std::format whole formatting a single value succeeds
+    //  std::println("{:^{}} ", std::views::values(storage.resources), longest_key_size);
+    //   std::println("{:^{}} ", storage.resources.begin()->second, longest_key_size);
 }
 
 void printProductionLineState(const ProductionLine& productionLine)

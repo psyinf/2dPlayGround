@@ -36,30 +36,30 @@ CPMAddPackage(
     "CATCH_BUILD_FUZZERS OFF"
 )
 
-CPMAddPackage(
-    NAME fmt
-    GITHUB_REPOSITORY fmtlib/fmt
-    GIT_TAG 10.2.1
-    OPTIONS
-    "FMT_DOC OFF"
-    "FMT_TEST OFF"
-    "FMT_INSTALL OFF"
-    "FMT_PEDANTIC OFF"
-    "FMT_WERROR OFF"
-    "FMT_USE_CCACHE OFF"
-    "FMT_USE_FIND_PACKAGE OFF"
-    "FMT_USE_CONFIG OFF"
-    "FMT_USE_PKG_CONFIG OFF"
-    "FMT_USE_CONAN OFF"
-    "FMT_USE_VCPKG OFF"
-    "FMT_USE_ASAN OFF"
-    "FMT_USE_UBSAN OFF"
-    "FMT_USE_MSAN OFF"
-    "FMT_USE_TSAN OFF"
-    "FMT_USE_CODE_ANALYSIS OFF"
-    "FMT_USE_CPPCHECK OFF"
-    
-)
+#CPMAddPackage(
+#    NAME fmt
+#    GITHUB_REPOSITORY fmtlib/fmt
+#    GIT_TAG 10.2.1
+#    OPTIONS
+#    "FMT_DOC OFF"
+#    "FMT_TEST OFF"
+#    "FMT_INSTALL OFF"
+#    "FMT_PEDANTIC OFF"
+#    "FMT_WERROR OFF"
+#    "FMT_USE_CCACHE OFF"
+#    "FMT_USE_FIND_PACKAGE OFF"
+#    "FMT_USE_CONFIG OFF"
+#    "FMT_USE_PKG_CONFIG OFF"
+#    "FMT_USE_CONAN OFF"
+#    "FMT_USE_VCPKG OFF"
+#    "FMT_USE_ASAN OFF"
+#    "FMT_USE_UBSAN OFF"
+#    "FMT_USE_MSAN OFF"
+#    "FMT_USE_TSAN OFF"
+#    "FMT_USE_CODE_ANALYSIS OFF"
+#    "FMT_USE_CPPCHECK OFF"
+#    
+#)
 
 CPMAddPackage(
     NAME magic_enum
@@ -122,30 +122,6 @@ CPMAddPackage(
 	GITHUB_REPOSITORY skypjack/entt
 	GIT_TAG v3.12.2
 )
-#fmt
-CPMAddPackage(
-	NAME fmt
-	GITHUB_REPOSITORY fmtlib/fmt
-	GIT_TAG 10.2.1
-	OPTIONS
-	"FMT_DOC OFF"
-	"FMT_TEST OFF"
-	"FMT_INSTALL OFF"
-	"FMT_PEDANTIC OFF"
-	"FMT_WERROR OFF"
-	"FMT_USE_CCACHE OFF"
-	"FMT_USE_FIND_PACKAGE OFF"
-	"FMT_USE_CONFIG OFF"
-	"FMT_USE_PKG_CONFIG OFF"
-	"FMT_USE_CONAN OFF"
-	"FMT_USE_VCPKG OFF"
-	"FMT_USE_ASAN OFF"
-	"FMT_USE_UBSAN OFF"
-	"FMT_USE_MSAN OFF"
-	"FMT_USE_TSAN OFF"
-	"FMT_USE_CODE_ANALYSIS OFF"
-	"FMT_USE_CPPCHECK OFF"
-)
 
 CPMAddPackage(
     NAME imgui
@@ -170,8 +146,8 @@ add_library(imgui::imgui ALIAS imgui)
 #endif()
 CPMAddPackage(
     NAME vfspp
-    GITHUB_REPOSITORY psyinf/vfspp
-    GIT_TAG bump_minizip_submodule
+    GITHUB_REPOSITORY nextgeniuspro/vfspp
+    GIT_TAG 7bcffe33eedde0e9df0cd731ef7d95de7bcad9e5
 )
 
 if(SCRIPTING)

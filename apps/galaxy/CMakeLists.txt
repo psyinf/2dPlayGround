@@ -12,7 +12,6 @@ target_link_libraries(${PROJECT_NAME}
     pgEngine::pgEngine
     pgGame::pgGame
     pgOrbit::pgOrbit
-    fmt::fmt
     spdlog::spdlog
     magic_enum::magic_enum
     BT::behaviortree_cpp
