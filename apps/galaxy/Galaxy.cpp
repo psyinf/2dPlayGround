@@ -53,14 +53,7 @@ void galaxy::GalacticCore::setup()
          .event_sounds = {event_sound_cfg}
 
         });
-    //     game->getConfig().addPerSceneConfig<galaxy::SceneSoundScape>(
-    //         "loadGalaxy",
-    //         "soundScape",
-    //         {.background_music{.music_list{{.background_music{"../data/music/dead-space-style-ambient-music-184793.mp3"}}},
-    //         .event_sounds = {event_sound_cfg}
-    //
-    //         });
-    // systems
+
     pg::game::SystemsFactory::registerSystem<galaxy::SoundSystem>("soundSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::GuiRenderSystem>("guiSystem");
     pg::game::SystemsFactory::registerSystem<galaxy::TaggedRenderSystem<pg::tags::GalaxyRenderTag>>(

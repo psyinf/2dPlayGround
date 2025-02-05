@@ -50,7 +50,7 @@ public:
     void setup(std::string_view /*scene_id*/) override
     {
         dot = std::make_shared<pg::Sprite>(
-            pg::SpriteFactory::makeSprite(_game.getApp().getRenderer(), "../data/circle_05.png"));
+            pg::SpriteFactory::makeSprite(_game.getApp().getRenderer(), "::resources/circle_05.png"));
         // auto       line = pg::Line{{0, 0}, {100, 100}};
         auto windowSize = _game.getApp().getWindowConfig().size;
         createStars(150, {0, 0}, pg::vec_cast<float>(windowSize));

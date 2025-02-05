@@ -104,9 +104,6 @@ game::Game::Game(pg::game::GameConfig&& config)
         }
         }
     }
-    //     auto fs = std::make_shared<vfspp::NativeFileSystem>("../data/");
-    //     fs->Initialize();
-    //     _vfs->AddFileSystem("data", fs);
 
     _gui = std::make_unique<pg::Gui>(getApp());
     // register event handlers
