@@ -9,6 +9,8 @@
 #include <systems/UpdateCurrentSystem.hpp>
 #include <scenes/SystemScene.hpp>
 
+#include <systems/EventLoggingSystem.hpp>
+
 #include <systems/DroneSystem.hpp>
 #include <systems/LifetimeSystem.hpp>
 #include <systems/BehaviorSystem.hpp>
@@ -88,7 +90,8 @@ void galaxy::GalacticCore::setup()
                                                         "droneSystem",
                                                         "lifeTimeSystem",
                                                         "behaviorSystem",
-                                                        "statsSystem"}});
+                                                        "statsSystem",
+                                                        "eventLoggingSystem"}});
 
     game->createScene<galaxy::SystemScene>(
         {.scene_id = "system", .systems = {"soundSystem", "systemRenderSystem", "guiSystem", "updateCurrentSystem"}});
