@@ -19,6 +19,13 @@ struct DroneCreatedEvent : pgf::TypeRegistrar<DroneCreatedEvent, "DroneCreatedEv
 struct DroneFailedEvent : pgf::TypeRegistrar<DroneFailedEvent, "DroneFailedEvent">
 {
     entt::entity entity;
+    std::string  reason;
+};
+
+struct DroneDestroyedEvent : pgf::TypeRegistrar<DroneDestroyedEvent, "DroneDestroyedEvent">
+{
+    entt::entity entity;
+    std::string  reason;
 };
 
 // NOT YET USED- currently using DroneFailedEvent
