@@ -1,5 +1,4 @@
 #include <core/KeyStateMap.hpp>
-#include <iostream>
 
 namespace pg {
 

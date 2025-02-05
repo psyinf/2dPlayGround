@@ -1,5 +1,4 @@
 #pragma once
-#include <pgEngine/math/Vec.hpp>
 #include <pgEngine/math/VecOps.hpp>
 
 #include <nlohmann/json.hpp>

@@ -1,5 +1,7 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
+
+#include <algorithm>
 #include <ostream>
 
 namespace pg {

@@ -1,8 +1,4 @@
 #include "FPSCounter.hpp"
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
-#include <vector>
 
 pg::FPSCounter::FPSCounter()
   : frameCount(0)

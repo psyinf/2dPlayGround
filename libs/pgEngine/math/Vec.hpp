@@ -1,12 +1,7 @@
 #pragma once
-#include <algorithm>
 #include <array>
-#include <cmath>
-#include <cstddef>
 #include <cstdint>
 #include <ranges>
-#include <type_traits>
-#include <limits>
 
 namespace pg {
 

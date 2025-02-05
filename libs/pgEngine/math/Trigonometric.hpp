@@ -1,6 +1,5 @@
 #pragma once
 #include <numbers>
-#include <cmath>
 #include <pgEngine/math/Vec.hpp>
 
 namespace pg::math {

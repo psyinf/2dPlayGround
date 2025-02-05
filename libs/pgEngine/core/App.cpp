@@ -1,8 +1,5 @@
 #include <core/App.hpp>
-#include "Lifetime.hpp"
 #include <SDL_ttf.h>
-#include <primitives/Renderable.hpp>
-#include <iostream>
 
 using namespace pg;
 
