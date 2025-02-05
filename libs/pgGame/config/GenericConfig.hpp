@@ -6,29 +6,57 @@
 
 namespace pg { namespace game {
 
-struct GenericConfig
+class GenericConfig
 {
-    std::unordered_map<std::string, std::any> config;
+private:
+    mutable std::unordered_map<std::string, std::any> config;
 
+public:
     template <class T>
-    const T& getPerSceneConfig(const std::string& scene, const std::string& key) const
+    const T& getPerContextConfig(const std::string& ctx, const std::string& key) const
     {
         try
         {
-            return std::any_cast<const T&>(config.at(scene + "::" + key));
+            return std::any_cast<const T&>(config.at(ctx + "::" + key));
         }
         catch (const std::out_of_range& /*e*/)
         {
-            spdlog::warn("GenericConfig: Missing scene config '{}'", scene + "::" + key);
+            spdlog::warn("GenericConfig: Missing context config '{}'", ctx + "::" + key);
             static T t;
             return t;
         }
     }
 
     template <class T>
-    T& getConfig(const std::string& key)
+    const T& getConfig(const std::string& key, T&& default_value = T{}) const
     {
-        return std::any_cast<T&>(config[key]);
+        try
+        {
+            return std::any_cast<T&>(config.at(key));
+        }
+        catch (const std::out_of_range& /*e*/)
+        {
+            spdlog::warn("GenericConfig: Missing config item '{}', returning default", key);
+
+            config[key] = default_value;
+            return std::any_cast<T&>(config.at(key));
+        }
+    }
+
+    template <class T>
+    T& getConfig(const std::string& key, T&& default_value = T{})
+    {
+        try
+        {
+            return std::any_cast<T&>(config.at(key));
+        }
+        catch (const std::out_of_range& /*e*/)
+        {
+            spdlog::warn("GenericConfig: Missing config item '{}', returning default", key);
+
+            config[key] = default_value;
+            return std::any_cast<T&>(config.at(key));
+        }
     }
 
     template <class T>
@@ -38,9 +66,9 @@ struct GenericConfig
     }
 
     template <class T>
-    void addPerSceneConfig(const std::string& scene, const std::string& key, const T&& value)
+    void addPerContextConfig(const std::string& ctx, const std::string& key, const T&& value)
     {
-        config[scene + "::" + key] = value;
+        config[ctx + "::" + key] = value;
     }
 };
 }} // namespace pg::game
