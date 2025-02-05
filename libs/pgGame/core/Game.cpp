@@ -76,7 +76,7 @@ game::Game::Game(pg::game::GameConfig&& config)
   , _inputEventDispatcher(_sdlApp.getEventHandler(), {})
   , _vfs(std::make_unique<vfspp::VirtualFileSystem>())
   , _resourceManager([this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
-      return std::make_unique<VFSDataProvider>(uri, _vfs);
+      return std::make_unique<VFSDataProvider>(uri, _vfs, _gameConfig.resourcePrefix);
   })
 {
     // register all vfs's
@@ -104,9 +104,6 @@ game::Game::Game(pg::game::GameConfig&& config)
         }
         }
     }
-    //     auto fs = std::make_shared<vfspp::NativeFileSystem>("../data/");
-    //     fs->Initialize();
-    //     _vfs->AddFileSystem("data", fs);
 
     _gui = std::make_unique<pg::Gui>(getApp());
     // register event handlers
@@ -221,7 +218,7 @@ pg::game::Scene& game::Game::switchScene(std::string_view id)
 
     catch (std::out_of_range& e)
     {
-        spdlog::error(fmt::format("Cannot switch scene to {}, not found: {}", id, e.what()));
+        spdlog::error("Cannot switch scene to {}, not found: {}", id, e.what());
         throw e;
     }
 }

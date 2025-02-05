@@ -1,29 +1,30 @@
 #pragma once
-
+#include <pgf/caching/ResourceManager.hpp>
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/core/Gui.hpp>
-#include <pgf/caching/ResourceManager.hpp>
-#include <pgEngine/core/FrameStamp.hpp>
-#include <pgGame/core/Scene.hpp>
 
-#include <memory>
-#include <unordered_map>
-#include <pgGame/components/WindowDetails.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
+#include <pgEngine/core/FrameStamp.hpp>
+
+#include <pgEngine/resources/SpriteResource.hpp>
+#include <pgGame/components/WindowDetails.hpp>
+
+#include <pgGame/core/Scene.hpp>
 #include <pgGame/config/GenericConfig.hpp>
 #include <pgGame/config/GameConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
 #include <pgGame/components/GameState.hpp>
-#include <stdexcept>
-#include <string>
-#include <type_traits>
-#include <pgEngine/core/AppConfig.hpp>
-#include "InputEventDispatcher.hpp"
+
+#include <pgGame/core/InputEventDispatcher.hpp>
 #include <entt/entity/fwd.hpp>
 #include <entt/signal/fwd.hpp>
 #include <sdlpp.hpp>
 
-#include <pgEngine/resources/SpriteResource.hpp>
+#include <memory>
+#include <unordered_map>
+#include <stdexcept>
+#include <string>
+#include <type_traits>
 
 namespace vfspp {
 class VirtualFileSystem;

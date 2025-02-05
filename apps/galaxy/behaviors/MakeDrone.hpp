@@ -4,7 +4,6 @@
 #include <components/Drone.hpp>
 #include <behaviors/utils/BehaviorActionNode.hpp>
 #include <helpers/GalaxyHelpers.hpp>
-#include <fmt/core.h>
 #include <components/Tags.hpp>
 #include <components/Lifetime.hpp>
 #include <pgGame/components/RenderState.hpp>
@@ -31,11 +30,10 @@ public:
 
         auto&& [transform, faction] = view.get<pg::Transform2D, galaxy::Faction>(maker_entity);
 
-        auto        dot_sprite = game.getResource<pg::Sprite>("../data/circle_05.png");
-        auto        faction_config = galaxy::getFactionConfig(game, faction.name);
-        const auto& drone_params = faction_config.droneParams;
-        const auto& faction_start_params = faction_config.startParams;
-        const auto& faction_color = faction_config.color;
+        auto        dot_sprite = game.getResource<pg::Sprite>("::resources/circle_05.png");
+        const auto& drone_params = galaxy::getFactionConfig(game, faction).droneParams;
+        const auto& faction_start_params = galaxy::getFactionConfig(game, faction).startParams;
+
         // create a drone
         auto renderState = pg::States{};
         renderState.push(pg::TextureColorState{faction_color});
@@ -66,7 +64,7 @@ public:
 
         auto blackboard = BT::Blackboard::create();
         blackboard->set("max_targets_to_find", faction_start_params.num_start_drones);
-        blackboard->set("ID", fmt::format("Drone: {}", entt::to_integral(entity)));
+        blackboard->set("ID", std::format("Drone: {}", entt::to_integral(entity)));
         blackboard->set("entity", entt::to_integral(entity));
 
         auto behavior_tree = ctx()->setupTree("Drone", entity, blackboard);

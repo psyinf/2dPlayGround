@@ -1,7 +1,6 @@
 #pragma once
 #include <pgEngine/math/Vec.hpp>
 #include <pgEngine/primitives/Renderable.hpp>
-#include <pgEngine/core/State.hpp>
 
 namespace pg {
 

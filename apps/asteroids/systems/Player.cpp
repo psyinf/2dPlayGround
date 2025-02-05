@@ -8,7 +8,6 @@
 #include <pgEngine/math/Bounds.hpp>
 #include <pgEngine/math/VecOps.hpp>
 #include <pgEngine/primitives/Renderable.hpp>
-#include <fmt/format.h>
 #include <events/LaserFired.h>
 
 void asteroids::Player::setup(std::string_view /*scene_id*/)

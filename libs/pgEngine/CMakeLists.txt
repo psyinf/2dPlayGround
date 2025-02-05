@@ -7,13 +7,13 @@ add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
 	PRIVATE
-		"core/App.cpp"
-		"primitives/Renderable.cpp"
-		"primitives/Sprite.cpp"
+		core/App.cpp
+		primitives/Renderable.cpp
+		primitives/Sprite.cpp
 
 		factories/Factories.cpp
 		font/Font.cpp
-		"core/FPSCounter.cpp"
+		core/FPSCounter.cpp
 		core/Gui.cpp
 		generators/markov/MarkovFrequencyMap.cpp
 	PUBLIC

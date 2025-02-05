@@ -4,7 +4,6 @@
 #include <pgEngine/math/Transform.hpp>
 #include <memory>
 #include <vector>
-#include <ranges>
 #include <entt/entt.hpp>
 #include <pgGame/core/SingletonInterface.hpp>
 #include <pgGame/systems/SystemsRegistry.hpp>

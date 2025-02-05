@@ -1,4 +1,6 @@
 add_subdirectory(_template)
 add_subdirectory(asteroids)
 add_subdirectory(galaxy)
+if (ENABLE_SANDBOXES)
 add_subdirectory(sandboxes)
+endif()

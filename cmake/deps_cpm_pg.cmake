@@ -9,6 +9,6 @@ CPMAddPackage(
 CPMAddPackage(
 	NAME soundEngine
 	GITHUB_REPOSITORY psyinf/soundEngine 
-    GIT_TAG bufferProvider
+    GIT_TAG v0.1.2
     SYSTEM 
 )

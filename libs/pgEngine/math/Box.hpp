@@ -1,5 +1,4 @@
 #pragma once
-#include <array>
 #include <pgEngine/math/Vec.hpp>
 
 // based on https://github.com/pvigier/Quadtree/blob/master/include/Box.h

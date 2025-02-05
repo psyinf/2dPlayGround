@@ -12,6 +12,7 @@ public:
     struct Config
     {
         std::unordered_map<std::string, std::string> config;
+
         Config() = default;
 
         Config(std::initializer_list<std::pair<std::string, std::string>> list);

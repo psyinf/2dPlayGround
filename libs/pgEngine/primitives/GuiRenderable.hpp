@@ -1,6 +1,5 @@
 #pragma once
 
-#include <pgEngine/primitives/Renderable.hpp>
 #include <pgEngine/core/Gui.hpp>
 
 namespace pg::game {

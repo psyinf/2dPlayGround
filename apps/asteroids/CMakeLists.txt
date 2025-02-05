@@ -8,7 +8,6 @@ file(GLOB_RECURSE CPP_FILES 	CONFIGURE_DEPENDS "*.cpp")
 
 add_executable(${PROJECT_NAME} ${HEADER_FILES} ${CPP_FILES} )
 
-find_package(fmt REQUIRED)
 find_package(EnTT REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
@@ -18,7 +17,6 @@ target_link_libraries(${PROJECT_NAME}
     soundEngine::soundEngine
 
     pgf::pgf
-    fmt::fmt
     EnTT::EnTT
     INTERFACE
     pgFoundation::pgFoundation

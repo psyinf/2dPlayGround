@@ -2,10 +2,9 @@
 #include <pgEngine/math/Box.hpp>
 #include <pgEngine/math/VecOps.hpp>
 #include <pgEngine/math/QuadtreeVisitor.hpp>
-#include <iostream>
 #include <vector>
-#include <memory>    // Include for smart pointers
-#include <algorithm> // Include for std::min and std::max
+#include <memory>
+#include <algorithm>
 
 namespace pg {
 

@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 #options
 option(ENABLE_COVERAGE "Enable coverage" OFF)
+option(ENABLE_SANDBOXES "Enable sandbox projects" OFF)
 #bigobj
 if (MSVC)
     add_compile_options(/bigobj)

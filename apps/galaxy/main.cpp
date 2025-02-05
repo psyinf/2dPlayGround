@@ -4,7 +4,7 @@
 
 #include <Config.hpp>
 #include <serializer/ConfigSerializer.hpp>
-#include <fmt/format.h>
+#include <print>
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
@@ -15,10 +15,11 @@ try
 
     game_config.vfsConfigs.push_back(
         {.root = "../data", .alias = "data", .type = pg::game::VFSConfig::VFSType::PHYSICAL});
+    game_config.vfsConfigs.push_back(
+        {.root = "../data", .alias = "::resources", .type = pg::game::VFSConfig::VFSType::PHYSICAL});
     game_config.vfsConfigs.push_back({.root = "../data/music/cylinders/Chris Zabriskie - Cylinders.zip",
                                       .alias = "music/soundtracks/cylinders",
                                       .type = pg::game::VFSConfig::VFSType::ZIP});
-
     {
         galaxy::GalacticCore gc(std::move(game_config));
         gc.setup();
@@ -29,13 +30,13 @@ try
 }
 catch (std::exception& e)
 {
-    fmt::print("Unhandled exception: {}\n", e.what());
+    std::print("Unhandled exception: {}\n", e.what());
     errorTrace::printErrorTrace();
     return -1;
 }
 catch (...)
 {
-    fmt::print("Unhandled exception");
+    std::print("Unhandled exception");
     errorTrace::printErrorTrace();
     return -1;
 }

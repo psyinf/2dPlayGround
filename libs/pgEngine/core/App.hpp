@@ -1,7 +1,7 @@
 #pragma once
 #include <pgEngine/core/AppConfig.hpp>
 #include <pgEngine/core/FPSCounter.hpp>
-#include "Lifetime.hpp"
+#include <pgFoundation/Lifetime.hpp>
 
 #include <sdlpp.hpp>
 
@@ -36,10 +36,10 @@ public:
 
     auto getWindowConfig() const -> const config::WindowConfig&;
 
-    auto                                  getFPSCounter() -> FPSCounter&;
-    [[deprecated("Use Game class")]] void loop(bool&                 done,
-                                               const RenderFunction& renderFunction,
-                                               const EventCallback&  eventCallback = {});
+    auto getFPSCounter() -> FPSCounter&;
+    //     [[deprecated("Use Game class")]] void loop(bool&                 done,
+    //                                                const RenderFunction& renderFunction,
+    //                                                const EventCallback&  eventCallback = {});
 
 protected:
     void checkInitialized() const;

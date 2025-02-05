@@ -85,7 +85,7 @@ public:
 
             /// @begin Text
             ImGui::Text(ICON_FA_SUN " %s", getCurrentSystem().state.name.data());
-            auto details_text = fmt::format("Class:{}, Pos:{}",
+            auto details_text = std::format("Class:{}, Pos:{}",
                                             magic_enum::enum_name(getCurrentSystem().state.spectralType),
                                             galaxy::buildSystemPositionStr(getCurrentSystem().trans.pos));
             ImGui::Text(ICON_FA_MAGNIFYING_GLASS " %s", details_text.data());

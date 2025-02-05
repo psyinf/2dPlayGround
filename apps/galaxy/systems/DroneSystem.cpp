@@ -119,7 +119,7 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
 
         BT::Blackboard::Ptr blackboard = BT::Blackboard::create();
         blackboard->set("max_targets_to_find", faction.startParams.num_start_drones);
-        blackboard->set("ID", fmt::format("Seed: {}", entt::to_integral(entity)));
+        blackboard->set("ID", std::format("Seed: {}", entt::to_integral(entity)));
         blackboard->set("entity", entt::to_integral(entity));
         auto behavior_tree = ctx->setupTree("Seed", entity, blackboard);
 

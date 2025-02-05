@@ -1,5 +1,5 @@
 #pragma once
-#include "sdlpp.hpp"
+#include <sdlpp.hpp>
 #include <any>
 
 namespace pg {

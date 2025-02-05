@@ -1,5 +1,4 @@
 #pragma once
-#include <array>
 #include <pgEngine/math/Vec.hpp>
 
 namespace pg {

@@ -1,6 +1,5 @@
 #include <core/Scene.hpp>
 #include <core/Game.hpp>
-#include <components/WindowDetails.hpp>
 #include <systems/SystemsRegistry.hpp>
 
 void pg::game::Scene::frame(FrameStamp& frameStamp)
@@ -21,7 +20,6 @@ void pg::game::Scene::frame(FrameStamp& frameStamp)
     {
         spdlog::error("Exception caught in Scene::frame of {} ({})", _id, e.what());
     }
- 
 }
 
 pg::game::Scene::Systems& pg::game::Scene::getSystems()
