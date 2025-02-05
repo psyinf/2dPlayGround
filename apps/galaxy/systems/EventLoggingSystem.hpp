@@ -1,6 +1,5 @@
 #pragma once
 #include <pgGame/systems/SystemInterface.hpp>
-#include <spdlog/spdlog.h>
 
 namespace galaxy {
 

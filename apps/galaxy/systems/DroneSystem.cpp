@@ -64,7 +64,10 @@ void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent eve
         {
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Unexplored;
             _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>(
-                {.system_entity = drone.targetId, .owner_faction = faction.name});
+                {.system_entity = drone.targetId,
+                 .owner_faction = faction.name,
+                 .status = galaxy::ColonizationStatus::Planned,
+                 .old_status = galaxy::ColonizationStatus::Unexplored});
         }
     }
     _game.getGlobalRegistry().destroy(event.entity);
@@ -104,8 +107,12 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
         system_faction.name = faction.name;
         starsystem.colonizationStatus = galaxy::ColonizationStatus::Colonized;
         // event
-        _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>(
-            {.system_entity = starsystem_entity, .owner_faction = faction.name});
+        _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>({
+            .system_entity = starsystem_entity,
+            .owner_faction = faction.name,
+            .status = ColonizationStatus::Colonized,
+            .old_status = ColonizationStatus::Unexplored,
+        });
 
         // setup port connections
         // defaults
