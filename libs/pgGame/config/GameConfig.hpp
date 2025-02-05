@@ -20,6 +20,7 @@ struct VFSConfig
 
 struct GameConfig
 {
+    GenericConfig            options;
     pg::config::WindowConfig windowConfig;
     std::vector<VFSConfig>   vfsConfigs;
     std::string              resourcePrefix;

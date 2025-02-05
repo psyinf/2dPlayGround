@@ -24,7 +24,7 @@ void galaxy::StatsSystem::handle(const pg::FrameStamp&)
         auto fpsStats = fpsCounter.getAverageFPSAndReset();
         stats.frameStats.fpsStats = fpsStats;
     }
-    if (fpsCounter.getCurrentFrameCount() % 100 == 0)
+    if (fpsCounter.getCurrentFrameCount() % 100 == 0 && _game.getGenericConfig().getConfig<bool>("logFPS", false))
     {
         auto fpsStats = stats.frameStats.fpsStats;
         spdlog::info("FPS Avg/Min/Max: {:.2}/{:.2}/{:.2}", fpsStats.minFPS, fpsStats.maxFPS, fpsStats.averageFPS);
