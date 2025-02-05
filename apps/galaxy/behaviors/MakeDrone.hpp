@@ -33,10 +33,10 @@ public:
         auto        dot_sprite = game.getResource<pg::Sprite>("::resources/circle_05.png");
         const auto& drone_params = galaxy::getFactionConfig(game, faction).droneParams;
         const auto& faction_start_params = galaxy::getFactionConfig(game, faction).startParams;
+
         // create a drone
         auto renderState = pg::States{};
-        renderState.push(pg::TextureColorState{faction.entityColor});
-        auto f = faction;
+        renderState.push(pg::TextureColorState{faction_color});
         auto entity = //
             pg::game::makeEntity<pg::Transform2D,
                                  pg::game::Drawable,
@@ -51,7 +51,7 @@ public:
                 pg::game::Drawable{dot_sprite},
                 {galaxy::Drone::fromConfig(drone_params)},
                 galaxy::Dynamic{},
-                std::move(f),
+                galaxy::Faction{faction},
                 galaxy::Lifetime{.expected_lifetime{drone_params.expected_lifetime},
                                  .reliability_factor{drone_params.reliability_factor}},
                 {std::move(renderState)},

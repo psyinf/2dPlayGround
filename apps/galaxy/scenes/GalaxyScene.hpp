@@ -373,7 +373,8 @@ private:
             auto gammaCorrectedBrightness = pgOrbit::adaptBrightnessByGamma(pgOrbit::perceivedBrightness, 2.6f);
             auto new_size =
                 gammaCorrectedBrightness[magic_enum::enum_integer(spectral_type)] * pg::fVec2{1.0f, 1.0f} * 0.025f;
-
+            rendererStates.push(
+                pg::TextureColorState{pg::asRBGA(pgOrbit::getForSpectralType(pgOrbit::StarColors, spectral_type))});
             auto entity = getGlobalRegistry().create();
 
             pg::game::addComponents<pg::Transform2D,

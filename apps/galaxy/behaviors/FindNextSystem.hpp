@@ -3,6 +3,8 @@
 #include <behaviors/utils/BehaviorActionNode.hpp>
 #include <pgEngine/math/Quadtree.hpp>
 
+#include <events/SystemEvents.hpp>
+
 namespace behavior {
 
 class FindNextSystem : public BehaviorActionNode
@@ -37,6 +39,9 @@ public:
                 game().getGlobalRegistry().get<galaxy::StarSystemState, galaxy::Faction>(drone.targetId);
             sys_faction = faction;
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Planned;
+            game().getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>(
+                {.system_entity = drone.targetId, .owner_faction = faction.name});
+
             return BT::NodeStatus::SUCCESS;
         }
         return BT::NodeStatus::FAILURE;

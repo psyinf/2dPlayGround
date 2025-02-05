@@ -7,6 +7,8 @@
 #include <pgGame/core/RegistryHelper.hpp>
 #include <Config.hpp>
 #include <components/Faction.hpp>
+#include <components/StarSystem.hpp>
+#include <components/FactionState.hpp>
 
 #include <components/Behavior.hpp>
 #include <pgEngine/math/Random.hpp>
@@ -18,7 +20,7 @@
 #include <behaviors/GetTargetsAvailable.hpp>
 
 #include <behaviors/EntityQueueLoop.hpp>
-#include <pgEngine/resources/TextResource.hpp>
+#include <events/SystemEvents.hpp>
 
 void galaxy::DroneSystem::setup(std::string_view /*scene_id*/)
 {
@@ -40,7 +42,7 @@ void galaxy::DroneSystem::setup(std::string_view /*scene_id*/)
         _game.getDispatcher().enqueue<galaxy::events::DroneFailedEvent>({.entity = entity});
         return BT::NodeStatus::SUCCESS;
     });
-    factory.registerBehaviorTreeFromText(_game.getResourceManager().load<pg::TextResource>({"data/behaviors/drones.xml"})->asString());
+    factory.registerBehaviorTreeFromFile("../data/behaviors/drones.xml");
 }
 
 void galaxy::DroneSystem::handle(const pg::FrameStamp& frameStamp)
@@ -61,6 +63,8 @@ void galaxy::DroneSystem::handleDroneFailed(galaxy::events::DroneFailedEvent eve
         if (starsystem.colonizationStatus == galaxy::ColonizationStatus::Planned)
         {
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Unexplored;
+            _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>(
+                {.system_entity = drone.targetId, .owner_faction = faction.name});
         }
     }
     _game.getGlobalRegistry().destroy(event.entity);
@@ -71,12 +75,15 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
     // setup for all factions
     auto galaxy_config = _game.getCurrentScene().getSingleton<const galaxy::config::Galaxy&>("galaxy.config");
 
-    for (const auto& faction : galaxy_config.factions)
+    for (const auto& faction : galaxy_config.factions | std::views::filter([](auto f) { return f.active; }))
     {
-        // skip inactive factions
-        if (!faction.active) { continue; }
-        // TODO: this needs to be based on the real time passed (e.g. years)
+        auto& faction_state = _game.getOrCreateSingleton<galaxy::FactionState>(faction.name);
+        if (faction_state.has_started) { continue; }
         if (faction.startParams.start_offset_seconds >= frameStamp.time.seconds) { continue; }
+
+        faction_state.has_started = true;
+        // faction activated event
+        _game.getDispatcher().enqueue<galaxy::events::FactionActivatedEvent>({.faction_name = faction.name});
 
         auto view = _game.getGlobalRegistry()
                         .view<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>();
@@ -94,8 +101,12 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
         auto&& [drawable, transform, starsystem, system_faction] =
             view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>(entity);
         // get a single star system
-        system_faction = {faction.name, faction.color, faction.color};
+        system_faction.name = faction.name;
         starsystem.colonizationStatus = galaxy::ColonizationStatus::Colonized;
+        // event
+        _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>(
+            {.system_entity = entity, .owner_faction = faction.name});
+
         // add faction
         spdlog::info("Create faction {}", system_faction.name);
 
