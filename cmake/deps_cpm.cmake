@@ -17,9 +17,40 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+    #zeromq
+    NAME ZeroMQ
+    GITHUB_REPOSITORY zeromq/libzmq
+    GIT_TAG v4.3.5
+    OPTIONS "WITH_LIBSODIUM OFF"
+    "WITH_PERF_TOOL OFF"
+    "WITH_DOC OFF"
+    "WITH_TESTS OFF"
+    "WITH_TOOLS OFF"
+    "WITH_LIBUNWIND OFF"
+    "WITH_SYSTEMD OFF"
+    "WITH_OPENPGM OFF"
+    "WITH_DRAFTS OFF"
+    "WITH_CURVE OFF"
+    "WITH_LZ4 OFF"
+    "WITH_GSSAPI OFF"
+    "WITH_LIBSODIUM OFF"
+    "WITH_LIBZMQ_STATIC ON"
+    "WITH_LIBZMQ_SHARED OFF"
+    "WITH_TLS OFF"
+    "WITH_VALGRIND OFF"
+    "WITH_ASAN OFF"
+    "WITH_UBSAN OFF"
+    "WITH_MSAN OFF"
+    "WITH_TSAN OFF"
+    #"WITH_CPACK OFF"
+    "BUILD_SHARED OFF"
+    
+)
+set (BTCPP_EXTRA_LIBRARIES libzmq-static)
+CPMAddPackage(
     Name btcpp
     GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
-    GIT_TAG HEAD
+    GIT_TAG b4bbef6800dca639dcf0316f0a5312c6f10e27ed
     SYSTEM TRUE
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
@@ -161,7 +192,7 @@ if(SCRIPTING)
 CPMAddPackage(
     NAME cparse
     GITHUB_REPOSITORY psyinf/cparse
-    GIT_TAG 87d2f03ea2828908402864a1df4fd61e689b4386
+    GIT_TAG b98299c7b0e94d1300ab227bead61fdd72fc1ef1
 )
 
 CPMAddPackage(
