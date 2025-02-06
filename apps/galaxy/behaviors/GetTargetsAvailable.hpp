@@ -55,14 +55,13 @@ public:
 
         const auto& drone_conf = galaxy::getFactionConfig(game(), faction.name).droneParams;
         const auto  range = pg::fVec2{drone_conf.max_range * 0.5f, drone_conf.max_range * 0.5f};
-        //clang-format off
         // TODO: assert result.data is always of size 1
+
         auto result_systems = quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, range)) |
                               std::views::filter(filterOutOwnSystem) | std::views::filter(onlyUnexplored) |
                               // take only .data member of the result
                               std::views::transform([](auto result) { return (result.data.front()); }) |
                               std::ranges::to<std::deque<entt::entity>>();
-        //clang-format on
         if (result_systems.empty()) { return BT::NodeStatus::FAILURE; }
         else
         {
