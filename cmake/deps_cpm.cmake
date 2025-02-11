@@ -50,7 +50,7 @@ set (BTCPP_EXTRA_LIBRARIES libzmq-static)
 CPMAddPackage(
     Name btcpp
     GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
-    GIT_TAG b4bbef6800dca639dcf0316f0a5312c6f10e27ed
+    GIT_TAG a44619cd8871c484f5c4b24f9958302455f19211
     SYSTEM TRUE
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
@@ -185,7 +185,7 @@ add_library(imgui::imgui ALIAS imgui)
 CPMAddPackage(
     NAME vfspp
     GITHUB_REPOSITORY nextgeniuspro/vfspp
-    GIT_TAG 7bcffe33eedde0e9df0cd731ef7d95de7bcad9e5
+    GIT_TAG v2.0.0
 )
 
 if(SCRIPTING)
