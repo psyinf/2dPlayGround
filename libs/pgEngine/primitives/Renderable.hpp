@@ -6,7 +6,7 @@
 #include <pgEngine/math/Transform.hpp>
 #include <pgEngine/math/Box.hpp>
 
-#include <bit>
+#include <cmath>
 #include <memory>
 #include <sdlpp.hpp>
 #include <vector>
