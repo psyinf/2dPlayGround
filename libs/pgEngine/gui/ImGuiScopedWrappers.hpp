@@ -84,4 +84,6 @@ using PopUpModal = ScopedBeginEnd<ImGui::BeginPopupModal,
                                   ImGui::EndPopup,
                                   /*ParameterInstance<bool*, nullptr>,*/
                                   ParameterInstance<ImGuiWindowFlags, 0>>;
+
+using PushItemWidth = VoidScopedBeginEnd<ImGui::PushItemWidth, ImGui::PopItemWidth, ParameterInstance<float, 0>>;
 } // namespace pgf::gui
