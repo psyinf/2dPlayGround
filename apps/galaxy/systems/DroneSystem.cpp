@@ -98,12 +98,13 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
             spdlog::error("No star systems found");
             continue;
         }
-
+        // TODO: alternatively use a start-position/sector
         std::advance(it, pg::randomBetween<size_t>(0, size));
         auto starsystem_entity = *it;
         auto&& [drawable, transform, starsystem, system_faction] =
             view.get<pg::game::Drawable, pg::Transform2D, galaxy::StarSystemState, galaxy::Faction>(starsystem_entity);
         // get a single star system
+        // TODO: check if the system is not already colonized
         system_faction.name = faction.name;
         starsystem.colonizationStatus = galaxy::ColonizationStatus::Colonized;
         // event
