@@ -12,7 +12,7 @@ CPMAddPackage(
 CPMAddPackage(
     Name btcpp
     GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
-    GIT_TAG b4bbef6800dca639dcf0316f0a5312c6f10e27ed
+    GIT_TAG HEAD
     SYSTEM TRUE
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
@@ -154,7 +154,7 @@ if(SCRIPTING)
 CPMAddPackage(
     NAME cparse
     GITHUB_REPOSITORY psyinf/cparse
-    GIT_TAG b98299c7b0e94d1300ab227bead61fdd72fc1ef1
+    GIT_TAG 87d2f03ea2828908402864a1df4fd61e689b4386
 )
 
 CPMAddPackage(

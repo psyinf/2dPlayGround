@@ -31,8 +31,9 @@ public:
         auto&& [transform, faction] = view.get<pg::Transform2D, galaxy::Faction>(maker_entity);
 
         auto        dot_sprite = game.getResource<pg::Sprite>("::resources/circle_05.png");
-        const auto& drone_params = galaxy::getFactionConfig(game, faction).droneParams;
-        const auto& faction_start_params = galaxy::getFactionConfig(game, faction).startParams;
+        const auto& drone_params = galaxy::getFactionConfig(game, faction.name).droneParams;
+        const auto& faction_start_params = galaxy::getFactionConfig(game, faction.name).startParams;
+        const auto& faction_color = galaxy::getFactionConfig(game, faction.name).color;
 
         // create a drone
         auto renderState = pg::States{};
