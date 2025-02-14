@@ -9,6 +9,13 @@ CPMAddPackage(
     GIT_TAG v0.0.1
     #OPTIONS USE_SDLGFX
 )
+#pybind
+CPMAddPackage(
+    NAME pybind11
+    GIT_REPOSITORY https://github.com/pybind/pybind11.git
+    GIT_TAG v2.13.6
+)
+
 CPMAddPackage(
     Name btcpp
     GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
