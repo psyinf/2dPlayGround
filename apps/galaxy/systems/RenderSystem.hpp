@@ -31,7 +31,7 @@ public:
     {
     }
 
-    void setup(std::string_view /*scene_id*/) {}
+    void setup(std::string_view /*scene_id*/) override {}
 
     pg::Transform2D calculateTransform(const pg::Transform2D& transform,
                                        const pg::Transform2D& globalTransform,

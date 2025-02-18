@@ -114,7 +114,8 @@
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl",
         "CMAKE_BUILD_TYPE": "Release",
-        "ENABLE_DEVELOPER_MODE": "OFF"
+        "ENABLE_DEVELOPER_MODE": "OFF",
+        "ENABLE_SANDBOXES": "ON"
       }
     },
     {
