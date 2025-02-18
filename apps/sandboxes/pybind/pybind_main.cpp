@@ -1,8 +1,7 @@
-#include <pybind11/pybind11.h>
-#include <pybind11/embed.h> // for embedding Python interpreter
-#include <iostream>
 
-namespace py = pybind11;
+#include <pgEngine/scripting/PythonScripter.hpp>
+
+/*
 
 // Simple function in the module
 int add(int a, int b)
@@ -16,31 +15,64 @@ PYBIND11_EMBEDDED_MODULE(mymodule, m)
     m.def("add", &add, "A function that adds two numbers");
 }
 
-int main()
+std::unique_ptr<py::scoped_interpreter> interpreter;
+
+int __main()
 {
     // Initialize Python interpreter
-    py::scoped_interpreter guard{};
 
     // Create the module dynamically (this is an embedded module)
 
     // Define some Python code to execute
     const char* code = R"(import mymodule
-result = mymodule.add(3, 4,7)
-print("Result from embedded module:", result)
+for i in range(1000):
+    result = mymodule.add(3, 4)
+#print("Result from embedded module:", result)
 )";
-    try
     {
-        py::module mymodule = py::module::import("mymodule");
-        // Execute the Python code using py::exec
-        // py::eval_file("script.py");
-        py::exec(code);
+        // accumulate time
+        auto                    now = std::chrono::high_resolution_clock::now();
+        auto                    interpreter = std::make_unique<py::scoped_interpreter>();
+        std::vector<py::module> modules;
+        modules.emplace_back(py::module::import("mymodule"));
+        int i = 0;
+        try
+        {
+            while (++i < 10000)
+            {
+                // py::scoped_interpreter guard{};
+                // benchmarks
+
+                //
+
+                // Execute the Python code using py::exec
+                py::exec(code);
+            }
+            auto end = std::chrono::high_resolution_clock::now();
+            std::cout << "Elapsed time: "
+                      << std::chrono::duration_cast<std::chrono::microseconds>(end - now).count() / 10000
+                      << "us per run \n";
+        }
+        catch (const py::error_already_set& e)
+        {
+            // py::module::import("traceback").attr("print_exception")(e.type(), e.value(), e.trace());
+            std::cout << e.what() << "\n";
+        }
     }
-    catch (const py::error_already_set& e)
-    {
-        // py::module::import("traceback").attr("print_exception")(e.type(), e.value(), e.trace());
-        std::cout << e.what() << "\n";
-    }
+
     // Execute the Python code using py::exec
 
     return 0;
+}
+*/
+
+int main()
+{
+    auto script = pg::scripting::PythonScripter::scriptFromString(R"(print("Hello, World!")\n)");
+
+    pg::scripting::PythonScripter scripter(std::move(script));
+    while (true)
+    {
+        scripter.run();
+    }
 }
