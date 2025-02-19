@@ -7,8 +7,8 @@
 #include <ranges>
 
 void pg::scripting::PythonScripter::run()
-
 {
+    using namespace std::literals::string_literals;
     namespace py = pybind11;
     py::scoped_interpreter guard{};
     // modules
@@ -21,7 +21,15 @@ void pg::scripting::PythonScripter::run()
     }
     // script
     std::string script_str = _script | std::views::join | std::ranges::to<std::string>();
-    py::exec(script_str);
+    try
+    {
+        py::exec(script_str);
+    }
+    catch (const py::error_already_set& e)
+    {
+        // py::module::import("traceback").attr("print_exception")(e.type(), e.value(), e.trace());
+        throw std::runtime_error("Script execution failed: "s + e.what());
+    }
 }
 
 pg::scripting::PythonScripter::PythonScripter(ScriptLines&& script, Modules&& /*= {}*/)
@@ -43,7 +51,7 @@ pg::scripting::ScriptLines pg::scripting::PythonScripter::scriptFromString(const
 
 pg::scripting::ScriptLines pg::scripting::PythonScripter::scriptFromFile(const std::filesystem::path& scriptPath)
 {
-    std::fstream file(scriptPath, std::ios_base::binary);
+    std::ifstream file(scriptPath, std::ios_base::binary);
     if (!file.is_open()) { throw std::runtime_error("Failed to open file: " + scriptPath.string()); }
 
     ScriptLines lines;

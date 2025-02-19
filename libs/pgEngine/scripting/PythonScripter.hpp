@@ -16,6 +16,8 @@ public:
 
     void run();
 
+    void addModule(const std::string& module) { _modules.push_back(module); }
+
 private:
     ScriptLines _script;
     Modules     _modules;

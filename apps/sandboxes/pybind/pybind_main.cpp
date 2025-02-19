@@ -1,5 +1,6 @@
 
 #include <pgEngine/scripting/PythonScripter.hpp>
+#include <iostream>
 
 /*
 
@@ -68,11 +69,18 @@ for i in range(1000):
 
 int main()
 {
-    auto script = pg::scripting::PythonScripter::scriptFromString(R"(print("Hello, World!")\n)");
+    auto script = pg::scripting::PythonScripter::scriptFromString(R"(print("Hello, World!"))");
 
     pg::scripting::PythonScripter scripter(std::move(script));
     while (true)
     {
-        scripter.run();
+        try
+        {
+            scripter.run();
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << e.what() << std::endl;
+        }
     }
 }

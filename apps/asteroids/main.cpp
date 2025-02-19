@@ -11,6 +11,7 @@
 #include <systems/Player.h>
 #include <systems/RenderSystem.hpp>
 #include <systems/SoundSystem.hpp>
+#include <systems/ScriptSystem.hpp>
 
 #include <pgGame/events/GameEvents.hpp>
 #include <pgGame/systems/SystemsRegistry.hpp>
@@ -28,6 +29,8 @@ try
     pg::game::SystemsFactory::registerSystem<asteroids::RenderSystem>("renderSystem");
     pg::game::SystemsFactory::registerSystem<asteroids::DynamicsSystem>("dynamicsSystem");
     pg::game::SystemsFactory::registerSystem<asteroids::SoundSystem>("soundSystem");
+    pg::game::SystemsFactory::registerSystem<asteroids::ScriptSystem>("scriptSystem");
+
     game.createScene({.scene_id = "start",
                       .systems{"lasers",
                                "player",
@@ -36,7 +39,8 @@ try
                                "collisions",
                                "renderSystem",
                                "dynamicsSystem",
-                               "soundSystem"}});
+                               "soundSystem",
+                               "scriptSystem"}});
     game.switchScene("start");
     // send start event
     game.getGlobalDispatcher().enqueue<pg::game::events::PlayPauseEvent>(
