@@ -128,8 +128,8 @@ std::vector<Vec2> convexHull(const std::vector<Vec2>& points)
 
 /**
  * @brief merge consecutive co-linear points
- * @param points A vector of points, asserted to be in order
- * @param pg::dotError allowed error in the pg::dot-product
+ * /param points A vector of points, asserted to be in order
+ * /param pg::dotError allowed error in the pg::dot-product
  * @todo this is not working as intended, as it removes too many points at to steep angles
  * @return
  */

@@ -108,12 +108,12 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
         system_faction.name = faction.name;
         starsystem.colonizationStatus = galaxy::ColonizationStatus::Colonized;
         // event
-        _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>({
-            .system_entity = starsystem_entity,
-            .owner_faction = faction.name,
-            .status = ColonizationStatus::Colonized,
-            .old_status = ColonizationStatus::Unexplored,
-        });
+        _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>(
+            {.system_entity = starsystem_entity,
+             .owner_faction = faction.name,
+             .status = ColonizationStatus::Colonized,
+             .old_status = ColonizationStatus::Unexplored,
+             .previous_owner = ""});
 
         // setup port connections
         // defaults

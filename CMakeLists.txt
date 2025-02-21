@@ -3,14 +3,17 @@ project(2dPlayground)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-
+#some global compiler settings
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    add_compile_options(/W4 /WX)
+    add_compile_options(/bigobj)
+else()
+    #add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wno-c++98-compat -Wno-c++98-compat-pedantic)
+    add_compile_options(-Wall -Wno-c++98-compat -Wno-c++98-compat-pedantic)
+endif()
 #options
 option(ENABLE_COVERAGE "Enable coverage" OFF)
 option(ENABLE_SANDBOXES "Enable sandbox projects" OFF)
-#bigobj
-if (MSVC)
-    add_compile_options(/bigobj)
-endif()
 
 #add cmake script to download conan-cmake integrations
 #include(cmake/conan_config.cmake)

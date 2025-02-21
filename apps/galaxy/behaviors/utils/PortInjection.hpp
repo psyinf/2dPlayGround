@@ -48,11 +48,11 @@ public:
     {
         for (const auto& port : forcedInput)
         {
-            if (!config.input_ports.contains(port)) { config.input_ports.insert({port, ""}); };
+            if (!config.input_ports.contains(port)) { config.input_ports.insert({port, ""}); }
         }
         for (const auto& port : forcedOutput)
         {
-            if (!config.output_ports.contains(port)) { config.output_ports.insert({port, ""}); };
+            if (!config.output_ports.contains(port)) { config.output_ports.insert({port, ""}); }
         }
     }
 

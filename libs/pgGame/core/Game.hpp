@@ -2,7 +2,7 @@
 #include <pgf/caching/ResourceManager.hpp>
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/core/Gui.hpp>
-
+#include <pgFoundation/VirtualFS.hpp>
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgEngine/core/FrameStamp.hpp>
 
@@ -26,9 +26,9 @@
 #include <string>
 #include <type_traits>
 
-namespace vfspp {
-class VirtualFileSystem;
-} // namespace vfspp
+// namespace vfspp {
+// class VirtualFileSystem;
+// } // namespace vfspp
 
 namespace pg::game {
 
@@ -43,8 +43,9 @@ public:
     virtual ~GamePimpl() = default;
 
     GamePimpl(Game& game, GameState& gameState)
-      : _game(game)
-      , _gameState(gameState)
+      : _gameState(gameState)
+      , _game(game)
+
     {
     }
 
@@ -64,7 +65,7 @@ public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
     using ResourceManager = foundation::ResourceManager;
-    using VFSPtr = std::shared_ptr<vfspp::VirtualFileSystem>;
+    using VFSPtr = std::shared_ptr<pg::foundation::VirtualFileSystem>;
 
 private:
     pg::game::GameConfig _gameConfig;

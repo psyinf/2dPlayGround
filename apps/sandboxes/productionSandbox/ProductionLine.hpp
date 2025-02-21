@@ -18,10 +18,10 @@ class ProductionLine
 public:
     enum class State
     {
-        EMPTY_QUEUE,           //< currently no items in queue
-        WAITING_FOR_RESOURCES, //< currently produced item waits for resources
-        FINISHED,              //< item production finished
-        RUNNING,               //< currently producing
+        EMPTY_QUEUE,           ///< currently no items in queue
+        WAITING_FOR_RESOURCES, ///< currently produced item waits for resources
+        FINISHED,              ///< item production finished
+        RUNNING,               ///< currently producing
     };
 
     ProductionLine(Storage& input_storage, Storage& output_storage, float capacity = 1.0)

@@ -31,7 +31,7 @@ target_link_libraries(${PROJECT_NAME}
 		pgf::pgf
 	PRIVATE
 	    pgEngine::pgEngine
-		vfspp::vfspp
+		#vfspp::vfspp
 
 )
 

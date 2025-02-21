@@ -11,7 +11,7 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
     pgGame::pgGame
-    vfspp
+    #vfspp
 )
 
 if (ENABLE_COVERAGE)

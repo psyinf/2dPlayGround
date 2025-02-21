@@ -140,7 +140,7 @@ CPMAddPackage(
     NAME spdlog
 
     GITHUB_REPOSITORY gabime/spdlog
-    GIT_TAG v1.13.0
+    GIT_TAG v1.15.1
     OPTIONS
     "SPDLOG_BUILD_EXAMPLES OFF"
     "SPDLOG_BUILD_TESTS OFF"
@@ -184,11 +184,11 @@ set_target_properties(imgui PROPERTIES FOLDER third-party) # optoinal IDE dir
 #alias
 add_library(imgui::imgui ALIAS imgui)
 #endif()
-CPMAddPackage(
-    NAME vfspp
-    GITHUB_REPOSITORY nextgeniuspro/vfspp
-    GIT_TAG v2.0.0
-)
+#CPMAddPackage(
+#    NAME vfspp
+#    GITHUB_REPOSITORY nextgeniuspro/vfspp
+#    GIT_TAG v2.0.0
+#)
 
 if(SCRIPTING)
 CPMAddPackage(

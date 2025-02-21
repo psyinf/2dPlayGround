@@ -60,7 +60,7 @@ public:
 
     void clear() { renderer.clear(); }
 
-    void present() { renderer.present(); };
+    void present() { renderer.present(); }
 
     void apply(States& states) { states.apply(renderer); }
 
@@ -70,6 +70,12 @@ public:
 class Renderable
 {
 public:
+    Renderable() = default;
+    Renderable(Renderable&&) = default;
+    Renderable& operator=(Renderable&&) = default;
+    Renderable(const Renderable&) = default;
+    Renderable& operator=(const Renderable&) = default;
+
     virtual ~Renderable() = default;
     virtual void draw(Renderer& r, const Transform2D& t, const States& rendererStates) = 0;
 
@@ -159,7 +165,9 @@ class Point : Renderable
 {
 public:
     Point(fVec2&& pos)
-      : _pos(std::move(pos)) {};
+      : _pos(std::move(pos))
+    {
+    }
 
     void draw(Renderer& r, const Transform2D& transform, const States& rendererStates) override;
 
@@ -201,38 +209,38 @@ class BoxPrimitive : public Renderable
 {
 public:
     BoxPrimitive(const fBox& box, Color color = {255, 255, 255, 255})
-      : box(box)
-      , color(color)
+      : _box(box)
+      , _color(color)
     {
     }
 
     void draw(Renderer& r, const Transform2D& transform, const States&) override
     {
         // transform the box
-        auto b = box;
-        b.pos -= (box.midpoint());
+        auto b = _box;
+        b.pos -= (_box.midpoint());
         b.pos *= transform.scale;
         b.dim *= transform.scale;
         b.pos += transform.pos;
         // TODO: this seems awkward
-        b.pos += (box.midpoint() * transform.scale);
+        b.pos += (_box.midpoint() * transform.scale);
         auto rect = (SDL_FRect{b.left(), b.top(), b.width(), b.height()});
         // r.setDrawColor(255, 255, 255, 255);
-        ScopedColor sc{r.renderer, color};
+        ScopedColor sc{r.renderer, _color};
         // draw the polygon
         SDL_RenderDrawRectF(r.renderer.get(), &rect);
     }
 
 private:
-    const fBox  box;
-    const Color color;
+    const fBox  _box;
+    const Color _color;
 };
 
 class Points : public Renderable
 {
 public:
     Points(std::vector<iVec2>&& points)
-      : points(points)
+      : _points(points)
     {
     }
 
@@ -241,11 +249,11 @@ public:
         r.renderer.setDrawColor(white.r, white.g, white.b, white.a);
         // draw the polygon
 
-        r.renderer.drawPoints(std::bit_cast<SDL_Point*>(points.data()), static_cast<int>(points.size()));
+        r.renderer.drawPoints(std::bit_cast<SDL_Point*>(_points.data()), static_cast<int>(_points.size()));
     }
 
 private:
-    std::vector<iVec2> points;
+    std::vector<iVec2> _points;
 };
 
 class RefPoints : public Renderable
