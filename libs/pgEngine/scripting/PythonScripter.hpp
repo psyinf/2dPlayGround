@@ -1,6 +1,7 @@
 #pragma once
 #include <filesystem>
 #include <string>
+#include <vector>
 
 namespace pg::scripting {
 using ScriptLines = std::vector<std::string>;
