@@ -17,16 +17,49 @@ CPMAddPackage(
 )
 
 CPMAddPackage(
+    #zeromq
+    NAME ZeroMQ
+    GITHUB_REPOSITORY zeromq/libzmq
+    GIT_TAG v4.3.5
+    OPTIONS "WITH_LIBSODIUM OFF"
+    "WITH_PERF_TOOL OFF"
+    "WITH_DOCS OFF"
+    "WITH_TESTS OFF"
+    "WITH_TOOLS OFF"
+    "WITH_LIBUNWIND OFF"
+    "WITH_SYSTEMD OFF"
+    "WITH_OPENPGM OFF"
+    "WITH_DRAFTS OFF"
+    "WITH_CURVE OFF"
+    "WITH_LZ4 OFF"
+    "WITH_GSSAPI OFF"
+    "WITH_LIBSODIUM OFF"
+    "WITH_LIBZMQ_STATIC ON"
+    "WITH_LIBZMQ_SHARED OFF"
+    "WITH_TLS OFF"
+    "WITH_VALGRIND OFF"
+    "WITH_ASAN OFF"
+    "WITH_UBSAN OFF"
+    "WITH_MSAN OFF"
+    "WITH_TSAN OFF"
+    #"WITH_CPACK OFF"
+    "BUILD_SHARED OFF"
+    "BUILD_TESTS OFF"
+    "ZMQ_BUILD_TESTS OFF"
+    
+)
+set (BTCPP_EXTRA_LIBRARIES libzmq-static)
+CPMAddPackage(
     Name btcpp
     GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
-    GIT_TAG HEAD
+    GIT_TAG a44619cd8871c484f5c4b24f9958302455f19211
     SYSTEM TRUE
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
     "BTCPP_BUILD_TOOLS OFF"
     "BTCPP_EXAMPLES OFF"
     "BTCPP_UNIT_TESTS OFF"
-    "BTCPP_GROOT_INTERFACE OFF"
+    "BTCPP_GROOT_INTERFACE ON"
     "BTCPP_SQLITE_LOGGING OFF"
     
 )
@@ -154,14 +187,14 @@ add_library(imgui::imgui ALIAS imgui)
 CPMAddPackage(
     NAME vfspp
     GITHUB_REPOSITORY nextgeniuspro/vfspp
-    GIT_TAG 7bcffe33eedde0e9df0cd731ef7d95de7bcad9e5
+    GIT_TAG v2.0.0
 )
 
 if(SCRIPTING)
 CPMAddPackage(
     NAME cparse
     GITHUB_REPOSITORY psyinf/cparse
-    GIT_TAG 87d2f03ea2828908402864a1df4fd61e689b4386
+    GIT_TAG b98299c7b0e94d1300ab227bead61fdd72fc1ef1
 )
 
 CPMAddPackage(

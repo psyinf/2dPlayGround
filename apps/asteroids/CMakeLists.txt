@@ -15,11 +15,15 @@ target_link_libraries(${PROJECT_NAME}
     pgEngine::pgEngine
     pgGame::pgGame
     soundEngine::soundEngine
+    pybind11::embed
+    pybind11::pybind11
+    pybind11::headers
 
     pgf::pgf
     EnTT::EnTT
     INTERFACE
     pgFoundation::pgFoundation
+
 )
 target_include_directories(${PROJECT_NAME}
 	PRIVATE
@@ -30,5 +34,11 @@ target_include_directories(${PROJECT_NAME}
 if (ENABLE_COVERAGE)
     enable_coverage(${PROJECT_NAME})
 endif()
-
+install(DIRECTORY
+        data/
+    DESTINATION
+        data
+    COMPONENT
+        ${RUNTIME_COMPONENT}
+)
 install(TARGETS ${PROJECT_NAME})

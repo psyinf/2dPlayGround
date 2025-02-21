@@ -3,6 +3,7 @@
 #include <pgEngine/core/Gui.hpp>
 #include <pgEngine/gui/GuiElements.hpp>
 #include <pgEngine/gui/ImGuiScopedWrappers.hpp>
+#include <pgEngine/math/Random.hpp>
 
 #include <string>
 #include <functional>
@@ -88,21 +89,43 @@ static bool optionsMenu(galaxy::config::Galaxy&                 galaxy_config,
         {
             ImGui::SeparatorText("View");
             // slider for opacity
+
+            ImGui::PushItemWidth(-1); // Use -1 to make it fill the available width
             if (ImGui::SliderFloat("Background opacity", &galaxy_config.background.opacity, 0.0f, 1.0f))
             {
                 changes = true;
             }
+            ImGui::PopItemWidth();
+            {
+                // this needs to span only the width of the previous element
+                if (ImGui::Button("Generate Seed"))
+                {
+                    galaxy_config.creation.stars_seed = pg::randomBetween(0u, std::numeric_limits<uint32_t>::max());
+                    changes = true;
+                }
+                ImGui::SameLine();
+                ImGui::PushItemWidth(-1);
+                // seed
+                if (ImGui::InputScalar("Galaxy Seed", ImGuiDataType_U32, &galaxy_config.creation.stars_seed))
+                {
+                    changes = true;
+                }
+                ImGui::PopItemWidth();
+            }
+
             // number of stars as small (1000), medium (5000), large (15000)
             auto current_item = getIndexFromStarCount(galaxy_config.creation.num_stars);
             // string from names
             // const char* data = galaxy_star_sizes.data();
             // horizontal line with name
             ImGui::SeparatorText("Galaxy");
+
             if (ImGui::Combo("Number of stars", &current_item, getNullSeparatedNames().data()))
             {
                 changes = true;
                 galaxy_config.creation.num_stars = galaxy_star_sizes_counts.at(current_item);
             }
+
             ImGui::SameLine();
             // star count as text
             ImGui::Text(": %d", galaxy_config.creation.num_stars);

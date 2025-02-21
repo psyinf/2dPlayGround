@@ -71,7 +71,7 @@ public:
         auto behavior_tree = ctx()->setupTree("Drone", entity, blackboard);
 
         pg::game::addComponent<galaxy::Behavior>(
-            game.getGlobalRegistry(), entity, galaxy::Behavior{std::move(behavior_tree)});
+            game.getGlobalRegistry(), entity, galaxy::Behavior{std::move(behavior_tree), {}});
 
         game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({.entity = entity, .transform = transform.pos});
         return BT::NodeStatus::SUCCESS;

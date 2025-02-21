@@ -54,16 +54,23 @@ public:
         };
 
         const auto& drone_conf = galaxy::getFactionConfig(game(), faction.name).droneParams;
-        const auto  range = pg::fVec2{drone_conf.max_range * 0.5f, drone_conf.max_range * 0.5f};
-        //clang-format off
+        const auto  range = 0.5f * pg::fVec2{drone_conf.max_range, drone_conf.max_range};
         // TODO: assert result.data is always of size 1
+
         auto result_systems = quadtree.rangeQuery(pg::fBox::fromMidpoint(transform.pos, range)) |
                               std::views::filter(filterOutOwnSystem) | std::views::filter(onlyUnexplored) |
                               // take only .data member of the result
                               std::views::transform([](auto result) { return (result.data.front()); }) |
                               std::ranges::to<std::deque<entt::entity>>();
-        //clang-format on
-        if (result_systems.empty()) { return BT::NodeStatus::FAILURE; }
+        if (result_systems.empty())
+        {
+            // log
+            // TODO: event
+            spdlog::warn("Couldn't find a target system for Drone {} within {} ly",
+                         config().blackboard->get<std::string>("ID"),
+                         drone_conf.max_range);
+            return BT::NodeStatus::FAILURE;
+        }
         else
         {
             std::string id = config().blackboard->get<std::string>("ID");

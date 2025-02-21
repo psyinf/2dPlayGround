@@ -4,6 +4,8 @@
 #include <pgEngine/math/Transform.hpp>
 #include <pgFoundation/NamedTypeRegistrar.hpp>
 
+#include <components/Faction.hpp>
+
 namespace galaxy::events {
 struct FactionActivatedEvent : pgf::TypeRegistrar<FactionActivatedEvent, "FactionCreatedEvent">
 {
@@ -13,12 +15,22 @@ struct FactionActivatedEvent : pgf::TypeRegistrar<FactionActivatedEvent, "Factio
 struct DroneCreatedEvent : pgf::TypeRegistrar<DroneCreatedEvent, "DroneCreatedEvent">
 {
     entt::entity    entity;
+    galaxy::Faction faction;
     pg::Transform2D transform;
 };
 
 struct DroneFailedEvent : pgf::TypeRegistrar<DroneFailedEvent, "DroneFailedEvent">
 {
-    entt::entity entity;
+    entt::entity    entity;
+    galaxy::Faction faction;
+    std::string     reason;
+};
+
+struct DroneDestroyedEvent : pgf::TypeRegistrar<DroneDestroyedEvent, "DroneDestroyedEvent">
+{
+    entt::entity    entity;
+    galaxy::Faction faction;
+    std::string     reason;
 };
 
 // NOT YET USED- currently using DroneFailedEvent

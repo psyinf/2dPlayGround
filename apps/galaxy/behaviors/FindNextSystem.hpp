@@ -40,7 +40,9 @@ public:
             sys_faction = faction;
             starsystem.colonizationStatus = galaxy::ColonizationStatus::Planned;
             game().getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>(
-                {.system_entity = drone.targetId, .owner_faction = faction.name});
+                {.system_entity = drone.targetId,
+                 .owner_faction = faction.name,
+                 .status = galaxy::ColonizationStatus::Planned});
 
             return BT::NodeStatus::SUCCESS;
         }

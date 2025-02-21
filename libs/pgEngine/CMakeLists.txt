@@ -1,6 +1,4 @@
 project(pgEngine)
-find_package(SDL2 REQUIRED)
-find_package(soundEngine REQUIRED)
 
 add_library(${PROJECT_NAME} STATIC)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
@@ -16,6 +14,7 @@ target_sources(${PROJECT_NAME}
 		core/FPSCounter.cpp
 		core/Gui.cpp
 		generators/markov/MarkovFrequencyMap.cpp
+		scripting/PythonScripter.cpp
 	PUBLIC
 		factories/Factories.hpp
 		
@@ -43,6 +42,7 @@ target_sources(${PROJECT_NAME}
 		generators/markov/MarkovFrequencyMap.hpp
 		generators/MarkovNameGen.hpp
 
+		scripting/PythonScripter.hpp
 
 )
 
@@ -60,6 +60,8 @@ target_link_libraries(${PROJECT_NAME}
 	PRIVATE
 	SDL2_ttf::SDL2_ttf-static
 	soundEngine::soundEngine
+	pybind11::embed
+
 )
 
 target_include_directories(
@@ -73,4 +75,4 @@ target_include_directories(
 )
 
 target_compile_options(${PROJECT_NAME} PRIVATE $<$<CXX_COMPILER_ID:MSVC>:/W4>)
-target_compile_options(${PROJECT_NAME} PRIVATE $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>)
+target_compile_options(${PROJECT_NAME} PRIVATE $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic -Wno-c++98-compat>)

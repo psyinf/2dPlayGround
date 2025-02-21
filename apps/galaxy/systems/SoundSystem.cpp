@@ -56,7 +56,7 @@ public:
     {
         // do something with event
         const auto& name = _registry.getTypeName<T>();
-        spdlog::info("Dispatching event {} with name {}", typeid(T).name(), name);
+        spdlog::info("Dispatching sound event {} with name {}", typeid(T).name(), name);
 
         try
         {
@@ -102,7 +102,8 @@ galaxy::SoundSystem::SoundSystem(pg::game::Game& game, const std::string& name)
 
 void galaxy::SoundSystem::setup(std::string_view scene_id)
 {
-    auto& soundScapeConfig = _game.getConfig().getPerSceneConfig<SceneSoundScape>(std::string{scene_id}, "soundScape");
+    auto& soundScapeConfig =
+        _game.getGenericConfig().getPerContextConfig<SceneSoundScape>(std::string{scene_id}, "soundScape");
     _game.getCurrentScene().addSingleton_as<SceneSoundScape>("scene.soundScape", soundScapeConfig);
 
     // add all sounds to pre-loader

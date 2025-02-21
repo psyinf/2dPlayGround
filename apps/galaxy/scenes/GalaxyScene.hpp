@@ -348,6 +348,7 @@ private:
 
     void setupStars()
     {
+        // TODO: the length/and the quadtree are dependent on the size of the galaxy
         galaxyQuadtree = std::make_unique<pg::Quadtree<entt::entity>>(pg::fBox{{-750, -750}, {1500, 1500}});
         std::normal_distribution<float> d(0.0f, 200.0f);
 
