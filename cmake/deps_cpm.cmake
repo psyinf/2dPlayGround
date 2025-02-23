@@ -15,7 +15,12 @@ CPMAddPackage(
     GIT_REPOSITORY https://github.com/pybind/pybind11.git
     GIT_TAG v2.13.6
 )
-
+CPMAddPackage(
+    NAME phyfs
+    GIT_REPOSITORY https://github.com/icculus/physfs
+    GIT_TAG release-3.2.0
+    SYSTEM ON
+)
 CPMAddPackage(
     #zeromq
     NAME ZeroMQ
