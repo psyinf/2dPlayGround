@@ -37,8 +37,10 @@ public:
         SDL_FRect dest_rect = {calcPos[0], calcPos[1], (dims[0] * t.scale[0] / width), (dims[1] * t.scale[1] / height)};
         int       x = _currentFrame % width;
         int       y = _currentFrame / width;
-        SDL_Rect  src_rect = {
-            x * (int)fdimensions[0], y * (int)fdimensions[1], (dims[0] / width) + width, (dims[1] / height)};
+        SDL_Rect  src_rect = {x * static_cast<int>(fdimensions[0]),
+                              y * static_cast<int>(fdimensions[1]),
+                              (dims[0] / width) + width,
+                              (dims[1] / height)};
         states.apply(r.renderer);
         states.apply(r.renderer, tex);
 

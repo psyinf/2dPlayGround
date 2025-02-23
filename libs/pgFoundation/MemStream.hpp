@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 
 namespace pg::foundation {
 
@@ -40,7 +41,9 @@ class OwningMemBuf : public MemBuf
 public:
     OwningMemBuf(std::vector<uint8_t>&& buffer)
       : MemBuf(buffer.data(), buffer.size())
-      , _buffer(std::move(buffer)){};
+      , _buffer(std::move(buffer))
+    {
+    }
 
 private:
     std::vector<uint8_t> _buffer;

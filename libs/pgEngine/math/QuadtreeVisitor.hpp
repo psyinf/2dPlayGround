@@ -42,7 +42,7 @@ public:
         CellVisitor<T>::traverse(c);
     }
 
-    virtual void done(T& c) {}
+    virtual void done(T& /*c*/) {}
 
     ResultVector results;
 };

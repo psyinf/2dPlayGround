@@ -27,12 +27,12 @@ public:
 
     static Sprite makeTextSprite(sdl::Renderer& renderer, SDLFont& font, std::string_view text);
     /**
-     * @brief
-     * @param renderer
-     * @param width num of horizontal frames
-     * @param height num of vertical frames
-     * @param resource_name
-     * @return
+     * /brief
+     * /param renderer
+     * /param width num of horizontal frames
+     * /param height num of vertical frames
+     * /param resource_name
+     * /return
      */
     static FramedSprite makeFramedSprite(
         sdl::Renderer&                         renderer,

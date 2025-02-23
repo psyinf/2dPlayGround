@@ -17,8 +17,9 @@ auto pg::SpriteFactory::loadFromFile(const std::string& path) -> SDL_Surface*
 auto pg::SpriteFactory::loadFromBuffer(const std::vector<char>& buffer) -> SDL_Surface*
 {
     std::lock_guard<std::mutex> lock(_loaderMutex);
-    SDL_RWops*                  rw = SDL_RWFromMem((void*)buffer.data(), static_cast<int>(buffer.size()));
-    auto                        img = IMG_Load_RW(rw, 1);
+    SDL_RWops*                  rw =
+        SDL_RWFromMem(reinterpret_cast<void*>(const_cast<char*>(buffer.data())), static_cast<int>(buffer.size()));
+    auto img = IMG_Load_RW(rw, 1);
     return img;
 }
 

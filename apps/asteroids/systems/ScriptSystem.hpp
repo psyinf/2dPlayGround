@@ -14,14 +14,14 @@ public:
 
     virtual ~ScriptSystem() = default;
 
-    void setup(std::string_view scene_id) override
+    void setup(std::string_view /*scene_id*/) override
     {
         _scripter = std::make_unique<pg::scripting::PythonScripter>(
             pg::scripting::PythonScripter::scriptFromFile("../data/scripts/test.py"));
         _scripter->addModule("mymodule");
     }
 
-    void handle(const pg::FrameStamp& frameStamp) override { _scripter->run(); }
+    void handle(const pg::FrameStamp& /*frameStamp*/) override { _scripter->run(); }
 
 private:
     std::unique_ptr<pg::scripting::PythonScripter> _scripter;

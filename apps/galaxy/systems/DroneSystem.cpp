@@ -110,6 +110,7 @@ void galaxy::DroneSystem::createFactions(const pg::FrameStamp& frameStamp)
         // event
         _game.getDispatcher().enqueue<galaxy::events::SystemOwnerChangedEvent>({
             .system_entity = starsystem_entity,
+            .previous_owner = "",
             .owner_faction = faction.name,
             .status = ColonizationStatus::Colonized,
             .old_status = ColonizationStatus::Unexplored,

@@ -12,15 +12,15 @@ using StarClassParameter = std::array<T, 7>;
 
 enum class SpectralType
 {
-    O,          //< Blue
-    B,          //< Blue-white
-    A,          //< White
-    F,          //< Yellow-white
-    G,          //< Yellow
-    K,          //< Orange
-    M,          //< Red
-    BrownDwarf, //< Brown dwarf
-    WhiteDwarf, //< White dwarf
+    O,          ///< Blue
+    B,          ///< Blue-white
+    A,          ///< White
+    F,          ///< Yellow-white
+    G,          ///< Yellow
+    K,          ///< Orange
+    M,          ///< Red
+    BrownDwarf, ///< Brown dwarf
+    WhiteDwarf, ///< White dwarf
     BlackHole,
     NeutronStar,
     Unknown,

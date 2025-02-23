@@ -56,17 +56,17 @@ public:
     /**
      * Register a callback that will be issued immediately when the key is pressed or released
      *
-     * @param code
-     * @param callback
+     * /param code
+     * /param callback
      */
     void registerDirectCallback(SDL_Keycode code, DirectCallback&& callback);
 
     /**
      * Register a callback that will queued and issued when evaluateCallbacks is called
      *
-     * @param code
-     * @param callback
-     * @param once if true, the callback will not report another key press until key is released before again
+     * /param code
+     * /param callback
+     * /param once if true, the callback will not report another key press until key is released before again
      */
     void registerKeyCallback(SDL_Keycode code, Callback&& callback, bool once = false);
 

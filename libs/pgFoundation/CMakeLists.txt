@@ -1,6 +1,6 @@
 project(pgFoundation)
 
-add_library(${PROJECT_NAME} STATIC)
+add_library(${PROJECT_NAME} INTERFACE)
 add_library(${PROJECT_NAME}::${PROJECT_NAME} ALIAS ${PROJECT_NAME})
 #set language to cXX
 #Interface only library
@@ -25,8 +25,8 @@ target_link_libraries(${PROJECT_NAME}
 
 target_include_directories(
   ${PROJECT_NAME}
-  PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}
+#  PRIVATE
+#	${CMAKE_CURRENT_SOURCE_DIR}
   INTERFACE 
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/..>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>

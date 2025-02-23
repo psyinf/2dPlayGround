@@ -43,9 +43,9 @@ static inline bool BufferingBar(const char*   label,
     const float b = speed * 0.333f;
     const float c = speed * 0.666f;
 
-    const float o1 = (circleWidth + r) * (t + a - speed * (int)((t + a) / speed)) / speed;
-    const float o2 = (circleWidth + r) * (t + b - speed * (int)((t + b) / speed)) / speed;
-    const float o3 = (circleWidth + r) * (t + c - speed * (int)((t + c) / speed)) / speed;
+    const float o1 = (circleWidth + r) * (t + a - speed * static_cast<int>((t + a) / speed)) / speed;
+    const float o2 = (circleWidth + r) * (t + b - speed * static_cast<int>((t + b) / speed)) / speed;
+    const float o3 = (circleWidth + r) * (t + c - speed * static_cast<int>((t + c) / speed)) / speed;
 
     window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o1, bb.Min.y + r), r, bg_col);
     window->DrawList->AddCircleFilled(ImVec2(pos.x + circleEnd - o2, bb.Min.y + r), r, bg_col);

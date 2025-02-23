@@ -118,7 +118,7 @@ public:
             // center vertically
             ImGui::SetCursorPos(ImVec2(centering.x, (ImGui::GetIO().DisplaySize.y * 0.5f) - (size_y * 0.5f)));
             // background sprite
-            ImGui::Image((ImTextureID)_dot_texture.get()->get(),
+            ImGui::Image(reinterpret_cast<ImTextureID>(_dot_texture.get()->get()),
                          ImVec2(static_cast<float>(size_x), static_cast<float>(size_y)));
             // TODO: style from config
             pgf::gui::StyleStack stack;
