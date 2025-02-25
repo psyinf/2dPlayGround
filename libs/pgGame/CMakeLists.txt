@@ -29,6 +29,7 @@ target_link_libraries(${PROJECT_NAME}
 		EnTT::EnTT
 	    spdlog::spdlog
 		pgf::pgf
+		PhysFSPP::PhysFSPP
 	PRIVATE
 	    pgEngine::pgEngine
 		#vfspp::vfspp

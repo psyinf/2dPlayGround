@@ -4,7 +4,6 @@
 #include <PhysFSPP/PhysFSPP_File.hpp>
 #include <physfs.h>
 #include <string>
-#include <vector>
 
 namespace physfspp {
 
@@ -23,7 +22,7 @@ public:
         Append,
     };
 
-    VirtualFileSystem(const std::string& arg0) { PHYSFS_init(arg0.c_str()); }
+    VirtualFileSystem(const std::string& arg0 = {}) { PHYSFS_init(arg0.c_str()); }
 
     ~VirtualFileSystem() { PHYSFS_deinit(); }
 

@@ -4,18 +4,11 @@ namespace pg::game {
 
 struct VFSConfig
 {
-    enum class VFSType
-    {
-        PHYSICAL,
-        ZIP,
-        MEMORY
-    };
     using Root = std::string;
     using Alias = std::string;
 
-    Root    root;
-    Alias   alias;
-    VFSType type{VFSType::PHYSICAL};
+    Root  root;  // root path
+    Alias alias; // alias/mount point
 };
 
 struct GameConfig

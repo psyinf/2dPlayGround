@@ -1,22 +1,21 @@
 #pragma once
 #include <pgf/caching/DataProvider.hpp>
-#include <pgfoundation/VirtualFS.hpp>
+#include <PhysFSPP/PhysFSPP.hpp>
+#include <PhysFSPP/PhysFSPP_Stream.hpp>
 
 namespace pg {
 class VFSDataProvider : public foundation::DataProvider
 {
-    std::shared_ptr<pg::foundation::VirtualFileSystem> _vfs;
-    std::shared_ptr<std::istream>                      _stream;
-    // vfspp::IFilePtr                                    _file;
-    std::string _localPrefix;
+    std::shared_ptr<physfspp::VirtualFileSystem> _vfs;
+    std::shared_ptr<physfspp::IFStream>          _stream;
+    std::string                                  _localPrefix;
 
 public:
-    VFSDataProvider(const foundation::URI&                             uri,
-                    std::shared_ptr<pg::foundation::VirtualFileSystem> vfs,
-                    std::string                                        local_prefix = "")
+    VFSDataProvider(const foundation::URI&                       uri,
+                    std::shared_ptr<physfspp::VirtualFileSystem> vfs,
+                    std::string                                  local_prefix = "")
       : DataProvider(uri)
       , _vfs(std::move(vfs))
-      //, _file(_vfs->OpenFile({getUri()}, {vfspp::IFile::FileMode::Read}))
       , _localPrefix(local_prefix)
     {
         //         if (!_file && !_localPrefix.empty())

@@ -2,7 +2,7 @@
 #include <pgf/caching/ResourceManager.hpp>
 #include <pgEngine/core/App.hpp>
 #include <pgEngine/core/Gui.hpp>
-#include <pgFoundation/VirtualFS.hpp>
+
 #include <pgEngine/primitives/Sprite.hpp>
 #include <pgEngine/core/FrameStamp.hpp>
 
@@ -14,6 +14,8 @@
 #include <pgGame/config/GameConfig.hpp>
 #include <pgFoundation/NamedTypeRegistry.hpp>
 #include <pgGame/components/GameState.hpp>
+
+#include <PhysFSPP/PhysFSPP.hpp>
 
 #include <pgGame/core/InputEventDispatcher.hpp>
 #include <entt/entity/fwd.hpp>
@@ -65,7 +67,7 @@ public:
     using Scenes = std::unordered_map<std::string, std::unique_ptr<Scene>>;
     using Systems = Scene::Systems;
     using ResourceManager = foundation::ResourceManager;
-    using VFSPtr = std::shared_ptr<pg::foundation::VirtualFileSystem>;
+    using VFSPtr = std::shared_ptr<physfspp::VirtualFileSystem>;
 
 private:
     pg::game::GameConfig _gameConfig;
