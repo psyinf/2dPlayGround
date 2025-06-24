@@ -19,7 +19,8 @@
 int main([[maybe_unused]] int argc, [[maybe_unused]] char** argv)
 try
 {
-    pg::game::Game game({.vfsConfigs{{.root = "../data", .alias = "data"}}, .resourcePrefix = "data"});
+    pg::game::Game game(
+        {.vfsConfigs{{.root = "../data", .alias = "data"}, {.root = "../data/Meteors", .alias = "Meteors"}}});
 
     pg::game::SystemsFactory::registerSystem<asteroids::Lasers>("lasers");
     pg::game::SystemsFactory::registerSystem<asteroids::Player>("player");

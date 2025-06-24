@@ -5,7 +5,6 @@
 #include <core/GameExceptions.hpp>
 #include <events/SceneManagementEvents.hpp>
 #include <events/GameEvents.hpp>
-#include <ranges>
 #include <components/singletons/RegisteredPreloaders.hpp>
 #include <pgGame/core/VFSDataProvider.hpp>
 
@@ -76,7 +75,7 @@ game::Game::Game(pg::game::GameConfig&& config)
   , _inputEventDispatcher(_sdlApp.getEventHandler(), {})
   , _vfs(std::make_unique<physfspp::VirtualFileSystem>())
   , _resourceManager([this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
-      return std::make_unique<VFSDataProvider>(uri, _vfs, _gameConfig.resourcePrefix);
+      return std::make_unique<VFSDataProvider>(uri, _vfs);
   })
 {
     // register all vfs's

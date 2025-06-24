@@ -16,7 +16,6 @@ struct GameConfig
     GenericConfig            options;
     pg::config::WindowConfig windowConfig;
     std::vector<VFSConfig>   vfsConfigs;
-    std::string              resourcePrefix;
 
     SDL_Rect getWindowRect()
     {

@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 #some global compiler settings
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    add_compile_options(/W4 /WX)
+    #add_compile_options(/W4 /WX)
+    add_compile_options(/W3)
     add_compile_options(/bigobj)
 else()
     #add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wno-c++98-compat -Wno-c++98-compat-pedantic)
