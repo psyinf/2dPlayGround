@@ -1,5 +1,10 @@
 #pragma once
 
+/*
+   PhysFSPP: A C++ wrapper for PhysicsFS
+   Copyright (C) 2024  psyinf (S.Messerschmidt) 
+*/
+
 #include <PhysFSPP/PhysFSPP_Exceptions.hpp>
 #include <PhysFSPP/PhysFSPP_File.hpp>
 #include <physfs.h>

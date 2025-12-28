@@ -2,6 +2,7 @@
 
 #include <physfs.h>
 #include <cstdint>
+#include <cstddef>
 
 namespace physfspp {
 class FileHandle
