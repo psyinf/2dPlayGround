@@ -20,6 +20,8 @@ CPMAddPackage(
     GIT_REPOSITORY https://github.com/icculus/physfs
     GIT_TAG release-3.2.0
     SYSTEM ON
+    OPTIONS "PHYSFS_BUILD_DOCS OFF"
+            "PHYSFS_TARGETNAME_UNINSTALL uninstall-physfs"
 )
 CPMAddPackage(
     #zeromq
