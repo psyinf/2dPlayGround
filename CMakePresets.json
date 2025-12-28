@@ -15,7 +15,7 @@
       "installDir": "${sourceDir}/out/install/${presetName}",
       "cacheVariables": {
         "CPM_SOURCE_CACHE": "${sourceDir}/out/.cache/cpm/",
-        //"ENABLE_SANDBOXES": "ON"
+        "ENABLE_SANDBOXES": "ON"
       }
     },
     {
@@ -114,8 +114,7 @@
         "CMAKE_C_COMPILER": "cl",
         "CMAKE_CXX_COMPILER": "cl",
         "CMAKE_BUILD_TYPE": "Release",
-        "ENABLE_DEVELOPER_MODE": "OFF",
-
+        "ENABLE_DEVELOPER_MODE": "OFF"
       }
     },
     {
@@ -126,7 +125,7 @@
       "cacheVariables": {
         "CMAKE_C_COMPILER": "clang-cl",
         "CMAKE_CXX_COMPILER": "clang-cl",
-        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_BUILD_TYPE": "Debug"
       },
       "vendor": {
         "microsoft.com/VisualStudioSettings/CMake/1.0": {
