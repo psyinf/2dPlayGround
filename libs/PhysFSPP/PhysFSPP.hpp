@@ -56,14 +56,14 @@ public:
             throw VirtualFileSystemException("Invalid file open mode");
         }
 
-        if (f == nullptr) { throw VirtualFileSystemException(PHYSFS_getLastError()); }
+        if (f == nullptr) { throw VirtualFileSystemException(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())); }
         return FileHandle{f};
     }
 
 private:
     void handleError(int res)
     {
-        if (res == 0) { throw VirtualFileSystemException(PHYSFS_getLastError()); }
+        if (res == 0) { throw VirtualFileSystemException(PHYSFS_getErrorByCode(PHYSFS_getLastErrorCode())); }
     }
 };
 } // namespace physfspp
