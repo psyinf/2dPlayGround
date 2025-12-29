@@ -3,11 +3,13 @@ name: cpp-linter
 on: 
   pull_request:
     types: [assigned, opened, synchronize, reopened]
+
 jobs:
   cpp-linter:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: cpp-linter/cpp-linter-action@v2
         id: linter
         env:
@@ -16,7 +18,8 @@ jobs:
           style: file
           lines-changed-only: true
           tidy-checks: -*
-          version: 16 # todo find minimal viable version
+          version: 18
+          
       - name: Fail fast?!
         if: steps.linter.outputs.checks-failed > 0
         run: echo "Some files failed the linting checks!"
