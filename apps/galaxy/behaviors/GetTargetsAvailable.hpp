@@ -3,6 +3,7 @@
 #include <behaviors/utils/BehaviorActionNode.hpp>
 #include <helpers/GalaxyHelpers.hpp>
 #include <spdlog/spdlog.h>
+#include <entt/entt.hpp>
 
 namespace BT {
 
