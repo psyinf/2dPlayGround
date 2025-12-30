@@ -27,7 +27,6 @@ include(cmake/stacktrace.cmake)
 include(cmake/setup_cpm.cmake)
 include(cmake/deps_cpm.cmake)
 include(cmake/disable_3rd_party_warnings.cmake)
-make_all_targets_system()
 
 
 enable_testing()
@@ -35,6 +34,9 @@ add_subdirectory(libs)
 add_subdirectory(apps)
 add_subdirectory(tests)
 add_subdirectory(tools)
+
+# Apply system includes to all external dependencies after they're all loaded
+make_all_targets_system()
 install(DIRECTORY
         data/
     DESTINATION
