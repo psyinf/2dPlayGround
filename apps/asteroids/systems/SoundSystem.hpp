@@ -32,5 +32,4 @@ private:
     std::unique_ptr<soundEngineX::SoundEngine>      _soundEngine;
     std::unique_ptr<soundEngineX::BackgroundPlayer> _bgPlayer;
 };
-
 } // namespace asteroids

@@ -13,9 +13,9 @@ namespace pg::game {
 
 struct SceneConfig
 {
-    std::string              scene_id;      //< name of the scene
-    std::vector<std::string> systems;       //< systems associated with this scene
-    std::string              followUpScene; //< scene to switch to after this scene
+    std::string              scene_id;      ///< name of the scene
+    std::vector<std::string> systems;       ///< systems associated with this scene
+    std::string              followUpScene; ///< scene to switch to after this scene
 };
 
 /**
@@ -36,8 +36,9 @@ public:
 
     virtual ~Scene() { stop(); }
 
-    virtual void preFrame(FrameStamp&) {};
-    virtual void postFrame(FrameStamp&) {};
+    virtual void preFrame(FrameStamp&) {}
+
+    virtual void postFrame(FrameStamp&) {}
 
     const Systems& getSystems() const;
 

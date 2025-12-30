@@ -22,5 +22,4 @@ public:
 private:
     std::vector<events::LaserFired> queued;
 };
-
 } // namespace asteroids

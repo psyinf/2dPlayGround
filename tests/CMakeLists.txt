@@ -15,7 +15,18 @@ if(BUILD_TESTING)
         get_filename_component( target ${testsourcefile} NAME_WE )
         add_executable( ${target} ${testsourcefile} )
         # Make sure YourLib is linked to each app
-        set_target_properties(${target} PROPERTIES CXX_EXTENSIONS OFF)
+        set_target_properties(${target} PROPERTIES 
+            CXX_EXTENSIONS OFF
+            BUILD_RPATH "${CMAKE_BINARY_DIR}/_deps/openal-build"
+            # The main project globally skips RPATH; keep it enabled for tests so bundled OpenAL is found
+            SKIP_RPATH FALSE
+            SKIP_BUILD_RPATH FALSE
+            INSTALL_RPATH_USE_LINK_PATH TRUE
+        )
+            if(UNIX AND NOT APPLE)
+                # Ensure the built OpenAL shared library is discoverable at runtime for test binaries
+                target_link_options(${target} PRIVATE -Wl,-rpath,${CMAKE_BINARY_DIR}/_deps/openal-build)
+            endif()
             target_compile_features(${target} PUBLIC cxx_std_20)
             target_compile_options(${target} PRIVATE ${DEFAULT_COMPILER_OPTIONS_AND_WARNINGS})
             target_link_libraries(${target} PRIVATE testMain pgEngine::pgEngine pgGame::pgGame nlohmann_json::nlohmann_json INTERFACE pgOrbit::pgOrbit)

@@ -56,8 +56,8 @@ public:
                       std::chrono::duration_cast<std::chrono::months>(std::chrono::years(1)).count();
         auto days = std::chrono::duration_cast<std::chrono::days>(secs) %
                     std::chrono::duration_cast<std::chrono::days>(std::chrono::months(1)).count();
-        auto hours = std::chrono::duration_cast<std::chrono::hours>(secs) %
-                     std::chrono::duration_cast<std::chrono::hours>(std::chrono::days(1)).count();
+        //         auto hours = std::chrono::duration_cast<std::chrono::hours>(secs) %
+        //                      std::chrono::duration_cast<std::chrono::hours>(std::chrono::days(1)).count();
         return std::format("{}y.{:02}m.{:02}d.{:05}s",
                            years.count(),
                            months.count(),

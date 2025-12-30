@@ -24,21 +24,21 @@ class BlendModeState : public RendererState
 {
 public:
     BlendModeState(SDL_BlendMode blendMode)
-      : blendMode(blendMode)
+      : _blendMode(blendMode)
     {
     }
 
     void apply(sdl::Renderer& renderer) override
     {
-        renderer.getDrawBlendMode(&prevBlendMode);
-        renderer.setDrawBlendMode(blendMode);
+        renderer.getDrawBlendMode(&_prevBlendMode);
+        renderer.setDrawBlendMode(_blendMode);
     }
 
-    void restore(sdl::Renderer& renderer) override { renderer.setDrawBlendMode(prevBlendMode); }
+    void restore(sdl::Renderer& renderer) override { renderer.setDrawBlendMode(_prevBlendMode); }
 
 private:
-    SDL_BlendMode       prevBlendMode;
-    const SDL_BlendMode blendMode;
+    SDL_BlendMode       _prevBlendMode{};
+    const SDL_BlendMode _blendMode;
 };
 
 class ColorState : public RendererState
@@ -73,45 +73,45 @@ class TextureColorState : public TextureState
 {
 public:
     TextureColorState(const Color& color)
-      : color(color)
+      : _color(color)
     {
     }
 
     void apply(sdl::Renderer&, sdl::Texture& texture) override
     {
-        texture.getColorMod(&prevColor[0], &prevColor[1], &prevColor[2]);
-        texture.setColorMod(color[0], color[1], color[2]);
+        texture.getColorMod(&_prevColor[0], &_prevColor[1], &_prevColor[2]);
+        texture.setColorMod(_color[0], _color[1], _color[2]);
     }
 
     void restore(sdl::Renderer&, sdl::Texture& texture) override
     {
-        texture.setColorMod(prevColor[0], prevColor[1], prevColor[2]);
+        texture.setColorMod(_prevColor[0], _prevColor[1], _prevColor[2]);
     }
 
 private:
-    Color       prevColor;
-    const Color color;
+    Color       _prevColor;
+    const Color _color;
 };
 
 class TextureBlendModeState : public TextureState
 {
 public:
     TextureBlendModeState(SDL_BlendMode blendMode)
-      : blendMode(blendMode)
+      : _blendMode(blendMode)
     {
     }
 
     void apply(sdl::Renderer&, sdl::Texture& texture) override
     {
-        texture.getBlendMode(&storeBlendMode);
-        texture.setBlendMode(blendMode);
+        texture.getBlendMode(&_storeBlendMode);
+        texture.setBlendMode(_blendMode);
     }
 
-    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setBlendMode(storeBlendMode); }
+    void restore(sdl::Renderer&, sdl::Texture& texture) override { texture.setBlendMode(_storeBlendMode); }
 
 private:
-    SDL_BlendMode       storeBlendMode;
-    const SDL_BlendMode blendMode;
+    SDL_BlendMode       _storeBlendMode;
+    const SDL_BlendMode _blendMode;
 };
 
 class TextureAlphaState : public TextureState
@@ -150,7 +150,7 @@ public:
     {
     }
 
-    void apply(sdl::Renderer& renderer) override { storeFunc(renderer, storedState); };
+    void apply(sdl::Renderer& renderer) override { storeFunc(renderer, storedState); }
 
     void restore(sdl::Renderer& renderer) override { restoreFunc(renderer, storedState); }
 

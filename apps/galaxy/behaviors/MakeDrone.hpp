@@ -7,6 +7,8 @@
 #include <components/Tags.hpp>
 #include <components/Lifetime.hpp>
 #include <pgGame/components/RenderState.hpp>
+#include <events/DroneEvents.hpp>
+#include <entt/entt.hpp>
 
 namespace behavior {
 
@@ -72,8 +74,8 @@ public:
 
         pg::game::addComponent<galaxy::Behavior>(
             game.getGlobalRegistry(), entity, galaxy::Behavior{std::move(behavior_tree), {}});
-
-        game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>({.entity = entity, .transform = transform.pos});
+        game.getDispatcher().trigger<galaxy::events::DroneCreatedEvent>(
+            galaxy::events::DroneCreatedEvent{.entity = entity, .faction = faction, .transform = transform.pos});
         return BT::NodeStatus::SUCCESS;
     }
 

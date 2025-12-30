@@ -4,18 +4,11 @@ namespace pg::game {
 
 struct VFSConfig
 {
-    enum class VFSType
-    {
-        PHYSICAL,
-        ZIP,
-        MEMORY
-    };
     using Root = std::string;
     using Alias = std::string;
 
-    Root    root;
-    Alias   alias;
-    VFSType type{VFSType::PHYSICAL};
+    Root  root;  // root path
+    Alias alias; // alias/mount point
 };
 
 struct GameConfig
@@ -23,7 +16,6 @@ struct GameConfig
     GenericConfig            options;
     pg::config::WindowConfig windowConfig;
     std::vector<VFSConfig>   vfsConfigs;
-    std::string              resourcePrefix;
 
     SDL_Rect getWindowRect()
     {

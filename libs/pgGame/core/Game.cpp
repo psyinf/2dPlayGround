@@ -5,7 +5,6 @@
 #include <core/GameExceptions.hpp>
 #include <events/SceneManagementEvents.hpp>
 #include <events/GameEvents.hpp>
-#include <ranges>
 #include <components/singletons/RegisteredPreloaders.hpp>
 #include <pgGame/core/VFSDataProvider.hpp>
 
@@ -74,35 +73,15 @@ game::Game::Game(pg::game::GameConfig&& config)
   , _windowDetails(_gameConfig.getWindowRect())
   , _sdlApp(_gameConfig.windowConfig)
   , _inputEventDispatcher(_sdlApp.getEventHandler(), {})
-  , _vfs(std::make_unique<vfspp::VirtualFileSystem>())
+  , _vfs(std::make_unique<physfspp::VirtualFileSystem>())
   , _resourceManager([this](const pg::foundation::URI& uri) -> pg::foundation::DataProviderPtr {
-      return std::make_unique<VFSDataProvider>(uri, _vfs, _gameConfig.resourcePrefix);
+      return std::make_unique<VFSDataProvider>(uri, _vfs);
   })
 {
     // register all vfs's
     for (const auto& vfsConfig : _gameConfig.vfsConfigs)
     {
-        switch (vfsConfig.type)
-        {
-        case pg::game::VFSConfig::VFSType::PHYSICAL: {
-            auto fs = std::make_shared<vfspp::NativeFileSystem>(vfsConfig.root);
-            fs->Initialize();
-            _vfs->AddFileSystem(vfsConfig.alias, fs);
-            break;
-        }
-        case pg::game::VFSConfig::VFSType::ZIP: {
-            auto fs = std::make_shared<vfspp::ZipFileSystem>(vfsConfig.root);
-            fs->Initialize();
-            _vfs->AddFileSystem(vfsConfig.alias, fs);
-            break;
-        }
-        case pg::game::VFSConfig::VFSType::MEMORY: {
-            auto fs = std::make_shared<vfspp::MemoryFileSystem>();
-            fs->Initialize();
-            _vfs->AddFileSystem(vfsConfig.alias, fs);
-            break;
-        }
-        }
+        _vfs->mount(vfsConfig.root, vfsConfig.alias, physfspp::VirtualFileSystem::AppendMode::Append);
     }
 
     _gui = std::make_unique<pg::Gui>(getApp());

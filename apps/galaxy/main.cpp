@@ -13,13 +13,10 @@ try
     game_config.windowConfig.size = {800, 600};
     game_config.windowConfig.windowName = "Galaxy";
 
+    game_config.vfsConfigs.push_back({.root = "../data", .alias = "data"});
+    game_config.vfsConfigs.push_back({.root = "../data", .alias = "::resources"});
     game_config.vfsConfigs.push_back(
-        {.root = "../data", .alias = "data", .type = pg::game::VFSConfig::VFSType::PHYSICAL});
-    game_config.vfsConfigs.push_back(
-        {.root = "../data", .alias = "::resources", .type = pg::game::VFSConfig::VFSType::PHYSICAL});
-    game_config.vfsConfigs.push_back({.root = "../data/music/cylinders/Chris Zabriskie - Cylinders.zip",
-                                      .alias = "music/soundtracks/cylinders",
-                                      .type = pg::game::VFSConfig::VFSType::ZIP});
+        {.root = "../data/music/cylinders/Chris Zabriskie - Cylinders.zip", .alias = "music/soundtracks/cylinders"});
     {
         galaxy::GalacticCore gc(std::move(game_config));
         gc.setup();

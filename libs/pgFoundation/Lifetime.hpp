@@ -4,8 +4,8 @@ namespace pg {
 
 /**
  * Lifetime scope wrapper for objects with explicit make and destroy functions
- * @tparam Make
- * @tparam Destroy
+ * /param Construct
+ * /param Destroy
  */
 template <auto Construct, auto Destroy>
 class Lifetime

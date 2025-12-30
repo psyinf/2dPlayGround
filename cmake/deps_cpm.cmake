@@ -15,7 +15,14 @@ CPMAddPackage(
     GIT_REPOSITORY https://github.com/pybind/pybind11.git
     GIT_TAG v2.13.6
 )
-
+CPMAddPackage(
+    NAME phyfs
+    GIT_REPOSITORY https://github.com/icculus/physfs
+    GIT_TAG release-3.2.0
+    SYSTEM ON
+    OPTIONS "PHYSFS_BUILD_DOCS OFF"
+            "PHYSFS_TARGETNAME_UNINSTALL uninstall-physfs"
+)
 CPMAddPackage(
     #zeromq
     NAME ZeroMQ
@@ -52,7 +59,8 @@ set (BTCPP_EXTRA_LIBRARIES libzmq-static)
 CPMAddPackage(
     Name btcpp
     GITHUB_REPOSITORY BehaviorTree/BehaviorTree.CPP
-    GIT_TAG a44619cd8871c484f5c4b24f9958302455f19211
+    GIT_TAG 4.7.0
+    #a44619cd8871c484f5c4b24f9958302455f19211
     SYSTEM TRUE
     OPTIONS 
     "BTCPP_SHARED_LIBS OFF"
@@ -61,6 +69,7 @@ CPMAddPackage(
     "BTCPP_UNIT_TESTS OFF"
     "BTCPP_GROOT_INTERFACE ON"
     "BTCPP_SQLITE_LOGGING OFF"
+    "BUILD_TESTING OFF"
     
 )
 
@@ -140,7 +149,7 @@ CPMAddPackage(
     NAME spdlog
 
     GITHUB_REPOSITORY gabime/spdlog
-    GIT_TAG v1.13.0
+    GIT_TAG v1.15.1
     OPTIONS
     "SPDLOG_BUILD_EXAMPLES OFF"
     "SPDLOG_BUILD_TESTS OFF"
@@ -184,11 +193,11 @@ set_target_properties(imgui PROPERTIES FOLDER third-party) # optoinal IDE dir
 #alias
 add_library(imgui::imgui ALIAS imgui)
 #endif()
-CPMAddPackage(
-    NAME vfspp
-    GITHUB_REPOSITORY nextgeniuspro/vfspp
-    GIT_TAG v2.0.0
-)
+#CPMAddPackage(
+#    NAME vfspp
+#    GITHUB_REPOSITORY nextgeniuspro/vfspp
+#    GIT_TAG v2.0.0
+#)
 
 if(SCRIPTING)
 CPMAddPackage(

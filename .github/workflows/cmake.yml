@@ -5,48 +5,88 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.head_ref && github.ref || github.run_id }}
   cancel-in-progress: true
 
 env:
-  # Customize the CMake build type here (Release, Debug, RelWithDebInfo, etc.)
-  BUILD_TYPE: Release
-  CONAN_USER_HOME: "${{ github.workspace }}/release/"
-  CONAN_USER_HOME_SHORT: "${{ github.workspace }}/release/short"
+  CPM_SOURCE_CACHE: ${{ github.workspace }}/cpm-cache
+
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
-        #version: [10, 12, 14]
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
+        build_type: [Debug, Release]
+        include:
+          - os: ubuntu-latest
+            preset: unixlike-gcc-debug
+            preset_release: unixlike-gcc-release
+          - os: macos-latest
+            preset: unixlike-clang-debug
+            preset_release: unixlike-clang-release
+
     runs-on: ${{ matrix.os }}
+    
     steps:
-    - name: Set up cache
-      id: cache-cpm
-      uses: actions/cache@v2
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up CPM cache
+      uses: actions/cache@v4
       with:
-       path: ~/cpm-cache
-       key: ${{ runner.os }}-cpm-${{ hashFiles('**/') }}
-       restore-keys: |
-         ${{ runner.os }}-cpm-    
-    - uses: actions/checkout@v3
-    - name: Setup GCC
-      uses: pkgxdev/setup@v1
+        path: ${{ env.CPM_SOURCE_CACHE }}
+        key: ${{ runner.os }}-cpm-${{ hashFiles('**/CMakeLists.txt', 'cmake/**/*.cmake') }}
+        restore-keys: |
+          ${{ runner.os }}-cpm-
+
+    - name: Set up build cache
+      uses: actions/cache@v4
       with:
-        +: gcc@14
+        path: |
+          out/build/${{ matrix.build_type == 'Debug' && matrix.preset || matrix.preset_release }}
+        key: ${{ runner.os }}-build-${{ matrix.build_type }}-${{ hashFiles('**/*.cpp', '**/*.hpp', '**/*.h', '**/*.c') }}
+        restore-keys: |
+          ${{ runner.os }}-build-${{ matrix.build_type }}-
+          ${{ runner.os }}-build-
+
+    - name: Install dependencies (Ubuntu)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ninja-build gcc-14 g++-14
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+
+    - name: Install dependencies (macOS)
+      if: runner.os == 'macOS'
+      run: brew install ninja
 
     - name: Configure CMake
-      # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
-      # See https://cmake.org/cmake/help/latest/variable/CMAKE_BUILD_TYPE.html?highlight=cmake_build_type
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCPM_SOURCE_CACHE=~/cpm-cache
-    
+      run: |
+        if [ "${{ matrix.build_type }}" == "Debug" ]; then
+          cmake --preset=${{ matrix.preset }}
+        else
+          cmake --preset=${{ matrix.preset_release }}
+        fi
+      shell: bash
+
     - name: Build
-      # Build your program with the given configuration
-      run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}}
+      run: |
+        if [ "${{ matrix.build_type }}" == "Debug" ]; then
+          cmake --build --preset=${{ matrix.preset }}
+        else
+          cmake --build --preset=${{ matrix.preset_release }}
+        fi
+      shell: bash
 
     - name: Test
-      working-directory: ${{github.workspace}}/build
-      # Execute tests defined by the CMake configuration.
-      # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
-      run: ctest -C ${{env.BUILD_TYPE}}
+      run: |
+        if [ "${{ matrix.build_type }}" == "Debug" ]; then
+          ctest --preset=test-${{ matrix.preset }}
+        else
+          ctest --preset=test-${{ matrix.preset_release }}
+        fi
+      shell: bash

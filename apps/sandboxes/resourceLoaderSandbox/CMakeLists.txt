@@ -1,6 +1,6 @@
 project(resourceLoaderSandBox)
 
-add_executable(${PROJECT_NAME} main.cpp)
+add_executable(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
     PUBLIC
@@ -11,7 +11,8 @@ target_link_libraries(${PROJECT_NAME}
     PUBLIC
     pgEngine::pgEngine
     pgGame::pgGame
-    vfspp
+    PhysFSPP::PhysFSPP
+    #vfspp
 )
 
 if (ENABLE_COVERAGE)
