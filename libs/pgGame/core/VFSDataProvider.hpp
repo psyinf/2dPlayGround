@@ -24,6 +24,6 @@ public:
     void              toBuffer(std::vector<char>& buffer, size_t max_ch) override;
     char              readNext() override;
     std::span<char>   asSpan() override;
-    size_t            size() override;
+    size_t            size() const override;
 };
 } // namespace pg

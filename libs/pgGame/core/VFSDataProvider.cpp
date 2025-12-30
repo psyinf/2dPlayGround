@@ -46,7 +46,7 @@ std::span<char> pg::VFSDataProvider::asSpan()
     throw std::runtime_error("Not implemented");
 }
 
-size_t pg::VFSDataProvider::size()
+size_t pg::VFSDataProvider::size() const
 {
     // return _file->Size();
     throw std::runtime_error("Not implemented");
